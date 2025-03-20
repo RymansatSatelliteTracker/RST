@@ -39,11 +39,8 @@
     ],
     "extraResources": [
       {
-        "filter": [
-          "src/data/init-data/transceiver.json",
-          "src/data/init-data/rotator.json",
-          "src/data/init-data/default_satellite.json"
-        ]
+        "from": "resources/data/init-data",
+        "to": "data/init-data"
       }
     ],
     "extraMetadata": {
