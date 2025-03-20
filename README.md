@@ -149,3 +149,8 @@ package.json
 - ローテーションは10MB（Constant.tsで設定）
 - ローテーションは１世代のみ保持される
 
+# Issue
+バグ報告や改善要望は、GitHubのIssuesに登録ください。
+
+# License
+The source code is licensed MIT.
