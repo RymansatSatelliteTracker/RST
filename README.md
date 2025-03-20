@@ -133,7 +133,8 @@ package.json
   "app:import-replace": "tscpaths -p tsconfig.json -s ./src -o ./dist/electron",
 }
 
-"tscpaths -p tsconfig.json -s ./src -o ./dist" の箇所で相対パスへ置換を行っている。
+# 以下箇所で相対パスへ置換を行っている。
+"tscpaths -p tsconfig.json -s ./src -o ./dist"
 ```
 
 #### ログファイル
