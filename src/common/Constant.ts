@@ -321,7 +321,7 @@ export default class Constant {
 
     // 周波数設定ファイルのURL
     static readonly FREQUENCY_URL =
-      "https://github.com/RymansatSatelliteTracker/RST/blob/0034fbddfecb023fcf57cd6e5effbf5e06d55fe1/satellite_data/frequency.json";
+      "https://raw.githubusercontent.com/RymansatSatelliteTracker/RST/refs/heads/main/satellite_data/frequency.json";
   };
 
   /**
