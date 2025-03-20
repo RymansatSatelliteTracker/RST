@@ -132,8 +132,10 @@ package.json
   "app:build": "npm run vite:build && tsc && npm run app:import-replace && electron-builder",
   "app:import-replace": "tscpaths -p tsconfig.json -s ./src -o ./dist/electron",
 }
+```
 
-# 以下箇所で相対パスへ置換を行っている。
+以下箇所で相対パスへ置換を行っている。
+```json
 "tscpaths -p tsconfig.json -s ./src -o ./dist"
 ```
 
