@@ -1,0 +1,32 @@
+// 色定義
+$blue-pale: #68a8ce;
+$blue-light: #2783b9;
+$blue: #1f6994;
+$blue-dark: #174f6f;
+$black-blue: #141d23;
+$danger-pale: #eb5757;
+$danger: darken(#eb5757, 20%);
+$danger-dark: darken(#eb5757, 40%);
+$white: #f2f2f2;
+$white-alpha: #ffffff90;
+$black20: #bdbdbd;
+$black40: #979797;
+$black50: #676767;
+$black60: #4f4f4f;
+$black80: #434343;
+$black90: #2e2e2e;
+$black90-alpha: #2e2e2e70;
+$black100: #121212;
+$black100-alpha: #00000090;
+$table-line: #3f3f3f;
+$border-line: #3f3f3f;
+$black-shadow:
+  0 2px 4px -1px rgba(0, 0, 0, 0.2),
+  0 4px 5px 0 rgba(0, 0, 0, 0.14),
+  0 1px 10px 0 rgba(0, 0, 0, 0.12);
+$alert: #fd5f5f;
+$green: #00c13b;
+$warning: #ff9800;
+$warning-text: #ffd599;
+$warning-alert-background: #453d30;
+$warning-alert-border: #4e473a;

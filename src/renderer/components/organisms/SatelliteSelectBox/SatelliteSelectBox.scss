@@ -1,0 +1,13 @@
+@import "@/renderer/components/styles/global.scss";
+
+.sat_select {
+  user-select: none;
+  min-width: 220px;
+  background-color: $black100-alpha;
+  text-align: center;
+  white-space: nowrap;
+  color: $white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  align-content: center;
+}

@@ -1,0 +1,8 @@
+@import "@/renderer/components/styles/global.scss";
+
+.sat__btn__icon {
+  width: 45px;
+}
+.active {
+  filter: invert(88%) sepia(61%) saturate(0%) hue-rotate(229deg) brightness(107%) contrast(101%);
+}

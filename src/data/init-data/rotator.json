@@ -1,0 +1,42 @@
+{
+  "rotators": [
+    {
+      "makerId": "0",
+      "makerName": "rsp",
+      "devices": [
+        {
+          "rotatorId": "0",
+          "deviceName": "simulator",
+          "commnadType": "simulator"
+        },
+        {
+          "rotatorId": "1",
+          "deviceName": "rsp Antenna IO",
+          "commnadType": "rsp_usb_antennaio_v1.0"
+        }
+      ]
+    },
+    {
+      "makerId": "1",
+      "makerName": "JA1COU",
+      "devices": [
+        {
+          "rotatorId": "2",
+          "deviceName": "Bluetooth AZ/EL Rotator",
+          "commnadType": "bt_az_el_rotator"
+        }
+      ]
+    },
+    {
+      "makerId": "2",
+      "makerName": "Fox Delta",
+      "devices": [
+        {
+          "rotatorId": "3",
+          "deviceName": "ST-2",
+          "commnadType": "fox_delta_st2"
+        }
+      ]
+    }
+  ]
+}

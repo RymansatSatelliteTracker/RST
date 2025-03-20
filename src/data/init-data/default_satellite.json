@@ -1,0 +1,31 @@
+{
+  "defaultSatellite": {
+    "defaultSatellites": [
+      {
+        "satelliteId": 1,
+        "satelliteName": "ISS (ZARYA)",
+        "noradId": "25544",
+        "uplink1": {
+          "uplinkMhz": null,
+          "uplinkMode": ""
+        },
+        "uplink2": {
+          "uplinkMhz": null,
+          "uplinkMode": ""
+        },
+        "downlink1": {
+          "downlinkMhz": null,
+          "downlinkMode": ""
+        },
+        "downlink2": {
+          "downlinkMhz": null,
+          "downlinkMode": ""
+        },
+        "toneMhz": null,
+        "outline": ""
+      }
+    ],
+    "maxSatelliteId": 1,
+    "registeredNoradIds": ["25544"]
+  }
+}

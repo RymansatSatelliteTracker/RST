@@ -1,0 +1,36 @@
+{
+  "transceivers": [
+    {
+      "makerId": "1",
+      "makerName": "Icom",
+      "devices": [
+        {
+          "transceiverId": "1",
+          "deviceName": "IC-9100",
+          "civAddress": "7C"
+        },
+        {
+          "transceiverId": "2",
+          "deviceName": "IC-9700",
+          "civAddress": "A2"
+        },
+        {
+          "transceiverId": "3",
+          "deviceName": "ID-52",
+          "civAddress": "A6"
+        }
+      ]
+    },
+    {
+      "makerId": "2",
+      "makerName": "Yaesu Musen",
+      "devices": [
+        {
+          "transceiverId": "1",
+          "deviceName": "FT-847",
+          "civAddress": ""
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+@import "@/renderer/components/styles/global.scss";
+.dialog-height {
+  height: 700px;
+}
+
+.custom-border {
+  user-select: none;
+  border: 1px solid white;
+}
+
+.form__label {
+  width: 80px;
+}
+
+.form__checkbox {
+  transform: scale(1.5);
+}

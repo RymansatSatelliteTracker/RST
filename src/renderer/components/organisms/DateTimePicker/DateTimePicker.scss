@@ -1,0 +1,57 @@
+.datetime-picker {
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.control {
+  display: flex;
+  flex-direction: column;
+  margin: 0 -10px;
+}
+
+.control label {
+  margin-left: 12px;
+  margin-bottom: -7px;
+  font-size: 0.75rem;
+}
+
+.adjusters {
+  display: flex;
+}
+
+.adjuster10 {
+  cursor: pointer;
+  user-select: none;
+  width: 30px;
+  text-align: right;
+  font-size: 2rem;
+}
+
+.adjuster1 {
+  cursor: pointer;
+  user-select: none;
+  width: 30px;
+  text-align: left;
+  font-size: 2rem;
+}
+
+.separator {
+  margin-top: 6px;
+  font-size: 2rem;
+}
+
+.now__btn {
+  width: 80px;
+  margin: 5px;
+  height: 30px;
+  padding: 3px 0px;
+}

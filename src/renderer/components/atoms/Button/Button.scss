@@ -1,0 +1,74 @@
+@import "@/renderer/components/styles/variables.scss";
+@import "@/renderer/components/styles/global.scss";
+
+.buttonPrimary {
+  color: $white;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  background-color: $blue;
+  border: 1px solid transparent;
+  // v-btnのデフォルトは英字が大文字になるので、noneで抑止する
+  text-transform: none !important;
+  letter-spacing: normal !important;
+
+  &:hover {
+    background-color: darken($blue, 5%);
+    border: 1px solid darken($blue, 5%);
+    cursor: pointer;
+  }
+
+  &:active {
+    background-color: darken($blue, 10%);
+    border: 1px solid darken($blue, 10%);
+    cursor: pointer;
+  }
+
+  &:focus {
+    background-color: darken($blue, 10%);
+    border: 1px solid darken($blue, 10%);
+    cursor: pointer;
+
+    &:focus {
+      outline: 2px solid $blue-light;
+    }
+  }
+
+  &:disabled {
+    background-color: $blue-dark;
+    border: 1px solid $blue-dark;
+    color: $black40;
+    cursor: not-allowed;
+  }
+}
+
+// 背景半透明
+.buttonPrimaryTransparent {
+  color: $white;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  background-color: $black90-alpha;
+  border: 1px solid transparent;
+  height: 40px;
+  // v-btnのデフォルトは英字が大文字になるので、noneで抑止する
+  text-transform: none !important;
+  letter-spacing: normal !important;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &:active {
+    cursor: pointer;
+  }
+
+  &:focus {
+    cursor: pointer;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}

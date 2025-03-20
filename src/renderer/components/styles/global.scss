@@ -1,0 +1,143 @@
+// 全体のスタイル
+@import "./colors";
+@import "./variables.scss";
+
+body {
+  margin: 5px;
+  color: $white;
+  background-color: $black100;
+  font-family: Arial, "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", Osaka, メイリオ, Meiryo, "ＭＳ Ｐゴシック",
+    "MS PGothic", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// 便利系
+.w-100per {
+  width: 100%;
+}
+
+.v-text-field--box .v-input__slot,
+.v-text-field--outline .v-input__slot {
+  min-height: 1px;
+}
+
+// v-textfield
+.textfield .v-input__control {
+  // 高さ調整
+  height: $form_textfield_height;
+}
+.textfield .v-field {
+  // textfield内の背景色
+  background-color: $black100;
+}
+.textfield .v-field__input {
+  font-size: $form_font_size;
+  height: $form_textfield_height;
+  min-height: 0px !important;
+  padding-top: 1px;
+  padding-left: 7px;
+  padding-bottom: 1px;
+}
+.textfield .v-text-field__suffix {
+  // Suffixの調整
+  user-select: none;
+  color: $white;
+  font-size: $form_font_size;
+  height: $form_textfield_height;
+  min-height: 0px !important;
+  padding-top: 15px;
+  padding-left: 2px;
+}
+.textfield .v-field-label {
+  font-size: $form_font_size;
+}
+
+// v-select
+.selectbox .v-input__control {
+  // 高さ調整
+  height: $form_selectbox_height;
+}
+.selectbox .v-select__selection-text {
+  // 選択時の文字サイズ
+  font-size: $form_font_size;
+}
+.selectbox .v-field__input {
+  // selectbox内の文字位置調整
+  padding-top: 1px;
+  padding-left: 7px;
+}
+.selectbox .v-field {
+  // selectbox内の背景色
+  user-select: none;
+  background-color: $black100;
+}
+.selectbox .v-field__append-inner {
+  // selectbox 内の三角アイコンの位置調整
+  height: $form_selectbox_height;
+}
+.selectbox .v-text-field__suffix {
+  // Suffixの調整
+  color: $white;
+  font-size: $form_font_size;
+  height: $form_textfield_height;
+  min-height: 0px !important;
+  padding-top: 10px;
+  padding-left: 2px;
+}
+// v-radio
+.radio .v-label {
+  font-size: $form_font_size;
+}
+.radio .v-icon__svg {
+  width: 1.3rem;
+}
+
+// label
+.label {
+  font-size: $form_font_size;
+  text-align: left;
+  vertical-align: middle;
+}
+
+// textarea
+.textarea .v-field__input {
+  font-size: $form_font_size;
+  min-height: 0px !important;
+}
+.textarea .v-field {
+  // 背景色
+  background-color: $black100;
+}
+
+// マップ操作時のカーソル指定
+.leaflet-grab {
+  cursor: default !important;
+}
+.leaflet-dragging .leaflet-grab {
+  cursor: move !important;
+}
+// マップ背景色
+.leaflet-container {
+  background: $black100;
+  outline: 0;
+}
+
+// v-list
+.listitem .v-list-item__content {
+  user-select: none;
+  font-size: $form_font_size;
+}
+.listitem .v-list-item--active {
+  background-color: #333333;
+}
+
+.v-btn {
+  // デフォルトの強制大文字表示を無効化する
+  text-transform: none !important;
+}
+
+// 無効な項目ラベル
+.g_invalid_item_label {
+  color: gray;
+}

@@ -1,0 +1,11 @@
+
+# Logs
+logs
+*.log
+
+node_modules
+dist
+release
+
+# viteの一時ファイル
+vite.config.mts.timestamp*

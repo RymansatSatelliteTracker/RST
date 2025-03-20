@@ -1,0 +1,52 @@
+@import "@/renderer/components/styles/global.scss";
+
+.menu {
+  display: flex;
+  flex-flow: column;
+  margin: 0 0 1em;
+}
+
+.menu__item {
+  user-select: none;
+  margin-left: 0.5em;
+  color: $black100;
+  align-items: center;
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+}
+
+.menu__item__icon {
+  background-color: $white-alpha;
+  border-radius: 4px;
+  padding: 3px;
+  width: 33px;
+  filter: invert(88%) sepia(61%) saturate(0%) hue-rotate(229deg) brightness(107%) contrast(101%);
+  z-index: 2;
+}
+
+.menu__item__text {
+  padding: 5px 0 0;
+  text-align: center;
+  margin-left: 0.5rem;
+  color: white;
+  z-index: 1;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition:
+    opacity 0.3s,
+    margin-left 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  margin-left: -10px;
+  opacity: 0;
+}
+
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
+}

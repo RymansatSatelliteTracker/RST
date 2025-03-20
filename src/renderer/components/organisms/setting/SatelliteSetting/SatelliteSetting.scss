@@ -1,0 +1,10 @@
+@import "@/renderer/components/styles/global.scss";
+
+.dialog-height {
+  height: 650px;
+}
+
+.custom-border {
+  user-select: none;
+  border: 1px solid white;
+}

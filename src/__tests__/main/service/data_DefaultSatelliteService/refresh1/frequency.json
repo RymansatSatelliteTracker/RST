@@ -1,0 +1,30 @@
+{
+  "frequency": {
+    "lastUpdateTime": 1,
+    "satellites": [
+      {
+        "satelliteId": 100,
+        "satelliteName": "ISAT",
+        "noradId": "43879",
+        "uplink1": {
+          "uplinkMhz": null,
+          "uplinkMode": ""
+        },
+        "uplink2": {
+          "uplinkMhz": null,
+          "uplinkMode": ""
+        },
+        "downlink1": {
+          "downlinkMhz": null,
+          "downlinkMode": ""
+        },
+        "downlink2": {
+          "downlinkMhz": null,
+          "downlinkMode": ""
+        },
+        "toneMhz": null,
+        "outline": ""
+      }
+    ]
+  }
+}

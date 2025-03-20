@@ -1,0 +1,153 @@
+@import "@/renderer/components/styles/global.scss";
+
+.container {
+  display: flex;
+  flex-flow: column;
+}
+
+.fieldset_area {
+  margin-top: 10px;
+  border-radius: 4px;
+}
+
+.aos_header {
+  position: sticky;
+  top: 0;
+  background-color: $black90;
+  z-index: 1;
+}
+.aos_body {
+  position: relative;
+  max-height: 150px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+.aos_table {
+  width: 100%;
+  border-collapse: collapse;
+  display: block;
+  position: relative;
+  height: 150px;
+  overflow-y: scroll;
+
+  th,
+  td {
+    border: none;
+    padding: 2px 3px 2px 3px;
+    text-align: center;
+    font-size: 0.8rem;
+  }
+
+  th {
+    background-color: $black90-alpha;
+    color: white;
+  }
+}
+
+// Autoボタン
+.auto_btn {
+  width: 100%;
+  height: 30px !important;
+  font-size: 1rem !important;
+  padding: 0 !important;
+}
+.auto_btn_on {
+  @extend .auto_btn;
+  background-color: $green !important;
+  color: $black100 !important;
+}
+.auto_btn_off {
+  @extend .auto_btn;
+  background-color: $black90 !important;
+  color: $white !important;
+}
+
+// Modeボタン
+.mode_btn {
+  width: 90px;
+  margin: 5px;
+  height: 30px;
+}
+.mode_btn_on {
+  @extend .mode_btn;
+  background-color: $green;
+  color: $black100;
+}
+.mode_btn_off {
+  @extend .mode_btn;
+  background-color: $black90;
+  color: $white;
+}
+
+// Satelliteボタン
+.sat_btn {
+  width: 190px;
+  margin: 5px;
+  height: 30px;
+}
+.sat_btn_on {
+  @extend .sat_btn;
+  background-color: $green;
+  color: $black100;
+}
+.sat_btn_off {
+  @extend .sat_btn;
+  background-color: $black90;
+  color: $white;
+}
+
+.grayed_out_on {
+  display: block;
+  font-size: 10px;
+  color: $black50;
+  margin-top: 1px;
+}
+
+.grayed_out_off {
+  display: block;
+  font-size: 10px;
+  color: $black40;
+  margin-top: 1px;
+}
+
+.freq_area {
+  user-select: none;
+  display: inline-block;
+  margin-left: 7px;
+  margin-bottom: 7px;
+}
+
+.freq_box {
+  margin-top: 5px;
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 1.4rem;
+  text-align: right;
+  width: 145px;
+  height: 38px;
+  background-color: $black90-alpha;
+}
+
+.freq_unit {
+  font-size: 0.8rem;
+}
+
+.item_group_legend {
+  user-select: none;
+  margin-left: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.item_2ground_mode {
+  margin-left: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  font-size: 0.9rem;
+  color: $green;
+  font-weight: 500;
+}
+
+.br_no_select {
+  user-select: none;
+}

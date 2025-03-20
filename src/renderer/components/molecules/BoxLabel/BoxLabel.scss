@@ -1,0 +1,9 @@
+@import "@/renderer/components/styles/global.scss";
+
+.box {
+  color: $white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  align-content: center;
+}

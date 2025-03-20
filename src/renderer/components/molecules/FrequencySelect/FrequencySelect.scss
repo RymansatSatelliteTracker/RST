@@ -1,0 +1,25 @@
+@import "@/renderer/components/styles/global.scss";
+
+.freq_box {
+  display: inline-block;
+  user-select: none;
+}
+.freq_unit {
+  margin-left: 5px;
+}
+.decimal_point {
+  margin: 0 2px;
+}
+.hovered {
+  cursor: pointer;
+  position: relative;
+  text-decoration: underline overline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 3px;
+  text-decoration-color: $white;
+  pointer-events: auto;
+}
+
+.grayed {
+  color: $black50;
+}

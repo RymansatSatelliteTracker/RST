@@ -1,0 +1,29 @@
+{
+  "frequency": {
+    "lastUpdateTime": 1727986363668,
+    "satellites": [
+      {
+        "noradId": "20442",
+        "satelliteName": "LUSAT (LO-19)",
+        "uplink1": {
+          "uplinkMhz": "123.456",
+          "uplinkMode": "LSB"
+        },
+        "uplink2": {
+          "uplinkMhz": "123.456",
+          "uplinkMode": "LSB"
+        },
+        "downlink1": {
+          "downlinkMhz": "123.456",
+          "downlinkMode": ""
+        },
+        "downlink2": {
+          "downlinkMhz": "123.456",
+          "downlinkMode": "FM"
+        },
+        "toneMhz": "123.456",
+        "outline": "周波数が文字列"
+      }
+    ]
+  }
+}

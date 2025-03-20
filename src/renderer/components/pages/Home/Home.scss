@@ -1,0 +1,78 @@
+@import "@/renderer/components/styles/variables.scss";
+@import "@/renderer/components/styles/global.scss";
+
+$main_left_satellite_height: 60px;
+$main_right_width: 250px;
+
+.container {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+// メニュー
+.menu_area {
+  position: absolute;
+  top: 100px;
+  left: 5px;
+  z-index: 900;
+}
+
+// 左側
+.main_left {
+  width: calc(100vw - $main_right_width);
+}
+
+// 右側
+.main_right {
+  position: absolute;
+  margin: 10px;
+  top: 0px;
+  left: calc(100vw - $main_right_width);
+  width: calc($main_right_width - 40px);
+}
+
+// ヘッダ部
+.header_area {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 10px;
+}
+
+// 左側・衛星グループ、衛星名エリア
+.main_left_sat_area {
+  z-index: 800;
+}
+
+// 左側・AOS
+.main_left_aos {
+  z-index: 800;
+}
+
+// 左側・現在時刻
+.main_left_nowtime {
+  z-index: 800;
+}
+
+// 左側・地図部
+.main_left_map {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: calc(100vw - $main_right_width);
+  bottom: 100px;
+  height: calc(100vh - $header_height - $footer_height - $main_left_satellite_height - 20px);
+  z-index: 100;
+}
+
+// 左側・レーダ部
+.main_left_radar {
+  position: absolute;
+  top: calc(100vh - 400px);
+  left: calc(100vw - $main_right_width - 300px);
+  width: 300px;
+  bottom: 100px;
+  z-index: 100;
+}

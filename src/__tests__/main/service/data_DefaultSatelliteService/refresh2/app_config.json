@@ -1,0 +1,79 @@
+{
+  "param": {
+    "appVersion": "0.0.6",
+    "lang": "ja",
+    "tle": {
+      "lastRetrievedDate": 1732222422205,
+      "urls": [{}]
+    },
+    "satellites": [
+      {
+        "satelliteId": 100,
+        "userRegistered": true,
+        "userRegisteredSatelliteName": "useradd",
+        "userRegisteredTle": "1 43879U 00000A   25315.09097222  .00000000  00000-0  00000+0 0  0007\n2 99000   1.0000   1.0000 5000000   1.0000   1.0000 14.82395607000004",
+        "noradId": "43879",
+        "autoModeUplinkFreq": 1,
+        "uplink1": {
+          "uplinkMhz": null,
+          "uplinkMode": ""
+        },
+        "uplink2": {
+          "uplinkMhz": null,
+          "uplinkMode": ""
+        },
+        "autoModeDownlinkFreq": 1,
+        "downlink1": {
+          "downlinkMhz": null,
+          "downlinkMode": ""
+        },
+        "downlink2": {
+          "downlinkMhz": null,
+          "downlinkMode": ""
+        },
+        "toneMhz": null,
+        "outline": "",
+        "visible": true
+      }
+    ],
+    "satelliteGroups": [
+      {
+        "groupId": 5,
+        "groupName": "test2",
+        "satelliteIds": [165, 100]
+      }
+    ],
+    "satelliteSetting": {
+      "satelliteChoiceMinEl": 2
+    },
+    "transceiver": {
+      "port": "",
+      "transceiverId": "3",
+      "civAddress": "",
+      "baudrateBps": "",
+      "makerId": "2",
+      "ipAddress": "",
+      "ipPort": ""
+    },
+    "rotator": {
+      "port": "",
+      "makerId": "",
+      "rotatorId": "",
+      "baudrateBps": "",
+      "ipAddress": "",
+      "ipPort": "",
+      "basePositionDegree": 0,
+      "moveMode": "normal",
+      "startAgoMinute": 0
+    },
+    "groundStation": {
+      "height": -1,
+      "lat": -1,
+      "lon": -1
+    },
+    "mainDisplay": {
+      "activeSatelliteGroupId": -1,
+      "activeSatelliteId": -1
+    }
+  }
+}

@@ -1,0 +1,108 @@
+@import "@/renderer/components/styles/variables.scss";
+
+// レーダ全体系
+.radar_contents {
+  padding: 12px;
+  position: relative;
+}
+.radar_body {
+  padding: 16px;
+  height: 200px;
+}
+.radar_view {
+  position: relative;
+}
+
+// 衛星位置
+.sat_pos {
+  position: absolute;
+  z-index: 10;
+}
+.sat_pos_point {
+  width: 10px;
+  height: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 11;
+}
+
+// Canvas系
+.radar_canvas {
+  position: relative;
+}
+.radar_canvas canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+// 東西南
+.direction {
+  position: absolute;
+  font-weight: bold;
+  font-size: 18px;
+  user-select: none;
+}
+// 北
+.direction_north {
+  @extend .direction;
+  height: 20px;
+  color: $green;
+}
+
+// Autoボタン
+.auto_btn {
+  position: absolute;
+  top: -32px;
+  right: 20px;
+  width: 100px;
+  height: 30px !important;
+  font-size: 1rem !important;
+  padding: 0 !important;
+}
+.auto_btn_on {
+  @extend .auto_btn;
+  background-color: $green !important;
+  color: $black100 !important;
+}
+.auto_btn_off {
+  @extend .auto_btn;
+  background-color: $black90 !important;
+  color: $white !important;
+}
+
+// AZ、EL
+.current_pos_item {
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: $white;
+}
+.current_pos_item_az {
+  position: absolute;
+  left: 10px;
+  top: 224px;
+  width: 95px;
+  height: 30px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  background-color: $black100-alpha;
+  border: 1px solid transparent;
+  text-align: center;
+  align-content: center;
+  user-select: none;
+}
+.current_pos_item_el {
+  position: absolute;
+  right: 50px;
+  top: 224px;
+  width: 95px;
+  height: 30px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  background-color: $black100-alpha;
+  border: 1px solid transparent;
+  text-align: center;
+  align-content: center;
+  user-select: none;
+}

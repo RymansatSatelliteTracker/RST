@@ -1,0 +1,50 @@
+{
+  "param": {
+    "appVersion": "0.0.6",
+    "lang": "ja",
+    "tle": {
+      "lastRetrievedDate": 1732222422205,
+      "urls": [{}]
+    },
+    "satellites": [],
+    "satelliteGroups": [
+      {
+        "groupId": 5,
+        "groupName": "test2",
+        "satelliteIds": [165, 100]
+      }
+    ],
+    "satelliteSetting": {
+      "satelliteChoiceMinEl": 2
+    },
+    "transceiver": {
+      "port": "",
+      "transceiverId": "3",
+      "civAddress": "",
+      "baudrateBps": "",
+      "makerId": "2",
+      "ipAddress": "",
+      "ipPort": ""
+    },
+    "rotator": {
+      "port": "",
+      "makerId": "",
+      "rotatorId": "",
+      "baudrateBps": "",
+      "ipAddress": "",
+      "ipPort": "",
+      "basePositionDegree": 0,
+      "moveMode": "normal",
+      "startAgoMinute": 0
+    },
+    "groundStation": {
+      "height": -1,
+      "lat": -1,
+      "lon": -1
+    },
+    "mainDisplay": {
+      "activeSatelliteGroupId": -1,
+      "activeSatelliteId": -1
+    }
+  }
+}
