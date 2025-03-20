@@ -32,11 +32,13 @@ export default class Constant {
     static readonly CONFIG_WINDOW = "app_window";
 
     // 設定ファイル名／初期データ／無線機定義
-    static readonly INIT_CONFIG_TRANSCEIVER_FILE_PATH = "src/data/init-data/transceiver.json";
+    static readonly INIT_CONFIG_TRANSCEIVER_FILE_PATH = "resources/data/init-data/transceiver.json";
+
     // 設定ファイル名／初期データ／ローテーター定義
-    static readonly INIT_CONFIG_ROTATOR_FILE_PATH = "src/data/init-data/rotator.json";
+    static readonly INIT_CONFIG_ROTATOR_FILE_PATH = "resources/data/init-data/rotator.json";
+
     // 設定ファイル名／初期データ／デフォルト衛星定義
-    static readonly INIT_CONFIG_DEFAULT_SATELLITE_FILE_PATH = "src/data/init-data/default_satellite.json";
+    static readonly INIT_CONFIG_DEFAULT_SATELLITE_FILE_PATH = "resources/data/init-data/default_satellite.json";
 
     /**
      * 設定／ローテーター

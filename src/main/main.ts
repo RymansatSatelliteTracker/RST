@@ -27,6 +27,16 @@ let mainWindow: BrowserWindow;
   // IPCイベントハンドラの登録（メインプロセス側のAPIのハンドラを登録）
   initializeIpcEvents();
 
+  // アプリ関係の初期化処理
+  const serive = new StartupService();
+  await serive.initApp();
+
+  // メニュー設定
+  // memo: makeElectronMenu()内でapp_configを参照しているため、
+  //       serive.initApp()コール後に実行する必要がある
+  const appMenu = makeElectronMenu();
+  Menu.setApplicationMenu(appMenu);
+
   // ウィンドウ生成
   mainWindow = createWindow();
   // for mac
@@ -42,16 +52,6 @@ let mainWindow: BrowserWindow;
     const contextMenu = Menu.buildFromTemplate(menuTemplate);
     contextMenu.popup();
   });
-
-  // アプリ関係の初期化処理
-  const serive = new StartupService();
-  await serive.initApp();
-
-  // メニュー設定
-  // memo: makeElectronMenu()内でapp_configを参照しているため、
-  //       serive.initApp()コール後に実行する必要がある
-  const appMenu = makeElectronMenu();
-  Menu.setApplicationMenu(appMenu);
 })();
 
 // Quit when all windows are closed, except on macOS. There, it's common
