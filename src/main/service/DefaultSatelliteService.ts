@@ -38,10 +38,8 @@ export default class DefaultSatelliteService {
    * @returns
    */
   public async updateDefaultSatelliteService(isFrequencyUpdated = true): Promise<string> {
-    // TLEが保存されたパスを取得する
-    const savePathTle = AppConfigUtil.getTlePath();
-    const tleData = FileUtil.readJson(savePathTle);
-    const tleItemMap: TleItemMap = tleData.tleItemMap;
+    // TLEを取得
+    const tleItemMap: TleItemMap = this.getLatestTLE();
 
     // デフォルト衛星定義が保存されたパスを取得する
     const savePathSat = path.join(ElectronUtil.getUserDir(), Constant.Config.DEFAULT_SATELLITE_FILENAME);
@@ -57,10 +55,7 @@ export default class DefaultSatelliteService {
 
     // TLEから情報を取得してデフォルト衛星定義を更新する
     for (const tleItem of Object.values(tleItemMap)) {
-      // TLEのリストに載っているものだけ更新する
-      if (tleItem.isInLatestTLE) {
-        this.defSatJson.addSatellite(tleItem.name, tleItem.id);
-      }
+      this.defSatJson.addSatellite(tleItem.name, tleItem.id);
     }
 
     // 衛星周波数設定で更新する
@@ -85,8 +80,9 @@ export default class DefaultSatelliteService {
    * @returns 衛星識別情報
    */
   public async getSavedSatelliteIdentifer(): Promise<SatelliteIdentiferType[]> {
+    const tleItemMap: TleItemMap = this.getLatestTLE();
     // デフォルト衛星定義から衛星識別情報を取得
-    const satIdentifer: SatelliteIdentiferType[] = this.defSatJson.getSatelliteIdentifer();
+    const satIdentifer: SatelliteIdentiferType[] = this.defSatJson.getSatelliteIdentifer(tleItemMap);
 
     return satIdentifer;
   }
@@ -171,5 +167,23 @@ export default class DefaultSatelliteService {
     if (!fs.existsSync(savePathSat)) return false;
     fs.writeFileSync(savePathSat, this.defSatJson.getJsonString());
     return true;
+  }
+
+  /**
+   * tle.jsonに存在するTLEを取得する
+   * @returns TleItemMap
+   */
+  private getLatestTLE(): TleItemMap {
+    const savePathTle = AppConfigUtil.getTlePath();
+    const tleData = FileUtil.readJson(savePathTle);
+
+    const tleItemMap: TleItemMap = tleData.tleItemMap;
+    const retTleItemMap: TleItemMap = {};
+    Object.values(tleItemMap).forEach((tleItem) => {
+      if (tleItem.isInLatestTLE) {
+        retTleItemMap[tleItem.id] = tleItem;
+      }
+    });
+    return retTleItemMap;
   }
 }
