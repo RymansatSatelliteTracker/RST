@@ -219,17 +219,19 @@ export default class ActiveSatServiceHub {
     if (appConfigSatellite) {
       if (appConfigSatellite.autoModeUplinkFreq === 2) {
         // アップリンク設定が2の場合は、設定2を使用する
+        // TODO 変数名はHzだが実際はMhzなのでシステムがHzで扱うようになったらmhzToHzを削除する
         this.uplinkFreq = {
-          uplinkHz: appConfigSatellite.uplink2.uplinkMhz
-            ? TransceiverUtil.mhzToHz(appConfigSatellite.uplink2.uplinkMhz)
+          uplinkHz: appConfigSatellite.uplink2.uplinkHz
+            ? TransceiverUtil.mhzToHz(appConfigSatellite.uplink2.uplinkHz)
             : null,
           uplinkMode: appConfigSatellite.uplink2.uplinkMode,
         };
       } else {
         // それ以外は設定1を使用する
         this.uplinkFreq = {
-          uplinkHz: appConfigSatellite.uplink1.uplinkMhz
-            ? TransceiverUtil.mhzToHz(appConfigSatellite.uplink1.uplinkMhz)
+          // TODO 変数名はHzだが実際はMhzなのでシステムがHzで扱うようになったらmhzToHzを削除する
+          uplinkHz: appConfigSatellite.uplink1.uplinkHz
+            ? TransceiverUtil.mhzToHz(appConfigSatellite.uplink1.uplinkHz)
             : null,
           uplinkMode: appConfigSatellite.uplink1.uplinkMode,
         };
@@ -237,16 +239,18 @@ export default class ActiveSatServiceHub {
       if (appConfigSatellite.autoModeDownlinkFreq === 2) {
         // ダウンリンク設定が2の場合は、設定2を使用する
         this.downlinkFreq = {
-          downlinkHz: appConfigSatellite.downlink2.downlinkMhz
-            ? TransceiverUtil.mhzToHz(appConfigSatellite.downlink2.downlinkMhz)
+          // TODO 変数名はHzだが実際はMhzなのでシステムがHzで扱うようになったらmhzToHzを削除する
+          downlinkHz: appConfigSatellite.downlink2.downlinkHz
+            ? TransceiverUtil.mhzToHz(appConfigSatellite.downlink2.downlinkHz)
             : null,
           downlinkMode: appConfigSatellite.downlink2.downlinkMode,
         };
       } else {
         // それ以外は設定1を使用する
         this.downlinkFreq = {
-          downlinkHz: appConfigSatellite.downlink1.downlinkMhz
-            ? TransceiverUtil.mhzToHz(appConfigSatellite.downlink1.downlinkMhz)
+          // TODO 変数名はHzだが実際はMhzなのでシステムがHzで扱うようになったらmhzToHzを削除する
+          downlinkHz: appConfigSatellite.downlink1.downlinkHz
+            ? TransceiverUtil.mhzToHz(appConfigSatellite.downlink1.downlinkHz)
             : null,
           downlinkMode: appConfigSatellite.downlink1.downlinkMode,
         };

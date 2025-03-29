@@ -213,7 +213,7 @@ const form = ref<EditSatelliteInfoForm>(new EditSatelliteInfoForm());
 const { validateForm, errors } = useEditSatelliteInfoValidate();
 
 // ファイルから取得した値と画面フォームで構造を変換する関数
-const { transformToForm, transformToAppConfig } = useEditSatelliteInfo();
+const { transformAppConfigToForm, transformDefSatToForm, transformFormToAppConfig } = useEditSatelliteInfo();
 
 onMounted(async function () {
   // 衛星を取得
@@ -224,7 +224,7 @@ onMounted(async function () {
   const appConfigSatellite = await ApiAppConfigSatellite.getAppConfigSatellite(selectedItem.value.satelliteId);
 
   // 画面に設定する
-  transformToForm(form.value, registedSatellite);
+  transformAppConfigToForm(form.value, registedSatellite);
   form.value.refSatelliteName = selectedItem.value.satelliteName;
   manualEditFlg.value = false;
 
@@ -275,14 +275,14 @@ async function onOk() {
     // リセットを押していたら(マニュアル設定がOFF)削除する
     if (manualEditFlg.value) {
       const sat: AppConfigSatellite = appConfig.satellites[index];
-      transformToAppConfig(sat, form.value);
+      transformFormToAppConfig(sat, form.value);
     } else {
       appConfig.satellites.splice(index, 1);
     }
   } else {
     // アプリケーション設定になければ新規追加
     const sat: AppConfigSatellite = new AppConfigSatellite();
-    transformToAppConfig(sat, form.value);
+    transformFormToAppConfig(sat, form.value);
     appConfig.satellites.push(sat);
   }
 
@@ -314,7 +314,7 @@ async function onReset() {
     selectedItem.value.satelliteId
   );
   if (defsat) {
-    transformToForm(form.value, defsat);
+    transformDefSatToForm(form.value, defsat);
   }
   manualEditFlg.value = false;
   isWatched = false;

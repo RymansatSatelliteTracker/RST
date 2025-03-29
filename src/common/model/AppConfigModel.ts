@@ -95,7 +95,7 @@ export class AppConfigSatellite {
  */
 export class Uplink {
   // アップリンク周波数(Mhz)
-  public uplinkMhz: number | null = null;
+  public uplinkHz: number | null = null;
   // アップリンクモード
   public uplinkMode = "";
 }
@@ -105,7 +105,7 @@ export class Uplink {
  */
 export class Downlink {
   // ダウンリンク周波数(Mhz)
-  public downlinkMhz: number | null = null;
+  public downlinkHz: number | null = null;
   // ダウンリンクモード
   public downlinkMode = "";
 }
