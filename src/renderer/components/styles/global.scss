@@ -17,6 +17,11 @@ body {
   width: 100%;
 }
 
+.g_solid_border {
+  user-select: none;
+  border: 1px solid white;
+}
+
 .v-text-field--box .v-input__slot,
 .v-text-field--outline .v-input__slot {
   min-height: 1px;

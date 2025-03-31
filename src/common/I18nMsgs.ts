@@ -230,6 +230,8 @@ export default class I18nMsgs {
   public static readonly GCOM_MENU_VERSION: I18nMsgItem = { en: "Version", ja: "バージョン" };
 
   // 画面項目系／ローテータ設定画面
+  public static readonly G51_TAB_CONNECTION: I18nMsgItem = { en: "DeviceSetting", ja: "機種設定" };
+  public static readonly G51_TAB_BEHIVIOR: I18nMsgItem = { en: "BehiviorSetting", ja: "動作設定" };
   public static readonly G51_MAKER: I18nMsgItem = { en: "Maker", ja: "メーカー" };
   public static readonly G51_DEVICE: I18nMsgItem = { en: "Device", ja: "機種" };
   public static readonly G51_SERIAL_PORT: I18nMsgItem = { en: "Serial Port", ja: "シリアルポート" };
@@ -248,10 +250,10 @@ export default class I18nMsgs {
   public static readonly G51_MOVE_MODE_NORMAL: I18nMsgItem = { en: "Normal", ja: "ノーマルモード" };
   public static readonly G51_MOVE_MODE_FLIP: I18nMsgItem = { en: "Flip", ja: "フリップモード" };
   public static readonly G51_START_AGO_MINUTE: I18nMsgItem = {
-    en: "How many minutes before should it start automatically?",
-    ja: "何分前から自動で動かすか？",
+    en: "Auto tracking start/end time",
+    ja: "自動追尾準備・終了時間",
   };
-  public static readonly G51_START_AGO_MINUTE_SUFIX: I18nMsgItem = { en: "minutes ago", ja: "分前" };
+  public static readonly G51_START_AGO_MINUTE_SUFIX: I18nMsgItem = { en: "minutes", ja: "分" };
   public static readonly G51_NEED_SELECT_MAKER: I18nMsgItem = {
     en: "need select maker",
     ja: "メーカーを選択してください",

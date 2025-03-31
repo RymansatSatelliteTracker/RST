@@ -1,0 +1,17 @@
+@import "@/renderer/components/styles/global.scss";
+
+.form_label {
+  width: 160px;
+}
+
+.form_label_az_min {
+  width: 160px;
+}
+.form_label_az_max {
+  width: 80px;
+}
+
+// Memo: scoped内の影響でdeepを付ける必要がある
+:deep(.right input) {
+  text-align: right;
+}
