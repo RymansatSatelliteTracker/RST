@@ -17,6 +17,16 @@ body {
   width: 100%;
 }
 
+.g_solid_border {
+  user-select: none;
+  border: 1px solid white;
+}
+
+// Memo: scoped内の影響でdeepを付ける必要がある
+:deep(.g_right input) {
+  text-align: right;
+}
+
 .v-text-field--box .v-input__slot,
 .v-text-field--outline .v-input__slot {
   min-height: 1px;

@@ -5,7 +5,7 @@ import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
 import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking";
 import ApiSirial from "@/renderer/api/ApiSirial";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
-import RotatorSettingForm from "@/renderer/components/organisms/setting/RotatorSetting/RotatorSettingForm";
+import { RotatorConnForm } from "@/renderer/components/organisms/setting/RotatorSetting/RotatorSettingForm";
 import emitter from "@/renderer/util/EventBus";
 import { computed, Ref } from "vue";
 
@@ -13,7 +13,7 @@ import { computed, Ref } from "vue";
  * ローテーター接続テストのフック
  */
 export default function useRotatorTestConnect(
-  form: Ref<RotatorSettingForm>,
+  form: Ref<RotatorConnForm>,
   isSerialOpen: Ref<boolean>,
   loadingTestBtn: Ref<boolean>,
   currentPos: Ref<AntennaPositionModel>,

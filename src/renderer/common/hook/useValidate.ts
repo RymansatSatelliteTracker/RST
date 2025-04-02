@@ -56,6 +56,9 @@ export const useValidate = (valiSchema: any) => {
         // 入れ子があるのでエラー項目名を"/"で連結
         const errItemName = issue.path.join("/");
         errors.value[errItemName] = issue.message;
+
+        // 入力エラー内容をコンソールに出力
+        console.warn(errItemName, issue.message);
       });
     }
 
