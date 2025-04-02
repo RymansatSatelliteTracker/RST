@@ -230,8 +230,8 @@ export default class I18nMsgs {
   public static readonly GCOM_MENU_VERSION: I18nMsgItem = { en: "Version", ja: "バージョン" };
 
   // 画面項目系／ローテータ設定画面
-  public static readonly G51_TAB_CONNECTION: I18nMsgItem = { en: "DeviceSetting", ja: "機種設定" };
-  public static readonly G51_TAB_BEHIVIOR: I18nMsgItem = { en: "BehiviorSetting", ja: "動作設定" };
+  public static readonly G51_TAB_CONNECTION: I18nMsgItem = { en: "Device", ja: "機種設定" };
+  public static readonly G51_TAB_BEHIVIOR: I18nMsgItem = { en: "Behivior", ja: "動作設定" };
   public static readonly G51_MAKER: I18nMsgItem = { en: "Maker", ja: "メーカー" };
   public static readonly G51_DEVICE: I18nMsgItem = { en: "Device", ja: "機種" };
   public static readonly G51_SERIAL_PORT: I18nMsgItem = { en: "Serial Port", ja: "シリアルポート" };
