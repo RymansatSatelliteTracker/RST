@@ -124,6 +124,8 @@ async function reloadConfig() {
   form.value.basePositionDegree = CommonUtil.toString(appConfig.rotator.basePositionDegree);
   form.value.moveMode = appConfig.rotator.moveMode;
   form.value.startAgoMinute = CommonUtil.toString(appConfig.rotator.startAgoMinute);
+  form.value.parkPosAz = CommonUtil.toString(appConfig.rotator.parkPosAz);
+  form.value.parkPosEl = CommonUtil.toString(appConfig.rotator.parkPosEl);
 
   // テストモードの値はクリアする
   form.value.testAz = "";
@@ -153,6 +155,8 @@ async function onOk() {
   rotatorConfig.rotator.rangeAzMax = parseInt(form.value.rangeAzMax);
   rotatorConfig.rotator.moveMode = form.value.moveMode;
   rotatorConfig.rotator.startAgoMinute = parseInt(form.value.startAgoMinute);
+  rotatorConfig.rotator.parkPosAz = parseInt(form.value.parkPosAz);
+  rotatorConfig.rotator.parkPosEl = parseInt(form.value.parkPosEl);
 
   // 保存
   await ApiAppConfig.storeAppConfig(rotatorConfig);

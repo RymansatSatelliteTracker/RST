@@ -21,6 +21,8 @@ class RotatorBehaviorForm {
   public rangeAzMax = "";
   public moveMode = "";
   public startAgoMinute = "";
+  public parkPosAz = "";
+  public parkPosEl = "";
 }
 
 /**
@@ -33,6 +35,8 @@ class RotatorSettingForm extends RotatorConnForm {
   public rangeAzMax = "";
   public moveMode = "";
   public startAgoMinute = "";
+  public parkPosAz = "";
+  public parkPosEl = "";
 }
 
 export { RotatorBehaviorForm, RotatorConnForm, RotatorSettingForm };

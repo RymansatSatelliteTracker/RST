@@ -25,13 +25,13 @@
             />
 
             <!-- 最大 -->
-            <label class="label form_label_az_max text-right pr-2 g_invalid_item_label"
+            <label class="label form_label_az_max text-right g_invalid_item_label"
               >{{ I18nUtil.getMsg(I18nMsgs.G51_AZ_KADO_HANI_MAX) }}(°)</label
             >
             <TextField
               v-model="form.rangeAzMax"
               suffix="°"
-              class="g_right"
+              class="g_right ml-2"
               maxlength="3"
               :valiSchema="valiSchemaRotatorBehavior"
               valiSchemaFieldPath="rangeAzMax"
@@ -57,8 +57,14 @@
             disabled
           />
         </div>
-        <div class="text-body-2 pl-8 g_invalid_item_label">
-          {{ I18nUtil.getMsg(I18nMsgs.G51_BASE_POSITION_DEGREE_GUIDE) }}
+
+        <!-- ガイド文言 -->
+        <div class="d-flex mt-0">
+          <!-- ダミー項目名 -->
+          <label class="label form_label pl-3 g_invalid_item_label" />
+          <div class="text-body-2 g_invalid_item_label">
+            {{ I18nUtil.getMsg(I18nMsgs.G51_BASE_POSITION_DEGREE_GUIDE) }}
+          </div>
         </div>
 
         <!-- モード -->
@@ -94,6 +100,32 @@
             :valiSchema="valiSchemaRotatorBehavior"
             valiSchemaFieldPath="startAgoMinute"
             v-model:error-text="errors.startAgoMinute"
+          />
+        </div>
+
+        <!-- パークポジション -->
+        <div class="d-flex mt-2">
+          <label class="label form_label">{{ I18nUtil.getMsg(I18nMsgs.G51_PARK_POS) }}</label>
+          <label class="label">Az:</label>
+          <TextField
+            v-model="form.parkPosAz"
+            suffix="°"
+            class="g_right ml-2"
+            maxlength="2"
+            :valiSchema="valiSchemaRotatorBehavior"
+            valiSchemaFieldPath="parkPosAz"
+            v-model:error-text="errors.parkPosAz"
+          />
+
+          <label class="label ml-4">El:</label>
+          <TextField
+            v-model="form.parkPosEl"
+            suffix="°"
+            class="g_right ml-2"
+            maxlength="2"
+            :valiSchema="valiSchemaRotatorBehavior"
+            valiSchemaFieldPath="parkPosEl"
+            v-model:error-text="errors.parkPosEl"
           />
         </div>
       </div>

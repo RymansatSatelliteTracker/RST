@@ -44,7 +44,17 @@ export const valiSchemaRotatorBehavior = zod.object({
 
   startAgoMinute: zod.lazy(() => {
     const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_MIN_MAX, "0", "60");
-    return ZodUtil.num(message, 0, 60);
+    return ZodUtil.numRequire(message, 0, 60);
+  }),
+
+  parkPosAz: zod.lazy(() => {
+    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_MIN_MAX, "0", "360");
+    return ZodUtil.numRequire(message, 0, 360);
+  }),
+
+  parkPosEl: zod.lazy(() => {
+    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_MIN_MAX, "0", "180");
+    return ZodUtil.numRequire(message, 0, 180);
   }),
 });
 

@@ -180,6 +180,10 @@ export class AppConfigRotator {
   public moveMode = Constant.Config.Rotator.MOVE_MODE_NORMAL;
   // 自動追尾開始分
   public startAgoMinute = 0;
+  // パーク方位
+  public parkPosAz = 0;
+  // パーク仰角
+  public parkPosEl = 0;
 }
 
 /**
