@@ -103,7 +103,7 @@
                 suffix="°"
                 maxlength="3"
                 :disabled="!isSerialOpen"
-                :valiSchema="valiSchemaRotatorSetting"
+                :valiSchema="valiSchemaRotatorConn"
                 valiSchemaFieldPath="testAz"
                 v-model:error-text="errors.testAz"
                 @blur="testMovePos"
@@ -120,7 +120,7 @@
                 suffix="°"
                 maxlength="3"
                 :disabled="!isSerialOpen"
-                :valiSchema="valiSchemaRotatorSetting"
+                :valiSchema="valiSchemaRotatorConn"
                 valiSchemaFieldPath="testEl"
                 v-model:error-text="errors.testEl"
                 @blur="testMovePos"
@@ -188,7 +188,7 @@
             <TextField
               v-model="form.ipAddress"
               maxlength="15"
-              :valiSchema="valiSchemaRotatorSetting"
+              :valiSchema="valiSchemaRotatorConn"
               valiSchemaFieldPath="ipAddress"
               v-model:error-text="errors.ipAddress"
               disabled
@@ -203,7 +203,7 @@
             <TextField
               v-model="form.ipPort"
               maxlength="5"
-              :valiSchema="valiSchemaRotatorSetting"
+              :valiSchema="valiSchemaRotatorConn"
               valiSchemaFieldPath="ipPort"
               v-model:error-text="errors.ipPort"
               disabled
@@ -227,15 +227,14 @@ import RotatorMakerSelect from "@/renderer/components/molecules/RotatorMakerSele
 import SerialPortSelect from "@/renderer/components/molecules/SerialPortSelect/SerialPortSelect.vue";
 import { mdiArrowDownBold, mdiArrowLeftBold, mdiArrowRightBold, mdiArrowUpBold } from "@mdi/js";
 import { ref } from "vue";
-import RotatorSettingForm from "../RotatorSettingForm";
-import { useRotatorSettingValidate, valiSchemaRotatorSetting } from "../useRotatorSettingValidate";
+import { RotatorConnForm } from "../RotatorSettingForm";
+import { useRotatorConnValidate, valiSchemaRotatorConn } from "./useRotatorConnValidate";
 import useRotatorCtrl from "./useRotatorCtrl";
 import useRotatorMonitor from "./useRotatorMonitor";
 import useRotatorTestConnect from "./useRotatorTestConnect";
 
-// 親との相互受信
-const form = defineModel<RotatorSettingForm>("form", { required: true });
-const emits = defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
+// 親との送受信
+const form = defineModel<RotatorConnForm>("form", { required: true });
 
 // 「更新」クリック時に更新ボタン側のメソッドをコールするためのref
 const serialPortSelectRef = ref();
@@ -246,7 +245,7 @@ const loadingTestBtn = ref(false);
 const isSerialOpen = ref(false);
 
 // 入力チェック関係
-const { validateForm, errors } = useRotatorSettingValidate();
+const { validateForm, errors } = useRotatorConnValidate();
 
 // フック
 const { startNewConnect, startElUp, startElDown, startAzUp, startAzDown, stopAntennaMove, testMovePos } =
@@ -260,11 +259,24 @@ const { connTest, validTest } = useRotatorTestConnect(
   startNewConnect
 );
 
+// 親に解放するメソッド
+defineExpose({
+  validateAll,
+  startNewConnect,
+});
+
 /**
  * 更新クリック
  */
 function onRefreshSerialPort() {
   serialPortSelectRef.value.refreshSerialPort();
+}
+
+/**
+ * 入力チェック
+ */
+async function validateAll(): Promise<boolean> {
+  return await validateForm(form.value);
 }
 </script>
 

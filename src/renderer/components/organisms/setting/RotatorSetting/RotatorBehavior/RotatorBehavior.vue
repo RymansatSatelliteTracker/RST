@@ -18,7 +18,7 @@
               suffix="°"
               class="right"
               maxlength="3"
-              :valiSchema="valiSchemaRotatorSetting"
+              :valiSchema="valiSchemaRotatorBehavior"
               valiSchemaFieldPath="rangeAzMin"
               v-model:error-text="errors.rangeAzMin"
               disabled
@@ -33,7 +33,7 @@
               suffix="°"
               class="right"
               maxlength="3"
-              :valiSchema="valiSchemaRotatorSetting"
+              :valiSchema="valiSchemaRotatorBehavior"
               valiSchemaFieldPath="rangeAzMax"
               v-model:error-text="errors.rangeAzMax"
               disabled
@@ -51,7 +51,7 @@
             suffix="°"
             class="right"
             maxlength="3"
-            :valiSchema="valiSchemaRotatorSetting"
+            :valiSchema="valiSchemaRotatorBehavior"
             valiSchemaFieldPath="basePositionDegree"
             v-model:error-text="errors.basePositionDegree"
             disabled
@@ -91,7 +91,7 @@
             :suffix="I18nUtil.getMsg(I18nMsgs.G51_START_AGO_MINUTE_SUFIX)"
             class="right"
             maxlength="2"
-            :valiSchema="valiSchemaRotatorSetting"
+            :valiSchema="valiSchemaRotatorBehavior"
             valiSchemaFieldPath="startAgoMinute"
             v-model:error-text="errors.startAgoMinute"
           />
@@ -108,15 +108,26 @@
 import I18nMsgs from "@/common/I18nMsgs";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
 import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
-import RotatorSettingForm from "../RotatorSettingForm";
-import { useRotatorSettingValidate, valiSchemaRotatorSetting } from "../useRotatorSettingValidate";
+import { RotatorSettingForm } from "../RotatorSettingForm";
+import { useRotatorBehaviorValidate, valiSchemaRotatorBehavior } from "./useRotatorBehaviorValidate";
 
-// 親との相互受信
+// 親との送受信
 const form = defineModel<RotatorSettingForm>("form", { required: true });
-const emits = defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
 
 // 入力チェック関係
-const { validateForm, errors } = useRotatorSettingValidate();
+const { validateForm, errors } = useRotatorBehaviorValidate();
+
+// 親に解放するメソッド
+defineExpose({
+  validateAll,
+});
+
+/**
+ * 入力チェック
+ */
+async function validateAll() {
+  return await validateForm(form.value);
+}
 </script>
 
 <style lang="scss" scoped>

@@ -5,26 +5,22 @@ import { AppConfigRotator } from "@/common/model/AppConfigModel";
 import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking";
 import ApiSirial from "@/renderer/api/ApiSirial";
 import { useValidate } from "@/renderer/common/hook/useValidate";
-import RotatorSettingForm from "@/renderer/components/organisms/setting/RotatorSetting/RotatorSettingForm";
-import {
-  azRange,
-  elRange,
-  RotatorRage,
-  valiSchemaRotatorSetting,
-} from "@/renderer/components/organisms/setting/RotatorSetting/useRotatorSettingValidate";
+import { RotatorConnForm } from "@/renderer/components/organisms/setting/RotatorSetting/RotatorSettingForm";
+import { RotatorRage } from "@/renderer/types/rotator-types";
 import { Ref } from "vue";
+import { azTestRange, elTestRange, valiSchemaRotatorConn } from "./useRotatorConnValidate";
 
 /**
  * ローテーター制御関係のフック
  */
 export default function useRotatorCtrl(
-  form: Ref<RotatorSettingForm>,
+  form: Ref<RotatorConnForm>,
   currentPos: Ref<AntennaPositionModel>,
   errors: Ref<Record<string, string>>
 ) {
   // アンテナ移動で利用するsetIntervalの制御オブジェクト
   let moveIntevalObj: NodeJS.Timeout | null = null;
-  const { validateAt } = useValidate(valiSchemaRotatorSetting);
+  const { validateAt } = useValidate(valiSchemaRotatorConn);
 
   /**
    * シリアル接続
@@ -158,8 +154,8 @@ export default function useRotatorCtrl(
     const targetEl = parseInt(form.value.testEl) + elMoveVal;
 
     // 位置指定に書き戻し
-    form.value.testAz = getAzElValIfOutOfRange(targetAz, azRange).toString();
-    form.value.testEl = getAzElValIfOutOfRange(targetEl, elRange).toString();
+    form.value.testAz = getAzElValIfOutOfRange(targetAz, azTestRange).toString();
+    form.value.testEl = getAzElValIfOutOfRange(targetEl, elTestRange).toString();
 
     // アンテナを移動
     const pos = new AntennaPositionModel();
