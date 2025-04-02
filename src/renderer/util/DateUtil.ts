@@ -57,16 +57,22 @@ class DateUtil {
    * @returns {string} 単位付き日時文字列
    */
   public static formatMsToDHMS = (milliSeconds: number | null): string => {
-    if (!milliSeconds || milliSeconds < 0) {
-      // ミリ秒数値がnullまたはマイナス値の場合は"―"を返却する
+    if (!milliSeconds) {
+      // ミリ秒数値がnullの場合は"―"を返却する
       return I18nUtil.getMsg(I18nMsgs.GCOM_NA);
     }
 
+    // ミリ秒数値がマイナス値の場合は秒表現で返す（例：-3s）
+    if (milliSeconds < 0) {
+      const seconds = Math.floor(milliSeconds / 1000);
+      return `${seconds}s`;
+    }
+
     // ミリ秒数値をd h m s形式の文字列に変換する
-    const seconds = Math.floor((milliSeconds / 1000) % 60),
-      minutes = Math.floor((milliSeconds / (1000 * 60)) % 60),
-      hours = Math.floor((milliSeconds / (1000 * 60 * 60)) % 24),
-      days = Math.floor(milliSeconds / (1000 * 60 * 60 * 24));
+    const seconds = Math.floor((milliSeconds / 1000) % 60);
+    const minutes = Math.floor((milliSeconds / (1000 * 60)) % 60);
+    const hours = Math.floor((milliSeconds / (1000 * 60 * 60)) % 24);
+    const days = Math.floor(milliSeconds / (1000 * 60 * 60 * 24));
 
     if (days === 0 && hours === 0) {
       // d, hが0の場合はm s形式で表示する
@@ -86,6 +92,14 @@ class DateUtil {
   public static addMinute(date: Date, val: number): Date {
     const dt = dayjs(date);
     return dt.add(val, "minute").toDate();
+  }
+
+  /**
+   * 秒を加算（減算）する
+   */
+  public static addSec(date: Date, val: number): Date {
+    const dt = dayjs(date);
+    return dt.add(val, "second").toDate();
   }
 }
 

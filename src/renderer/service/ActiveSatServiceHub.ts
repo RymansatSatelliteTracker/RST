@@ -4,6 +4,7 @@ import TransceiverUtil from "@/common/util/TransceiverUtil";
 import ApiActiveSat from "@/renderer/api/ApiActiveSat";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite";
+import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
 import GroundStationServiceFactory from "@/renderer/common/util/GroundStationServiceFactory";
 import OrbitLineServiceFactory from "@/renderer/common/util/OrbitLineServiceFactory";
 import SatelliteServiceFactory from "@/renderer/common/util/SatelliteServiceFactory";
@@ -268,11 +269,17 @@ export default class ActiveSatServiceHub {
       return null;
     }
 
+    // 現在の基準日時を元に、追尾開始・終了時間を加味した基準日時を取得する
+    // memo: 素の基準日時を渡すと、LOS後に次のパスが取れてしまうため（余白的な追尾が出来ないため）
+    //       追尾開始・終了時間を加味した基準日時を元にパスを取得する
+    const appConfig = await ApiAppConfig.getAppConfig();
+    const baseDate = AutoTrackingHelper.getOffsetBaseDate(appConfig, date);
+
     // 2か所の地上局が有効な場合は、重複するAOS/LOSを取得する
     // （有効な場合：this.overlapPassesService != null）
     if (this.overlapPassesService) {
       const passes = await this.overlapPassesService.getOverlapPassesListAsync(
-        date,
+        baseDate,
         new Date(date.getTime() + Constant.Time.MILLISECONDS_IN_DAY)
       );
 
@@ -286,21 +293,8 @@ export default class ActiveSatServiceHub {
 
     // 地上局が１つの場合
     // 人工衛星の直近のAOS/LOSを返す
-    return await this.groundStationService.getOrbitPassAsync(date);
+    return await this.groundStationService.getOrbitPassAsync(baseDate);
   }
-
-  // public setBaseDate(date: Date) {
-  //   this.baseDate = date;
-
-  //   // コールバックを実行
-  //   this.baseDateChangeCallbacks.forEach((callback) => {
-  //     callback(this.baseDate);
-  //   });
-  // }
-
-  // public getBaseDate(): Date {
-  //   return this.baseDate;
-  // }
 
   /**
    * アクティブ衛星のSatelliteServiceのインスタンスを返す

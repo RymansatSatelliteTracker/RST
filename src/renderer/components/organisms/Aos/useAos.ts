@@ -1,3 +1,5 @@
+import ApiAppConfig from "@/renderer/api/ApiAppConfig";
+import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 import DateUtil from "@/renderer/util/DateUtil";
 import { onMounted, ref, watch, type Ref } from "vue";
@@ -40,12 +42,18 @@ export default function useAos(currentDate: Ref<Date>) {
       return;
     }
 
+    // 現在の基準日時を元に、追尾開始・終了時間を加味した基準日時を取得する
+    // memo: 素の基準日時を渡すと、LOS後に次のパスが取れてしまうため（余白的な追尾が出来ないため）
+    //       追尾開始・終了時間を加味した基準日時を元にパスを取得する
+    const appConfig = await ApiAppConfig.getAppConfig();
+    const baseDate = AutoTrackingHelper.getOffsetBaseDate(appConfig, currentDate.value);
+
     // 人工衛星の直近のAOS/LOSを取得する
-    const passesCache = await groundStationService.getOrbitPassAsync(currentDate.value);
+    const passesCache = await groundStationService.getOrbitPassAsync(baseDate);
 
     if (passesCache && passesCache.aos && passesCache.los) {
-      // 現在日時で人工衛星が可視/不可視判定を取得する
-      const isVisible = await groundStationService.isSatelliteVisibleAsync(currentDate.value);
+      // 基準日時で人工衛星が可視/不可視判定を取得する
+      const isVisible = await groundStationService.isSatelliteVisibleAsync(baseDate);
       if (isVisible) {
         // 現在日時で人工衛星が可視の場合は直近のLOSまでの残時間を取得する
         passCountdown.value = `LOS ${DateUtil.formatMsToDHMS(passesCache.los.date.getTime() - currentDate.value.getTime())}`;
