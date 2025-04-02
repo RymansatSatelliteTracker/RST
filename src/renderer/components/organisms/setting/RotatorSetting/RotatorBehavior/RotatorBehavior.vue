@@ -16,7 +16,7 @@
             <TextField
               v-model="form.rangeAzMin"
               suffix="°"
-              class="right"
+              class="g_right"
               maxlength="3"
               :valiSchema="valiSchemaRotatorBehavior"
               valiSchemaFieldPath="rangeAzMin"
@@ -31,7 +31,7 @@
             <TextField
               v-model="form.rangeAzMax"
               suffix="°"
-              class="right"
+              class="g_right"
               maxlength="3"
               :valiSchema="valiSchemaRotatorBehavior"
               valiSchemaFieldPath="rangeAzMax"
@@ -49,7 +49,7 @@
           <TextField
             v-model="form.basePositionDegree"
             suffix="°"
-            class="right"
+            class="g_right"
             maxlength="3"
             :valiSchema="valiSchemaRotatorBehavior"
             valiSchemaFieldPath="basePositionDegree"
@@ -89,7 +89,7 @@
           <TextField
             v-model="form.startAgoMinute"
             :suffix="I18nUtil.getMsg(I18nMsgs.G51_START_AGO_MINUTE_SUFIX)"
-            class="right"
+            class="g_right"
             maxlength="2"
             :valiSchema="valiSchemaRotatorBehavior"
             valiSchemaFieldPath="startAgoMinute"

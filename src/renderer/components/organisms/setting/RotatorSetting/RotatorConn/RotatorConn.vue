@@ -99,7 +99,7 @@
             <div class="d-flex">
               <TextField
                 v-model="form.testAz"
-                class="right"
+                class="g_right"
                 suffix="°"
                 maxlength="3"
                 :disabled="!isSerialOpen"
@@ -116,7 +116,7 @@
             <div class="d-flex">
               <TextField
                 v-model="form.testEl"
-                class="right"
+                class="g_right"
                 suffix="°"
                 maxlength="3"
                 :disabled="!isSerialOpen"
