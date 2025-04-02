@@ -153,6 +153,8 @@ const schemaRotator = zod.object({
   rangeAzMax: zod.number(),
   moveMode: zod.string(),
   startAgoMinute: zod.number(),
+  parkPosAz: zod.number(),
+  parkPosEl: zod.number(),
 });
 
 /**

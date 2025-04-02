@@ -29,7 +29,9 @@
       "ipPort": "",
       "basePositionDegree": 0,
       "moveMode": "normal",
-      "startAgoMinute": 0
+      "startAgoMinute": 0,
+      "parkPosAz": 0,
+      "parkPosEl": 0
     },
     "groundStation": {
       "height": -1,

@@ -2,6 +2,7 @@ import Constant from "@/common/Constant";
 import I18nMsgs from "@/common/I18nMsgs";
 import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel";
 import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
+import { AppConfigModel } from "@/common/model/AppConfigModel";
 import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
@@ -59,8 +60,10 @@ export default class AntennaAutoTrackingService {
 
     // 自動追尾の開始時刻か判定する
     const appConfig = await ApiAppConfig.getAppConfig();
+
+    // 自動追尾の時間帯でない場合は、アンテナをパークポジションに設定する
     if (!(await AutoTrackingHelper.isRotatorTrackingTimeRange(appConfig, baseDate))) {
-      this.setInitPosition(controller);
+      this.moveParkPosition(appConfig, controller);
       return;
     }
 
@@ -99,12 +102,12 @@ export default class AntennaAutoTrackingService {
   }
 
   /**
-   * アンテナを初期位置に設定する
+   * アンテナをパークポジションに設定する
    */
-  private setInitPosition(controller: RotatorControllerBase) {
+  private moveParkPosition(appConfig: AppConfigModel, controller: RotatorControllerBase) {
     const pos: AntennaPositionModel = {
-      azimuth: 0,
-      elevation: 90,
+      azimuth: appConfig.rotator.parkPosAz,
+      elevation: appConfig.rotator.parkPosEl,
     };
     controller.setPosition(pos);
   }

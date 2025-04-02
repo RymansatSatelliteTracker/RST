@@ -258,6 +258,10 @@ export default class I18nMsgs {
     en: "need select maker",
     ja: "メーカーを選択してください",
   };
+  public static readonly G51_PARK_POS: I18nMsgItem = {
+    en: "Park position",
+    ja: "パークポジション",
+  };
 
   // 画面項目系／衛星設定画面
   public static readonly G31_DISPLAY_SATELLITE: I18nMsgItem = { en: "Display Sattelite", ja: "表示衛星" };
