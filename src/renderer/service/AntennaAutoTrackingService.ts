@@ -4,13 +4,13 @@ import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel";
 import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
 import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
+import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
 import GroundStationHelper from "@/renderer/common/util/GroundStationHelper";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 import RotatorControllerBase from "@/renderer/service/rotator/RotatorControllerBase";
 import RotatorControllerFactory from "@/renderer/service/rotator/RotatorControllerFactory";
 import { AppConfigUtil } from "@/renderer/util/AppConfigUtil";
-import DateUtil from "@/renderer/util/DateUtil";
 import emitter from "@/renderer/util/EventBus";
 import { Ref } from "vue";
 
@@ -55,11 +55,11 @@ export default class AntennaAutoTrackingService {
    * 自動追尾を行う
    */
   private async doTracking(controller: RotatorControllerBase, date: Ref<Date>) {
-    // const now = new Date();
     const baseDate = date.value;
 
     // 自動追尾の開始時刻か判定する
-    if (!(await this.isAosTimeRange(baseDate))) {
+    const appConfig = await ApiAppConfig.getAppConfig();
+    if (!(await AutoTrackingHelper.isRotatorTrackingTimeRange(appConfig, baseDate))) {
       this.setInitPosition(controller);
       return;
     }
@@ -107,30 +107,6 @@ export default class AntennaAutoTrackingService {
       elevation: 90,
     };
     controller.setPosition(pos);
-  }
-
-  /**
-   * 自動追尾の時間帯か判定する
-   * @param baseDate 基準時間
-   */
-  private async isAosTimeRange(baseDate: Date): Promise<boolean> {
-    // AOS情報を取得
-    const pass = await ActiveSatServiceHub.getInstance().getOrbitPassAsync(baseDate);
-    if (!pass || !pass.aos || !pass.los) {
-      return false;
-    }
-
-    // 自動追尾の開始時刻を取得
-    const appConfig = await ApiAppConfig.getAppConfig();
-    const addMinute = appConfig.rotator.startAgoMinute ?? 0;
-    const trackingStartDate = DateUtil.addMinute(pass.aos.date, addMinute * -1);
-
-    // 自動追尾の時間範囲内
-    if (trackingStartDate.getTime() <= baseDate.getTime() && baseDate.getTime() <= pass.los.date.getTime()) {
-      return true;
-    }
-
-    return false;
   }
 
   /**
