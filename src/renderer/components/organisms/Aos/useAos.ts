@@ -52,8 +52,11 @@ export default function useAos(currentDate: Ref<Date>) {
     const passesCache = await groundStationService.getOrbitPassAsync(baseDate);
 
     if (passesCache && passesCache.aos && passesCache.los) {
-      // 基準日時で人工衛星が可視/不可視判定を取得する
-      const isVisible = await groundStationService.isSatelliteVisibleAsync(baseDate);
+      // 人工衛星が可視/不可視判定を取得する
+      // memo: 元の基準時間と追尾開始・終了時間のどちらかが可視の場合は可視とする
+      let isVisible = await groundStationService.isSatelliteVisibleAsync(currentDate.value);
+      isVisible = isVisible || (await groundStationService.isSatelliteVisibleAsync(baseDate));
+
       if (isVisible) {
         // 現在日時で人工衛星が可視の場合は直近のLOSまでの残時間を取得する
         passCountdown.value = `LOS ${DateUtil.formatMsToDHMS(passesCache.los.date.getTime() - currentDate.value.getTime())}`;

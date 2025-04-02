@@ -63,7 +63,7 @@ class DateUtil {
     }
 
     // ミリ秒数値がマイナス値の場合は秒表現で返す（例：-3s）
-    if (milliSeconds < 0) {
+    if (milliSeconds <= 0) {
       const seconds = Math.floor(milliSeconds / 1000);
       return `${seconds}s`;
     }
