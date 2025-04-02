@@ -45,6 +45,8 @@ export default class AutoTrackingHelper {
     const offsetMinute = appConfig.rotator.startAgoMinute ?? 0;
     const offsetSec = offsetMinute * 60;
 
+    // todo: 無線機のAutoTrackingの開始・終了時刻の際は、ここでローテータのオフセットと比較して大きい方をオフセットとする
+
     // 基準日時から追尾開始時間を引く
     return DateUtil.addSec(baseDate, offsetSec * -1);
   }
