@@ -3,13 +3,13 @@ import Constant from "@/common/Constant";
 import { AppConfigTransceiver } from "@/common/model/AppConfigModel";
 import ApiSirial from "@/renderer/api/ApiSirial";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver";
-import TransceiverSettingForm from "@/renderer/components/organisms/setting/TransceiverSetting/TransceiverSettingForm";
+import TransceiverConnForm from "@/renderer/components/organisms/setting/TransceiverSetting/TransceiverConn/TransceiverConnForm";
 import { Ref } from "vue";
 
 /**
  * 無線機制御関係のフック
  */
-export default function useTransceiverCtrl(form: Ref<TransceiverSettingForm>) {
+export default function useTransceiverCtrl(form: Ref<TransceiverConnForm>) {
   /**
    * シリアル接続
    */

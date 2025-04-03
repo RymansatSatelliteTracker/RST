@@ -18,7 +18,8 @@
       "baudrateBps": "",
       "makerId": "2",
       "ipAddress": "",
-      "ipPort": ""
+      "ipPort": "",
+      "autoTrackingIntervalSec": "1"
     },
     "rotator": {
       "port": "",
