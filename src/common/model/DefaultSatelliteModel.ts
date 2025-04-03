@@ -116,7 +116,7 @@ export class DefaultSatelliteModel {
       uplink2: { uplinkHz: null, uplinkMode: "" },
       downlink1: { downlinkHz: null, downlinkMode: "" },
       downlink2: { downlinkHz: null, downlinkMode: "" },
-      toneMhz: null,
+      toneHz: null,
       outline: "",
     };
 

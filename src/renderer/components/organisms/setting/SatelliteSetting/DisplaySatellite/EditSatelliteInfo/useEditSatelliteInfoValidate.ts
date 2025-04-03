@@ -23,20 +23,20 @@ export function useEditSatelliteInfoValidate() {
     // 相関チェック
     // アップリンク周波数の周波数かモードの片方が未入力の場合はエラー
     if (
-      (form.uplink1Mhz && !form.uplink1Mode) ||
-      (!form.uplink1Mhz && form.uplink1Mode) ||
-      (form.uplink2Mhz && !form.uplink2Mode) ||
-      (!form.uplink2Mhz && form.uplink2Mode)
+      (form.uplink1Hz && !form.uplink1Mode) ||
+      (!form.uplink1Hz && form.uplink1Mode) ||
+      (form.uplink2Hz && !form.uplink2Mode) ||
+      (!form.uplink2Hz && form.uplink2Mode)
     ) {
       result = false;
       errors.value["uplink"] = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NOT_ENTERED_UPLINK);
     }
     // ダウンリンク周波数の周波数かモードの片方が未入力の場合はエラー
     if (
-      (form.downlink1Mhz && !form.downlink1Mode) ||
-      (!form.downlink1Mhz && form.downlink1Mode) ||
-      (form.downlink2Mhz && !form.downlink2Mode) ||
-      (!form.downlink2Mhz && form.downlink2Mode)
+      (form.downlink1Hz && !form.downlink1Mode) ||
+      (!form.downlink1Hz && form.downlink1Mode) ||
+      (form.downlink2Hz && !form.downlink2Mode) ||
+      (!form.downlink2Hz && form.downlink2Mode)
     ) {
       result = false;
       errors.value["downlink"] = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NOT_ENTERED_DOWNLINK);
@@ -63,7 +63,7 @@ export const valiSchemaEditSatelliteInfo = zod.object({
         .regex(/^[A-Za-z0-9&*/ '()+_\[\]-]*$/, { message: message2 })
     );
   }),
-  uplink1Mhz: zod.lazy(() => {
+  uplink1Hz: zod.lazy(() => {
     const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_POSITIVE);
     return (
       zod
@@ -79,7 +79,7 @@ export const valiSchemaEditSatelliteInfo = zod.object({
     );
   }),
 
-  uplink2Mhz: zod.lazy(() => {
+  uplink2Hz: zod.lazy(() => {
     const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_POSITIVE);
     return (
       zod
@@ -95,7 +95,7 @@ export const valiSchemaEditSatelliteInfo = zod.object({
     );
   }),
 
-  downlink1Mhz: zod.lazy(() => {
+  downlink1Hz: zod.lazy(() => {
     const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_POSITIVE);
     return (
       zod
@@ -111,7 +111,7 @@ export const valiSchemaEditSatelliteInfo = zod.object({
     );
   }),
 
-  downlink2Mhz: zod.lazy(() => {
+  downlink2Hz: zod.lazy(() => {
     const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_POSITIVE);
     return (
       zod
@@ -127,7 +127,7 @@ export const valiSchemaEditSatelliteInfo = zod.object({
     );
   }),
 
-  toneMhz: zod.lazy(() => {
+  toneHz: zod.lazy(() => {
     const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_POSITIVE);
     return (
       zod

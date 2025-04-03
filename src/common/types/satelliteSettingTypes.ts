@@ -53,7 +53,7 @@ export type DefaultSatelliteType = {
   // 対象衛星ダウンリンク設定2
   downlink2: DownlinkType;
   // トーン周波数
-  toneMhz: number | null;
+  toneHz: number | null;
   // 対象衛星概要
   outline: string;
 };

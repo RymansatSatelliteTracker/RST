@@ -7,22 +7,22 @@
         "satelliteName": "ISAT",
         "noradId": "43879",
         "uplink1": {
-          "uplinkMhz": null,
+          "uplinkHz": null,
           "uplinkMode": ""
         },
         "uplink2": {
-          "uplinkMhz": null,
+          "uplinkHz": null,
           "uplinkMode": ""
         },
         "downlink1": {
-          "downlinkMhz": null,
+          "downlinkHz": null,
           "downlinkMode": ""
         },
         "downlink2": {
-          "downlinkMhz": null,
+          "downlinkHz": null,
           "downlinkMode": ""
         },
-        "toneMhz": null,
+        "toneHz": null,
         "outline": ""
       }
     ]
