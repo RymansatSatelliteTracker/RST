@@ -5,7 +5,7 @@ import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
 import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking";
 import ApiSirial from "@/renderer/api/ApiSirial";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
-import { RotatorConnForm } from "@/renderer/components/organisms/setting/RotatorSetting/RotatorSettingForm";
+import RotatorConnForm from "@/renderer/components/organisms/setting/RotatorSetting/RotatorConn/RotatorConnForm";
 import emitter from "@/renderer/util/EventBus";
 import { computed, Ref } from "vue";
 

@@ -2,7 +2,7 @@ import I18nMsgs from "@/common/I18nMsgs";
 import ZodUtil from "@/common/util/ZodUtil";
 import { useValidate } from "@/renderer/common/hook/useValidate";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
-import { RotatorBehaviorForm } from "@/renderer/components/organisms/setting/RotatorSetting/RotatorSettingForm";
+import RotatorBehaviorForm from "@/renderer/components/organisms/setting/RotatorSetting/RotatorBehavior/RotatorBehaviorForm";
 import { RotatorRage } from "@/renderer/types/rotator-types";
 import * as zod from "zod";
 

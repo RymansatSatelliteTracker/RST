@@ -5,7 +5,7 @@ import { AppConfigRotator } from "@/common/model/AppConfigModel";
 import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking";
 import ApiSirial from "@/renderer/api/ApiSirial";
 import { useValidate } from "@/renderer/common/hook/useValidate";
-import { RotatorConnForm } from "@/renderer/components/organisms/setting/RotatorSetting/RotatorSettingForm";
+import RotatorConnForm from "@/renderer/components/organisms/setting/RotatorSetting/RotatorConn/RotatorConnForm";
 import { RotatorRage } from "@/renderer/types/rotator-types";
 import { Ref } from "vue";
 import { azTestRange, elTestRange, valiSchemaRotatorConn } from "./useRotatorConnValidate";

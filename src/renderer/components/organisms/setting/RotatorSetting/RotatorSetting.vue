@@ -55,7 +55,7 @@ import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
 import { ref, watch } from "vue";
 import RotatorBehavior from "./RotatorBehavior/RotatorBehavior.vue";
 import RotatorConn from "./RotatorConn/RotatorConn.vue";
-import { RotatorSettingForm } from "./RotatorSettingForm";
+import RotatorSettingForm from "./RotatorSettingForm";
 
 // イベント関係
 const emits = defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
