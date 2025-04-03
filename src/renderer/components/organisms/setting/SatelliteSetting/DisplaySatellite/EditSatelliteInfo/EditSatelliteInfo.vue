@@ -61,11 +61,11 @@
           </v-col>
           <v-col cols="4">
             <TextField
-              v-model="form.uplink1Mhz"
-              suffix="Mhz"
+              v-model="form.uplink1Hz"
+              suffix="Hz"
               :valiSchema="valiSchemaEditSatelliteInfo"
-              valiSchemaFieldPath="uplink1Mhz"
-              v-model:error-text="errors.uplink1Mhz"
+              valiSchemaFieldPath="uplink1Hz"
+              v-model:error-text="errors.uplink1Hz"
             />
           </v-col>
           <v-col cols="3"> <OpeModeSelect v-model="form.uplink1Mode" /></v-col>
@@ -76,20 +76,20 @@
           <v-col cols="4"> </v-col>
           <v-col cols="4">
             <TextField
-              v-model="form.uplink2Mhz"
-              suffix="Mhz"
+              v-model="form.uplink2Hz"
+              suffix="Hz"
               :valiSchema="valiSchemaEditSatelliteInfo"
-              valiSchemaFieldPath="uplink2Mhz"
-              v-model:error-text="errors.uplink2Mhz"
-              :disabled="!(form.uplink1Mhz && form.uplink1Mode)"
+              valiSchemaFieldPath="uplink2Hz"
+              v-model:error-text="errors.uplink2Hz"
+              :disabled="!(form.uplink1Hz && form.uplink1Mode)"
             />
           </v-col>
           <v-col cols="3">
-            <OpeModeSelect v-model="form.uplink2Mode" :disabled="!(form.uplink1Mhz && form.uplink1Mode)"
+            <OpeModeSelect v-model="form.uplink2Mode" :disabled="!(form.uplink1Hz && form.uplink1Mode)"
           /></v-col>
           <v-col col="1">
             <v-radio-group v-model="form.autoModeUplinkFreq" hide-details density="compact">
-              <v-radio value="2" :disabled="!(form.uplink1Mhz && form.uplink1Mode)"></v-radio></v-radio-group
+              <v-radio value="2" :disabled="!(form.uplink1Hz && form.uplink1Mode)"></v-radio></v-radio-group
           ></v-col>
         </v-row>
         <v-row>
@@ -99,11 +99,11 @@
           </v-col>
           <v-col cols="4">
             <TextField
-              v-model="form.downlink1Mhz"
-              suffix="Mhz"
+              v-model="form.downlink1Hz"
+              suffix="Hz"
               :valiSchema="valiSchemaEditSatelliteInfo"
-              valiSchemaFieldPath="downlink1Mhz"
-              v-model:error-text="errors.downlink1Mhz"
+              valiSchemaFieldPath="downlink1Hz"
+              v-model:error-text="errors.downlink1Hz"
             />
           </v-col>
           <v-col cols="3"> <OpeModeSelect v-model="form.downlink1Mode" /></v-col>
@@ -114,20 +114,20 @@
           <v-col cols="4"> </v-col>
           <v-col cols="4">
             <TextField
-              v-model="form.downlink2Mhz"
-              suffix="Mhz"
+              v-model="form.downlink2Hz"
+              suffix="Hz"
               :valiSchema="valiSchemaEditSatelliteInfo"
-              valiSchemaFieldPath="downlink2Mhz"
-              v-model:error-text="errors.downlink2Mhz"
-              :disabled="!(form.downlink1Mhz && form.downlink1Mode)"
+              valiSchemaFieldPath="downlink2Hz"
+              v-model:error-text="errors.downlink2Hz"
+              :disabled="!(form.downlink1Hz && form.downlink1Mode)"
             />
           </v-col>
           <v-col cols="3">
-            <OpeModeSelect v-model="form.downlink2Mode" :disabled="!(form.downlink1Mhz && form.downlink1Mode)"
+            <OpeModeSelect v-model="form.downlink2Mode" :disabled="!(form.downlink1Hz && form.downlink1Mode)"
           /></v-col>
           <v-col col="1">
             <v-radio-group v-model="form.autoModeDownlinkFreq" hide-details density="compact">
-              <v-radio value="2" :disabled="!(form.downlink1Mhz && form.downlink1Mode)"></v-radio></v-radio-group
+              <v-radio value="2" :disabled="!(form.downlink1Hz && form.downlink1Mode)"></v-radio></v-radio-group
           ></v-col>
         </v-row>
         <v-row>
@@ -137,11 +137,11 @@
           </v-col>
           <v-col cols="4">
             <TextField
-              v-model="form.toneMhz"
-              suffix="Mhz"
+              v-model="form.toneHz"
+              suffix="Hz"
               :valiSchema="valiSchemaEditSatelliteInfo"
-              valiSchemaFieldPath="toneMhz"
-              v-model:error-text="errors.toneMhz"
+              valiSchemaFieldPath="toneHz"
+              v-model:error-text="errors.toneHz"
             />
           </v-col>
         </v-row>

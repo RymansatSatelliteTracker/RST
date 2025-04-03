@@ -85,7 +85,7 @@ export class AppConfigSatellite {
   // 対象衛星ダウンリンク設定2
   public downlink2 = new Downlink();
   // トーン周波数
-  public toneMhz: number | null = null;
+  public toneHz: number | null = null;
   // 対象衛星概要
   public outline = "";
 }
@@ -94,7 +94,7 @@ export class AppConfigSatellite {
  * アップリンク設定タイプ
  */
 export class Uplink {
-  // アップリンク周波数(Mhz)
+  // アップリンク周波数(Hz)
   public uplinkHz: number | null = null;
   // アップリンクモード
   public uplinkMode = "";
@@ -104,7 +104,7 @@ export class Uplink {
  * ダウンリンク設定タイプ
  */
 export class Downlink {
-  // ダウンリンク周波数(Mhz)
+  // ダウンリンク周波数(Hz)
   public downlinkHz: number | null = null;
   // ダウンリンクモード
   public downlinkMode = "";
