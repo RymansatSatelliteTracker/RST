@@ -140,11 +140,11 @@
 import I18nMsgs from "@/common/I18nMsgs";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
 import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
-import { RotatorSettingForm } from "../RotatorSettingForm";
+import RotatorBehaviorForm from "./RotatorBehaviorForm";
 import { useRotatorBehaviorValidate, valiSchemaRotatorBehavior } from "./useRotatorBehaviorValidate";
 
 // 親との送受信
-const form = defineModel<RotatorSettingForm>("form", { required: true });
+const form = defineModel<RotatorBehaviorForm>("form", { required: true });
 
 // 入力チェック関係
 const { validateForm, errors } = useRotatorBehaviorValidate();

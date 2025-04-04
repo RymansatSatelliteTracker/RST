@@ -1,19 +1,5 @@
 @import "@/renderer/components/styles/global.scss";
 
-.title__sheet--border {
-  user-select: none;
-  border: 1px solid white;
-}
-
-.form__label {
-  width: 150px;
-}
-
-.form__select {
-  width: 250px;
-}
-
-// Memo: scoped内の影響でdeepを付ける必要がある
-:deep(.right input) {
-  text-align: right;
+.dialog_box {
+  height: 650px;
 }

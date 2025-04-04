@@ -4,7 +4,7 @@ import I18nMsgs from "@/common/I18nMsgs";
 import ApiSirial from "@/renderer/api/ApiSirial";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
-import TransceiverSettingForm from "@/renderer/components/organisms/setting/TransceiverSetting/TransceiverSettingForm";
+import TransceiverConnForm from "@/renderer/components/organisms/setting/TransceiverSetting/TransceiverConn/TransceiverConnForm";
 import emitter from "@/renderer/util/EventBus";
 import { computed, Ref } from "vue";
 
@@ -12,7 +12,7 @@ import { computed, Ref } from "vue";
  * 無線機接続テストのフック
  */
 export default function useTransceiverTestConnect(
-  form: Ref<TransceiverSettingForm>,
+  form: Ref<TransceiverConnForm>,
   isSerialOpen: Ref<boolean>,
   loadingTestBtn: Ref<boolean>,
   startNewConnect: () => Promise<void>

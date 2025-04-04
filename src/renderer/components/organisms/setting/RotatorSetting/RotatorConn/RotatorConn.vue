@@ -227,7 +227,7 @@ import RotatorMakerSelect from "@/renderer/components/molecules/RotatorMakerSele
 import SerialPortSelect from "@/renderer/components/molecules/SerialPortSelect/SerialPortSelect.vue";
 import { mdiArrowDownBold, mdiArrowLeftBold, mdiArrowRightBold, mdiArrowUpBold } from "@mdi/js";
 import { ref } from "vue";
-import { RotatorConnForm } from "../RotatorSettingForm";
+import RotatorConnForm from "./RotatorConnForm";
 import { useRotatorConnValidate, valiSchemaRotatorConn } from "./useRotatorConnValidate";
 import useRotatorCtrl from "./useRotatorCtrl";
 import useRotatorMonitor from "./useRotatorMonitor";
