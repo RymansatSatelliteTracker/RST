@@ -53,6 +53,12 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   // AutoモードのOnOff管理
   const autoStore = useStoreAutoState();
 
+  // 周波数の更新タイマ
+  let timerId: NodeJS.Timeout | null = null;
+
+  // 周波数の更新インターバル（ミリ秒）
+  let autoTrackingIntervalMsec = 1000;
+
   /**
    * 表示中の衛星グループが変更された場合のイベントハンドラ
    */
@@ -92,12 +98,27 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     // ドップラーシフトの基準周波数を設定する
     dopplerTxBaseFrequency.value = Number(txFrequency.value);
     dopplerRxBaseFrequency.value = Number(rxFrequency.value);
+
+    // 周波数の更新インターバルを取得
+    const appConfig = await ApiAppConfig.getAppConfig();
+    autoTrackingIntervalMsec = parseFloat(appConfig.transceiver.autoTrackingIntervalSec) * 1000;
+
+    // 更新インターバルごとに周波数の更新する
+    timerId = setInterval(async () => {
+      updateFreq();
+    }, autoTrackingIntervalMsec);
   }
 
   /**
    * Autoモードを停止する
    */
   async function stopAutoMode() {
+    if (!timerId) {
+      return;
+    }
+    clearInterval(timerId);
+    timerId = null;
+
     // Autoモード移行前の周波数を復元する
     txFrequency.value = savedTxFrequency.value;
     rxFrequency.value = savedRxFrequency.value;
@@ -197,22 +218,24 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    */
   async function updateTxFrequencyWithDopplerShift(intervalMs: number) {
     const frequencyTrackService = ActiveSatServiceHub.getInstance().getFrequencyTrackService();
-    if (frequencyTrackService) {
-      // ドップラーファクターを計算する
-      const txDopplerFactor = await frequencyTrackService.calcUplinkDopplerFactor(currentDate.value, intervalMs);
-      // 無線機のアップリンク周波数を更新する
-      await updateTxFrequency(dopplerTxBaseFrequency.value * txDopplerFactor);
-      // 画面のアップリンク周波数を更新する
-      txFrequency.value = TransceiverUtil.mhzToMhzString(dopplerTxBaseFrequency.value * txDopplerFactor);
-      // AppMainLogger.debug(
-      //   "ドップラーシフト補正値(Tx): " +
-      //     TransceiverUtil.subtractFrequencies(
-      //       dopplerTxBaseFrequency.value * txDopplerFactor * 1000,
-      //       dopplerTxBaseFrequency.value * 1000
-      //     ).toFixed(3) +
-      //     "kHz"
-      // );
+    if (!frequencyTrackService) {
+      return;
     }
+
+    // ドップラーファクターを計算する
+    const txDopplerFactor = await frequencyTrackService.calcUplinkDopplerFactor(currentDate.value, intervalMs);
+    // 無線機のアップリンク周波数を更新する
+    await updateTxFrequency(dopplerTxBaseFrequency.value * txDopplerFactor);
+    // 画面のアップリンク周波数を更新する
+    txFrequency.value = TransceiverUtil.mhzToMhzString(dopplerTxBaseFrequency.value * txDopplerFactor);
+    // AppMainLogger.debug(
+    //   "ドップラーシフト補正値(Tx): " +
+    //     TransceiverUtil.subtractFrequencies(
+    //       dopplerTxBaseFrequency.value * txDopplerFactor * 1000,
+    //       dopplerTxBaseFrequency.value * 1000
+    //     ).toFixed(3) +
+    //     "kHz"
+    // );
   }
 
   /**
@@ -221,22 +244,24 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    */
   async function updateRxFrequencyWithDopplerShift(intervalMs: number) {
     const frequencyTrackService = ActiveSatServiceHub.getInstance().getFrequencyTrackService();
-    if (frequencyTrackService) {
-      // ドップラーファクターを計算する
-      const rxDopplerFactor = await frequencyTrackService.calcDownlinkDopplerFactor(currentDate.value, intervalMs);
-      // 無線機のダウンリンク周波数を更新する
-      await updateRxFrequency(dopplerRxBaseFrequency.value * rxDopplerFactor);
-      // 画面のダウンリンク周波数を更新する
-      rxFrequency.value = TransceiverUtil.mhzToMhzString(dopplerRxBaseFrequency.value * rxDopplerFactor);
-      // AppMainLogger.debug(
-      //   "ドップラーシフト補正値(Rx): " +
-      //     TransceiverUtil.subtractFrequencies(
-      //       dopplerRxBaseFrequency.value * rxDopplerFactor * 1000,
-      //       dopplerRxBaseFrequency.value * 1000
-      //     ).toFixed(3) +
-      //     "kHz"
-      // );
+    if (!frequencyTrackService) {
+      return;
     }
+
+    // ドップラーファクターを計算する
+    const rxDopplerFactor = await frequencyTrackService.calcDownlinkDopplerFactor(currentDate.value, intervalMs);
+    // 無線機のダウンリンク周波数を更新する
+    await updateRxFrequency(dopplerRxBaseFrequency.value * rxDopplerFactor);
+    // 画面のダウンリンク周波数を更新する
+    rxFrequency.value = TransceiverUtil.mhzToMhzString(dopplerRxBaseFrequency.value * rxDopplerFactor);
+    // AppMainLogger.debug(
+    //   "ドップラーシフト補正値(Rx): " +
+    //     TransceiverUtil.subtractFrequencies(
+    //       dopplerRxBaseFrequency.value * rxDopplerFactor * 1000,
+    //       dopplerRxBaseFrequency.value * 1000
+    //     ).toFixed(3) +
+    //     "kHz"
+    // );
   }
 
   /**
@@ -294,6 +319,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       uplinkHz: null,
       uplinkMode: newTxOpeMode,
     });
+
     // 運用モードによってUSB/LSBモード判定、AM/FMモード判定を更新する
     await updateTxModeFlags(newTxOpeMode);
   });
@@ -366,28 +392,34 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     await updateRxModeFlags(newRxOpeMode);
   });
 
-  // 現在時刻が変更された場合にドップラーシフト補正を行い、周波数を更新する
-  watch(currentDate, async (newDate, oldDate) => {
+  /**
+   * 周波数の更新を行う
+   */
+  async function updateFreq() {
     if (!autoStore.tranceiverAuto) {
       // Autoモード中でない場合は何もしない
       return;
     }
-    if (newDate.getTime() - oldDate.getTime() < 0 || newDate.getTime() - oldDate.getTime() >= 1500) {
-      // 手動による日時操作があった場合は何もしない
-      return;
-    }
+
+    // memo: Auto時は、手動の日時更新は無効にしているので、以下処理はデッドコードと思われる（コメントアウトした）
+    // if (newDate.getTime() - oldDate.getTime() < 0 || newDate.getTime() - oldDate.getTime() >= 1500) {
+    //   // 手動による日時操作があった場合は何もしない
+    //   return;
+    // }
 
     // 人工衛星がドップラーシフトが有効となる範囲にいるか判定する
     const isActive = await isWithinDopplerShiftActiveRange();
-    if (isActive) {
-      // アップリンク周波数をドップラーシフト補正して更新する
-      await updateTxFrequencyWithDopplerShift(newDate.getTime() - oldDate.getTime());
-      if (isSatelliteMode.value) {
-        // サテライトモードがONの場合、ダウンリンク周波数をドップラーシフト補正して更新する
-        await updateRxFrequencyWithDopplerShift(newDate.getTime() - oldDate.getTime());
-      }
+    if (!isActive) {
+      return;
     }
-  });
+
+    // アップリンク周波数をドップラーシフト補正して更新する
+    await updateTxFrequencyWithDopplerShift(autoTrackingIntervalMsec);
+    if (isSatelliteMode.value) {
+      // サテライトモードがONの場合、ダウンリンク周波数をドップラーシフト補正して更新する
+      await updateRxFrequencyWithDopplerShift(autoTrackingIntervalMsec);
+    }
+  }
 
   onMounted(async () => {
     // 無線機の設定を初期化する

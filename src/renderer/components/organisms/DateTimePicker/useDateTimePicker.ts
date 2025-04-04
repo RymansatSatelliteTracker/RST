@@ -170,10 +170,12 @@ const useDateTimePicker = () => {
   };
 
   // 毎秒現在日時を更新する
+  // memo: 無線機のAuto時の周波数更新の最小間隔は100msなので、100msごとに更新する
+  //       （ドップラーシフトの計算にて、このnow.valueが参照される。１秒更新だと１秒ごとの周波数が算出されてしまうため、100msごとに更新する必要がある）
   setInterval(() => {
     targetDate.value = getSetDate();
     now.value = new Date();
-  }, 1000);
+  }, 100);
 
   return {
     adjustDate,

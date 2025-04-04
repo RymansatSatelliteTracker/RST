@@ -32,6 +32,7 @@ export default class FrequencyTrackService {
     if (!velocity) {
       return 1.0;
     }
+
     return 1.0 + velocity / Constant.Astronomy.LIGHT_SPEED;
   }
   /**
@@ -45,6 +46,7 @@ export default class FrequencyTrackService {
     if (!velocity) {
       return 1.0;
     }
+
     return 1.0 - velocity / Constant.Astronomy.LIGHT_SPEED;
   }
 
