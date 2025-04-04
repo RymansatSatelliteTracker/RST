@@ -14,19 +14,19 @@
       <div class="freq_area">
         <div>
           Tx<FrequencySelect class="freq_box" v-model:frequency="txFrequency" v-model:diffFrequency="diffTxFrequency"
-            ><span class="freq_unit">MHz</span></FrequencySelect
+            ><span class="freq_unit">Hz</span></FrequencySelect
           >
         </div>
       </div>
       <div class="freq_area">
         <div v-if="isSatelliteMode">
           Rx<FrequencySelect class="freq_box" v-model:frequency="rxFrequency" v-model:diffFrequency="diffRxFrequency"
-            ><span class="freq_unit">MHz</span></FrequencySelect
+            ><span class="freq_unit">Hz</span></FrequencySelect
           >
         </div>
         <div v-else>
           Rx<FrequencySelect class="freq_box" v-model:frequency="txFrequency" v-model:diffFrequency="diffRxFrequency"
-            ><span class="freq_unit">MHz</span></FrequencySelect
+            ><span class="freq_unit">Hz</span></FrequencySelect
           >
         </div>
       </div>
