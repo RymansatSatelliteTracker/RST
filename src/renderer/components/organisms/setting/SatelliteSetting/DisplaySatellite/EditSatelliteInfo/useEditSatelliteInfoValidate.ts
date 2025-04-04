@@ -69,7 +69,7 @@ export const valiSchemaEditSatelliteInfo = zod.object({
       zod
         // 正の実数か空白
         .union([
-          zod.coerce.number().refine((val) => val > 0, {
+          zod.coerce.number().refine((val) => Number.isInteger(val) && val > 0, {
             message,
           }),
           zod.null(),
@@ -85,7 +85,7 @@ export const valiSchemaEditSatelliteInfo = zod.object({
       zod
         // 正の実数か空白
         .union([
-          zod.coerce.number().refine((val) => val > 0, {
+          zod.coerce.number().refine((val) => Number.isInteger(val) && val > 0, {
             message,
           }),
           zod.null(),
@@ -101,7 +101,7 @@ export const valiSchemaEditSatelliteInfo = zod.object({
       zod
         // 正の実数か空白
         .union([
-          zod.coerce.number().refine((val) => val > 0, {
+          zod.coerce.number().refine((val) => Number.isInteger(val) && val > 0, {
             message,
           }),
           zod.null(),
@@ -117,7 +117,7 @@ export const valiSchemaEditSatelliteInfo = zod.object({
       zod
         // 正の実数か空白
         .union([
-          zod.coerce.number().refine((val) => val > 0, {
+          zod.coerce.number().refine((val) => Number.isInteger(val) && val > 0, {
             message,
           }),
           zod.null(),
@@ -133,7 +133,7 @@ export const valiSchemaEditSatelliteInfo = zod.object({
       zod
         // 正の実数か空白
         .union([
-          zod.coerce.number().refine((val) => val > 0, {
+          zod.coerce.number().refine((val) => Number.isInteger(val) && val > 0, {
             message,
           }),
           zod.null(),
