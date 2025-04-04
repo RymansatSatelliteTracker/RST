@@ -50,6 +50,34 @@ export default class TransceiverUtil {
   }
 
   /**
+   * 数値　→ ドット区切り文字列
+   * @param hz
+   * @returns
+   */
+  public static formatWithDot(hz: number): string {
+    // 10桁にパディング
+    const padHz = hz.toString().padStart(10, "0");
+
+    // 各桁を取得
+    const digitMHz = padHz.slice(0, 4);
+    const digitKHz = padHz.slice(4, 7);
+    const digitHz = padHz.slice(7, 10);
+
+    // ドット区切りの文字列に変換
+    return `${digitMHz}.${digitKHz}.${digitHz}`;
+  }
+
+  /**
+   * ドット区切り文字列 → 数値
+   * @param value
+   */
+  public static parseNumber(value: string): number {
+    const numeric = value.replace(/\./g, "");
+    const parsed = parseFloat(numeric);
+    return isNaN(parsed) ? 0 : parsed;
+  }
+
+  /**
    * 周波数をMHzの数値からMHzの文字列に変換する
    * @param {number} mhz 周波数の数値[単位:MHz]
    * @returns {string} 周波数の文字列[単位:MHz]
