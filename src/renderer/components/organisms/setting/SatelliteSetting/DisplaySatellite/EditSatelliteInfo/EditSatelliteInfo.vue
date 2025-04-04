@@ -60,7 +60,7 @@
             <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_UPLINK) }}</label>
           </v-col>
           <v-col cols="4">
-            <TextField
+            <DigitTextField
               v-model="form.uplink1Hz"
               suffix="Hz"
               :valiSchema="valiSchemaEditSatelliteInfo"
@@ -75,7 +75,7 @@
           ></v-col>
           <v-col cols="4"> </v-col>
           <v-col cols="4">
-            <TextField
+            <DigitTextField
               v-model="form.uplink2Hz"
               suffix="Hz"
               :valiSchema="valiSchemaEditSatelliteInfo"
@@ -98,7 +98,7 @@
             <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_DOWNLINK) }}</label>
           </v-col>
           <v-col cols="4">
-            <TextField
+            <DigitTextField
               v-model="form.downlink1Hz"
               suffix="Hz"
               :valiSchema="valiSchemaEditSatelliteInfo"
@@ -113,7 +113,7 @@
           ></v-col>
           <v-col cols="4"> </v-col>
           <v-col cols="4">
-            <TextField
+            <DigitTextField
               v-model="form.downlink2Hz"
               suffix="Hz"
               :valiSchema="valiSchemaEditSatelliteInfo"
@@ -136,7 +136,7 @@
             <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_TONE) }}</label>
           </v-col>
           <v-col cols="4">
-            <TextField
+            <DigitTextField
               v-model="form.toneHz"
               suffix="Hz"
               :valiSchema="valiSchemaEditSatelliteInfo"
@@ -183,6 +183,7 @@ import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite";
 import ApiDefaultSatellite from "@/renderer/api/ApiDefaultSatellite";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
+import DigitTextField from "@/renderer/components/atoms/DigitTextField/DigitTextField.vue";
 import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
 import OpeModeSelect from "@/renderer/components/molecules/OpeModeSelect/OpeModeSelect.vue";
 import emitter from "@/renderer/util/EventBus";
