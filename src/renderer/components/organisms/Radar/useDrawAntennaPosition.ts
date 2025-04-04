@@ -1,4 +1,4 @@
-import { SatAzEl } from "@/renderer/types/satellite-type";
+import { RotatorAzEl } from "@/renderer/types/satellite-type";
 import { CenterPosition } from "@/renderer/util/CanvasUtil";
 import { Ref, watch } from "vue";
 
@@ -61,7 +61,7 @@ function useDrawAntennaPosition(
   canvasRef: Ref<HTMLCanvasElement | null>,
   radarRadius: number,
   radarCenter: CenterPosition,
-  position: Ref<SatAzEl | undefined>
+  position: Ref<RotatorAzEl | undefined>
 ) {
   watch(position, () => {
     const canvasElem = canvasRef.value;
