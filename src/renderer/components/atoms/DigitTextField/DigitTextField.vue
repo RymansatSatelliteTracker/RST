@@ -62,20 +62,29 @@ watch(
 watch(displayValue, (newVal) => {
   model.value = parseNumber(newVal);
 });
-// 数値 → カンマ付き文字列
+
+/**
+ * 数値 → カンマ付き文字列
+ * @param value
+ */
 function formatNumber(value: number): string {
   if (!value) return "";
   return value.toLocaleString();
 }
 
-// カンマ付き文字列 → 数値（数値でない場合は 0 にフォールバック）
+/**
+ * カンマ付き文字列 → 数値（数値でない場合は null にフォールバック）
+ * @param value
+ */
 function parseNumber(value: string): number | null {
   const numeric = value.replace(/,/g, "");
   const parsed = parseFloat(numeric);
   return isNaN(parsed) ? null : parsed;
 }
 
-// カンマ付きで表示
+/**
+ * カンマ付きで表示
+ */
 function formatWithComma() {
   displayValue.value = formatNumber(model.value);
 }
