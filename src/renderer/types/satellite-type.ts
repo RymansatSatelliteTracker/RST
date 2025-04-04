@@ -31,3 +31,9 @@ export type SatAzEl = {
   az: number;
   el: number;
 };
+
+// ローテータの位置（Deg）
+export type RotatorAzEl = {
+  az: number;
+  el: number;
+};
