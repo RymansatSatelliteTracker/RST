@@ -309,7 +309,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   // アップリンク周波数が変更された場合にAPIを呼び出す
   watch(txFrequency, async (newFrequency) => {
     // アップリンク周波数を更新する
-    await updateTxFrequency(Number(newFrequency));
+    await updateTxFrequency(TransceiverUtil.parseNumber(newFrequency));
   });
 
   // 画面でアップリンク周波数が変更された場合に変化量を反映する
@@ -346,7 +346,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     }
 
     // ダウンリンク周波数を更新する
-    await updateRxFrequency(Number(newFrequency));
+    await updateRxFrequency(TransceiverUtil.parseNumber(newFrequency));
   });
 
   // 画面でダウンリンク周波数が変更された場合に変化量を反映する
