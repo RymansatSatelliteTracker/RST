@@ -1,5 +1,9 @@
 # RST (Rymansat Satellite Tracker)
 
+## 0. バイナリの保管場所
+
+最新のバイナリは[releases](https://github.com/RymansatSatelliteTracker/RST/releases)からダウンロードできます。
+
 ## 1. 環境構築
 
 ### node環境の構築

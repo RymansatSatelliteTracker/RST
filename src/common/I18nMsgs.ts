@@ -229,12 +229,29 @@ export default class I18nMsgs {
   public static readonly GCOM_MENU_HELP: I18nMsgItem = { en: "Help", ja: "ヘルプ" };
   public static readonly GCOM_MENU_VERSION: I18nMsgItem = { en: "Version", ja: "バージョン" };
 
+  // 画面項目系／無線機設定画面
+  public static readonly G41_TAB_CONNECTION: I18nMsgItem = { en: "Device", ja: "機種設定" };
+  public static readonly G41_TAB_BEHIVIOR: I18nMsgItem = { en: "Behivior", ja: "動作設定" };
+  public static readonly G41_MAKER: I18nMsgItem = { en: "Maker", ja: "メーカー" };
+  public static readonly G41_DEVICE: I18nMsgItem = { en: "Device", ja: "機種" };
+  public static readonly G41_SERIAL_PORT: I18nMsgItem = { en: "Serial Port", ja: "シリアルポート" };
+  public static readonly G41_BORATE: I18nMsgItem = { en: "Borate", ja: "ボーレート" };
+  public static readonly G41_CIVADDRESS: I18nMsgItem = { en: "CI-V Address", ja: "CI-Vアドレス" };
+  public static readonly G41_TEST_CONNECT: I18nMsgItem = { en: "Test Connect", ja: "接続テスト" };
+  public static readonly G41_IPADDRESS: I18nMsgItem = { en: "IP Address", ja: "IPアドレス" };
+  public static readonly G41_IPADDRESS_PORT: I18nMsgItem = { en: "Port", ja: "Port" };
+  public static readonly G41_AUTO_INTERVAL: I18nMsgItem = {
+    en: "Freq Control Interval",
+    ja: "周波数設定インターバル",
+  };
+
   // 画面項目系／ローテータ設定画面
+  public static readonly G51_TAB_CONNECTION: I18nMsgItem = { en: "Device", ja: "機種設定" };
+  public static readonly G51_TAB_BEHIVIOR: I18nMsgItem = { en: "Behivior", ja: "動作設定" };
   public static readonly G51_MAKER: I18nMsgItem = { en: "Maker", ja: "メーカー" };
   public static readonly G51_DEVICE: I18nMsgItem = { en: "Device", ja: "機種" };
   public static readonly G51_SERIAL_PORT: I18nMsgItem = { en: "Serial Port", ja: "シリアルポート" };
   public static readonly G51_BORATE: I18nMsgItem = { en: "Borate", ja: "ボーレート" };
-  public static readonly G51_CIVADDRESS: I18nMsgItem = { en: "CI-V Address", ja: "CI-Vアドレス" };
   public static readonly G51_TEST_CONNECT: I18nMsgItem = { en: "Test Connect", ja: "接続テスト" };
   public static readonly G51_TEST_MODE: I18nMsgItem = { en: "Test Mode", ja: "テストモード" };
   public static readonly G51_IPADDRESS: I18nMsgItem = { en: "IP Address", ja: "IPアドレス" };
@@ -248,13 +265,17 @@ export default class I18nMsgs {
   public static readonly G51_MOVE_MODE_NORMAL: I18nMsgItem = { en: "Normal", ja: "ノーマルモード" };
   public static readonly G51_MOVE_MODE_FLIP: I18nMsgItem = { en: "Flip", ja: "フリップモード" };
   public static readonly G51_START_AGO_MINUTE: I18nMsgItem = {
-    en: "How many minutes before should it start automatically?",
-    ja: "何分前から自動で動かすか？",
+    en: "Auto tracking start/end time",
+    ja: "自動追尾準備・終了時間",
   };
-  public static readonly G51_START_AGO_MINUTE_SUFIX: I18nMsgItem = { en: "minutes ago", ja: "分前" };
+  public static readonly G51_START_AGO_MINUTE_SUFIX: I18nMsgItem = { en: "minutes", ja: "分" };
   public static readonly G51_NEED_SELECT_MAKER: I18nMsgItem = {
     en: "need select maker",
     ja: "メーカーを選択してください",
+  };
+  public static readonly G51_PARK_POS: I18nMsgItem = {
+    en: "Park position",
+    ja: "パークポジション",
   };
 
   // 画面項目系／衛星設定画面

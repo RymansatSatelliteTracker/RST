@@ -71,7 +71,7 @@ import useDrawAntennaPosition from "@/renderer/components/organisms/Radar/useDra
 import useDrawRadar from "@/renderer/components/organisms/Radar/useDrawRadar";
 import useDrawSat from "@/renderer/components/organisms/Radar/useDrawSat";
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
-import { SatAzEl } from "@/renderer/types/satellite-type";
+import { RotatorAzEl, SatAzEl } from "@/renderer/types/satellite-type";
 import emitter from "@/renderer/util/EventBus";
 import { onMounted, Ref, ref, watch } from "vue";
 import useAutoTracking from "./useAutoTracking";
@@ -95,7 +95,7 @@ const props = defineProps({
 
 // データ
 const activeSatPos = ref<SatAzEl | null>(null);
-const antennaPos = ref<SatAzEl>();
+const antennaPos = ref<RotatorAzEl>();
 const currentDate = ref<Date>(props.currentDate);
 
 // 描画系データ
@@ -207,7 +207,6 @@ async function autoBtnClick() {
  */
 function azimuthFormat(value: SatAzEl | undefined) {
   if (!value) return "-";
-  if (value.az < 0 || value.el < 0) return "-";
 
   // Elevation > 90の場合はアンテナが反転しているので、Azimuth +180[deg]とする
   const azimuth = value.el > 90 ? value.az + 180 : value.az;
@@ -219,7 +218,6 @@ function azimuthFormat(value: SatAzEl | undefined) {
  */
 function elavationFormat(value: SatAzEl | undefined) {
   if (!value) return "-";
-  if (value.az < 0 || value.el < 0) return "-";
 
   // Elevation > 90の場合はアンテナが反転しているので、Elevation - 90[deg]とする
   const elevation = value.el > 90 ? 180 - value.el : value.el;

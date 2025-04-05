@@ -1,6 +1,33 @@
+import Constant from "@/common/Constant";
 import { DefaultSatelliteModel } from "@/common/model/DefaultSatelliteModel";
+import { TleItemMap } from "@/common/model/TleModel";
 import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil";
+import FileUtil from "@/main/util/FileUtil";
+import * as path from "path";
+
 describe("DefaultSatelliteModel", () => {
+  function getLatestTLE(): TleItemMap {
+    const savePathTle = AppConfigUtil.getTlePath();
+    const tleData = FileUtil.readJson(savePathTle);
+
+    const tleItemMap: TleItemMap = tleData.tleItemMap;
+    const retTleItemMap: TleItemMap = {};
+    Object.values(tleItemMap).forEach((tleItem) => {
+      if (tleItem.isInLatestTLE) {
+        retTleItemMap[tleItem.id] = tleItem;
+      }
+    });
+    return retTleItemMap;
+  }
+
+  beforeAll(() => {
+    const TEST_HOME_DIR = path.resolve(__dirname, "data_DefaultSatelliteModel");
+    // 設定ファイルが扱えないため
+    jest.spyOn(AppConfigUtil, "getTlePath").mockImplementation(() => {
+      return path.join(TEST_HOME_DIR, Constant.Tle.TLE_FILENAME);
+    });
+  });
   /**
    * 正常系:引数1つ
    */
@@ -44,7 +71,7 @@ describe("DefaultSatelliteModel", () => {
   test("JSON形式で取得", () => {
     // Arrange
     const defSatModel = new DefaultSatelliteModel();
-    defSatModel.addSatellite("test", "1");
+    defSatModel.addSatellite("test", "00001");
     // Act
     const ret = defSatModel.getJsonString();
     // Assert
@@ -60,10 +87,11 @@ describe("DefaultSatelliteModel", () => {
    */
   test("SatelliteIdenfierの取得", () => {
     // Arrange
+    const tle = getLatestTLE();
     const defSatModel = new DefaultSatelliteModel();
-    defSatModel.addSatellite("test", "1");
+    defSatModel.addSatellite("test", "00001");
     // Act
-    const satId = defSatModel.getSatelliteIdentifer();
+    const satId = defSatModel.getSatelliteIdentifer(tle);
     // Assert
     expect(satId.length).toBe(1);
     expect(satId[0]).toHaveProperty("satelliteId");

@@ -1,4 +1,6 @@
 import Constant from "@/common/Constant";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig";
+import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
 import GroundStationHelper from "@/renderer/common/util/GroundStationHelper";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 import { SatAzEl } from "@/renderer/types/satellite-type";
@@ -68,9 +70,15 @@ export default function useDrawSatPass(
       return;
     }
 
+    // 現在の基準日時を元に、追尾開始・終了時間を加味した基準日時を取得する
+    // memo: 素の基準日時を渡すと、LOS後に次のパスが取れてしまうため（余白的な追尾が出来ないため）
+    //       追尾開始・終了時間を加味した基準日時を元にパスを取得する
+    const appConfig = await ApiAppConfig.getAppConfig();
+    const baseDate = AutoTrackingHelper.getOffsetBaseDate(appConfig, currentDate.value);
+
     // 人工衛星のAOSリストを取得する
     const passes = await groundStationService.getOrbitPassListAsync(
-      currentDate.value,
+      baseDate,
       new Date(currentDate.value.getTime() + Constant.Time.MILLISECONDS_IN_DAY)
     );
     if (!passes || passes.length === 0) {

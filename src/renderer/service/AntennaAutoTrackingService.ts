@@ -2,15 +2,16 @@ import Constant from "@/common/Constant";
 import I18nMsgs from "@/common/I18nMsgs";
 import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel";
 import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
+import { AppConfigModel } from "@/common/model/AppConfigModel";
 import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
+import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
 import GroundStationHelper from "@/renderer/common/util/GroundStationHelper";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 import RotatorControllerBase from "@/renderer/service/rotator/RotatorControllerBase";
 import RotatorControllerFactory from "@/renderer/service/rotator/RotatorControllerFactory";
 import { AppConfigUtil } from "@/renderer/util/AppConfigUtil";
-import DateUtil from "@/renderer/util/DateUtil";
 import emitter from "@/renderer/util/EventBus";
 import { Ref } from "vue";
 
@@ -55,12 +56,14 @@ export default class AntennaAutoTrackingService {
    * 自動追尾を行う
    */
   private async doTracking(controller: RotatorControllerBase, date: Ref<Date>) {
-    // const now = new Date();
     const baseDate = date.value;
 
     // 自動追尾の開始時刻か判定する
-    if (!(await this.isAosTimeRange(baseDate))) {
-      this.setInitPosition(controller);
+    const appConfig = await ApiAppConfig.getAppConfig();
+
+    // 自動追尾の時間帯でない場合は、アンテナをパークポジションに設定する
+    if (!(await AutoTrackingHelper.isRotatorTrackingTimeRange(appConfig, baseDate))) {
+      this.moveParkPosition(appConfig, controller);
       return;
     }
 
@@ -99,38 +102,14 @@ export default class AntennaAutoTrackingService {
   }
 
   /**
-   * アンテナを初期位置に設定する
+   * アンテナをパークポジションに設定する
    */
-  private setInitPosition(controller: RotatorControllerBase) {
+  private moveParkPosition(appConfig: AppConfigModel, controller: RotatorControllerBase) {
     const pos: AntennaPositionModel = {
-      azimuth: 0,
-      elevation: 90,
+      azimuth: appConfig.rotator.parkPosAz,
+      elevation: appConfig.rotator.parkPosEl,
     };
     controller.setPosition(pos);
-  }
-
-  /**
-   * 自動追尾の時間帯か判定する
-   * @param baseDate 基準時間
-   */
-  private async isAosTimeRange(baseDate: Date): Promise<boolean> {
-    // AOS情報を取得
-    const pass = await ActiveSatServiceHub.getInstance().getOrbitPassAsync(baseDate);
-    if (!pass || !pass.aos || !pass.los) {
-      return false;
-    }
-
-    // 自動追尾の開始時刻を取得
-    const appConfig = await ApiAppConfig.getAppConfig();
-    const addMinute = appConfig.rotator.startAgoMinute ?? 0;
-    const trackingStartDate = DateUtil.addMinute(pass.aos.date, addMinute * -1);
-
-    // 自動追尾の時間範囲内
-    if (trackingStartDate.getTime() <= baseDate.getTime() && baseDate.getTime() <= pass.los.date.getTime()) {
-      return true;
-    }
-
-    return false;
   }
 
   /**

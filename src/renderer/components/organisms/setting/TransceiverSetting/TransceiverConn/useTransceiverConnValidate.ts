@@ -1,20 +1,20 @@
 import I18nMsgs from "@/common/I18nMsgs";
 import { useValidate } from "@/renderer/common/hook/useValidate";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
-import TransceiverSettingForm from "@/renderer/components/organisms/setting/TransceiverSetting/TransceiverSettingForm";
+import TransceiverConnForm from "@/renderer/components/organisms/setting/TransceiverSetting/TransceiverConn/TransceiverConnForm";
 import * as zod from "zod";
 
 /**
  * 無線機設定画面の入力チェックフック
  */
-export function useTransceiverSettingValidate() {
+export function useTransceiverConnValidate() {
   // 入力チェック共通フック
   const { validateAll, errors } = useValidate(valiSchemaTransceiverSetting);
 
   /**
    * Form全体の入力チェックの実行
    */
-  async function validateForm(form: TransceiverSettingForm) {
+  async function validateForm(form: TransceiverConnForm) {
     return await validateAll(form);
   }
 

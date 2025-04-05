@@ -134,6 +134,7 @@ const schemaTransceiver = zod.object({
   baudrateBps: zod.string(),
   ipAddress: zod.string(),
   ipPort: zod.string(),
+  autoTrackingIntervalSec: zod.string(),
   txFrequency: zod.string(),
   rxFrequency: zod.string(),
 });
@@ -153,6 +154,8 @@ const schemaRotator = zod.object({
   rangeAzMax: zod.number(),
   moveMode: zod.string(),
   startAgoMinute: zod.number(),
+  parkPosAz: zod.number(),
+  parkPosEl: zod.number(),
 });
 
 /**

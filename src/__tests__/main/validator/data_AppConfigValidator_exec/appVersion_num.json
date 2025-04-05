@@ -19,6 +19,7 @@
       "baudrateBps": "",
       "ipAddress": "",
       "ipPort": "",
+      "autoTrackingIntervalSec": "1",
       "txFrequency": "2430.000",
       "rxFrequency": "0480.000"
     },
@@ -33,7 +34,9 @@
       "rangeAzMin": 0,
       "rangeAzMax": 360,
       "moveMode": "normal",
-      "startAgoMinute": 0
+      "startAgoMinute": 0,
+      "parkPosAz": 0,
+      "parkPosEl": 0
     },
     "groundStation": {
       "height": -1,

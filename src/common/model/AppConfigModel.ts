@@ -95,7 +95,7 @@ export class AppConfigSatellite {
  */
 export class Uplink {
   // アップリンク周波数(Mhz)
-  public uplinkMhz: number | null = null;
+  public uplinkHz: number | null = null;
   // アップリンクモード
   public uplinkMode = "";
 }
@@ -105,7 +105,7 @@ export class Uplink {
  */
 export class Downlink {
   // ダウンリンク周波数(Mhz)
-  public downlinkMhz: number | null = null;
+  public downlinkHz: number | null = null;
   // ダウンリンクモード
   public downlinkMode = "";
 }
@@ -148,6 +148,8 @@ export class AppConfigTransceiver {
   public ipAddress = "";
   // 無線機IPアドレスポート
   public ipPort = "";
+  // 自動周波数制御インターバル（秒）
+  public autoTrackingIntervalSec = "1";
   // 無線機の送信周波数
   public txFrequency = "2430.000";
   // 無線機の受信周波数
@@ -180,6 +182,10 @@ export class AppConfigRotator {
   public moveMode = Constant.Config.Rotator.MOVE_MODE_NORMAL;
   // 自動追尾開始分
   public startAgoMinute = 0;
+  // パーク方位
+  public parkPosAz = 0;
+  // パーク仰角
+  public parkPosEl = 0;
 }
 
 /**

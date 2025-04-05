@@ -1,7 +1,7 @@
 {
   "name": "rst",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": {
     "name": "rsp.",
     "email": "xxx@rymansat.com"
@@ -24,7 +24,7 @@
     "vite:preview": "vite preview",
     "ts": "tsc",
     "watch": "tsc -w",
-    "test": "jest --config ./jest.config.json"
+    "test": "jest --config ./jest.config.json --coverage"
   },
   "build": {
     "appId": "RST",

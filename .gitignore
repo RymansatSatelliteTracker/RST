@@ -9,3 +9,5 @@ release
 
 # viteの一時ファイル
 vite.config.mts.timestamp*
+
+coverage
