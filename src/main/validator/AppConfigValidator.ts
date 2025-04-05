@@ -100,7 +100,7 @@ const schemaSatellite = zod.object({
   downlink1: schemaDownlink,
   // 対象衛星ダウンリンク設定2
   downlink2: schemaDownlink,
-  // 対象衛星トーン周波数（Mhz）
+  // 対象衛星トーン周波数（Hz）
   toneHz: zod.number().nullable(),
   // 対象衛星概要
   outline: zod.string(),

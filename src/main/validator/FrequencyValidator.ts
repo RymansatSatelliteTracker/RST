@@ -92,7 +92,7 @@ export default class FrequencyValidator {
  * zodスキーマ定義 Uplink
  */
 const schemaUplink = zod.object({
-  // アップリンク周波数（Mhz）
+  // アップリンク周波数（Hz）
   uplinkHz: zod.number().nullable(),
   // アップリンクモード
   uplinkMode: zod.string(),
@@ -102,7 +102,7 @@ const schemaUplink = zod.object({
  * zodスキーマ定義 Downlink
  */
 const schemaDownlink = zod.object({
-  // ダウンリンク周波数（Mhz）
+  // ダウンリンク周波数（Hz）
   downlinkHz: zod.number().nullable(),
   // ダウンリンクモード
   downlinkMode: zod.string(),
@@ -124,8 +124,8 @@ const schemaSatellite = zod.object({
   downlink1: schemaDownlink,
   // 衛星ダウンリンク設定2
   downlink2: schemaDownlink,
-  // 衛星トーン周波数（Mhz）
-  toneMhz: zod.number().nullable(),
+  // 衛星トーン周波数（Hz）
+  toneHz: zod.number().nullable(),
   // 衛星概要
   outline: zod.string(),
 });

@@ -78,4 +78,22 @@ test("appVersion_num", () => {
   expect(results[0].errMsgItem).toBe(I18nMsgs.CHK_ERR_APPCONFIG_INVALID_ITEM);
 });
 
+/**
+ * 正常
+ * 衛星設定あり
+ */
+test("app_config", () => {
+  // テストデータ
+  const dataPath = path.resolve(__dirname, "data_AppConfigValidator_exec", "app_config.json");
+  const text = FileUtil.readText(dataPath);
+  const appConfig = JSON.parse(text);
+
+  // 実行
+  const validator = new AppConfigValidator();
+  const results = validator.exec(appConfig);
+
+  // 検証
+  expect(results.length).toBe(0);
+});
+
 // TODO: 設定ファイルは今後変動が予想されるため、確定後にその他のテストを記載する

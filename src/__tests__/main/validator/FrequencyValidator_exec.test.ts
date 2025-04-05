@@ -36,15 +36,15 @@ test("異常系：周波数が文字列", () => {
 
   // 検証
   expect(results.length).toBe(5);
-  expect(results[0].errItemName).toBe("frequency/satellites/0/uplink1/uplinkMhz");
+  expect(results[0].errItemName).toBe("frequency/satellites/0/uplink1/uplinkHz");
   expect(results[0].errMsgItem).toBe(I18nMsgs.CHK_ERR_FREQUENCY_INVALID_ITEM);
-  expect(results[1].errItemName).toBe("frequency/satellites/0/uplink2/uplinkMhz");
+  expect(results[1].errItemName).toBe("frequency/satellites/0/uplink2/uplinkHz");
   expect(results[1].errMsgItem).toBe(I18nMsgs.CHK_ERR_FREQUENCY_INVALID_ITEM);
-  expect(results[2].errItemName).toBe("frequency/satellites/0/downlink1/downlinkMhz");
+  expect(results[2].errItemName).toBe("frequency/satellites/0/downlink1/downlinkHz");
   expect(results[2].errMsgItem).toBe(I18nMsgs.CHK_ERR_FREQUENCY_INVALID_ITEM);
-  expect(results[3].errItemName).toBe("frequency/satellites/0/downlink2/downlinkMhz");
+  expect(results[3].errItemName).toBe("frequency/satellites/0/downlink2/downlinkHz");
   expect(results[3].errMsgItem).toBe(I18nMsgs.CHK_ERR_FREQUENCY_INVALID_ITEM);
-  expect(results[4].errItemName).toBe("frequency/satellites/0/toneMhz");
+  expect(results[4].errItemName).toBe("frequency/satellites/0/toneHz");
   expect(results[4].errMsgItem).toBe(I18nMsgs.CHK_ERR_FREQUENCY_INVALID_ITEM);
 });
 

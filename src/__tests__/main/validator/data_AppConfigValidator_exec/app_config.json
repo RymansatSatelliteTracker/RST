@@ -6,7 +6,35 @@
       "lastRetrievedDate": 0,
       "urls": []
     },
-    "satellites": [],
+    "satellites": [
+      {
+        "satelliteId": 230,
+        "userRegistered": false,
+        "userRegisteredSatelliteName": "1998-067XC",
+        "userRegisteredTle": "",
+        "noradId": "62296",
+        "autoModeUplinkFreq": 1,
+        "uplink1": {
+          "uplinkHz": 1000000000,
+          "uplinkMode": "LSB"
+        },
+        "uplink2": {
+          "uplinkHz": 1234567890,
+          "uplinkMode": "USB"
+        },
+        "autoModeDownlinkFreq": 1,
+        "downlink1": {
+          "downlinkHz": 1000000000,
+          "downlinkMode": "LSB"
+        },
+        "downlink2": {
+          "downlinkHz": 1234567890,
+          "downlinkMode": "FM"
+        },
+        "toneHz": 1000000000,
+        "outline": ""
+      }
+    ],
     "satelliteGroups": [],
     "satelliteSetting": {
       "satelliteChoiceMinEl": -1
