@@ -6,19 +6,19 @@
         "noradId": "43017",
         "satelliteName": "RADFXSAT (FOX-1B) ",
         "uplink1": {
-          "uplinkMhz": 435.25,
+          "uplinkHz": 435.25,
           "uplinkMode": "FM"
         },
         "uplink2": {
-          "uplinkMhz": null,
+          "uplinkHz": null,
           "uplinkMode": ""
         },
         "downlink1": {
-          "downlinkMhz": 145.96,
+          "downlinkHz": 145.96,
           "downlinkMode": "FM"
         },
         "downlink2": {
-          "downlinkMhz": null,
+          "downlinkHz": null,
           "downlinkMode": ""
         },
         "toneMhz": null,
@@ -28,19 +28,19 @@
         "noradId": "27607",
         "satelliteName": "SAUDISAT 1C (SO-50)",
         "uplink1": {
-          "uplinkMhz": 145.85,
+          "uplinkHz": 145.85,
           "uplinkMode": "FM"
         },
         "uplink2": {
-          "uplinkMhz": null,
+          "uplinkHz": null,
           "uplinkMode": ""
         },
         "downlink1": {
-          "downlinkMhz": 436.795,
+          "downlinkHz": 436.795,
           "downlinkMode": "FM"
         },
         "downlink2": {
-          "downlinkMhz": null,
+          "downlinkHz": null,
           "downlinkMode": ""
         },
         "toneMhz": null,
@@ -50,19 +50,19 @@
         "noradId": "43678",
         "satelliteName": "DIWATA-2B",
         "uplink1": {
-          "uplinkMhz": 437.5,
+          "uplinkHz": 437.5,
           "uplinkMode": "FM"
         },
         "uplink2": {
-          "uplinkMhz": null,
+          "uplinkHz": null,
           "uplinkMode": ""
         },
         "downlink1": {
-          "downlinkMhz": 145.9,
+          "downlinkHz": 145.9,
           "downlinkMode": "FM"
         },
         "downlink2": {
-          "downlinkMhz": null,
+          "downlinkHz": null,
           "downlinkMode": ""
         },
         "toneMhz": null,
@@ -72,19 +72,19 @@
         "noradId": "40908",
         "satelliteName": "LILACSAT-2",
         "uplink1": {
-          "uplinkMhz": 144.35,
+          "uplinkHz": 144.35,
           "uplinkMode": "FM"
         },
         "uplink2": {
-          "uplinkMhz": null,
+          "uplinkHz": null,
           "uplinkMode": ""
         },
         "downlink1": {
-          "downlinkMhz": 437.2,
+          "downlinkHz": 437.2,
           "downlinkMode": "FM"
         },
         "downlink2": {
-          "downlinkMhz": null,
+          "downlinkHz": null,
           "downlinkMode": ""
         },
         "toneMhz": null,
@@ -94,19 +94,19 @@
         "noradId": "40931",
         "satelliteName": "LAPAN-A2",
         "uplink1": {
-          "uplinkMhz": 145.88,
+          "uplinkHz": 145.88,
           "uplinkMode": "FM"
         },
         "uplink2": {
-          "uplinkMhz": null,
+          "uplinkHz": null,
           "uplinkMode": ""
         },
         "downlink1": {
-          "downlinkMhz": 435.88,
+          "downlinkHz": 435.88,
           "downlinkMode": "FM"
         },
         "downlink2": {
-          "downlinkMhz": null,
+          "downlinkHz": null,
           "downlinkMode": ""
         },
         "toneMhz": null,
@@ -116,19 +116,19 @@
         "noradId": "25544",
         "satelliteName": "ISS (ZARYA)",
         "uplink1": {
-          "uplinkMhz": 145.99,
+          "uplinkHz": 145.99,
           "uplinkMode": "FM"
         },
         "uplink2": {
-          "uplinkMhz": null,
+          "uplinkHz": null,
           "uplinkMode": ""
         },
         "downlink1": {
-          "downlinkMhz": 437.8,
+          "downlinkHz": 437.8,
           "downlinkMode": "FM"
         },
         "downlink2": {
-          "downlinkMhz": null,
+          "downlinkHz": null,
           "downlinkMode": ""
         },
         "toneMhz": null,
@@ -138,19 +138,19 @@
         "noradId": "62690",
         "satelliteName": "HADES-R",
         "uplink1": {
-          "uplinkMhz": 145.925,
+          "uplinkHz": 145.925,
           "uplinkMode": "FM"
         },
         "uplink2": {
-          "uplinkMhz": null,
+          "uplinkHz": null,
           "uplinkMode": ""
         },
         "downlink1": {
-          "downlinkMhz": 436.885,
+          "downlinkHz": 436.885,
           "downlinkMode": "FM"
         },
         "downlink2": {
-          "downlinkMhz": null,
+          "downlinkHz": null,
           "downlinkMode": ""
         },
         "toneMhz": null,
@@ -160,19 +160,19 @@
         "noradId": "61781",
         "satelliteName": "ASRTU-1 (AO-123)",
         "uplink1": {
-          "uplinkMhz": 145.85,
+          "uplinkHz": 145.85,
           "uplinkMode": "FM"
         },
         "uplink2": {
-          "uplinkMhz": null,
+          "uplinkHz": null,
           "uplinkMode": ""
         },
         "downlink1": {
-          "downlinkMhz": 435.4,
+          "downlinkHz": 435.4,
           "downlinkMode": "FM"
         },
         "downlink2": {
-          "downlinkMhz": null,
+          "downlinkHz": null,
           "downlinkMode": ""
         },
         "toneMhz": null,
@@ -182,19 +182,19 @@
         "noradId": "48274",
         "satelliteName": "CSS (TIANHE)",
         "uplink1": {
-          "uplinkMhz": 145.875,
+          "uplinkHz": 145.875,
           "uplinkMode": "FM"
         },
         "uplink2": {
-          "uplinkMhz": 435.075,
+          "uplinkHz": 435.075,
           "uplinkMode": "FM"
         },
         "downlink1": {
-          "downlinkMhz": 436.51,
+          "downlinkHz": 436.51,
           "downlinkMode": "FM"
         },
         "downlink2": {
-          "downlinkMhz": 145.985,
+          "downlinkHz": 145.985,
           "downlinkMode": "FM"
         },
         "toneMhz": null,
