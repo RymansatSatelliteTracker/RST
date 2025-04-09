@@ -35,7 +35,9 @@ export default class FrequencyService {
     const results = validater.exec(res.data);
 
     if (results.length !== 0) {
-      AppMainLogger.warn(results);
+      AppMainLogger.warn(
+        `項目チェックに失敗しました。エラー数=${results.length} 項目名[0]=${results[0].errItemName} 内容[0]=${results[0].errMsgItem.ja}`
+      );
       return false;
     }
 
