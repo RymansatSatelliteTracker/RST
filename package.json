@@ -99,6 +99,7 @@
   },
   "dependencies": {
     "@mdi/font": "7.4.47",
+    "@playwright/test": "^1.51.1",
     "@types/geojson": "7946.0.15",
     "@vue-leaflet/vue-leaflet": "0.10.1",
     "axios": "1.7.7",
@@ -112,6 +113,7 @@
     "mitt": "3.0.1",
     "module-alias": "2.2.3",
     "pinia-plugin-persistedstate": "4.1.1",
+    "playwright": "^1.51.1",
     "satellite.js": "5.0.0",
     "serialport": "12.0.0",
     "tsconfig-paths": "4.2.0",
