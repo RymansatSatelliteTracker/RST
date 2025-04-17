@@ -140,6 +140,22 @@ export default class TleService {
     // 各OSの改行コードを想定してスプリットする
     const lines = tlesText.split(/\r\n|\r|\n/).filter((line) => !CommonUtil.isEmpty(line.trim()));
     for (let ii = 0; ii < lines.length; ii += 3) {
+      // TLEの2行目が「1 」、3行目が「2 」で始まる行を探す
+      while (ii < lines.length) {
+        if (
+          lines[ii + 1] &&
+          lines[ii + 1].substring(0, 2) === "1 " &&
+          lines[ii + 2] &&
+          lines[ii + 2].substring(0, 2) === "2 "
+        ) {
+          break;
+        }
+        ii++;
+      }
+      // 行きすぎたらループを抜ける
+      if (lines.length <= ii + 2) break;
+
+      // ここまできたら取得可能なTLEの行数なので、TLEを取得する
       const id = TleUtil.getNoradId(lines[ii + 1]);
       const epoch = TleUtil.getEpochDate(lines[ii + 1]);
       const name = TleUtil.getName(lines[ii]);
