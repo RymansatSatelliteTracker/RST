@@ -347,7 +347,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         // 運用モードの値が取得できない場合は処理終了
         return;
       }
-      this.state.setReqRxMode(modeValue);
+      this.state.setReqTxMode(modeValue);
     } else if ("downlinkMode" in modeModel) {
       // ダウンリンクモードを取得する
       const mode = modeModel.downlinkMode;
