@@ -43,7 +43,7 @@ export default class TransceiverIcomState {
    * RSTから無線機に設定したいRx周波数をセットする
    */
   public setReqRxFreqHz(freqHz: number): void {
-    // 現在保持している値と同一の場合は何もしない
+    // 現在保持している値と同一の場合は何もしない（不要なバンド切り替えを抑止する）
     if (this.reqRxFreqHz === freqHz) {
       return;
     }
@@ -55,7 +55,7 @@ export default class TransceiverIcomState {
    * RSTから無線機に設定したいTx周波数をセットする
    */
   public setReqTxFreqHz(freq: number): void {
-    // 現在保持している値と同一の場合は何もしない
+    // 現在保持している値と同一の場合は何もしない（不要なバンド切り替えを抑止する）
     if (this.reqTxFreqHz === freq) {
       return;
     }
@@ -67,7 +67,7 @@ export default class TransceiverIcomState {
    * RSTから無線機に設定したいRxモードをセットする
    */
   public setReqRxMode(mode: string): void {
-    // 現在保持している値と同一の場合は何もしない
+    // 現在保持している値と同一の場合は何もしない（不要なバンド切り替えを抑止する）
     if (this.reqRxMode === mode) {
       return;
     }
@@ -79,7 +79,7 @@ export default class TransceiverIcomState {
    * RSTから無線機に設定したいTxモードをセットする
    */
   public setReqTxMode(mode: string): void {
-    // 現在保持している値と同一の場合は何もしない
+    // 現在保持している値と同一の場合は何もしない（不要なバンド切り替えを抑止する）
     if (this.reqTxMode === mode) {
       return;
     }
@@ -91,7 +91,7 @@ export default class TransceiverIcomState {
    * 無線機から取得したRx周波数をセットする
    */
   public setRecvRxFreqHz(freq: number): void {
-    // 現在保持している値と同一の場合は何もしない
+    // 現在保持している値と同一の場合は何もしない（不要なバンド切り替えを抑止する）
     if (this.recvRxFreqHz === freq) {
       return;
     }
@@ -105,7 +105,7 @@ export default class TransceiverIcomState {
    * 無線機から取得したTx周波数をセットする
    */
   public setRecvTxFreqHz(freq: number): void {
-    // 現在保持している値と同一の場合は何もしない
+    // 現在保持している値と同一の場合は何もしない（不要なバンド切り替えを抑止する）
     if (this.recvTxFreqHz === freq) {
       return;
     }
