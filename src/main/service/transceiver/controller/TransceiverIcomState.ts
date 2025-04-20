@@ -40,49 +40,75 @@ export default class TransceiverIcomState {
   }
 
   /**
-   * RSTから無線機に設定したい周波数をセットする
+   * RSTから無線機に設定したいRx周波数をセットする
    */
   public setReqRxFreqHz(freqHz: number): void {
+    // 現在保持している値と同一の場合は何もしない
+    if (this.reqRxFreqHz === freqHz) {
+      return;
+    }
     this.reqRxFreqHz = freqHz;
     this.isRxFreqUpdate = true;
   }
+
+  /**
+   * RSTから無線機に設定したいTx周波数をセットする
+   */
   public setReqTxFreqHz(freq: number): void {
+    // 現在保持している値と同一の場合は何もしない
+    if (this.reqTxFreqHz === freq) {
+      return;
+    }
     this.reqTxFreqHz = freq;
     this.isTxFreqUpdate = true;
   }
 
   /**
-   * RSTから無線機に設定したいモードをセットする
+   * RSTから無線機に設定したいRxモードをセットする
    */
   public setReqRxMode(mode: string): void {
+    // 現在保持している値と同一の場合は何もしない
+    if (this.reqRxMode === mode) {
+      return;
+    }
     this.reqRxMode = mode;
     this.isRxModeUpdate = true;
   }
+
+  /**
+   * RSTから無線機に設定したいTxモードをセットする
+   */
   public setReqTxMode(mode: string): void {
+    // 現在保持している値と同一の場合は何もしない
+    if (this.reqTxMode === mode) {
+      return;
+    }
     this.reqTxMode = mode;
     this.isTxModeUpdate = true;
   }
 
   /**
-   * 無線機から取得した周波数をセットする
+   * 無線機から取得したRx周波数をセットする
    */
   public setRecvRxFreqHz(freq: number): void {
     // 現在保持している値と同一の場合は何もしない
     if (this.recvRxFreqHz === freq) {
       return;
     }
-
     this.recvRxFreqHz = freq;
     this.isRecvRxFreqUpdate = true;
     // 無線機での周波数変更は片側の変更のみが通知されるため、Tx側の周波数も更新されたものとして、データ取得対象としておく
     this.isRecvTxFreqUpdate = true;
   }
+
+  /**
+   * 無線機から取得したTx周波数をセットする
+   */
   public setRecvTxFreqHz(freq: number): void {
     // 現在保持している値と同一の場合は何もしない
     if (this.recvTxFreqHz === freq) {
       return;
     }
-
     this.recvTxFreqHz = freq;
     this.isRecvTxFreqUpdate = true;
     // 無線機での周波数変更は片側の変更のみが通知されるため、Rx側の周波数も更新されたものとして、データ取得対象としておく
