@@ -211,39 +211,6 @@ export default class Constant {
 
     // ドップラーシフトが有効となるパス前後の追加時間範囲[単位:秒]
     static readonly DOPPLER_SHIFT_RANGE_SEC = 60;
-
-    /**
-     * CI-Vコマンド
-     */
-    public static readonly CivCommand = class {
-      // プリアンプル
-      static readonly PREAMBLE = 0xfe;
-      // ポストアンプル
-      static readonly POSTAMBLE = 0xfd;
-      // PCの送受信時アドレス
-      static readonly PC_ADDRESS = 0xe0;
-
-      // 周波数の設定(トランシーブ)
-      static readonly SET_FREQUENCY = 0x00; //0x05;
-      // 周波数の読み込み
-      static readonly GET_FREQUENCY = 0x03;
-      // モードの設定(非トランシーブ)
-      static readonly SET_MODE = 0x06; // 0x01;
-      // モードの読み込み
-      static readonly GET_MODE = 0x04;
-
-      // MAIN/SUBバンドの切り替え
-      static readonly SWITCH_BAND = 0x07;
-      // メインバンド
-      static readonly MAIN_BAND = 0xd0;
-      // サブバンド
-      static readonly SUB_BAND = 0xd1;
-      // メインバンドとサブバンドを入れ替える
-      static readonly INVERT_BAND = 0xb0;
-
-      // 連続するコマンドの結合を回避するためのパディング
-      static readonly PADDING = 0x00;
-    };
   };
 
   /**
