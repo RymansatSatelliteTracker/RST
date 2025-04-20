@@ -95,6 +95,12 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       await updateRxModeFlags(rxOpeMode.value);
     }
 
+    // Auto開始をメイン側に連携する
+    await ApiTransceiver.initAutoOn(
+      TransceiverUtil.mhzToHz(parseInt(txFrequency.value)),
+      TransceiverUtil.mhzToHz(parseInt(rxFrequency.value))
+    );
+
     // ドップラーシフトの基準周波数を設定する
     dopplerTxBaseFrequency.value = Number(txFrequency.value);
     dopplerRxBaseFrequency.value = Number(rxFrequency.value);

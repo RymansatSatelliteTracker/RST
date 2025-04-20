@@ -179,12 +179,6 @@ export default class Constant {
    * 無線機関係
    */
   public static readonly Transceiver = class {
-    // コマンド送信タイミングの重複回避のため、互いに素なインターバル周期を設定する
-    // 無線機の周波数の読み取り間隔（ミリ秒）
-    static readonly GET_FREQUENCY_INTERVAL_MS = 700;
-    // 無線機の運用モードの読み取り間隔（ミリ秒）
-    static readonly GET_OPEMODE_INTERVAL_MS = 1900;
-
     /**
      * 無線機メーカーID
      */
@@ -230,11 +224,11 @@ export default class Constant {
       static readonly PC_ADDRESS = 0xe0;
 
       // 周波数の設定(トランシーブ)
-      static readonly SET_FREQUENCY = 0x00;
+      static readonly SET_FREQUENCY = 0x00; //0x05;
       // 周波数の読み込み
       static readonly GET_FREQUENCY = 0x03;
-      // モードの設定(トランシーブ)
-      static readonly SET_MODE = 0x01;
+      // モードの設定(非トランシーブ)
+      static readonly SET_MODE = 0x06; // 0x01;
       // モードの読み込み
       static readonly GET_MODE = 0x04;
 
@@ -244,6 +238,8 @@ export default class Constant {
       static readonly MAIN_BAND = 0xd0;
       // サブバンド
       static readonly SUB_BAND = 0xd1;
+      // メインバンドとサブバンドを入れ替える
+      static readonly INVERT_BAND = 0xb0;
 
       // 連続するコマンドの結合を回避するためのパディング
       static readonly PADDING = 0x00;

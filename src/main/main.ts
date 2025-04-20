@@ -117,7 +117,7 @@ function createWindow() {
   if (EnvUtil.isDev()) {
     // メインプロセス側のホットリロード設定
     // memo: メイン側のソース保存時に再起動させたくない場合は、ここをコメントアウトしてください
-    // enableHotReload();
+    enableHotReload();
 
     // ウィンドウ内のコンテンツの設定（レンダラプロセスのURLを指定）
     mainWindow.loadURL("http://localhost:5173");

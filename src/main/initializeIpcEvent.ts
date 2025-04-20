@@ -220,10 +220,17 @@ export function initializeIpcEvents() {
   });
 
   /**
+   * 無線機関係・無線機関係・AutoOn時の初期処理
+   */
+  ipcMain.handle("initAutoOn", async (event, txFreqHz: number, rxFreqHz: number) => {
+    return await TransceiverService.getInstance().initAutoOn(txFreqHz, rxFreqHz);
+  });
+
+  /**
    * 無線機関係・無線機周波数を変更する
    */
-  ipcMain.handle("setTransceiverFrequency", (event, frequencyModel: UplinkType | DownlinkType) => {
-    return TransceiverService.getInstance().setTransceiverFrequency(frequencyModel);
+  ipcMain.handle("setTransceiverFrequency", async (event, frequencyModel: UplinkType | DownlinkType) => {
+    return await TransceiverService.getInstance().setTransceiverFrequency(frequencyModel);
   });
 
   /**
