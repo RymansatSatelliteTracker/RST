@@ -32,15 +32,15 @@ export default class AntennaAutoTrackingService {
       return false;
     }
 
-    // 表示中の衛星グループが変更された場合のコールバックを設定
-    ActiveSatServiceHub.getInstance().addOnChangeActiveSat(this.onChangeActiveSat);
-
+    // ローテータが未設定の場合はトーストを表示して終了
     const rotDevice = await AppConfigUtil.getCurrentRotatorDevice();
     if (!rotDevice) {
-      // ローテータが未設定の場合
       emitter.emit(Constant.GlobalEvent.NOTICE_INFO, I18nUtil.getMsg(I18nMsgs.SYSTEM_YET_ROTATOR_CONFIG));
       return false;
     }
+
+    // 表示中の衛星グループが変更された場合のコールバックを設定
+    ActiveSatServiceHub.getInstance().addOnChangeActiveSat(this.onChangeActiveSat);
 
     const controller = await RotatorControllerFactory.getController(rotDevice);
 
