@@ -1,5 +1,6 @@
 import CommonUtil from "@/common/CommonUtil";
 import Constant from "@/common/Constant";
+import I18nMsgs from "@/common/I18nMsgs";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse } from "@/common/types/types";
 import TransceiverUtil from "@/common/util/TransceiverUtil";
@@ -71,7 +72,14 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   /**
    * Autoモード中はアクティブ衛星で周波数/運用モードを更新する
    */
-  async function startAutoMode() {
+  async function startAutoMode(): Promise<boolean> {
+    // 無線機が未設定の場合はトーストを表示して処理終了
+    const appConfig = await ApiAppConfig.getAppConfig();
+    if (CommonUtil.isEmpty(appConfig.transceiver.transceiverId)) {
+      emitter.emit(Constant.GlobalEvent.NOTICE_INFO, I18nUtil.getMsg(I18nMsgs.SYSTEM_YET_TRANSCEIVER_CONFIG));
+      return false;
+    }
+
     // Autoモード移行前の周波数を保持する
     savedTxFrequency.value = txFrequency.value;
     savedRxFrequency.value = rxFrequency.value;
@@ -106,13 +114,14 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     dopplerRxBaseFrequency.value = Number(rxFrequency.value);
 
     // 周波数の更新インターバルを取得
-    const appConfig = await ApiAppConfig.getAppConfig();
     autoTrackingIntervalMsec = parseFloat(appConfig.transceiver.autoTrackingIntervalSec) * 1000;
 
     // 更新インターバルごとに周波数の更新する
     timerId = setInterval(async () => {
       updateFreq();
     }, autoTrackingIntervalMsec);
+
+    return true;
   }
 
   /**

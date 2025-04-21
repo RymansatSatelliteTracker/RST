@@ -251,13 +251,16 @@ async function autoBtnClick() {
   loadingAutoBtn.value = true;
 
   // 現在のAuto状態を反転させて、Autoモードの開始/終了を要求する
-  autoStore.tranceiverAuto = !autoStore.tranceiverAuto;
-  if (autoStore.tranceiverAuto) {
+  const auto = !autoStore.tranceiverAuto;
+  if (auto) {
     // Autoモード開始
-    await startAutoMode();
+    const result = await startAutoMode();
+    // 開始の結果をストアに反映（開始できなかった場合はfalseが返ってくる）
+    autoStore.tranceiverAuto = result;
   } else {
     // Autoモード終了
     await stopAutoMode();
+    autoStore.tranceiverAuto = false;
   }
 
   loadingAutoBtn.value = false;
