@@ -95,6 +95,10 @@ export default class TransceiverIcomRecvParser {
    */
   public static trimRecData(recvData: string) {
     const startIdx = recvData.indexOf("fefe");
+    if (startIdx === -1) {
+      return "";
+    }
+
     return recvData.substring(startIdx);
   }
 }
