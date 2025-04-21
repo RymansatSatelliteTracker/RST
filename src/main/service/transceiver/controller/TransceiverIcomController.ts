@@ -121,13 +121,13 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     this.state.isSatelliteMode = TransceiverIcomRecvParser.parseSatelliteMode(recvData);
 
     // 現状の周波数データ取得
-    this.getIcomFreq();
+    this.getFreqFromIcom();
   }
 
   /**
    * 無線機側の周波数データを取得する
    */
-  private async getIcomFreq() {
+  private async getFreqFromIcom() {
     // メイン側のデータ取得
     this.state.isMain = true;
     await this.sendAndWaitRecv(this.cmdMaker.switchToMainBand(), "SWITCH");
@@ -221,10 +221,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     if (this.state.isRxFreqUpdate) {
       await this.sendRxFreq(this.state.getReqRxFreqHz());
       this.state.isRxFreqUpdate = false;
-
-      // Rx周波数の取得
-      // memo: RST側から設定した場合は、基本的に同じ値が返ってくるため、周波数の取得は行わない
     } else if (this.state.isRecvRxFreqUpdate) {
+      // Rx周波数の取得
+      // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、周波数の取得は行わない
       const recvDataMainFreq = await this.sendAndWaitRecv(this.cmdMaker.getFreq(), "GET_FREQ");
       await this.handleRecvData(recvDataMainFreq);
       this.state.isRecvRxFreqUpdate = false;
@@ -237,6 +236,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       this.state.isRxModeUpdate = false;
     } else {
       // Rx運用モードの取得
+      // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、周波数の取得は行わない
       const recvDataMode = await this.sendAndWaitRecv(this.cmdMaker.getMode(), "GET_MODE");
       await this.handleRecvData(recvDataMode);
     }
@@ -259,10 +259,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     if (this.state.isTxFreqUpdate) {
       await this.sendTxFreq(this.state.getReqTxFreqHz());
       this.state.isTxFreqUpdate = false;
-
-      // Rx周波数の取得
-      // memo: RST側から設定した場合は、基本的に同じ値が返ってくるため、周波数の取得は行わない
     } else if (this.state.isRecvTxFreqUpdate) {
+      // Rx周波数の取得
+      // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、周波数の取得は行わない
       const recvDataSubFreq = await this.sendAndWaitRecv(this.cmdMaker.getFreq(), "GET_FREQ");
       await this.handleRecvData(recvDataSubFreq);
       this.state.isRecvTxFreqUpdate = false;
@@ -275,6 +274,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       this.state.isTxModeUpdate = false;
     } else {
       // Tx運用モードの取得
+      // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、周波数の取得は行わない
       const recvDataMode = await this.sendAndWaitRecv(this.cmdMaker.getMode(), "GET_MODE");
       await this.handleRecvData(recvDataMode);
     }
@@ -412,7 +412,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     await this.sendAndWaitRecv(cmdData, "SWITCH");
 
     // 入れ替え後の周波数データを取得する
-    this.getIcomFreq();
+    this.getFreqFromIcom();
 
     return true;
   }
