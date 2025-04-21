@@ -83,7 +83,7 @@ export default class TransceiverIcomRecvParser {
    * @returns true: サテライトモードOn
    */
   public static parseSatelliteMode(recvData: string): boolean {
-    const recvMode = recvData.substring(13, 15);
+    const recvMode = recvData.substring(12, 14);
     if (recvMode === "01") {
       return true;
     }

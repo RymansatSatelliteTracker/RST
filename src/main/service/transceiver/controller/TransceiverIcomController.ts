@@ -106,6 +106,26 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   }
 
   /**
+   * デバイスの切断などを行う
+   */
+  public override async stop(): Promise<void> {
+    this.unsetCallback();
+
+    await super.stop();
+
+    // 定期コマンド送信を停止
+    this.cancelTimer();
+  }
+
+  /**
+   * AutoOn時の初期処理
+   */
+  public override async initAutoOn(txFreqHz: number, rxFreqHz: number): Promise<void> {
+    // メインバンドの周波数を元に、必要であればメインとサブの周波数帯の入れ替えを行う
+    await this.switchBandIfNeed();
+  }
+
+  /**
    * 無線機の初期化を行う
    */
   private async initTranceiver() {
@@ -146,26 +166,6 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // メイン・周波数
     const recvDataSubFreq = await this.sendAndWaitRecv(this.cmdMaker.getFreq(), "GET_FREQ");
     this.state.setRecvTxFreqHz(TransceiverIcomRecvParser.parseFreq(recvDataSubFreq));
-  }
-
-  /**
-   * デバイスの切断などを行う
-   */
-  public override async stop(): Promise<void> {
-    this.unsetCallback();
-
-    await super.stop();
-
-    // 定期コマンド送信を停止
-    this.cancelTimer();
-  }
-
-  /**
-   * AutoOn時の初期処理
-   */
-  public override async initAutoOn(txFreqHz: number, rxFreqHz: number): Promise<void> {
-    // メインバンドの周波数を元に、必要であればメインとサブの周波数帯の入れ替えを行う
-    await this.switchBandIfNeed();
   }
 
   /**
