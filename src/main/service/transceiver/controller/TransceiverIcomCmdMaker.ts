@@ -1,3 +1,5 @@
+import Constant from "@/common/Constant";
+
 /**
  * CI-Vコマンド
  */
@@ -36,9 +38,11 @@ const CivCommand = class {
  */
 export default class TransceiverIcomCmdMaker {
   private civAddress: number = 0x0;
+  private transceiverId: string = "";
 
-  public constructor(civAddress: number) {
+  public constructor(civAddress: number, transceiverId: string) {
     this.civAddress = civAddress;
+    this.transceiverId = transceiverId;
   }
 
   /**
@@ -167,11 +171,16 @@ export default class TransceiverIcomCmdMaker {
    * @param {boolean} isSatelliteMode サテライトモード設定
    */
   public setSatelliteMode(isSatelliteMode: boolean): Uint8Array {
+    // IC910の場合は、コマンドが異なる
+    let cmd = [0x16, 0x5a]; // IC910以外の機種
+    if (this.transceiverId === Constant.Transceiver.TransceiverId.ICOM_IC910) {
+      cmd = [0x1a, 0x07];
+    }
+
     return new Uint8Array([
       ...this.makePrefix(),
       // コマンド部
-      0x16, // サテライトモードの設定
-      0x5a,
+      ...cmd,
       isSatelliteMode ? 0x01 : 0x00,
       ...this.makeSuffix(),
     ]);
@@ -181,11 +190,16 @@ export default class TransceiverIcomCmdMaker {
    * サテライトモードの取得コマンド
    */
   public getSatelliteMode(): Uint8Array {
+    // IC910の場合は、コマンドが異なる
+    let cmd = [0x16, 0x5a]; // IC910以外の機種
+    if (this.transceiverId === Constant.Transceiver.TransceiverId.ICOM_IC910) {
+      cmd = [0x1a, 0x07];
+    }
+
     return new Uint8Array([
       ...this.makePrefix(),
       // コマンド部
-      0x16, // サテライトモードの設定
-      0x5a,
+      ...cmd,
       ...this.makeSuffix(),
     ]);
   }
