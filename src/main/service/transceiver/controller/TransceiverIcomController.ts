@@ -34,6 +34,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   // ICOM無線機のCI-Vアドレス
   private civAddress: number = 0;
 
+  // コマンド生成
+  private cmdMaker: TransceiverIcomCmdMaker;
+
   // 無線機から受信したデータ
   private recvBuffer = "";
 
@@ -55,6 +58,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     super(transceiverConfig);
     this.state.resetAll();
     this.civAddress = parseInt(transceiverConfig.civAddress.toLowerCase(), 16);
+    this.cmdMaker = new TransceiverIcomCmdMaker(this.civAddress);
   }
 
   /**
@@ -106,29 +110,29 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    */
   private async initTranceiver() {
     // VFO-Aに切り替え
-    const cmdData = TransceiverIcomCmdMaker.switchVfo(this.civAddress);
+    const cmdData = this.cmdMaker.switchVfoA();
     await this.sendAndWaitRecv(cmdData, "SWITCH");
 
     // トランシーブOn
-    await this.sendAndWaitRecv(TransceiverIcomCmdMaker.setTranceive(this.civAddress, 0x01), "SWITCH");
+    await this.sendAndWaitRecv(this.cmdMaker.setTranceive(0x01), "SWITCH");
 
     // 無線機側のサテライトモードの取得
-    const recvData = await this.sendAndWaitRecv(TransceiverIcomCmdMaker.getSatelliteMode(this.civAddress), "GET_MODE");
+    const recvData = await this.sendAndWaitRecv(this.cmdMaker.getSatelliteMode(), "GET_MODE");
     this.state.isSatelliteMode = TransceiverIcomRecvParser.parseSatelliteMode(recvData);
 
     // 現状の周波数データ取得
-    this.getIcomFreq();
+    this.getFreqFromIcom();
   }
 
   /**
    * 無線機側の周波数データを取得する
    */
-  private async getIcomFreq() {
+  private async getFreqFromIcom() {
     // メイン側のデータ取得
     this.state.isMain = true;
-    await this.sendAndWaitRecv(TransceiverIcomCmdMaker.switchToMainBand(this.civAddress), "SWITCH");
+    await this.sendAndWaitRecv(this.cmdMaker.switchToMainBand(), "SWITCH");
     // メイン・周波数
-    const recvDataMainFreq = await this.sendAndWaitRecv(TransceiverIcomCmdMaker.getFreq(this.civAddress), "GET_FREQ");
+    const recvDataMainFreq = await this.sendAndWaitRecv(this.cmdMaker.getFreq(), "GET_FREQ");
     this.state.setRecvRxFreqHz(TransceiverIcomRecvParser.parseFreq(recvDataMainFreq));
 
     // サテライトモードでない場合は、サブ側のデータ取得は不要
@@ -138,9 +142,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
     // サブ側のデータ取得
     this.state.isMain = false;
-    await this.sendAndWaitRecv(TransceiverIcomCmdMaker.switchToSubBand(this.civAddress), "SWITCH");
+    await this.sendAndWaitRecv(this.cmdMaker.switchToSubBand(), "SWITCH");
     // メイン・周波数
-    const recvDataSubFreq = await this.sendAndWaitRecv(TransceiverIcomCmdMaker.getFreq(this.civAddress), "GET_FREQ");
+    const recvDataSubFreq = await this.sendAndWaitRecv(this.cmdMaker.getFreq(), "GET_FREQ");
     this.state.setRecvTxFreqHz(TransceiverIcomRecvParser.parseFreq(recvDataSubFreq));
   }
 
@@ -208,32 +212,32 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
     // メインへ切り替え
     this.state.isMain = true;
-    await this.sendAndWaitRecv(TransceiverIcomCmdMaker.switchToMainBand(this.civAddress), "SWITCH");
+    await this.sendAndWaitRecv(this.cmdMaker.switchToMainBand(), "SWITCH");
 
     // メインバンドの周波数を元に、必要であればメインとサブの周波数帯の入れ替えを行う
     await this.switchBandIfNeed();
 
     // Rx周波数の設定
     if (this.state.isRxFreqUpdate) {
-      await this.sendRxFreq(this.state.getReqRxFreqHz());
+      await this.sendFreq(this.state.getReqRxFreqHz());
       this.state.isRxFreqUpdate = false;
-
-      // Rx周波数の取得
-      // memo: RST側から設定した場合は、基本的に同じ値が返ってくるため、周波数の取得は行わない
     } else if (this.state.isRecvRxFreqUpdate) {
-      const recvDataMainFreq = await this.sendAndWaitRecv(TransceiverIcomCmdMaker.getFreq(this.civAddress), "GET_FREQ");
+      // Rx周波数の取得
+      // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、周波数の取得は行わない
+      const recvDataMainFreq = await this.sendAndWaitRecv(this.cmdMaker.getFreq(), "GET_FREQ");
       await this.handleRecvData(recvDataMainFreq);
       this.state.isRecvRxFreqUpdate = false;
     }
 
     // Rx運用モードの設定
     if (this.state.isRxModeUpdate) {
-      const cmdData = TransceiverIcomCmdMaker.setMode(this.civAddress, this.state.getReqRxMode());
+      const cmdData = this.cmdMaker.setMode(this.state.getReqRxMode());
       await this.sendAndWaitRecv(cmdData, "SET_MODE");
       this.state.isRxModeUpdate = false;
     } else {
       // Rx運用モードの取得
-      const recvDataMode = await this.sendAndWaitRecv(TransceiverIcomCmdMaker.getMode(this.civAddress), "GET_MODE");
+      // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、周波数の取得は行わない
+      const recvDataMode = await this.sendAndWaitRecv(this.cmdMaker.getMode(), "GET_MODE");
       await this.handleRecvData(recvDataMode);
     }
   }
@@ -249,60 +253,45 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
     // サブバンドへ切り替え
     this.state.isMain = false;
-    await this.sendAndWaitRecv(TransceiverIcomCmdMaker.switchToSubBand(this.civAddress), "SWITCH");
+    await this.sendAndWaitRecv(this.cmdMaker.switchToSubBand(), "SWITCH");
 
     // Tx周波数の設定
     if (this.state.isTxFreqUpdate) {
-      await this.sendTxFreq(this.state.getReqTxFreqHz());
+      await this.sendFreq(this.state.getReqTxFreqHz());
       this.state.isTxFreqUpdate = false;
-
-      // Rx周波数の取得
-      // memo: RST側から設定した場合は、基本的に同じ値が返ってくるため、周波数の取得は行わない
     } else if (this.state.isRecvTxFreqUpdate) {
-      const recvDataSubFreq = await this.sendAndWaitRecv(TransceiverIcomCmdMaker.getFreq(this.civAddress), "GET_FREQ");
+      // Rx周波数の取得
+      // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、周波数の取得は行わない
+      const recvDataSubFreq = await this.sendAndWaitRecv(this.cmdMaker.getFreq(), "GET_FREQ");
       await this.handleRecvData(recvDataSubFreq);
       this.state.isRecvTxFreqUpdate = false;
     }
 
     // Tx運用モードの設定
     if (this.state.isTxModeUpdate) {
-      const cmdData = TransceiverIcomCmdMaker.setMode(this.civAddress, this.state.getReqTxMode());
+      const cmdData = this.cmdMaker.setMode(this.state.getReqTxMode());
       await this.sendAndWaitRecv(cmdData, "SET_MODE");
       this.state.isTxModeUpdate = false;
     } else {
       // Tx運用モードの取得
-      const recvDataMode = await this.sendAndWaitRecv(TransceiverIcomCmdMaker.getMode(this.civAddress), "GET_MODE");
+      // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、周波数の取得は行わない
+      const recvDataMode = await this.sendAndWaitRecv(this.cmdMaker.getMode(), "GET_MODE");
       await this.handleRecvData(recvDataMode);
     }
   }
 
   /**
-   * Rx周波数の設定コマンドを送信する
+   * 周波数の設定コマンドを送信する
+   * 現在のバンド（メイン、サブ）に対して設定が行われます。
    */
-  private async sendRxFreq(freq: number): Promise<void> {
+  private async sendFreq(freq: number): Promise<void> {
     // 周波数が未設定の場合は処理終了する
     if (!CommonUtil.isNumber(freq)) {
       return;
     }
 
     // データ送信
-    const freqStr = Math.floor(freq).toString();
-    const cmdData = TransceiverIcomCmdMaker.setFreq(this.civAddress, freqStr);
-    await this.sendAndWaitRecv(cmdData, "SET_FREQ");
-  }
-
-  /**
-   * Tx周波数の設定コマンドを送信する
-   */
-  private async sendTxFreq(freq: number): Promise<void> {
-    // 周波数が未設定の場合は処理終了する
-    if (!CommonUtil.isNumber(freq)) {
-      return;
-    }
-
-    // データ送信
-    const freqStr = Math.floor(freq).toString();
-    const cmdData = TransceiverIcomCmdMaker.setFreq(this.civAddress, freqStr);
+    const cmdData = this.cmdMaker.setFreq(freq);
     await this.sendAndWaitRecv(cmdData, "SET_FREQ");
   }
 
@@ -320,8 +309,6 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     if ("uplinkHz" in freqModel && freqModel.uplinkHz) {
       // アップリンク周波数を取得する
       this.state.setReqTxFreqHz(freqModel.uplinkHz);
-
-      // await this.switchToMainBand();
     } else if ("downlinkHz" in freqModel && freqModel.downlinkHz) {
       // ダウンリンク周波数を取得する
       this.state.setReqRxFreqHz(freqModel.downlinkHz);
@@ -343,8 +330,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       // アップリンクモードを取得する
       const mode = modeModel.uplinkMode;
       const modeValue = TransceiverIcomRecvParser.getValueFromOpeMode(mode);
+
+      // 運用モードの値が取得できない場合は処理終了
       if (modeValue === null) {
-        // 運用モードの値が取得できない場合は処理終了
         return;
       }
       this.state.setReqTxMode(modeValue);
@@ -352,8 +340,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       // ダウンリンクモードを取得する
       const mode = modeModel.downlinkMode;
       const modeValue = TransceiverIcomRecvParser.getValueFromOpeMode(mode);
+
+      // 運用モードの値が取得できない場合は処理終了
       if (modeValue === null) {
-        // 運用モードの値が取得できない場合は処理終了
         return;
       }
       this.state.setReqRxMode(modeValue);
@@ -404,11 +393,11 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     );
 
     // メインとサブのバンドを入れ替える
-    const cmdData = TransceiverIcomCmdMaker.setInvertBand(this.civAddress);
+    const cmdData = this.cmdMaker.setInvertBand();
     await this.sendAndWaitRecv(cmdData, "SWITCH");
 
     // 入れ替え後の周波数データを取得する
-    this.getIcomFreq();
+    this.getFreqFromIcom();
 
     return true;
   }
@@ -425,9 +414,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     }
 
     // データ送信
-    const cmdData = TransceiverIcomCmdMaker.setSatelliteMode(this.civAddress, isSatelliteMode);
+    const cmdData = this.cmdMaker.setSatelliteMode(isSatelliteMode);
     await this.sendAndWaitRecv(cmdData, "SET_MODE");
-    // AppMainLogger.info(`送信 sendSatelliteModeCommand ${Buffer.from(cmdData).toString("hex")}`);
 
     // サテライトモードの設定を保持する
     this.state.isSatelliteMode = isSatelliteMode;
@@ -438,15 +426,15 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
   /**
    * 無線機へデータの送信、応答受信を行う
-   * 応答を待つかは、targetCmdTypeによって要否が決定させる
+   * - 応答を待つかは、targetCmdTypeによって要否が決定される。
+   * - RST内で排他的に処理を行うため、synchronizedを付与している。
+   * - 排他処理のため、コールバック（this.recvCallbackType と this.recvCallback）はクラス内で１つのみ保持。
    * @param cmdData コマンド
    * @param targetCmdType 送信コマンド種別
    * @returns 受信データ
    */
   @synchronized()
   private async sendAndWaitRecv(cmdData: Uint8Array, targetCmdType: CommandType): Promise<string> {
-    // AppMainLogger.info(`sendAndWaitResponse ${targetCmdType} ` + Buffer.from(cmdData).toString("hex"));
-
     return new Promise(async (resolve, reject) => {
       // if (!this.checkRecvTimeout()) {
       //   return;
@@ -461,21 +449,13 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
       // データ受信
       const onData = (recvData: string, recvCmdType: string) => {
-        // AppMainLogger.info(`onData targetCmdType=${targetCmdType} recvCmdType=${recvCmdType} ${recvData}`);
-
         if (!this.recvCallbackType) {
           resetCallback();
           resolve(recvData);
           return;
         }
 
-        if (CommonUtil.isEmpty(targetCmdType)) {
-          resetCallback();
-          resolve(recvData);
-          return;
-        }
-
-        // 送信と受信のコマンドが不一致の場合、無視
+        // GET系だが、他のデータが飛んできた場合は無視
         if (targetCmdType.startsWith("GET") && recvCmdType !== targetCmdType) {
           return;
         }
@@ -494,7 +474,6 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       }
 
       // データ送信
-      // AppMainLogger.info(`sendAndWaitResponse send ${this.recvCallBack.reqCommandType}`);
       await this.waitSendInterval();
       await super.sendSerial(cmdData);
 
@@ -512,7 +491,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         resolve("");
       }, 2000);
 
-      // 応答なしのコマンドは、送信後に解放する
+      // 応答なしのコマンドは、送信後に処理を終了する
       if (!this.recvCallbackType.isResponsive) {
         resetCallback();
         resolve("");
@@ -533,7 +512,6 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
   /**
    * シリアルデータの受信
-   * memo: こちらは、無線機起点の受信データを処理する
    * @param {Buffer} data 受信データ
    */
   protected override onRecv = async (data: Buffer) => {
@@ -551,12 +529,11 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         continue;
       }
 
-      // コールバックが設定されている場合は、ディスパッチにてコールバックを行う
+      // コールバックが設定されている場合は、ディスパッチにてコールバックを呼び出し
       if (this.recvCallbackType) {
         this.dispatchRecvData(this.recvBuffer);
-      }
-      // 無線機起点で受信したデータの場合
-      else {
+      } else {
+        // 無線機起点で受信したデータの場合
         await this.handleRecvData(this.recvBuffer);
       }
 
@@ -574,9 +551,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       return;
     }
 
-    // プリアンブルを読み捨て
-    const startIdx = recvData.indexOf("fefe");
-    const trimedData = recvData.substring(startIdx);
+    // プリアンブル以降を読む（先頭に"00"がついている場合があるので、そこは読み捨てる）
+    const trimedData = TransceiverIcomRecvParser.trimRecData(recvData);
 
     // 対象の無線機からの応答でない場合は無視（ターゲットのCI-Vアドレスで判定）
     const target = trimedData.substring(6, 8);
@@ -584,10 +560,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       return;
     }
 
-    const resultCmd = trimedData.substring(8, 10);
-    // AppMainLogger.info(`  dispatchRecvData ${resultCmd} ${trimedData}`);
-
     // コマンド部により処理を切り替え
+    const resultCmd = trimedData.substring(8, 10);
     switch (resultCmd) {
       // セット系はコマンド部にFB（OK）、FA（NG）が返ってくる
       case "fb":
@@ -619,7 +593,6 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
     // サブコマンド部により処理を切り替え
     const resultSubCmd = trimedData.substring(8, 12);
-    // AppMainLogger.info(`  dispatchRecvData ${resultSubCmd} ${trimedData}`);
     switch (resultSubCmd) {
       // サテライトモードの取得
       case "165a":
@@ -637,15 +610,13 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    */
   private async handleRecvData(recvData: string) {
     // プリアンブル以降を読む（先頭に"00"がついている場合があるので、そこは読み捨てる）
-    const startIdx = recvData.indexOf("fefe");
-    const trimedData = recvData.substring(startIdx);
+    const trimedData = TransceiverIcomRecvParser.trimRecData(recvData);
 
     // 対象の無線機からの応答でない場合は無視（ターゲットのCI-Vアドレスで判定）
     const target = trimedData.substring(6, 8);
     if (target !== this.civAddress.toString(16)) {
       return;
     }
-    // AppMainLogger.info(`  handleRecvData ${trimedData}`);
 
     // コマンド部により処理を切り替え
     switch (trimedData.substring(8, 10)) {

@@ -27,215 +27,190 @@ const CivCommand = class {
   // メインバンドとサブバンドを入れ替える
   static readonly INVERT_BAND = 0xb0;
 
-  // 連続するコマンドの結合を回避するためのパディング
-  static readonly PADDING = 0x00;
+  // // 連続するコマンドの結合を回避するためのパディング
+  // static readonly PADDING = 0x00;
 };
 
 /**
  * ICOM無線機のコマンド生成クラス
  */
 export default class TransceiverIcomCmdMaker {
+  private civAddress: number = 0x0;
+
+  public constructor(civAddress: number) {
+    this.civAddress = civAddress;
+  }
+
+  /**
+   * コマンド共通のプレフィックスを返す
+   */
+  private makePrefix(): Uint8Array {
+    return new Uint8Array([CivCommand.PREAMBLE, CivCommand.PREAMBLE, this.civAddress, CivCommand.PC_ADDRESS]);
+  }
+
+  /**
+   * コマンド共通のサフィックスを返す
+   */
+  private makeSuffix(): Uint8Array {
+    return new Uint8Array([
+      CivCommand.POSTAMBLE,
+      // memo: 現状はパディングがなくても問題なく動作するのでコメントアウト。そのうち削除する
+      // CivCommand.PADDING, // 後続コマンドとの結合を回避するためのパディング
+    ]);
+  }
+
   /**
    * トランシーブモードの設定コマンド
    * @param onOff 0x00: Off, 0x01: On
    */
-  public static setTranceive(civAddress: number, onOff: number): Uint8Array {
-    const data = new Uint8Array(11);
-    data[0] = CivCommand.PREAMBLE;
-    data[1] = CivCommand.PREAMBLE;
-    data[2] = civAddress;
-    data[3] = CivCommand.PC_ADDRESS;
-    data[4] = 0x1a;
-    data[5] = 0x05;
-    data[6] = 0x01;
-    data[7] = 0x27;
-    data[8] = onOff;
-    data[9] = CivCommand.POSTAMBLE;
-    data[10] = CivCommand.PADDING; // 後続コマンドとの結合を回避するためのパディング
-
-    return data;
+  public setTranceive(onOff: number): Uint8Array {
+    return new Uint8Array([
+      ...this.makePrefix(),
+      // コマンド部
+      0x1a, // セット ― 外部端子 ― CI-V ― CI-Vトランシーブの設定
+      0x05,
+      0x01,
+      0x27,
+      onOff,
+      ...this.makeSuffix(),
+    ]);
   }
 
   /**
    * VFO Aに切り替える
    */
-  public static switchVfo(civAddress: number): Uint8Array {
-    const data = new Uint8Array(8);
-    data[0] = CivCommand.PREAMBLE;
-    data[1] = CivCommand.PREAMBLE;
-    data[2] = civAddress;
-    data[3] = CivCommand.PC_ADDRESS;
-    data[4] = 0x07;
-    data[5] = 0x00;
-    data[6] = CivCommand.POSTAMBLE;
-    data[7] = CivCommand.PADDING; // 後続コマンドとの結合を回避するためのパディング
-
-    return data;
+  public switchVfoA(): Uint8Array {
+    return new Uint8Array([
+      ...this.makePrefix(),
+      // コマンド部
+      CivCommand.SWITCH_BAND,
+      0x00, // VFO Aにする
+      ...this.makeSuffix(),
+    ]);
   }
 
   /**
    * 無線機をメインバンドに切り替える
    */
-  public static switchToMainBand(civAddress: number): Uint8Array {
-    // シリアル送信のデータ作成
-    const data = new Uint8Array(8);
-    data[0] = CivCommand.PREAMBLE;
-    data[1] = CivCommand.PREAMBLE;
-    data[2] = civAddress;
-    data[3] = CivCommand.PC_ADDRESS;
-    data[4] = CivCommand.SWITCH_BAND;
-    data[5] = CivCommand.MAIN_BAND;
-    data[6] = CivCommand.POSTAMBLE;
-    data[7] = CivCommand.PADDING; // 後続コマンドとの結合を回避するためのパディング
-
-    return data;
+  public switchToMainBand(): Uint8Array {
+    return new Uint8Array([
+      ...this.makePrefix(),
+      // コマンド部
+      CivCommand.SWITCH_BAND,
+      CivCommand.MAIN_BAND,
+      ...this.makeSuffix(),
+    ]);
   }
 
   /**
    * 無線機をサブバンドに切り替える
    */
-  public static switchToSubBand(civAddress: number): Uint8Array {
-    // シリアル送信のデータ作成
-    const data = new Uint8Array(8);
-    data[0] = CivCommand.PREAMBLE;
-    data[1] = CivCommand.PREAMBLE;
-    data[2] = civAddress;
-    data[3] = CivCommand.PC_ADDRESS;
-    data[4] = CivCommand.SWITCH_BAND;
-    data[5] = CivCommand.SUB_BAND;
-    data[6] = CivCommand.POSTAMBLE;
-    data[7] = CivCommand.PADDING; // 後続コマンドとの結合を回避するためのパディング
-
-    return data;
+  public switchToSubBand(): Uint8Array {
+    return new Uint8Array([
+      ...this.makePrefix(),
+      // コマンド部
+      CivCommand.SWITCH_BAND,
+      CivCommand.SUB_BAND,
+      ...this.makeSuffix(),
+    ]);
   }
 
   /**
    * メインバンドとサブバンドを入れ替える
    */
-  public static setInvertBand(civAddress: number): Uint8Array {
-    // シリアル送信のデータ作成
-    const data = new Uint8Array(8);
-    data[0] = CivCommand.PREAMBLE;
-    data[1] = CivCommand.PREAMBLE;
-    data[2] = civAddress;
-    data[3] = CivCommand.PC_ADDRESS;
-    data[4] = CivCommand.SWITCH_BAND;
-    data[5] = CivCommand.INVERT_BAND;
-    data[6] = CivCommand.POSTAMBLE;
-    data[7] = CivCommand.PADDING; // 後続コマンドとの結合を回避するためのパディング
-
-    return data;
+  public setInvertBand(): Uint8Array {
+    return new Uint8Array([
+      ...this.makePrefix(),
+      // コマンド部
+      CivCommand.SWITCH_BAND,
+      CivCommand.INVERT_BAND,
+      ...this.makeSuffix(),
+    ]);
   }
 
   /**
    * 無線機に周波数を設定するコマンドを送信する
    */
-  public static setFreq(civAddress: number, freq: string): Uint8Array {
+  public setFreq(freq: number): Uint8Array {
     // 周波数を10桁の文字列に変換
-    const freqs = freq.padStart(10, "0").split("");
-    // シリアル送信用のデータを作成する
-    const data = new Uint8Array(12);
-    data[0] = CivCommand.PREAMBLE;
-    data[1] = CivCommand.PREAMBLE;
-    data[2] = civAddress;
-    data[3] = CivCommand.PC_ADDRESS;
-    data[4] = CivCommand.SET_FREQUENCY;
-    data[5] = parseInt(freqs[8] + freqs[9], 16);
-    data[6] = parseInt(freqs[6] + freqs[7], 16);
-    data[7] = parseInt(freqs[4] + freqs[5], 16);
-    data[8] = parseInt(freqs[2] + freqs[3], 16);
-    data[9] = parseInt(freqs[0] + freqs[1], 16);
-    data[10] = CivCommand.POSTAMBLE;
-    data[11] = CivCommand.PADDING; // 後続コマンドとの結合を回避するためのパディング
+    const freqStr = Math.floor(freq).toString();
+    const freqs = freqStr.padStart(10, "0").split("");
 
-    return data;
+    return new Uint8Array([
+      ...this.makePrefix(),
+      // コマンド部
+      CivCommand.SET_FREQUENCY,
+      parseInt(freqs[8] + freqs[9], 16),
+      parseInt(freqs[6] + freqs[7], 16),
+      parseInt(freqs[4] + freqs[5], 16),
+      parseInt(freqs[2] + freqs[3], 16),
+      parseInt(freqs[0] + freqs[1], 16),
+      ...this.makeSuffix(),
+    ]);
   }
 
   /**
    * 無線機に運用モードを設定するコマンドを送信する
    */
-  public static setMode(civAddress: number, mode: string): Uint8Array {
-    // シリアル送信用のデータを作成する
-    const data = new Uint8Array(8);
-    data[0] = CivCommand.PREAMBLE;
-    data[1] = CivCommand.PREAMBLE;
-    data[2] = civAddress;
-    data[3] = CivCommand.PC_ADDRESS;
-    data[4] = CivCommand.SET_MODE;
-    data[5] = parseInt(mode, 16);
-    data[6] = CivCommand.POSTAMBLE;
-    data[7] = CivCommand.PADDING; // 後続コマンドとの結合を回避するためのパディング
-
-    return data;
+  public setMode(mode: string): Uint8Array {
+    return new Uint8Array([
+      ...this.makePrefix(),
+      // コマンド部
+      CivCommand.SET_MODE,
+      parseInt(mode, 16),
+      ...this.makeSuffix(),
+    ]);
   }
 
   /**
    * サテライトモードの設定コマンド
    * @param {boolean} isSatelliteMode サテライトモード設定
    */
-  public static setSatelliteMode(civAddress: number, isSatelliteMode: boolean): Uint8Array {
-    const data = new Uint8Array(9);
-    data[0] = CivCommand.PREAMBLE;
-    data[1] = CivCommand.PREAMBLE;
-    data[2] = civAddress;
-    data[3] = CivCommand.PC_ADDRESS;
-    data[4] = 0x16;
-    data[5] = 0x5a;
-    data[6] = isSatelliteMode ? 0x01 : 0x00;
-    data[7] = CivCommand.POSTAMBLE;
-    data[8] = CivCommand.PADDING; // 後続コマンドとの結合を回避するためのパディング
-
-    return data;
+  public setSatelliteMode(isSatelliteMode: boolean): Uint8Array {
+    return new Uint8Array([
+      ...this.makePrefix(),
+      // コマンド部
+      0x16, // サテライトモードの設定
+      0x5a,
+      isSatelliteMode ? 0x01 : 0x00,
+      ...this.makeSuffix(),
+    ]);
   }
 
   /**
    * サテライトモードの取得コマンド
    */
-  public static getSatelliteMode(civAddress: number): Uint8Array {
-    const data = new Uint8Array(8);
-    data[0] = CivCommand.PREAMBLE;
-    data[1] = CivCommand.PREAMBLE;
-    data[2] = civAddress;
-    data[3] = CivCommand.PC_ADDRESS;
-    data[4] = 0x16;
-    data[5] = 0x5a;
-    data[6] = CivCommand.POSTAMBLE;
-    data[7] = CivCommand.PADDING; // 後続コマンドとの結合を回避するためのパディング
-
-    return data;
+  public getSatelliteMode(): Uint8Array {
+    return new Uint8Array([
+      ...this.makePrefix(),
+      // コマンド部
+      0x16, // サテライトモードの設定
+      0x5a,
+      ...this.makeSuffix(),
+    ]);
   }
 
   /**
    * 無線機から現在の周波数を読み取るコマンドを送信する
    */
-  public static getFreq(civAddress: number): Uint8Array {
-    // シリアル送信用のデータを作成する
-    const data = new Uint8Array(7);
-    data[0] = CivCommand.PREAMBLE;
-    data[1] = CivCommand.PREAMBLE;
-    data[2] = civAddress;
-    data[3] = CivCommand.PC_ADDRESS;
-    data[4] = CivCommand.GET_FREQUENCY;
-    data[5] = CivCommand.POSTAMBLE;
-    data[6] = CivCommand.PADDING; // 後続コマンドとの結合を回避するためのパディング
-
-    return data;
+  public getFreq(): Uint8Array {
+    return new Uint8Array([
+      ...this.makePrefix(),
+      // コマンド部
+      CivCommand.GET_FREQUENCY,
+      ...this.makeSuffix(),
+    ]);
   }
 
   /**
    * 無線機から現在のモードを読み取るコマンドを送信する
    */
-  public static getMode(civAddress: number): Uint8Array {
-    // シリアル送信用のデータを作成する
-    const data = new Uint8Array(7);
-    data[0] = CivCommand.PREAMBLE;
-    data[1] = CivCommand.PREAMBLE;
-    data[2] = civAddress;
-    data[3] = CivCommand.PC_ADDRESS;
-    data[4] = CivCommand.GET_MODE;
-    data[5] = CivCommand.POSTAMBLE;
-    data[6] = CivCommand.PADDING; // 後続コマンドとの結合を回避するためのパディング
-
-    return data;
+  public getMode(): Uint8Array {
+    return new Uint8Array([
+      ...this.makePrefix(),
+      // コマンド部
+      CivCommand.GET_MODE,
+      ...this.makeSuffix(),
+    ]);
   }
 }
