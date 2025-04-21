@@ -734,6 +734,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
   /**
    * データ受信タイムアウトチェック
+   * memo: 少なくともIC-9700においては、無線機が電源Offでも、電源が接続されている場合は、送信コマンドをそのまま返してくるので、
+   *       本処理でのタイムアウトチェックは、無線機が電源に接続されていない場合にのみ有効となる。
    */
   private checkRecvTimeout(): boolean {
     // 既にデータ受信済みであればOK
