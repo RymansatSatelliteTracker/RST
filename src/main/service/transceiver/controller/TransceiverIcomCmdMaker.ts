@@ -131,9 +131,10 @@ export default class TransceiverIcomCmdMaker {
   /**
    * 無線機に周波数を設定するコマンドを送信する
    */
-  public setFreq(freq: string): Uint8Array {
+  public setFreq(freq: number): Uint8Array {
     // 周波数を10桁の文字列に変換
-    const freqs = freq.padStart(10, "0").split("");
+    const freqStr = Math.floor(freq).toString();
+    const freqs = freqStr.padStart(10, "0").split("");
 
     return new Uint8Array([
       ...this.makePrefix(),

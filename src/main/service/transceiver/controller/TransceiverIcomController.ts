@@ -219,7 +219,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
     // Rx周波数の設定
     if (this.state.isRxFreqUpdate) {
-      await this.sendRxFreq(this.state.getReqRxFreqHz());
+      await this.sendFreq(this.state.getReqRxFreqHz());
       this.state.isRxFreqUpdate = false;
     } else if (this.state.isRecvRxFreqUpdate) {
       // Rx周波数の取得
@@ -257,7 +257,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
     // Tx周波数の設定
     if (this.state.isTxFreqUpdate) {
-      await this.sendTxFreq(this.state.getReqTxFreqHz());
+      await this.sendFreq(this.state.getReqTxFreqHz());
       this.state.isTxFreqUpdate = false;
     } else if (this.state.isRecvTxFreqUpdate) {
       // Rx周波数の取得
@@ -281,32 +281,17 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   }
 
   /**
-   * Rx周波数の設定コマンドを送信する
+   * 周波数の設定コマンドを送信する
+   * 現在のバンド（メイン、サブ）に対して設定が行われます。
    */
-  private async sendRxFreq(freq: number): Promise<void> {
+  private async sendFreq(freq: number): Promise<void> {
     // 周波数が未設定の場合は処理終了する
     if (!CommonUtil.isNumber(freq)) {
       return;
     }
 
     // データ送信
-    const freqStr = Math.floor(freq).toString();
-    const cmdData = this.cmdMaker.setFreq(freqStr);
-    await this.sendAndWaitRecv(cmdData, "SET_FREQ");
-  }
-
-  /**
-   * Tx周波数の設定コマンドを送信する
-   */
-  private async sendTxFreq(freq: number): Promise<void> {
-    // 周波数が未設定の場合は処理終了する
-    if (!CommonUtil.isNumber(freq)) {
-      return;
-    }
-
-    // データ送信
-    const freqStr = Math.floor(freq).toString();
-    const cmdData = this.cmdMaker.setFreq(freqStr);
+    const cmdData = this.cmdMaker.setFreq(freq);
     await this.sendAndWaitRecv(cmdData, "SET_FREQ");
   }
 
@@ -324,8 +309,6 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     if ("uplinkHz" in freqModel && freqModel.uplinkHz) {
       // アップリンク周波数を取得する
       this.state.setReqTxFreqHz(freqModel.uplinkHz);
-
-      // await this.switchToMainBand();
     } else if ("downlinkHz" in freqModel && freqModel.downlinkHz) {
       // ダウンリンク周波数を取得する
       this.state.setReqRxFreqHz(freqModel.downlinkHz);
@@ -347,8 +330,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       // アップリンクモードを取得する
       const mode = modeModel.uplinkMode;
       const modeValue = TransceiverIcomRecvParser.getValueFromOpeMode(mode);
+
+      // 運用モードの値が取得できない場合は処理終了
       if (modeValue === null) {
-        // 運用モードの値が取得できない場合は処理終了
         return;
       }
       this.state.setReqTxMode(modeValue);
@@ -356,8 +340,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       // ダウンリンクモードを取得する
       const mode = modeModel.downlinkMode;
       const modeValue = TransceiverIcomRecvParser.getValueFromOpeMode(mode);
+
+      // 運用モードの値が取得できない場合は処理終了
       if (modeValue === null) {
-        // 運用モードの値が取得できない場合は処理終了
         return;
       }
       this.state.setReqRxMode(modeValue);
@@ -431,7 +416,6 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // データ送信
     const cmdData = this.cmdMaker.setSatelliteMode(isSatelliteMode);
     await this.sendAndWaitRecv(cmdData, "SET_MODE");
-    // AppMainLogger.info(`送信 sendSatelliteModeCommand ${Buffer.from(cmdData).toString("hex")}`);
 
     // サテライトモードの設定を保持する
     this.state.isSatelliteMode = isSatelliteMode;
@@ -442,15 +426,15 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
   /**
    * 無線機へデータの送信、応答受信を行う
-   * 応答を待つかは、targetCmdTypeによって要否が決定させる
+   * - 応答を待つかは、targetCmdTypeによって要否が決定される。
+   * - RST内で排他的に処理を行うため、synchronizedを付与している。
+   * - 排他処理のため、コールバック（this.recvCallbackType と this.recvCallback）はクラス内で１つのみ保持。
    * @param cmdData コマンド
    * @param targetCmdType 送信コマンド種別
    * @returns 受信データ
    */
   @synchronized()
   private async sendAndWaitRecv(cmdData: Uint8Array, targetCmdType: CommandType): Promise<string> {
-    // AppMainLogger.info(`sendAndWaitResponse ${targetCmdType} ` + Buffer.from(cmdData).toString("hex"));
-
     return new Promise(async (resolve, reject) => {
       // if (!this.checkRecvTimeout()) {
       //   return;
@@ -465,21 +449,13 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
       // データ受信
       const onData = (recvData: string, recvCmdType: string) => {
-        // AppMainLogger.info(`onData targetCmdType=${targetCmdType} recvCmdType=${recvCmdType} ${recvData}`);
-
         if (!this.recvCallbackType) {
           resetCallback();
           resolve(recvData);
           return;
         }
 
-        if (CommonUtil.isEmpty(targetCmdType)) {
-          resetCallback();
-          resolve(recvData);
-          return;
-        }
-
-        // 送信と受信のコマンドが不一致の場合、無視
+        // GET系だが、他のデータが飛んできた場合は無視
         if (targetCmdType.startsWith("GET") && recvCmdType !== targetCmdType) {
           return;
         }
@@ -498,7 +474,6 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       }
 
       // データ送信
-      // AppMainLogger.info(`sendAndWaitResponse send ${this.recvCallBack.reqCommandType}`);
       await this.waitSendInterval();
       await super.sendSerial(cmdData);
 
@@ -516,7 +491,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         resolve("");
       }, 2000);
 
-      // 応答なしのコマンドは、送信後に解放する
+      // 応答なしのコマンドは、送信後に処理を終了する
       if (!this.recvCallbackType.isResponsive) {
         resetCallback();
         resolve("");
@@ -537,7 +512,6 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
   /**
    * シリアルデータの受信
-   * memo: こちらは、無線機起点の受信データを処理する
    * @param {Buffer} data 受信データ
    */
   protected override onRecv = async (data: Buffer) => {
@@ -555,12 +529,11 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         continue;
       }
 
-      // コールバックが設定されている場合は、ディスパッチにてコールバックを行う
+      // コールバックが設定されている場合は、ディスパッチにてコールバックを呼び出し
       if (this.recvCallbackType) {
         this.dispatchRecvData(this.recvBuffer);
-      }
-      // 無線機起点で受信したデータの場合
-      else {
+      } else {
+        // 無線機起点で受信したデータの場合
         await this.handleRecvData(this.recvBuffer);
       }
 
@@ -578,9 +551,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       return;
     }
 
-    // プリアンブルを読み捨て
-    const startIdx = recvData.indexOf("fefe");
-    const trimedData = recvData.substring(startIdx);
+    // プリアンブル以降を読む（先頭に"00"がついている場合があるので、そこは読み捨てる）
+    const trimedData = TransceiverIcomRecvParser.trimRecData(recvData);
 
     // 対象の無線機からの応答でない場合は無視（ターゲットのCI-Vアドレスで判定）
     const target = trimedData.substring(6, 8);
@@ -588,10 +560,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       return;
     }
 
-    const resultCmd = trimedData.substring(8, 10);
-    // AppMainLogger.info(`  dispatchRecvData ${resultCmd} ${trimedData}`);
-
     // コマンド部により処理を切り替え
+    const resultCmd = trimedData.substring(8, 10);
     switch (resultCmd) {
       // セット系はコマンド部にFB（OK）、FA（NG）が返ってくる
       case "fb":
@@ -623,7 +593,6 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
     // サブコマンド部により処理を切り替え
     const resultSubCmd = trimedData.substring(8, 12);
-    // AppMainLogger.info(`  dispatchRecvData ${resultSubCmd} ${trimedData}`);
     switch (resultSubCmd) {
       // サテライトモードの取得
       case "165a":
@@ -641,15 +610,13 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    */
   private async handleRecvData(recvData: string) {
     // プリアンブル以降を読む（先頭に"00"がついている場合があるので、そこは読み捨てる）
-    const startIdx = recvData.indexOf("fefe");
-    const trimedData = recvData.substring(startIdx);
+    const trimedData = TransceiverIcomRecvParser.trimRecData(recvData);
 
     // 対象の無線機からの応答でない場合は無視（ターゲットのCI-Vアドレスで判定）
     const target = trimedData.substring(6, 8);
     if (target !== this.civAddress.toString(16)) {
       return;
     }
-    // AppMainLogger.info(`  handleRecvData ${trimedData}`);
 
     // コマンド部により処理を切り替え
     switch (trimedData.substring(8, 10)) {
