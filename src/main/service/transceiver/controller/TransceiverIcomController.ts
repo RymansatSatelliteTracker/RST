@@ -4,6 +4,7 @@ import I18nMsgs from "@/common/I18nMsgs";
 import { AppConfigTransceiver } from "@/common/model/AppConfigModel";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse } from "@/common/types/types";
+import TransceiverUtil from "@/common/util/TransceiverUtil";
 import TransceiverIcomCmdMaker from "@/main/service/transceiver/controller/TransceiverIcomCmdMaker";
 import TransceiverIcomRecvParser from "@/main/service/transceiver/controller/TransceiverIcomRecvParser";
 import TransceiverIcomState from "@/main/service/transceiver/controller/TransceiverIcomState";
@@ -352,8 +353,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   }
 
   /**
-   * RSTと無線機のメインバンドの周波数を元に、必要であればバンドの入れ替えを行う
-   * memo: 入れ替えないと、要求と無線機のバンド帯が異なる場合に、周波数設定ができない
+   * RSTと無線機の「メイン」バンドのRx周波数を元に、必要であればバンドの入れ替えを行う
+   * memo: 入れ替えないと、要求と無線機のバンド帯が異なる場合に、周波数設定ができない。
+   * memo: サブバンドTx側は参照しないので注意。
    */
   private async switchBandIfNeed(): Promise<boolean> {
     // サテライトモードでない場合は入れ替え不要
@@ -369,24 +371,22 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       return false;
     }
 
-    // RSTと無線機が144MHz帯か？
-    const isReq144Hz = 144000000 <= rstRxFreqHz && rstRxFreqHz <= 146000000;
-    const isNow144Hz = 144000000 <= icomRxFreqHz && icomRxFreqHz <= 146000000;
-    if (isReq144Hz && isNow144Hz) {
+    // RSTとICOMのバンド帯を取得
+    const rstRxBandRange = TransceiverUtil.analizeAmateurBandRange(rstRxFreqHz);
+    const icomRxBandRange = TransceiverUtil.analizeAmateurBandRange(icomRxFreqHz);
+
+    // 周波数がアマチュアバンド帯でない場合は入れ替えしない
+    if (CommonUtil.isEmpty(rstRxBandRange)) {
+      AppMainLogger.warn(`RST側のRx周波数がアマチュアバンド帯外です。 RST=${rstRxFreqHz}Hz`);
+      return false;
+    }
+    if (CommonUtil.isEmpty(icomRxBandRange)) {
+      AppMainLogger.warn(`ICOM側のRx周波数がアマチュアバンド帯外です。 RST=${icomRxFreqHz}Hz`);
       return false;
     }
 
-    // RSTと無線機が430MHz帯か？
-    const isReq430Hz = 432000000 <= rstRxFreqHz && rstRxFreqHz <= 440000000;
-    const isNow430Hz = 432000000 <= icomRxFreqHz && icomRxFreqHz <= 440000000;
-    if (isReq430Hz && isNow430Hz) {
-      return false;
-    }
-
-    // RSTと無線機が12xxMHz帯か？
-    const isReq1200Hz = 1294000000 <= rstRxFreqHz && rstRxFreqHz <= 1295000000;
-    const isNow1200Hz = 1294000000 <= icomRxFreqHz && icomRxFreqHz <= 1295000000;
-    if (isReq1200Hz && isNow1200Hz) {
+    // RSTと無線機が同じバンド帯の場合は、入れ替え不要
+    if (rstRxBandRange === icomRxBandRange) {
       return false;
     }
 

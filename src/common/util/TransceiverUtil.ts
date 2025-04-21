@@ -1,9 +1,11 @@
+import CommonUtil from "@/common/CommonUtil";
+
 /**
  * 無線機関係のユーティリティ
  * @class TransceiverUtil
  * @typedef {TransceiverUtil}
  */
-class TransceiverUtil {
+export default class TransceiverUtil {
   /**
    * 周波数をMHzの数値からHzの数値に変換する
    * @param {number} mhz 周波数の数値[単位:MHz]
@@ -84,6 +86,31 @@ class TransceiverUtil {
     // IEEE754の丸め誤差を回避するため、小数点以下3桁で丸める
     return Math.round((freq1 - freq2) * 1000) / 1000;
   };
-}
 
-export default TransceiverUtil;
+  /**
+   * 指定の周波数がアマチュアバンドの範囲内かどうかを判定する
+   * @returns {string} アマチュアバンドの範囲外の場合は空文字を返す
+   */
+  public static analizeAmateurBandRange(freq: number): "144" | "430" | "1200" | "" {
+    if (!CommonUtil.isNumber(freq)) {
+      return "";
+    }
+
+    // 144MHz帯か？
+    if (144000000 <= freq && freq <= 146000000) {
+      return "144";
+    }
+
+    // 430MHz帯か？
+    if (432000000 <= freq && freq <= 440000000) {
+      return "430";
+    }
+
+    // 1200MHz帯か？
+    if (1294000000 <= freq && freq <= 1295000000) {
+      return "1200";
+    }
+
+    return "";
+  }
+}
