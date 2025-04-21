@@ -151,6 +151,10 @@ export default class I18nMsgs {
     en: "An unexpected error has occurred",
     ja: "予期しないエラーが発生しました",
   };
+  public static readonly SYSTEM_YET_TRANSCEIVER_CONFIG: I18nMsgItem = {
+    en: "Transceiver is not set. Please set it in the Radio menu.",
+    ja: "無線機が未設定です。無線機メニューで設定を行ってください。",
+  };
   public static readonly SYSTEM_YET_ROTATOR_CONFIG: I18nMsgItem = {
     en: "Rotator is not set. Please set it in the rotator menu.",
     ja: "ローテータが未設定です。ローテータメニューで設定を行ってください。",
