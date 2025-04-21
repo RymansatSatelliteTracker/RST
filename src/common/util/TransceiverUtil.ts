@@ -102,12 +102,12 @@ export default class TransceiverUtil {
     }
 
     // 430MHz帯か？
-    if (432000000 <= freq && freq <= 440000000) {
+    if (430000000 <= freq && freq <= 440000000) {
       return "430";
     }
 
     // 1200MHz帯か？
-    if (1294000000 <= freq && freq <= 1295000000) {
+    if (1260000000 <= freq && freq <= 1300000000) {
       return "1200";
     }
 
