@@ -1,5 +1,6 @@
 import CommonUtil from "@/common/CommonUtil";
 import { synchronized } from "@/common/decorator/synchronized";
+import I18nMsgs from "@/common/I18nMsgs";
 import { AppConfigTransceiver } from "@/common/model/AppConfigModel";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse } from "@/common/types/types";
@@ -10,7 +11,8 @@ import TransceiverSerialControllerBase from "@/main/service/transceiver/controll
 import AppMainLogger from "@/main/util/AppMainLogger";
 
 // 受信タイムアウト（秒）
-// const RECV_TIEOUT_SEC = 10;
+const FIRST_RECV_TIEOUT_SEC = 2;
+const RECV_TIEOUT_MSEC = 1000;
 
 // コマンド種別
 type CommandType = "GET_FREQ" | "GET_MODE" | "SET_FREQ" | "SET_MODE" | "SWITCH";
@@ -47,9 +49,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   // RST側と無線機側の周波数、モードの状態の保持
   private state = new TransceiverIcomState();
 
-  // // 受信タイムアウト制御用
-  // private startSec = 0;
-  // private isReceived = false;
+  // 受信タイムアウト制御用
+  private startSec = 0;
+  private isReceived = false;
 
   // 無線機への送信間隔制御
   private prevSendTimeMsec = 0;
@@ -71,9 +73,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // シリアルオープン
     await this.openSerial();
 
-    // // タイムアウト制御用
-    // this.startSec = new Date().getTime() / 1000;
-    // this.isReceived = false;
+    // タイムアウト制御用
+    this.startSec = new Date().getTime() / 1000;
+    this.isReceived = false;
 
     // 無線機の初期化
     await this.initTranceiver();
@@ -436,9 +438,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   @synchronized()
   private async sendAndWaitRecv(cmdData: Uint8Array, targetCmdType: CommandType): Promise<string> {
     return new Promise(async (resolve, reject) => {
-      // if (!this.checkRecvTimeout()) {
-      //   return;
-      // }
+      if (!this.checkRecvTimeout()) {
+        return;
+      }
 
       let timeout: NodeJS.Timeout;
 
@@ -489,7 +491,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
         resetCallback();
         resolve("");
-      }, 2000);
+      }, RECV_TIEOUT_MSEC);
 
       // 応答なしのコマンドは、送信後に処理を終了する
       if (!this.recvCallbackType.isResponsive) {
@@ -519,8 +521,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       return;
     }
 
-    // // 受信済みとする
-    // this.isReceived = true;
+    // 受信済みとする
+    this.isReceived = true;
 
     // 受信データを16進数文字列に変換する
     for (let i = 0; i < data.length; i++) {
@@ -730,42 +732,41 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     this.modeCallback(res);
   }
 
-  // 一旦コメントアウト。もう不要かも？
-  // /**
-  //  * データ受信タイムアウトチェック
-  //  */
-  // private checkRecvTimeout(): boolean {
-  //   // 既にデータ受信済みであればOK
-  //   if (this.isReceived) {
-  //     return true;
-  //   }
+  /**
+   * データ受信タイムアウトチェック
+   */
+  private checkRecvTimeout(): boolean {
+    // 既にデータ受信済みであればOK
+    if (this.isReceived) {
+      return true;
+    }
 
-  //   // タイムアウト前の場合はOK
-  //   const nowSec = new Date().getTime() / 1000;
-  //   if (this.startSec + RECV_TIEOUT_SEC > nowSec) {
-  //     return true;
-  //   }
+    // タイムアウト前の場合はOK
+    const nowSec = new Date().getTime() / 1000;
+    if (this.startSec + FIRST_RECV_TIEOUT_SEC > nowSec) {
+      return true;
+    }
 
-  //   // タイムアウト
-  //   AppMainLogger.warn(
-  //     `無線機へのモード取得開始から${RECV_TIEOUT_SEC}秒経過しましたが、無線機から応答がないため、無線機のモードの取得を停止します。`
-  //   );
+    // タイムアウト
+    AppMainLogger.warn(
+      `無線機へのモード取得開始から${FIRST_RECV_TIEOUT_SEC}秒経過しましたが、無線機から応答がないため、無線機のモードの取得を停止します。`
+    );
 
-  //   // タイマーを停止
-  //   this.cancelTimer();
+    // タイマーを停止
+    this.cancelTimer();
 
-  //   // コールバック呼び出し
-  //   if (this.freqCallback) {
-  //     const res = new ApiResponse(false, I18nMsgs.SYSTEM_TRANSCEIVER_SERIAL_RECV_TIMEOUT);
-  //     this.freqCallback(res);
-  //   }
-  //   if (this.modeCallback) {
-  //     const res = new ApiResponse(false, I18nMsgs.SYSTEM_TRANSCEIVER_SERIAL_RECV_TIMEOUT);
-  //     this.modeCallback(res);
-  //   }
+    // コールバック呼び出し
+    if (this.freqCallback) {
+      const res = new ApiResponse(false, I18nMsgs.SYSTEM_TRANSCEIVER_SERIAL_RECV_TIMEOUT);
+      this.freqCallback(res);
+    }
+    if (this.modeCallback) {
+      const res = new ApiResponse(false, I18nMsgs.SYSTEM_TRANSCEIVER_SERIAL_RECV_TIMEOUT);
+      this.modeCallback(res);
+    }
 
-  //   return false;
-  // }
+    return false;
+  }
 
   /**
    * 無線機への送信間隔を調整する
