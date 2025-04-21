@@ -58,7 +58,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     super(transceiverConfig);
     this.state.resetAll();
     this.civAddress = parseInt(transceiverConfig.civAddress.toLowerCase(), 16);
-    this.cmdMaker = new TransceiverIcomCmdMaker(this.civAddress);
+    this.cmdMaker = new TransceiverIcomCmdMaker(this.civAddress, transceiverConfig.transceiverId);
   }
 
   /**

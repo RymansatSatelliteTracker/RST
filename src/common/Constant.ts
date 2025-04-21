@@ -190,6 +190,14 @@ export default class Constant {
     };
 
     /**
+     * 機種ID
+     */
+    public static readonly TransceiverId = class {
+      // ICOM IC-910
+      static readonly ICOM_IC910 = "4";
+    };
+
+    /**
      * 無線機運用モード
      */
     public static readonly OpeMode = class {
