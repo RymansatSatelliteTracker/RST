@@ -14,6 +14,10 @@ export default class I18nMsgs {
     en: "Please enter a number greater than 0",
     ja: "0より大きい数字を入力してください",
   };
+  public static readonly CHK_ERR_POSITIVE_INT: I18nMsgItem = {
+    en: "Please enter a positive integer",
+    ja: "0より大きい整数を入力してください",
+  };
   public static readonly CHK_ERR_NUM_DECIMAL: I18nMsgItem = {
     en: "Please enter a maximum of {0} decimal places",
     ja: "最大{0}桁の小数で入力してください",

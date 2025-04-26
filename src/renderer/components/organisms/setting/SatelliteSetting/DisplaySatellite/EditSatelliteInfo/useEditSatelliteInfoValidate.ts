@@ -64,7 +64,7 @@ export const valiSchemaEditSatelliteInfo = zod.object({
     );
   }),
   uplink1Hz: zod.lazy(() => {
-    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_POSITIVE);
+    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_POSITIVE_INT);
     return (
       zod
         // 正の実数か空白
@@ -80,7 +80,7 @@ export const valiSchemaEditSatelliteInfo = zod.object({
   }),
 
   uplink2Hz: zod.lazy(() => {
-    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_POSITIVE);
+    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_POSITIVE_INT);
     return (
       zod
         // 正の実数か空白
@@ -96,7 +96,7 @@ export const valiSchemaEditSatelliteInfo = zod.object({
   }),
 
   downlink1Hz: zod.lazy(() => {
-    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_POSITIVE);
+    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_POSITIVE_INT);
     return (
       zod
         // 正の実数か空白
@@ -112,7 +112,7 @@ export const valiSchemaEditSatelliteInfo = zod.object({
   }),
 
   downlink2Hz: zod.lazy(() => {
-    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_POSITIVE);
+    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_POSITIVE_INT);
     return (
       zod
         // 正の実数か空白
@@ -128,7 +128,7 @@ export const valiSchemaEditSatelliteInfo = zod.object({
   }),
 
   toneHz: zod.lazy(() => {
-    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_POSITIVE);
+    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_POSITIVE_INT);
     return (
       zod
         // 正の実数か空白
