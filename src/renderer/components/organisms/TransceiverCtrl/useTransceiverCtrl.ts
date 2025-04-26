@@ -105,8 +105,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
     // Auto開始をメイン側に連携する
     await ApiTransceiver.initAutoOn(
-      TransceiverUtil.mhzToHz(parseInt(txFrequency.value)),
-      TransceiverUtil.mhzToHz(parseInt(rxFrequency.value))
+      TransceiverUtil.parseNumber(txFrequency.value),
+      TransceiverUtil.parseNumber(rxFrequency.value)
     );
 
     // ドップラーシフトの基準周波数を設定する
