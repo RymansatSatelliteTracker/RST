@@ -431,8 +431,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       return;
     }
 
-    console.log("updateFreq");
-
     // memo: Auto時は、手動の日時更新は無効にしているので、以下処理はデッドコードと思われる（コメントアウトした）
     // if (newDate.getTime() - oldDate.getTime() < 0 || newDate.getTime() - oldDate.getTime() >= 1500) {
     //   // 手動による日時操作があった場合は何もしない
