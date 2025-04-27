@@ -15,6 +15,11 @@
           "civAddress": "A2"
         },
         {
+          "transceiverId": "4",
+          "deviceName": "IC-910",
+          "civAddress": "60"
+        },
+        {
           "transceiverId": "3",
           "deviceName": "ID-52",
           "civAddress": "A6"

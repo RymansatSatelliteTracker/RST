@@ -22,6 +22,13 @@ export default class ApiTransceiver {
   }
 
   /**
+   * AutoOn時の初期処理
+   */
+  public static async initAutoOn(txFreqHz: number, rxFreqHz: number): Promise<void> {
+    await window.rstApi.initAutoOn(txFreqHz, rxFreqHz);
+  }
+
+  /**
    * 指定の周波数に変更する
    */
   public static async setTransceiverFrequency(frequencyModel: UplinkType | DownlinkType) {

@@ -54,8 +54,8 @@ export default function useTransceiverTestConnect(
       return;
     }
 
-    // 接続開始
-    await startNewConnect();
+    // テスト後はクローズする
+    await ApiSirial.close();
 
     loadingTestBtn.value = false;
     isSerialOpen.value = true;

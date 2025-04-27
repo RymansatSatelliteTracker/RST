@@ -199,6 +199,13 @@ const apiHandler = {
   },
 
   /**
+   * 無線機関係・AutoOn時の初期処理
+   */
+  initAutoOn: function (txFreqHz: number, rxFreqHz: number): Promise<ApiResponse<void>> {
+    return ipcRenderer.invoke("initAutoOn", txFreqHz, rxFreqHz);
+  },
+
+  /**
    * 無線機関係・周波数設定コマンドを送信する
    */
   setTransceiverFrequency: function (frequencyModel: UplinkType | DownlinkType): Promise<void> {

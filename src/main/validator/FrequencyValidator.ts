@@ -33,14 +33,14 @@ export default class FrequencyValidator {
   private validateCorrelation(data: any): ValidatorResultModel[] {
     const results: ValidatorResultModel[] = [];
     data.frequency.satellites.forEach((sat: any) => {
-      const uplink1IsBothFill = sat.uplink1.uplinkMhz && sat.uplink1.uplinkMode;
-      const uplink2IsBothFill = sat.uplink2.uplinkMhz && sat.uplink2.uplinkMode;
-      const downlink1IsBothFill = sat.downlink1.downlinkMhz && sat.downlink1.downlinkMode;
-      const downlink2IsBothFill = sat.downlink2.downlinkMhz && sat.downlink2.downlinkMode;
-      const uplink1IsBothEmpty = !sat.uplink1.uplinkMhz && !sat.uplink1.uplinkMode;
-      const uplink2IsBothEmpty = !sat.uplink2.uplinkMhz && !sat.uplink2.uplinkMode;
-      const downlink1IsBothEmpty = !sat.downlink1.downlinkMhz && !sat.downlink1.downlinkMode;
-      const downlink2IsBothEmpty = !sat.downlink2.downlinkMhz && !sat.downlink2.downlinkMode;
+      const uplink1IsBothFill = sat.uplink1.uplinkHz && sat.uplink1.uplinkMode;
+      const uplink2IsBothFill = sat.uplink2.uplinkHz && sat.uplink2.uplinkMode;
+      const downlink1IsBothFill = sat.downlink1.downlinkHz && sat.downlink1.downlinkMode;
+      const downlink2IsBothFill = sat.downlink2.downlinkHz && sat.downlink2.downlinkMode;
+      const uplink1IsBothEmpty = !sat.uplink1.uplinkHz && !sat.uplink1.uplinkMode;
+      const uplink2IsBothEmpty = !sat.uplink2.uplinkHz && !sat.uplink2.uplinkMode;
+      const downlink1IsBothEmpty = !sat.downlink1.downlinkHz && !sat.downlink1.downlinkMode;
+      const downlink2IsBothEmpty = !sat.downlink2.downlinkHz && !sat.downlink2.downlinkMode;
 
       // 周波数とモードが片方だけ定義されていないか
       if (!(uplink1IsBothFill || uplink1IsBothEmpty)) {
@@ -92,8 +92,8 @@ export default class FrequencyValidator {
  * zodスキーマ定義 Uplink
  */
 const schemaUplink = zod.object({
-  // アップリンク周波数（Mhz）
-  uplinkMhz: zod.number().nullable(),
+  // アップリンク周波数（Hz）
+  uplinkHz: zod.number().nullable(),
   // アップリンクモード
   uplinkMode: zod.string(),
 });
@@ -102,8 +102,8 @@ const schemaUplink = zod.object({
  * zodスキーマ定義 Downlink
  */
 const schemaDownlink = zod.object({
-  // ダウンリンク周波数（Mhz）
-  downlinkMhz: zod.number().nullable(),
+  // ダウンリンク周波数（Hz）
+  downlinkHz: zod.number().nullable(),
   // ダウンリンクモード
   downlinkMode: zod.string(),
 });
@@ -124,8 +124,8 @@ const schemaSatellite = zod.object({
   downlink1: schemaDownlink,
   // 衛星ダウンリンク設定2
   downlink2: schemaDownlink,
-  // 衛星トーン周波数（Mhz）
-  toneMhz: zod.number().nullable(),
+  // 衛星トーン周波数（Hz）
+  toneHz: zod.number().nullable(),
   // 衛星概要
   outline: zod.string(),
 });

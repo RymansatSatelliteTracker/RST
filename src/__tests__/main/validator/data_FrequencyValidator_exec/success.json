@@ -6,66 +6,66 @@
         "noradId": "07530",
         "satelliteName": "OSCAR 7 (AO-7)",
         "uplink1": {
-          "uplinkMhz": 123.456,
+          "uplinkHz": 123.456,
           "uplinkMode": "LSB"
         },
         "uplink2": {
-          "uplinkMhz": 123.456,
+          "uplinkHz": 123.456,
           "uplinkMode": "USB"
         },
         "downlink1": {
-          "downlinkMhz": 123.456,
+          "downlinkHz": 123.456,
           "downlinkMode": "CW"
         },
         "downlink2": {
-          "downlinkMhz": 123.456,
+          "downlinkHz": 123.456,
           "downlinkMode": "FM"
         },
-        "toneMhz": 123.456,
+        "toneHz": 123.456,
         "outline": "全部入力した例"
       },
       {
         "noradId": "14129",
         "satelliteName": "PHASE 3B (AO-10)",
         "uplink1": {
-          "uplinkMhz": 123.456,
+          "uplinkHz": 123.456,
           "uplinkMode": "AM"
         },
         "uplink2": {
-          "uplinkMhz": null,
+          "uplinkHz": null,
           "uplinkMode": ""
         },
         "downlink1": {
-          "downlinkMhz": 123.456,
+          "downlinkHz": 123.456,
           "downlinkMode": "AM"
         },
         "downlink2": {
-          "downlinkMhz": null,
+          "downlinkHz": null,
           "downlinkMode": ""
         },
-        "toneMhz": null,
+        "toneHz": null,
         "outline": "一部入力した例"
       },
       {
         "noradId": "14781",
         "satelliteName": "UOSAT 2 (UO-11)",
         "uplink1": {
-          "uplinkMhz": null,
+          "uplinkHz": null,
           "uplinkMode": ""
         },
         "uplink2": {
-          "uplinkMhz": null,
+          "uplinkHz": null,
           "uplinkMode": ""
         },
         "downlink1": {
-          "downlinkMhz": null,
+          "downlinkHz": null,
           "downlinkMode": ""
         },
         "downlink2": {
-          "downlinkMhz": null,
+          "downlinkHz": null,
           "downlinkMode": ""
         },
-        "toneMhz": null,
+        "toneHz": null,
         "outline": "入力しない例(入力がないならこのデータ自体も登録しなくて良い)"
       }
     ]
