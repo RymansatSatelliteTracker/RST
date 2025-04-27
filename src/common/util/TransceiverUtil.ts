@@ -7,69 +7,40 @@ import CommonUtil from "@/common/CommonUtil";
  */
 export default class TransceiverUtil {
   /**
-   * 周波数をMHzの数値からHzの数値に変換する
-   * @param {number} mhz 周波数の数値[単位:MHz]
-   * @returns {number} 周波数の数値[単位:Hz]
+   * 数値　→ ドット区切り文字列
+   * @param hz
+   * @returns
    */
-  public static mhzToHz = (mhz: number): number => {
-    return Math.floor(mhz * 1000000);
-  };
+  public static formatWithDot(hz: number): string {
+    // 10桁にパディング
+    // 整数として扱う
+    // 10桁以上の場合は、下10桁を取得
+    const padHz = Math.floor(hz).toString().slice(-10).padStart(10, "0");
 
-  /**
-   * 周波数をHzの数値からMHzの数値に変換する
-   * @param {number} hz 周波数の数値[単位:Hz]
-   * @returns {number} 周波数の数値[単位:MHz]
-   */
-  public static hzToMhz = (hz: number): number => {
-    return Math.floor(hz / 1000) / 1000;
-  };
+    // 各桁を取得
+    const digitMHz = padHz.slice(0, 4);
+    const digitKHz = padHz.slice(4, 7);
+    const digitHz = padHz.slice(7, 10);
 
-  /**
-   * 周波数のkHz未満を切り捨てる
-   * @param {number} mhz 周波数の数値[単位:MHz]
-   * @returns {number} 周波数の数値[単位MHz]
-   */
-  public static floorMhz = (mhz: number): number => {
-    return Math.floor(mhz * 1000) / 1000;
-  };
-
-  /**
-   * 周波数をHzの数値からMHzの文字列に変換する
-   * @param {number} hz 周波数の数値[単位:Hz]
-   * @returns {string} 周波数の文字列[単位:MHz]
-   */
-  public static hzToMhzString(hz: number): string {
-    // 小数点以下3桁にフォーマット
-    const mhzStr = this.hzToMhz(hz).toFixed(3);
-    // 整数部と小数部に分割
-    const [integerPart, decimalPart] = mhzStr.split(".");
-    // 整数部を4桁にパディング
-    const paddedIntegerPart = integerPart.padStart(4, "0");
-    // 整数部と小数部を結合して8文字にする
-    return `${paddedIntegerPart}.${decimalPart}`;
+    // ドット区切りの文字列に変換
+    return `${digitMHz}.${digitKHz}.${digitHz}`;
   }
 
   /**
-   * 周波数をMHzの数値からMHzの文字列に変換する
-   * @param {number} mhz 周波数の数値[単位:MHz]
-   * @returns {string} 周波数の文字列[単位:MHz]
+   * ドット区切り文字列 → 数値
+   * @param value
    */
-  public static mhzToMhzString(mhz: number): string {
-    // 小数点以下3桁にフォーマット
-    const mhzStr = this.floorMhz(mhz).toFixed(3);
-    // 整数部と小数部に分割
-    const [integerPart, decimalPart] = mhzStr.split(".");
-    // 整数部を4桁にパディング
-    const paddedIntegerPart = integerPart.padStart(4, "0");
-    // 整数部と小数部を結合して8文字にする
-    return `${paddedIntegerPart}.${decimalPart}`;
+  public static parseNumber(value: string): number {
+    const numeric = value.replace(/\./g, "");
+    const parsed = parseFloat(numeric);
+    return isNaN(parsed) ? 0 : parsed;
   }
 
   /**
    * 2つの周波数を足し算する
-   * @param {number} freq1 周波数1[単位:MHz]
-   * @param {number} freq2 周波数2[単位:MHz]
-   * @returns {number} 演算結果[単位:MHz]
+   * @param {number} freq1 周波数1[単位:Hz]
+   * @param {number} freq2 周波数2[単位:Hz]
+   * @returns {number} 演算結果[単位:Hz]
    */
   public static addFrequencies = (freq1: number, freq2: number): number => {
     // IEEE754の丸め誤差を回避するため、小数点以下3桁で丸める
@@ -78,9 +49,9 @@ export default class TransceiverUtil {
 
   /**
    * 2つの周波数を引き算する
-   * @param {number} freq1 周波数1[単位:MHz]
-   * @param {number} freq2 周波数2[単位:MHz]
-   * @returns {number} 演算結果[単位:MHz]
+   * @param {number} freq1 周波数1[単位:Hz]
+   * @param {number} freq2 周波数2[単位:Hz]
+   * @returns {number} 演算結果[単位:Hz]
    */
   public static subtractFrequencies = (freq1: number, freq2: number): number => {
     // IEEE754の丸め誤差を回避するため、小数点以下3桁で丸める

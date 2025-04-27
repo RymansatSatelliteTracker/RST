@@ -15,15 +15,15 @@ export default function useEditSatelliteInfo() {
     targetForm.satelliteId = srcObj.satelliteId;
     // 参照用はここでは設定しない
     targetForm.noradId = srcObj.noradId;
-    targetForm.uplink1Mhz = srcObj.uplink1.uplinkHz;
+    targetForm.uplink1Hz = srcObj.uplink1.uplinkHz;
     targetForm.uplink1Mode = srcObj.uplink1.uplinkMode;
-    targetForm.uplink2Mhz = srcObj.uplink2.uplinkHz;
+    targetForm.uplink2Hz = srcObj.uplink2.uplinkHz;
     targetForm.uplink2Mode = srcObj.uplink2.uplinkMode;
-    targetForm.downlink1Mhz = srcObj.downlink1.downlinkHz;
+    targetForm.downlink1Hz = srcObj.downlink1.downlinkHz;
     targetForm.downlink1Mode = srcObj.downlink1.downlinkMode;
-    targetForm.downlink2Mhz = srcObj.downlink2.downlinkHz;
+    targetForm.downlink2Hz = srcObj.downlink2.downlinkHz;
     targetForm.downlink2Mode = srcObj.downlink2.downlinkMode;
-    targetForm.toneMhz = srcObj.toneMhz;
+    targetForm.toneHz = srcObj.toneHz;
     targetForm.outline = srcObj.outline;
   }
   /**
@@ -58,16 +58,16 @@ export default function useEditSatelliteInfo() {
     targetAppConfig.userRegisteredSatelliteName = srcForm.editSatelliteName;
     targetAppConfig.noradId = srcForm.noradId;
     targetAppConfig.autoModeUplinkFreq = parseInt(srcForm.autoModeUplinkFreq);
-    targetAppConfig.uplink1.uplinkHz = srcForm.uplink1Mhz ? srcForm.uplink1Mhz : null;
+    targetAppConfig.uplink1.uplinkHz = srcForm.uplink1Hz ? srcForm.uplink1Hz : null;
     targetAppConfig.uplink1.uplinkMode = srcForm.uplink1Mode;
-    targetAppConfig.uplink2.uplinkHz = srcForm.uplink2Mhz ? srcForm.uplink2Mhz : null;
+    targetAppConfig.uplink2.uplinkHz = srcForm.uplink2Hz ? srcForm.uplink2Hz : null;
     targetAppConfig.uplink2.uplinkMode = srcForm.uplink2Mode;
     targetAppConfig.autoModeDownlinkFreq = parseInt(srcForm.autoModeDownlinkFreq);
-    targetAppConfig.downlink1.downlinkHz = srcForm.downlink1Mhz ? srcForm.downlink1Mhz : null;
+    targetAppConfig.downlink1.downlinkHz = srcForm.downlink1Hz ? srcForm.downlink1Hz : null;
     targetAppConfig.downlink1.downlinkMode = srcForm.downlink1Mode;
-    targetAppConfig.downlink2.downlinkHz = srcForm.downlink2Mhz ? srcForm.downlink2Mhz : null;
+    targetAppConfig.downlink2.downlinkHz = srcForm.downlink2Hz ? srcForm.downlink2Hz : null;
     targetAppConfig.downlink2.downlinkMode = srcForm.downlink2Mode;
-    targetAppConfig.toneMhz = srcForm.toneMhz ? srcForm.toneMhz : null;
+    targetAppConfig.toneHz = srcForm.toneHz ? srcForm.toneHz : null;
     targetAppConfig.outline = srcForm.outline;
   }
 

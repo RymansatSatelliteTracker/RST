@@ -1,7 +1,7 @@
 <template>
   <div class="freq_box">
     <span
-      v-for="(digit, index) in digits"
+      v-for="(digit, index) in mHzDigits"
       :key="index"
       @wheel.passive="(event) => handleWheel(event, index)"
       @contextmenu.prevent="() => handleRightClick(index)"
@@ -14,18 +14,35 @@
     </span>
     <span class="decimal_point">.</span>
     <span
-      v-for="(digit, index) in decimalDigits"
-      :key="index + digits.length"
-      @wheel.passive="(event) => handleWheel(event, index + digits.length)"
-      @contextmenu.prevent="() => handleRightClick(index + digits.length)"
-      @click="handleClick(index + digits.length)"
-      @mouseover="hoverIndex = index + digits.length"
+      v-for="(digit, index) in kHzDigits"
+      :key="index + mHzDigits.length"
+      @wheel.passive="(event) => handleWheel(event, index + mHzDigits.length)"
+      @contextmenu.prevent="() => handleRightClick(index + mHzDigits.length)"
+      @click="handleClick(index + mHzDigits.length)"
+      @mouseover="hoverIndex = index + mHzDigits.length"
       @mouseleave="hoverIndex = null"
-      :class="{ hovered: hoverIndex === index + digits.length, grayed: isGrayed(index + digits.length) }"
+      :class="{ hovered: hoverIndex === index + mHzDigits.length, grayed: isGrayed(index + mHzDigits.length) }"
     >
       {{ digit }}
     </span>
-    <span class="freq_unit">MHz</span>
+    <span class="decimal_point">.</span>
+    <span
+      v-for="(digit, index) in hzDigits"
+      :key="index + mHzDigits.length + kHzDigits.length"
+      @wheel.passive="(event) => handleWheel(event, index + mHzDigits.length + kHzDigits.length)"
+      @contextmenu.prevent="() => handleRightClick(index + mHzDigits.length + kHzDigits.length)"
+      @click="handleClick(index + mHzDigits.length + kHzDigits.length)"
+      @mouseover="hoverIndex = index + mHzDigits.length + kHzDigits.length"
+      @mouseleave="hoverIndex = null"
+      :class="{
+        hovered: hoverIndex === index + mHzDigits.length + kHzDigits.length,
+        grayed: isGrayed(index + mHzDigits.length + kHzDigits.length),
+      }"
+    >
+      {{ digit }}
+    </span>
+
+    <span class="freq_unit">Hz</span>
   </div>
 </template>
 
@@ -39,7 +56,8 @@ const frequency = defineModel<string>("frequency", { required: true });
 const diffFrequency = defineModel<number>("diffFrequency", { required: true });
 
 // フック
-const { digits, decimalDigits, hoverIndex, onWheel, onRightClick, onClick, isGrayed } = useFrequencySelect(frequency);
+const { mHzDigits, kHzDigits, hzDigits, hoverIndex, onWheel, onRightClick, onClick, isGrayed } =
+  useFrequencySelect(frequency);
 
 // ホイールイベントの処理
 function handleWheel(event: WheelEvent, index: number) {

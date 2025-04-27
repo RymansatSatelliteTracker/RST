@@ -19,9 +19,9 @@ import { onMounted, ref, Ref, watch } from "vue";
  */
 const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   // アップリンク周波数
-  const txFrequency = ref<string>("2430.000");
+  const txFrequency = ref<string>("2430.000.000");
   // ダウンリンク周波数
-  const rxFrequency = ref<string>("0480.000");
+  const rxFrequency = ref<string>("0480.000.000");
   // アップリンク周波数の変化量
   const diffTxFrequency = ref<number>(0.0);
   // ダウンリンク周波数の変化量
@@ -88,7 +88,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     const transceiverSetting = await ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
     if (transceiverSetting.uplink && transceiverSetting.uplink.uplinkHz) {
       // アップリンク周波数/運用モードをアクティブ衛星の設定で更新する
-      txFrequency.value = TransceiverUtil.hzToMhzString(transceiverSetting.uplink.uplinkHz);
+      txFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.uplink.uplinkHz);
       txOpeMode.value = transceiverSetting.uplink.uplinkMode;
 
       // 運用モードによってUSB/LSBモード判定、AM/FMモード判定を更新する
@@ -96,7 +96,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     }
     if (transceiverSetting.downlink && transceiverSetting.downlink.downlinkHz) {
       // ダウンリンク周波数/運用モードをアクティブ衛星の設定で更新する
-      rxFrequency.value = TransceiverUtil.hzToMhzString(transceiverSetting.downlink.downlinkHz);
+      rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.downlink.downlinkHz);
       rxOpeMode.value = transceiverSetting.downlink.downlinkMode;
 
       // 運用モードによってUSB/LSBモード判定、AM/FMモード判定を更新する
@@ -105,13 +105,13 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
     // Auto開始をメイン側に連携する
     await ApiTransceiver.initAutoOn(
-      TransceiverUtil.mhzToHz(parseInt(txFrequency.value)),
-      TransceiverUtil.mhzToHz(parseInt(rxFrequency.value))
+      TransceiverUtil.parseNumber(txFrequency.value),
+      TransceiverUtil.parseNumber(rxFrequency.value)
     );
 
     // ドップラーシフトの基準周波数を設定する
-    dopplerTxBaseFrequency.value = Number(txFrequency.value);
-    dopplerRxBaseFrequency.value = Number(rxFrequency.value);
+    dopplerTxBaseFrequency.value = TransceiverUtil.parseNumber(txFrequency.value);
+    dopplerRxBaseFrequency.value = TransceiverUtil.parseNumber(rxFrequency.value);
 
     // 周波数の更新インターバルを取得
     autoTrackingIntervalMsec = parseFloat(appConfig.transceiver.autoTrackingIntervalSec) * 1000;
@@ -211,7 +211,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    */
   async function updateTxFrequency(newTxFrequency: number) {
     await ApiTransceiver.setTransceiverFrequency({
-      uplinkHz: TransceiverUtil.mhzToHz(newTxFrequency),
+      uplinkHz: newTxFrequency,
       uplinkMode: "",
     });
   }
@@ -222,7 +222,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    */
   async function updateRxFrequency(newRxFrequency: number) {
     await ApiTransceiver.setTransceiverFrequency({
-      downlinkHz: TransceiverUtil.mhzToHz(newRxFrequency),
+      downlinkHz: newRxFrequency,
       downlinkMode: "",
     });
   }
@@ -242,7 +242,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     // 無線機のアップリンク周波数を更新する
     await updateTxFrequency(dopplerTxBaseFrequency.value * txDopplerFactor);
     // 画面のアップリンク周波数を更新する
-    txFrequency.value = TransceiverUtil.mhzToMhzString(dopplerTxBaseFrequency.value * txDopplerFactor);
+    txFrequency.value = TransceiverUtil.formatWithDot(dopplerTxBaseFrequency.value * txDopplerFactor);
     // AppMainLogger.debug(
     //   "ドップラーシフト補正値(Tx): " +
     //     TransceiverUtil.subtractFrequencies(
@@ -268,7 +268,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     // 無線機のダウンリンク周波数を更新する
     await updateRxFrequency(dopplerRxBaseFrequency.value * rxDopplerFactor);
     // 画面のダウンリンク周波数を更新する
-    rxFrequency.value = TransceiverUtil.mhzToMhzString(dopplerRxBaseFrequency.value * rxDopplerFactor);
+    rxFrequency.value = TransceiverUtil.formatWithDot(dopplerRxBaseFrequency.value * rxDopplerFactor);
     // AppMainLogger.debug(
     //   "ドップラーシフト補正値(Rx): " +
     //     TransceiverUtil.subtractFrequencies(
@@ -309,7 +309,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   // アップリンク周波数が変更された場合にAPIを呼び出す
   watch(txFrequency, async (newFrequency) => {
     // アップリンク周波数を更新する
-    await updateTxFrequency(Number(newFrequency));
+    await updateTxFrequency(TransceiverUtil.parseNumber(newFrequency));
   });
 
   // 画面でアップリンク周波数が変更された場合に変化量を反映する
@@ -346,7 +346,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     }
 
     // ダウンリンク周波数を更新する
-    await updateRxFrequency(Number(newFrequency));
+    await updateRxFrequency(TransceiverUtil.parseNumber(newFrequency));
   });
 
   // 画面でダウンリンク周波数が変更された場合に変化量を反映する
@@ -370,8 +370,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
     if (isSatTrackingModeNormal.value) {
       // トラッキングモードがNORMALの場合、アップリンク周波数とダウンリンク周波数の変化量を同一方向に同じステップで変化させる
-      txFrequency.value = TransceiverUtil.mhzToMhzString(
-        TransceiverUtil.subtractFrequencies(Number(txFrequency.value), diffRxFrequency.value)
+      txFrequency.value = TransceiverUtil.formatWithDot(
+        TransceiverUtil.subtractFrequencies(TransceiverUtil.parseNumber(txFrequency.value), diffRxFrequency.value)
       );
       // ドップラーシフトの基準周波数に画面で操作した変化量を反映する
       dopplerTxBaseFrequency.value = TransceiverUtil.subtractFrequencies(
@@ -380,8 +380,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       );
     } else {
       // トラッキングモードがREVERSEの場合、アップリンク周波数とダウンリンク周波数の変化量を逆方向に同じステップで変化させる
-      txFrequency.value = TransceiverUtil.mhzToMhzString(
-        TransceiverUtil.addFrequencies(Number(txFrequency.value), diffRxFrequency.value)
+      txFrequency.value = TransceiverUtil.formatWithDot(
+        TransceiverUtil.addFrequencies(TransceiverUtil.parseNumber(txFrequency.value), diffRxFrequency.value)
       );
       // ドップラーシフトの基準周波数に画面で操作した変化量を反映する
       dopplerTxBaseFrequency.value = TransceiverUtil.addFrequencies(
@@ -459,14 +459,14 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
       if ("uplinkHz" in frequency && frequency.uplinkHz) {
         // アップリンク周波数を更新する
-        txFrequency.value = TransceiverUtil.hzToMhzString(frequency.uplinkHz);
+        txFrequency.value = TransceiverUtil.formatWithDot(frequency.uplinkHz);
         // ドップラーシフトの基準周波数を更新する
-        dopplerTxBaseFrequency.value = TransceiverUtil.hzToMhz(frequency.uplinkHz);
+        dopplerTxBaseFrequency.value = frequency.uplinkHz;
       } else if ("downlinkHz" in frequency && frequency.downlinkHz) {
         // ダウンリンク周波数を更新する
-        rxFrequency.value = TransceiverUtil.hzToMhzString(frequency.downlinkHz);
+        rxFrequency.value = TransceiverUtil.formatWithDot(frequency.downlinkHz);
         // ドップラーシフトの基準周波数を更新する
-        dopplerRxBaseFrequency.value = TransceiverUtil.hzToMhz(frequency.downlinkHz);
+        dopplerRxBaseFrequency.value = frequency.downlinkHz;
       }
     });
 
