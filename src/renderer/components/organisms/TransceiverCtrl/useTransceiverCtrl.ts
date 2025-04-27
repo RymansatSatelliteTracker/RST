@@ -116,6 +116,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     // 周波数の更新インターバルを取得
     autoTrackingIntervalMsec = parseFloat(appConfig.transceiver.autoTrackingIntervalSec) * 1000;
 
+    // 周波数の更新を停止（停止されていない場合があるので、複数のタイマが発動することをガード）
+    stopUpdateFreq();
+
     // 更新インターバルごとに周波数の更新する
     timerId = setInterval(async () => {
       updateFreq();
@@ -128,11 +131,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * Autoモードを停止する
    */
   async function stopAutoMode() {
-    if (!timerId) {
+    if (!stopUpdateFreq()) {
       return;
     }
-    clearInterval(timerId);
-    timerId = null;
 
     // Autoモード移行前の周波数を復元する
     txFrequency.value = savedTxFrequency.value;
@@ -141,6 +142,20 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     // 運用モードによってUSB/LSBモード判定、AM/FMモード判定を更新する
     await updateTxModeFlags(txOpeMode.value);
     await updateRxModeFlags(rxOpeMode.value);
+  }
+
+  /**
+   * Autoモードの周波数更新を停止する
+   */
+  function stopUpdateFreq() {
+    if (!timerId) {
+      return false;
+    }
+
+    clearInterval(timerId);
+    timerId = null;
+
+    return true;
   }
 
   /**
