@@ -4,7 +4,6 @@ import { Location3, PolarLocation } from "@/renderer/types/location-type";
 /**
  * 座標計算関係のユーティリティ
  * @class CoordinateCalcUtil
- * @typedef {CoordinateCalcUtil}
  */
 class CoordinateCalcUtil {
   /**

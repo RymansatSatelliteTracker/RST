@@ -6,7 +6,6 @@ import dayjs from "dayjs";
 /**
  * 日付や時間関係のユーティリティ
  * @class DateUtil
- * @typedef {DateUtil}
  */
 class DateUtil {
   /**

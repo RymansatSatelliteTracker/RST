@@ -6,7 +6,6 @@ import CoordinateCalcUtil from "../../renderer/util/CoordinateCalcUtil";
 /**
  * TLE関係のユーティリティ
  * @class TleUtil
- * @typedef {TleUtil}
  */
 class TleUtil {
   /**
