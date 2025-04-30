@@ -24,7 +24,6 @@ export type CenterPosition = {
 /**
  * 描画関係のユーティリティ
  * @class CanvasUtil
- * @typedef {CanvasUtil}
  */
 class CanvasUtil {
   /**

@@ -3,7 +3,6 @@ import CommonUtil from "@/common/CommonUtil";
 /**
  * 無線機関係のユーティリティ
  * @class TransceiverUtil
- * @typedef {TransceiverUtil}
  */
 export default class TransceiverUtil {
   /**

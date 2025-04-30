@@ -12,7 +12,6 @@ import * as satellite from "satellite.js";
 /**
  * 人工衛星の軌道要素を管理/各種値を計算する
  * @class SatelliteService
- * @typedef {SatelliteService}
  */
 class SatelliteService {
   // NoradID
