@@ -196,15 +196,15 @@ class SatelliteService {
    * @returns {(TargetPolarLocation | null)} 人工衛星の緯度/経度[単位:ラジアン]
    */
   public getTargetPolarLocationInRadian = (date: Date, offsetLongitude: number = 0.0): TargetPolarLocation | null => {
-    const positionEci = satellite.propagate(this._satRec, date).position;
-    if (typeof positionEci === "boolean" || positionEci === undefined) {
+    const propagate = satellite.propagate(this._satRec, date);
+    if (!propagate) {
       // 人工衛星の位置が取得できない場合はnullで返却する
       return null;
     }
 
     // GMSTに変換
     const gstime = satellite.gstime(date);
-    const location = satellite.eciToGeodetic(positionEci, gstime);
+    const location = satellite.eciToGeodetic(propagate.position, gstime);
     if (Constant.Astronomy.EARTH_POLAR_RADIUS_KM + location.height > this._apogee * 1.1) {
       // SGP4の高度計算が発散した場合はnullを返却する（遠地点距離の偏差を許容する）
       return null;
