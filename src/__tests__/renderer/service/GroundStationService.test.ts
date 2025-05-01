@@ -24,7 +24,7 @@ describe("[正常系]人工衛星の可視種別が取得できる", () => {
   // テスト日時を設定する
   const currentDate = new Date("2024-10-01T00:00:00Z");
 
-  it("ISSは可視衛星が取得できる", () => {
+  it("ISSは可視種別が取得できる", () => {
     // given 前提条件
     const issGroundStation = new GroundStationService(
       TleDataHelper.Satellite.ISS,
@@ -40,7 +40,7 @@ describe("[正常系]人工衛星の可視種別が取得できる", () => {
     expect(issResult).toBe(VisibilityType.VISIBLE);
   });
 
-  it("だいち4号機は可視衛星が取得できる", () => {
+  it("だいち4号機は可視種別が取得できる", () => {
     // given 前提条件
     const daichiGroundStation = new GroundStationService(
       TleDataHelper.Satellite.DAICHI,
@@ -56,7 +56,7 @@ describe("[正常系]人工衛星の可視種別が取得できる", () => {
     expect(daichiResult).toBe(VisibilityType.VISIBLE);
   });
 
-  it("ひまわり8号機は常時可視衛星が取得できる", () => {
+  it("ひまわり8号機は常時可視種別が取得できる", () => {
     // given 前提条件
     const himawariGroundStation = new GroundStationService(
       TleDataHelper.Satellite.HIMAWARI,
@@ -72,7 +72,7 @@ describe("[正常系]人工衛星の可視種別が取得できる", () => {
     expect(himawariResult).toBe(VisibilityType.ALWAYS_VISIBLE); // ひまわり8号機は常時可視
   });
 
-  it("みちびきは常時可視衛星が取得できる", () => {
+  it("みちびきは常時可視種別が取得できる", () => {
     // given 前提条件
     const michibikiGroundStation = new GroundStationService(
       TleDataHelper.Satellite.MICHIBIKI,
@@ -88,7 +88,7 @@ describe("[正常系]人工衛星の可視種別が取得できる", () => {
     expect(michibikiResult).toBe(VisibilityType.ALWAYS_VISIBLE); // みちびきは常時可視
   });
 
-  it("GOES 17は常時不可視衛星が取得できる", () => {
+  it("GOES 17は常時不可視種別が取得できる", () => {
     // given 前提条件
     const goesGroundStation = new GroundStationService(
       TleDataHelper.Satellite.GOES,
@@ -104,7 +104,7 @@ describe("[正常系]人工衛星の可視種別が取得できる", () => {
     expect(goesResult).toBe(VisibilityType.ALWAYS_INVISIBLE); // GOES-17は常時不可視
   });
 
-  it("AEHF-1は可視衛星が取得できる", () => {
+  it("AEHF-1は可視種別が取得できる", () => {
     // given 前提条件
     const aehfGroundStation = new GroundStationService(
       TleDataHelper.Satellite.AEHF,
@@ -120,7 +120,7 @@ describe("[正常系]人工衛星の可視種別が取得できる", () => {
     expect(aehfResult).toBe(VisibilityType.VISIBLE);
   });
 
-  it("モルニア軌道は可視衛星が取得できる", () => {
+  it("モルニア軌道は可視種別が取得できる", () => {
     // given 前提条件
     const molniyaGroundStation = new GroundStationService(
       TleDataHelper.Satellite.MOLNIYA,
@@ -136,7 +136,7 @@ describe("[正常系]人工衛星の可視種別が取得できる", () => {
     expect(molniyaResult).toBe(VisibilityType.VISIBLE);
   });
 
-  it("TESSは可視衛星が取得できる", () => {
+  it("TESSは可視種別が取得できる", () => {
     // given 前提条件
     const heoGroundStation = new GroundStationService(
       TleDataHelper.Satellite.HEO,
