@@ -34,9 +34,14 @@ class DateUtil {
    * @returns {string} hh:mm:ss形式の文字列
    */
   public static formatMsToHHMMSS = (milliSeconds: number | null): string => {
-    if (!milliSeconds || milliSeconds < 0) {
+    if (milliSeconds === null || milliSeconds < 0) {
       // ミリ秒数値がnullまたはマイナス値の場合は"―"を返却する
       return I18nUtil.getMsg(I18nMsgs.GCOM_NA);
+    }
+
+    // ミリ秒数値が0の場合は"00:00:00"を返却する
+    if (milliSeconds === 0) {
+      return "00:00:00";
     }
 
     // ミリ秒数値をhh:mm:ss形式の文字列に変換する
