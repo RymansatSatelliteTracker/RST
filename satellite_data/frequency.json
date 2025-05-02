@@ -28,7 +28,7 @@
         "noradId": "27607",
         "satelliteName": "SAUDISAT 1C (SO-50)",
         "uplink1": {
-          "uplinkHz": 1458500000,
+          "uplinkHz": 145850000,
           "uplinkMode": "FM"
         },
         "uplink2": {
