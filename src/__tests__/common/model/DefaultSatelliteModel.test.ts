@@ -2,6 +2,7 @@ import Constant from "@/common/Constant";
 import { DefaultSatelliteModel } from "@/common/model/DefaultSatelliteModel";
 import { TleItemMap } from "@/common/model/TleModel";
 import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
+import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil";
 import FileUtil from "@/main/util/FileUtil";
 import * as path from "path";
@@ -164,17 +165,7 @@ describe("DefaultSatelliteModel", () => {
     // 先に追加しておく
     defSatModel.addSatellite("test", "10");
     // 上書き用のデータ
-    const overwriteDefSat: DefaultSatelliteType = {
-      satelliteId: 0,
-      satelliteName: "overwrite",
-      noradId: "10",
-      uplink1: { uplinkHz: null, uplinkMode: "" },
-      uplink2: { uplinkHz: null, uplinkMode: "" },
-      downlink1: { downlinkHz: null, downlinkMode: "" },
-      downlink2: { downlinkHz: null, downlinkMode: "" },
-      toneHz: null,
-      outline: "",
-    };
+    const overwriteDefSat: DefaultSatelliteType = createDefaultSatellite(0, "overwrite", "10");
     // Act
     defSatModel.updateSatellites([overwriteDefSat]);
     // Assert

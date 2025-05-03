@@ -1,5 +1,6 @@
 import { TleItemMap } from "@/common/model/TleModel";
 import { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes";
+import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil";
 
 /**
  * アプリケーション内で管理しておく対象衛星のデフォルト情報
@@ -108,17 +109,7 @@ export class DefaultSatelliteModel {
     this.registeredNoradIds.push(noradIdLocal);
 
     // デフォルト衛星情報を作成
-    const defSat: DefaultSatelliteType = {
-      satelliteId: newSatId,
-      satelliteName: satelliteName,
-      noradId: noradIdLocal,
-      uplink1: { uplinkHz: null, uplinkMode: "" },
-      uplink2: { uplinkHz: null, uplinkMode: "" },
-      downlink1: { downlinkHz: null, downlinkMode: "" },
-      downlink2: { downlinkHz: null, downlinkMode: "" },
-      toneHz: null,
-      outline: "",
-    };
+    const defSat: DefaultSatelliteType = createDefaultSatellite(newSatId, satelliteName, noradIdLocal);
 
     // デフォルト衛星情報のリストに追加
     this.defaultSatellites.push(defSat);
