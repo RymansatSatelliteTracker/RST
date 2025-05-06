@@ -189,21 +189,53 @@ class SatelliteService {
   };
 
   /**
+   * 指定した日時の人工衛星の位置ベクトルを取得する
+   * @param {Date} date 計算日時
+   * @returns {(Location3 | null)} 人工衛星の位置ベクトル[単位:km]
+   */
+  public getTargetLocation3 = (date: Date): Location3 | null => {
+    const propagate = satellite.propagate(this._satRec, date);
+    if (!propagate) {
+      // 人工衛星が取得できない場合はnullで返却する
+      return null;
+    }
+
+    // 人工衛星の位置ベクトルを返却する
+    return propagate.position;
+  };
+
+  /**
+   * 指定した日時の人工衛星の速度ベクトルを取得する
+   * @param {Date} date 計算日時
+   * @returns {(Location3 | null)} 人工衛星の速度ベクトル[単位:km/s]
+   */
+  public getTargetVelocity3 = (date: Date): Location3 | null => {
+    const propagate = satellite.propagate(this._satRec, date);
+    if (!propagate) {
+      // 人工衛星が取得できない場合はnullで返却する
+      return null;
+    }
+
+    // 人工衛星の速度ベクトルを返却する
+    return propagate.velocity;
+  };
+
+  /**
    * 指定した日時の人工衛星の緯度/経度を計算する
    * @param {Date} date 計算日時
    * @param {number} offsetLongitude 地図の中心経度のオフセット[単位:ラジアン]
    * @returns {(TargetPolarLocation | null)} 人工衛星の緯度/経度[単位:ラジアン]
    */
   public getTargetPolarLocationInRadian = (date: Date, offsetLongitude: number = 0.0): TargetPolarLocation | null => {
-    const propagate = satellite.propagate(this._satRec, date);
-    if (!propagate) {
+    const position = this.getTargetLocation3(date);
+    if (!position) {
       // 人工衛星の位置が取得できない場合はnullで返却する
       return null;
     }
 
     // GMSTに変換
     const gstime = satellite.gstime(date);
-    const location = satellite.eciToGeodetic(propagate.position, gstime);
+    const location = satellite.eciToGeodetic(position, gstime);
     if (Constant.Astronomy.EARTH_POLAR_RADIUS_KM + location.height > this._apogee * 1.1) {
       // SGP4の高度計算が発散した場合はnullを返却する（遠地点距離の偏差を許容する）
       return null;
