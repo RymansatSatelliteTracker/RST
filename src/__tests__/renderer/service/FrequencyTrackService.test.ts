@@ -59,7 +59,7 @@ describe("FrequencyTrackService", () => {
     const dopplerFactor = await freqTrack.calcDownlinkDopplerFactor(dt, INTERVAL_MS);
 
     //Assert
-    const downlinkFreq = Math.floor(dopplerFactor * BASE_FREQ_kHz);
+    const downlinkFreq = Math.trunc(dopplerFactor * BASE_FREQ_kHz);
     expect(downlinkFreq).toBe(expectedFreq);
   });
 

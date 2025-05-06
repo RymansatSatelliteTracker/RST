@@ -1,7 +1,7 @@
 import Constant from "@/common/Constant";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import SatelliteService from "@/renderer/service/SatelliteService";
-import { EcefLocation } from "@/renderer/types/location-type";
+import type { Location3 } from "@/renderer/types/location-type";
 import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil";
 
 /**
@@ -57,13 +57,13 @@ export default class FrequencyTrackService {
     }
 
     const gsVel = {
-      x: -Constant.Astronomy.EARTH_ROTATION_OMEGA * observerEcf.y,
+      x: Constant.Astronomy.EARTH_ROTATION_OMEGA * observerEcf.y,
       y: Constant.Astronomy.EARTH_ROTATION_OMEGA * observerEcf.x,
       z: 0,
     };
 
     const vRel = {
-      x: velocityEcf.x - gsVel.x,
+      x: velocityEcf.x + gsVel.x,
       y: velocityEcf.y - gsVel.y,
       z: velocityEcf.z - gsVel.z,
     };
@@ -71,7 +71,7 @@ export default class FrequencyTrackService {
     const dx = positionEcf.x - observerEcf.x;
     const dy = positionEcf.y - observerEcf.y;
     const dz = positionEcf.z - observerEcf.z;
-    const rangeMag = Math.sqrt(dx * dx + dy * dy + dz * dz);
+    const rangeMag = Math.hypot(dx, dy, dz);
 
     const rHat = {
       x: dx / rangeMag,
@@ -88,27 +88,19 @@ export default class FrequencyTrackService {
    * 設定ファイルから地上局の位置を取得して地心直交座標に変換する
    * @returns 地上局の位置(WGS84回転楕円体)
    */
-  private async getGroundStationEcefLocation() {
+  private async getGroundStationEcefLocation(): Promise<Location3> {
     const appConfig = await ApiAppConfig.getAppConfig();
 
     // 高度は m から km に変換
     const heightKm = CoordinateCalcUtil.mToKm(appConfig.groundStation.height);
 
     // 観測地点の地心直交座標(WGS84回転楕円体)を設定する
-    const ecef = CoordinateCalcUtil.geodeticInDegreeToEcef(
+    const location3 = CoordinateCalcUtil.geodeticInDegreeToEcef(
       appConfig.groundStation.lat,
       appConfig.groundStation.lon,
       heightKm
     );
 
-    const ecefLocation: EcefLocation = {
-      x: ecef.x,
-      y: ecef.y,
-      z: ecef.z,
-      radius: CoordinateCalcUtil.getEarthRadiusInDegree(appConfig.groundStation.lat),
-      height: heightKm,
-    };
-
-    return ecefLocation;
+    return location3;
   }
 }

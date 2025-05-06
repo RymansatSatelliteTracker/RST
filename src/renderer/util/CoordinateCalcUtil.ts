@@ -245,7 +245,7 @@ class CoordinateCalcUtil {
    */
   public static translateCartesianToPolarInRadian = (location: Location3): PolarLocation => {
     // 半径
-    const radius = Math.sqrt(location.x * location.x + location.y * location.y + location.z * location.z);
+    const radius = Math.hypot(location.x, location.y, +location.z);
     // 仰角（緯度）
     const latitudeRad = Math.asin(location.y / radius);
     // 方位角（経度）
