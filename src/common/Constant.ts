@@ -111,14 +111,16 @@ export default class Constant {
     static readonly ECLIPTIC_INCLINATION_DEG = 23.436092;
     // 万有引力定数
     static readonly GRAVITATIONAL_CONSTANT = 6.67428e-11;
-    // 光速[単位:m/s]
-    static readonly LIGHT_SPEED = 299792458.0;
+    // 光速[単位:km/s]
+    static readonly LIGHT_SPEED = 299792.458;
     // 地球の赤道半径[単位:km]
     static readonly EARTH_EQUATOR_RADIUS_KM = 6378.1366;
     // 地球の極半径[単位:km]
     static readonly EARTH_POLAR_RADIUS_KM = 6356.7523;
     // 地球の離心率^2
     static readonly EARTH_ECCENTRICITY = 0.006694259853221781;
+    // 地球の自転角速度[単位:rad/s]
+    static readonly EARTH_ROTATION_OMEGA = 7.2921159e-5;
     // 地球の質量
     static readonly EARTH_MASS = 5.9722e24;
     // 薄明曲線の描画ポイントの数

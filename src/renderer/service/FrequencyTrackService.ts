@@ -28,13 +28,9 @@ export default class FrequencyTrackService {
    * @returns ドップラーファクター(ダウンリンク)
    */
   public async calcDownlinkDopplerFactor(nowDate: Date, intervalMs: number = 1000): Promise<number> {
-    const velocity = await this.calcVelocity(nowDate, intervalMs);
-    if (!velocity) {
-      return 1.0;
-    }
-
-    return 1.0 + velocity / Constant.Astronomy.LIGHT_SPEED;
+    return this._calcDopplerFactor(new Date(nowDate.getTime() - intervalMs / 2.0), false);
   }
+
   /**
    * ドップラーファクター(アップリンク)を算出する
    * @param {Date} nowDate 現在日時
@@ -42,62 +38,50 @@ export default class FrequencyTrackService {
    * @returns ドップラーファクター(アップリンク)
    */
   public async calcUplinkDopplerFactor(nowDate: Date, intervalMs: number = 1000): Promise<number> {
-    const velocity = await this.calcVelocity(nowDate, intervalMs);
-    if (!velocity) {
+    return this._calcDopplerFactor(new Date(nowDate.getTime() - intervalMs / 2.0), true);
+  }
+
+  /**
+   * ドップラーファクターを算出する
+   * @param {Date} nowDate 現在日時
+   * @param {boolean} isUplink アップリンク判定フラグ
+   * @returns {Promise<number | null>} 速度[単位:m/s]
+   */
+  private async _calcDopplerFactor(nowDate: Date, isUplink: boolean): Promise<number> {
+    const positionEcf = this._satelliteService.getTargetLocation3(nowDate);
+    const velocityEcf = this._satelliteService.getTargetVelocity3(nowDate);
+    const observerEcf = await this.getGroundStationEcefLocation();
+
+    if (!positionEcf || !velocityEcf || !observerEcf) {
       return 1.0;
     }
 
-    return 1.0 - velocity / Constant.Astronomy.LIGHT_SPEED;
-  }
+    const gsVel = {
+      x: -Constant.Astronomy.EARTH_ROTATION_OMEGA * observerEcf.y,
+      y: Constant.Astronomy.EARTH_ROTATION_OMEGA * observerEcf.x,
+      z: 0,
+    };
 
-  /**
-   * 距離の変化量から速度を算出する
-   * 観測者に向かう方が正の値
-   * @param {Date} nowDate 現在日時
-   * @param {number} intervalMs 現在と以前の時間差[単位:ミリ秒]
-   * @returns {Promise<number | null>} 速度[単位:m/s]
-   */
-  private async calcVelocity(nowDate: Date, intervalMs: number): Promise<number | null> {
-    const nowDistance = await this.calcDistance(nowDate);
-    const prevDistance = await this.calcDistance(new Date(nowDate.getTime() - intervalMs));
-    if (nowDistance === null || prevDistance === null) {
-      // 距離が取得できない場合はnullを返却する
-      return null;
-    }
-    // 距離の変化量から速度を算出する
-    // m/sに変換するため1000で割る
-    return (prevDistance - nowDistance) / (intervalMs / 1000);
-  }
+    const vRel = {
+      x: velocityEcf.x - gsVel.x,
+      y: velocityEcf.y - gsVel.y,
+      z: velocityEcf.z - gsVel.z,
+    };
 
-  /**
-   * 地上局と衛星の間の距離を算出する
-   * @param {Date} nowDate 現在日時
-   * @returns {Promise<number | null>} 地上局と衛星の間の距離[単位:m]
-   */
-  private async calcDistance(nowDate: Date): Promise<number | null> {
-    // 地上局の地心直交座標を取得する
-    const grdStaEcefCoord = await this.getGroundStationEcefLocation();
-    // 人工衛星の緯度/経度を取得する
-    const satCoord = this._satelliteService.getTargetPolarLocationInDegree(nowDate);
-    if (!satCoord) {
-      // 人工衛星の緯度/経度が取得できない場合はnullを返却する
-      return null;
-    }
-    // 人工衛星の緯度/経度を地心直交座標に変換する
-    const satEcefCoord = CoordinateCalcUtil.geodeticInDegreeToEcef(
-      satCoord.latitude,
-      satCoord.longitude,
-      satCoord.height
-    );
+    const dx = positionEcf.x - observerEcf.x;
+    const dy = positionEcf.y - observerEcf.y;
+    const dz = positionEcf.z - observerEcf.z;
+    const rangeMag = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
-    // 地上局と衛星の間の距離を算出する
-    const distance = CoordinateCalcUtil.getVectorNorm({
-      x: satEcefCoord.x - grdStaEcefCoord.x,
-      y: satEcefCoord.y - grdStaEcefCoord.y,
-      z: satEcefCoord.z - grdStaEcefCoord.z,
-    });
+    const rHat = {
+      x: dx / rangeMag,
+      y: dy / rangeMag,
+      z: dz / rangeMag,
+    };
 
-    return CoordinateCalcUtil.kmToM(distance);
+    const dot = vRel.x * rHat.x + vRel.y * rHat.y + vRel.z * rHat.z;
+
+    return 1.0 - (isUplink ? -dot : dot) / Constant.Astronomy.LIGHT_SPEED;
   }
 
   /**
