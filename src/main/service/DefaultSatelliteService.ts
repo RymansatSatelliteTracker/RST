@@ -28,7 +28,7 @@ export default class DefaultSatelliteService {
     const savePathSat = path.join(ElectronUtil.getUserDir(), Constant.Config.DEFAULT_SATELLITE_FILENAME);
     if (fs.existsSync(savePathSat)) {
       const fileContentSat = fs.readFileSync(savePathSat, "utf-8");
-      this.defSatJson = Object.assign(new DefaultSatelliteModel(), JSON.parse(fileContentSat).defaultSatellite);
+      this.defSatJson = DefaultSatelliteModel.getInitializedModelFromData(JSON.parse(fileContentSat).defaultSatellite);
     }
   }
 
@@ -51,7 +51,7 @@ export default class DefaultSatelliteService {
     }
 
     const defaultSatData = FileUtil.readJson(savePathSat);
-    this.defSatJson = Object.assign(new DefaultSatelliteModel(), defaultSatData.defaultSatellite);
+    this.defSatJson = DefaultSatelliteModel.getInitializedModelFromData(defaultSatData.defaultSatellite);
 
     // TLEから情報を取得してデフォルト衛星定義を更新する
     for (const tleItem of Object.values(tleItemMap)) {

@@ -1,6 +1,6 @@
 import { TleItemMap } from "@/common/model/TleModel";
 import { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes";
-import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil";
+import { createDefaultSatellite, initializeDefaultSatellites, normalizeData } from "@/common/util/DefaultSatelliteUtil";
 
 /**
  * アプリケーション内で管理しておく対象衛星のデフォルト情報
@@ -29,6 +29,23 @@ export class DefaultSatelliteModel {
       null,
       2
     );
+  }
+
+  /**
+   * デフォルト衛星定義のファイルデータからモデルを初期化して生成する
+   * @param data
+   * @returns
+   */
+  public static getInitializedModelFromData(data: any): DefaultSatelliteModel {
+    if (data.defaultSatellites && data.registeredNoradIds && data.maxSatelliteId) {
+      return Object.assign(new DefaultSatelliteModel(), {
+        defaultSatellites: initializeDefaultSatellites(data.defaultSatellites),
+        maxSatelliteId: data.maxSatelliteId,
+        registeredNoradIds: data.registeredNoradIds,
+      });
+    } else {
+      return new DefaultSatelliteModel();
+    }
   }
 
   /**
@@ -142,7 +159,7 @@ export class DefaultSatelliteModel {
     satellites.forEach((sat) => {
       this.defaultSatellites.forEach((defsat) => {
         if (defsat.noradId === sat.noradId) {
-          Object.assign(defsat, sat);
+          Object.assign(defsat, normalizeData(sat, defsat));
         }
       });
     });
