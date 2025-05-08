@@ -146,7 +146,7 @@
               :valiSchema="valiSchemaEditSatelliteInfo"
               valiSchemaFieldPath="toneHz"
               v-model:error-text="errors.toneHz"
-              maxlength="13"
+              maxlength="15"
             />
           </v-col>
         </v-row>
