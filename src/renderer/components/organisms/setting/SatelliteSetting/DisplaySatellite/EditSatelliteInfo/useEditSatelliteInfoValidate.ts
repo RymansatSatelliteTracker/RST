@@ -128,14 +128,36 @@ export const valiSchemaEditSatelliteInfo = zod.object({
   }),
 
   toneHz: zod.lazy(() => {
-    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_POSITIVE_INT);
+    const message1 = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_POSITIVE);
+    const message2 = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_DECIMAL, "1");
     return (
       zod
-        // 正の実数か空白
+        // 小数点第1位までの正の実数か空白
         .union([
-          zod.coerce.number().refine((val) => Number.isInteger(val) && val > 0, {
-            message,
-          }),
+          zod.coerce
+            .string()
+            .refine(
+              (value) => {
+                // 小数点第1位までかを確認（小数第2位以降はNG）
+                const decimalPart = value.split(".")[1];
+                if (decimalPart && decimalPart.length > 1) return false;
+
+                return true;
+              },
+              {
+                message: message2,
+              }
+            )
+            .refine(
+              (val) => {
+                // 正の数値かを確認
+                const numVal = parseFloat(val);
+                return !isNaN(numVal) && numVal > 0;
+              },
+              {
+                message: message1,
+              }
+            ),
           zod.null(),
           // 入力をクリアすると空文字となるためこれを許容する
           zod.literal(""),
