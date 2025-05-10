@@ -1,4 +1,4 @@
-import TleDataHelper from "@/__tests__/renderer/service/TleData.helper";
+import TleDataHelper from "@/__tests__/renderer/service/TleDataHelper";
 import Constant from "@/common/Constant";
 import { InvalidArgumentError } from "@/common/exceptions";
 import GroundStationService, { VisibilityType } from "@/renderer/service/GroundStationService";

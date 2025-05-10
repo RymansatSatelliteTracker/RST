@@ -1,4 +1,4 @@
-import TleDataHelper from "@/__tests__/renderer/service/TleData.helper";
+import TleDataHelper from "@/__tests__/renderer/service/TleDataHelper";
 import { InvalidArgumentError } from "@/common/exceptions";
 import OrbitLineService from "@/renderer/service/OrbitLineService";
 

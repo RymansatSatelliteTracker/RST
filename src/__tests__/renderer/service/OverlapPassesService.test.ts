@@ -1,4 +1,4 @@
-import TleDataHelper from "@/__tests__/renderer/service/TleData.helper";
+import TleDataHelper from "@/__tests__/renderer/service/TleDataHelper";
 import OverlapPassesService from "@/renderer/service/OverlapPassesService";
 import { GROUND2_STATION, GROUND_STATION } from "./GroundStationService.test";
 
