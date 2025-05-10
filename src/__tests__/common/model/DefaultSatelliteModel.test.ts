@@ -2,6 +2,7 @@ import Constant from "@/common/Constant";
 import { DefaultSatelliteModel } from "@/common/model/DefaultSatelliteModel";
 import { TleItemMap } from "@/common/model/TleModel";
 import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
+import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil";
 import FileUtil from "@/main/util/FileUtil";
 import * as path from "path";
@@ -164,20 +165,47 @@ describe("DefaultSatelliteModel", () => {
     // 先に追加しておく
     defSatModel.addSatellite("test", "10");
     // 上書き用のデータ
-    const overwriteDefSat: DefaultSatelliteType = {
-      satelliteId: 0,
-      satelliteName: "overwrite",
-      noradId: "10",
-      uplink1: { uplinkHz: null, uplinkMode: "" },
-      uplink2: { uplinkHz: null, uplinkMode: "" },
-      downlink1: { downlinkHz: null, downlinkMode: "" },
-      downlink2: { downlinkHz: null, downlinkMode: "" },
-      toneMhz: null,
-      outline: "",
-    };
+    const overwriteDefSat: DefaultSatelliteType = createDefaultSatellite(0, "overwrite", "10");
     // Act
     defSatModel.updateSatellites([overwriteDefSat]);
     // Assert
     expect(defSatModel.getDefaultSatelliteBySatelliteId(0)?.satelliteName).toBe("overwrite");
+  });
+
+  /**
+   *
+   */
+  test("常に新しい定義でデフォルト衛星情報を初期化する", () => {
+    // Arrange
+    // uplink1がuplinkMhzになっている
+    const data = {
+      defaultSatellite: {
+        defaultSatellites: [
+          {
+            satelliteId: 0,
+            satelliteName: "test",
+            uplink1: { uplinkMhz: null, uplinkMode: "AAA" },
+            uplink2: { uplinkHz: null, uplinkMode: "" },
+            downlink1: { downlinkHz: null, downlinkMode: "" },
+            downlink2: { downlinkHz: null, downlinkMode: "" },
+            toneHz: null,
+            outline: "",
+            noradId: "1",
+          },
+        ],
+        maxSatelliteId: 1,
+        registeredNoradIds: ["1"],
+      },
+    };
+
+    // Act
+    const initilizedModel = DefaultSatelliteModel.getInitializedModelFromData(data.defaultSatellite);
+    const defsat = initilizedModel.getDefaultSatelliteBySatelliteId(0);
+
+    // Assert
+    // 元データはともあれuplinkHzが定義されている
+    expect(defsat).toHaveProperty("uplink1.uplinkHz");
+    // キーが一致しているものは値が引き継げている
+    expect(defsat?.uplink1.uplinkMode).toBe("AAA");
   });
 });

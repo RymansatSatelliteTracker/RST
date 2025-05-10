@@ -14,6 +14,10 @@ export default class I18nMsgs {
     en: "Please enter a number greater than 0",
     ja: "0より大きい数字を入力してください",
   };
+  public static readonly CHK_ERR_POSITIVE_INT: I18nMsgItem = {
+    en: "Please enter a positive integer",
+    ja: "0より大きい整数を入力してください",
+  };
   public static readonly CHK_ERR_NUM_DECIMAL: I18nMsgItem = {
     en: "Please enter a maximum of {0} decimal places",
     ja: "最大{0}桁の小数で入力してください",
@@ -150,6 +154,10 @@ export default class I18nMsgs {
   public static readonly SYSTEM_UNEXPECTED_ERROR: I18nMsgItem = {
     en: "An unexpected error has occurred",
     ja: "予期しないエラーが発生しました",
+  };
+  public static readonly SYSTEM_YET_TRANSCEIVER_CONFIG: I18nMsgItem = {
+    en: "Transceiver is not set. Please set it in the Radio menu.",
+    ja: "無線機が未設定です。無線機メニューで設定を行ってください。",
   };
   public static readonly SYSTEM_YET_ROTATOR_CONFIG: I18nMsgItem = {
     en: "Rotator is not set. Please set it in the rotator menu.",

@@ -1,203 +1,203 @@
 {
   "frequency": {
-    "lastUpdateTime": 1742335000780,
+    "lastUpdateTime": 1745146861765,
     "satellites": [
       {
         "noradId": "43017",
         "satelliteName": "RADFXSAT (FOX-1B) ",
         "uplink1": {
-          "uplinkMhz": 435.25,
+          "uplinkHz": 435250000,
           "uplinkMode": "FM"
         },
         "uplink2": {
-          "uplinkMhz": null,
+          "uplinkHz": null,
           "uplinkMode": ""
         },
         "downlink1": {
-          "downlinkMhz": 145.96,
+          "downlinkHz": 145960000,
           "downlinkMode": "FM"
         },
         "downlink2": {
-          "downlinkMhz": null,
+          "downlinkHz": null,
           "downlinkMode": ""
         },
-        "toneMhz": null,
+        "toneHz": null,
         "outline": ""
       },
       {
         "noradId": "27607",
         "satelliteName": "SAUDISAT 1C (SO-50)",
         "uplink1": {
-          "uplinkMhz": 145.85,
+          "uplinkHz": 145850000,
           "uplinkMode": "FM"
         },
         "uplink2": {
-          "uplinkMhz": null,
+          "uplinkHz": null,
           "uplinkMode": ""
         },
         "downlink1": {
-          "downlinkMhz": 436.795,
+          "downlinkHz": 436795000,
           "downlinkMode": "FM"
         },
         "downlink2": {
-          "downlinkMhz": null,
+          "downlinkHz": null,
           "downlinkMode": ""
         },
-        "toneMhz": null,
+        "toneHz": null,
         "outline": ""
       },
       {
         "noradId": "43678",
         "satelliteName": "DIWATA-2B",
         "uplink1": {
-          "uplinkMhz": 437.5,
+          "uplinkHz": 437500000,
           "uplinkMode": "FM"
         },
         "uplink2": {
-          "uplinkMhz": null,
+          "uplinkHz": null,
           "uplinkMode": ""
         },
         "downlink1": {
-          "downlinkMhz": 145.9,
+          "downlinkHz": 145900000,
           "downlinkMode": "FM"
         },
         "downlink2": {
-          "downlinkMhz": null,
+          "downlinkHz": null,
           "downlinkMode": ""
         },
-        "toneMhz": null,
+        "toneHz": null,
         "outline": ""
       },
       {
         "noradId": "40908",
         "satelliteName": "LILACSAT-2",
         "uplink1": {
-          "uplinkMhz": 144.35,
+          "uplinkHz": 144350000,
           "uplinkMode": "FM"
         },
         "uplink2": {
-          "uplinkMhz": null,
+          "uplinkHz": null,
           "uplinkMode": ""
         },
         "downlink1": {
-          "downlinkMhz": 437.2,
+          "downlinkHz": 437200000,
           "downlinkMode": "FM"
         },
         "downlink2": {
-          "downlinkMhz": null,
+          "downlinkHz": null,
           "downlinkMode": ""
         },
-        "toneMhz": null,
+        "toneHz": null,
         "outline": ""
       },
       {
         "noradId": "40931",
         "satelliteName": "LAPAN-A2",
         "uplink1": {
-          "uplinkMhz": 145.88,
+          "uplinkHz": 145880000,
           "uplinkMode": "FM"
         },
         "uplink2": {
-          "uplinkMhz": null,
+          "uplinkHz": null,
           "uplinkMode": ""
         },
         "downlink1": {
-          "downlinkMhz": 435.88,
+          "downlinkHz": 435880000,
           "downlinkMode": "FM"
         },
         "downlink2": {
-          "downlinkMhz": null,
+          "downlinkHz": null,
           "downlinkMode": ""
         },
-        "toneMhz": null,
+        "toneHz": null,
         "outline": ""
       },
       {
         "noradId": "25544",
         "satelliteName": "ISS (ZARYA)",
         "uplink1": {
-          "uplinkMhz": 145.99,
+          "uplinkHz": 145990000,
           "uplinkMode": "FM"
         },
         "uplink2": {
-          "uplinkMhz": null,
+          "uplinkHz": null,
           "uplinkMode": ""
         },
         "downlink1": {
-          "downlinkMhz": 437.8,
+          "downlinkHz": 437800000,
           "downlinkMode": "FM"
         },
         "downlink2": {
-          "downlinkMhz": null,
+          "downlinkHz": null,
           "downlinkMode": ""
         },
-        "toneMhz": null,
+        "toneHz": null,
         "outline": "ISS Crossband Repeater"
       },
       {
         "noradId": "62690",
         "satelliteName": "HADES-R",
         "uplink1": {
-          "uplinkMhz": 145.925,
+          "uplinkHz": 145925000,
           "uplinkMode": "FM"
         },
         "uplink2": {
-          "uplinkMhz": null,
+          "uplinkHz": null,
           "uplinkMode": ""
         },
         "downlink1": {
-          "downlinkMhz": 436.885,
+          "downlinkHz": 436885000,
           "downlinkMode": "FM"
         },
         "downlink2": {
-          "downlinkMhz": null,
+          "downlinkHz": null,
           "downlinkMode": ""
         },
-        "toneMhz": null,
+        "toneHz": null,
         "outline": ""
       },
       {
         "noradId": "61781",
         "satelliteName": "ASRTU-1 (AO-123)",
         "uplink1": {
-          "uplinkMhz": 145.85,
+          "uplinkHz": 145850000,
           "uplinkMode": "FM"
         },
         "uplink2": {
-          "uplinkMhz": null,
+          "uplinkHz": null,
           "uplinkMode": ""
         },
         "downlink1": {
-          "downlinkMhz": 435.4,
+          "downlinkHz": 435400000,
           "downlinkMode": "FM"
         },
         "downlink2": {
-          "downlinkMhz": null,
+          "downlinkHz": null,
           "downlinkMode": ""
         },
-        "toneMhz": null,
+        "toneHz": null,
         "outline": ""
       },
       {
         "noradId": "48274",
         "satelliteName": "CSS (TIANHE)",
         "uplink1": {
-          "uplinkMhz": 145.875,
+          "uplinkHz": 145875000,
           "uplinkMode": "FM"
         },
         "uplink2": {
-          "uplinkMhz": 435.075,
+          "uplinkHz": 435075000,
           "uplinkMode": "FM"
         },
         "downlink1": {
-          "downlinkMhz": 436.51,
+          "downlinkHz": 436510000,
           "downlinkMode": "FM"
         },
         "downlink2": {
-          "downlinkMhz": 145.985,
+          "downlinkHz": 145985000,
           "downlinkMode": "FM"
         },
-        "toneMhz": null,
+        "toneHz": null,
         "outline": ""
       }
     ]

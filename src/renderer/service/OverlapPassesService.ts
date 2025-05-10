@@ -6,7 +6,6 @@ import type SatelliteService from "./SatelliteService";
 /**
  * 2か所の地上局から同時に人工衛星が観測できる重複するAOS/LOS/Melを計算する
  * @class OverlapPassesService
- * @typedef {OverlapPassesService}
  * @extends {GroundStationService}
  */
 class OverlapPassesService extends GroundStationService {

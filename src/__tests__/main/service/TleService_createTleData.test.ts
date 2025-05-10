@@ -43,7 +43,7 @@ describe("TleService - createTleData", () => {
     const tleService = new TleService();
     const tleText = `name2
 1 B2BBBC DDEEEFFF 21211.11111111 +.IIIIIIII +JJJJJ-J +KKKKK-K L MMMMN
-line2-2
+2 AA
 `;
     const tleTextRn = tleText.replace(/\n/g, "\r\n");
 
@@ -58,7 +58,7 @@ line2-2
         name: "name2",
         epoch: 21211.11111111,
         line1: "1 B2BBBC DDEEEFFF 21211.11111111 +.IIIIIIII +JJJJJ-J +KKKKK-K L MMMMN",
-        line2: "line2-2",
+        line2: "2 AA",
         isInLatestTLE: true,
       },
     });
@@ -72,10 +72,10 @@ line2-2
     const tleService = new TleService();
     const tleText = `name2
 1 B2BBBC DDEEEFFF 21211.11111111 +.IIIIIIII +JJJJJ-J +KKKKK-K L MMMMN
-line2-2
+2 AA
 name3
 1 B3BBBC DDEEEFFF 31311.11111111 +.IIIIIIII +JJJJJ-J +KKKKK-K L MMMMN
-line3-2
+2 BB
 `;
     const tleTextRn = tleText.replace(/\n/g, "\r\n");
 
@@ -90,7 +90,7 @@ line3-2
         name: "name2",
         epoch: 21211.11111111,
         line1: "1 B2BBBC DDEEEFFF 21211.11111111 +.IIIIIIII +JJJJJ-J +KKKKK-K L MMMMN",
-        line2: "line2-2",
+        line2: "2 AA",
         isInLatestTLE: true,
       },
       B3BBB: {
@@ -98,7 +98,7 @@ line3-2
         name: "name3",
         epoch: 31311.11111111,
         line1: "1 B3BBBC DDEEEFFF 31311.11111111 +.IIIIIIII +JJJJJ-J +KKKKK-K L MMMMN",
-        line2: "line3-2",
+        line2: "2 BB",
         isInLatestTLE: true,
       },
     });
@@ -112,7 +112,7 @@ line3-2
     const tleService = new TleService();
     const tleText = `name2
 1 B2BBBC DDEEEFFF 21211.11111111 +.IIIIIIII +JJJJJ-J +KKKKK-K L MMMMN
-line2-2
+2 AA
 `;
     const tleTextRn = tleText.replace(/\n/g, "\r\n");
 
@@ -133,7 +133,7 @@ line2-2
         name: "name2",
         epoch: 21211.11111111,
         line1: "1 B2BBBC DDEEEFFF 21211.11111111 +.IIIIIIII +JJJJJ-J +KKKKK-K L MMMMN",
-        line2: "line2-2",
+        line2: "2 AA",
         isInLatestTLE: true,
       },
     });
@@ -147,10 +147,10 @@ line2-2
     const tleService = new TleService();
     const tleText = `name2
 1 B2BBBC DDEEEFFF 21211.11111111 +.IIIIIIII +JJJJJ-J +KKKKK-K L MMMMN
-line2-2
+2 AA
 name3
 1 B3BBBC DDEEEFFF 31311.11111111 +.IIIIIIII +JJJJJ-J +KKKKK-K L MMMMN
-line3-2
+2 BB
 `;
     const tleTextRn = tleText.replace(/\n/g, "\r\n");
 
@@ -171,7 +171,7 @@ line3-2
         name: "name2",
         epoch: 21211.11111111,
         line1: "1 B2BBBC DDEEEFFF 21211.11111111 +.IIIIIIII +JJJJJ-J +KKKKK-K L MMMMN",
-        line2: "line2-2",
+        line2: "2 AA",
         isInLatestTLE: true,
       },
       B3BBB: {
@@ -179,7 +179,7 @@ line3-2
         name: "name3",
         epoch: 31311.11111111,
         line1: "1 B3BBBC DDEEEFFF 31311.11111111 +.IIIIIIII +JJJJJ-J +KKKKK-K L MMMMN",
-        line2: "line3-2",
+        line2: "2 BB",
         isInLatestTLE: true,
       },
     });

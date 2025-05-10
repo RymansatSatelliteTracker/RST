@@ -5,7 +5,7 @@ import { ApiResponse } from "@/common/types/types";
  * 無線機のコントローラ親クラス
  */
 export default abstract class TransceiverControllerBase {
-  protected frequencyCallback: Function | null = null;
+  protected freqCallback: Function | null = null;
   protected modeCallback: Function | null = null;
 
   /**
@@ -19,28 +19,33 @@ export default abstract class TransceiverControllerBase {
   public abstract stop(): Promise<void>;
 
   /**
-   * 無線機に周波数を設定するコマンドを送信する
+   * 無線機関係・AutoOn時の初期処理
+   */
+  public abstract initAutoOn(txFreqHz: number, rxFreqHz: number): Promise<void>;
+
+  /**
+   * 無線機に送信する周波数を設定する
    * @param {(UplinkType | DownlinkType)} frequencyModel 周波数設定
    */
-  public abstract sendFrequencyCommand(frequencyModel: UplinkType | DownlinkType): Promise<void>;
+  public abstract setFreq(frequencyModel: UplinkType | DownlinkType): Promise<void>;
 
   /**
-   * 無線機に運用モードを設定するコマンドを送信する
+   * 無線機に送信する運用モードを設定する
    * @param {(UplinkType | DownlinkType)} modeModel 運用モード設定
    */
-  public abstract sendModeCommand(modeModel: UplinkType | DownlinkType): Promise<void>;
+  public abstract setMode(modeModel: UplinkType | DownlinkType): Promise<void>;
 
   /**
-   * 無線機にサテライトモードを設定するコマンドを送信する
+   * 無線機に送信するサテライトモードを設定する
    * @param {boolean} isSatelliteMode サテライトモード設定
    */
-  public abstract sendSatelliteModeCommand(isSatelliteMode: boolean): Promise<void>;
+  public abstract setSatelliteMode(isSatelliteMode: boolean): Promise<void>;
 
   /**
    * 無線機の周波数を呼び出し側に伝播させるためのコールバックを設定する
    */
   public setFrequencyCallback(callback: Function): void {
-    this.frequencyCallback = callback;
+    this.freqCallback = callback;
   }
 
   /**
@@ -54,7 +59,7 @@ export default abstract class TransceiverControllerBase {
    * コールバックを解除する
    */
   public unsetCallback(): void {
-    this.frequencyCallback = null;
+    this.freqCallback = null;
     this.modeCallback = null;
   }
 }

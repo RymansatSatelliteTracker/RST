@@ -24,7 +24,8 @@
     "vite:preview": "vite preview",
     "ts": "tsc",
     "watch": "tsc -w",
-    "test": "jest --config ./jest.config.json --coverage"
+    "test": "jest --config ./jest.config.json --coverage",
+    "test:e2e": "playwright test src/__tests__/playwright"
   },
   "build": {
     "appId": "RST",

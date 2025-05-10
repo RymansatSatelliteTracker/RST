@@ -37,8 +37,9 @@ export default abstract class TransceiverSerialControllerBase extends Transceive
   /**
    * データ受信
    */
-  protected onRecv(data: Buffer): void {
+  protected onRecv(data: Buffer): Promise<void> {
     // console.log(`受信データ: ${data.toString()}`);
+    return Promise.resolve();
   }
 
   /**

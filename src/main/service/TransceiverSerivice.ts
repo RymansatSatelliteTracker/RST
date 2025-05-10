@@ -81,6 +81,18 @@ export default class TransceiverService {
   }
 
   /**
+   * 無線機関係・AutoOn時の初期処理
+   */
+  public async initAutoOn(txFreqHz: number, rxFreqHz: number) {
+    if (!this.controller) {
+      return;
+    }
+
+    // AutoOnの初期処理を実行する
+    await this.controller.initAutoOn(txFreqHz, rxFreqHz);
+  }
+
+  /**
    * 無線機を変更する
    * @param transceiverConfig 無線機設定
    */
@@ -144,12 +156,12 @@ export default class TransceiverService {
    * 無線機周波数を変更する
    * @param {(UplinkType | DownlinkType)} frequencyModel 周波数設定
    */
-  public setTransceiverFrequency(frequencyModel: UplinkType | DownlinkType) {
+  public async setTransceiverFrequency(frequencyModel: UplinkType | DownlinkType) {
     if (!this.isReady()) {
       return;
     }
 
-    this.controller?.sendFrequencyCommand(frequencyModel);
+    await this.controller?.setFreq(frequencyModel);
   }
 
   /**
@@ -161,7 +173,7 @@ export default class TransceiverService {
       return;
     }
 
-    this.controller?.sendModeCommand(modeModel);
+    this.controller?.setMode(modeModel);
   }
 
   /**
@@ -173,7 +185,7 @@ export default class TransceiverService {
       return;
     }
 
-    this.controller?.sendSatelliteModeCommand(isSatelliteMode);
+    this.controller?.setSatelliteMode(isSatelliteMode);
   }
 
   /**

@@ -23,7 +23,7 @@ export default function useTransceiverCtrl(form: Ref<TransceiverConnForm>) {
     // 無線機が指定されている場合は、無線機の監視を開始する
     const tranConfig = createTransceiverConfig();
     if (!CommonUtil.isEmpty(tranConfig.transceiverId)) {
-      await ApiTransceiver.startCtrl(tranConfig);
+      await ApiTransceiver.startCtrl();
     }
   }
 

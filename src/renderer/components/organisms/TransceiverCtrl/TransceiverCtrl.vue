@@ -14,19 +14,19 @@
       <div class="freq_area">
         <div>
           Tx<FrequencySelect class="freq_box" v-model:frequency="txFrequency" v-model:diffFrequency="diffTxFrequency"
-            ><span class="freq_unit">MHz</span></FrequencySelect
+            ><span class="freq_unit">Hz</span></FrequencySelect
           >
         </div>
       </div>
       <div class="freq_area">
         <div v-if="isSatelliteMode">
           Rx<FrequencySelect class="freq_box" v-model:frequency="rxFrequency" v-model:diffFrequency="diffRxFrequency"
-            ><span class="freq_unit">MHz</span></FrequencySelect
+            ><span class="freq_unit">Hz</span></FrequencySelect
           >
         </div>
         <div v-else>
           Rx<FrequencySelect class="freq_box" v-model:frequency="txFrequency" v-model:diffFrequency="diffRxFrequency"
-            ><span class="freq_unit">MHz</span></FrequencySelect
+            ><span class="freq_unit">Hz</span></FrequencySelect
           >
         </div>
       </div>
@@ -251,13 +251,16 @@ async function autoBtnClick() {
   loadingAutoBtn.value = true;
 
   // 現在のAuto状態を反転させて、Autoモードの開始/終了を要求する
-  autoStore.tranceiverAuto = !autoStore.tranceiverAuto;
-  if (autoStore.tranceiverAuto) {
+  const auto = !autoStore.tranceiverAuto;
+  if (auto) {
     // Autoモード開始
-    await startAutoMode();
+    const result = await startAutoMode();
+    // 開始の結果をストアに反映（開始できなかった場合はfalseが返ってくる）
+    autoStore.tranceiverAuto = result;
   } else {
     // Autoモード終了
     await stopAutoMode();
+    autoStore.tranceiverAuto = false;
   }
 
   loadingAutoBtn.value = false;
