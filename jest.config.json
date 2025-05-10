@@ -1,7 +1,6 @@
 {
   "roots": ["<rootDir>/src"],
-  "testMatch": ["**/__tests__/**/*.+(ts|js)", "**/?(*.)+(spec|test).+(ts|js)"],
-  "testPathIgnorePatterns": [".*\\.helper\\.ts$"],
+  "testMatch": ["**/__tests__/**/*.(spec|test).[tj]s?(x)"],
   "transform": {
     "^.+\\.(ts|tsx)$": "ts-jest"
   },
