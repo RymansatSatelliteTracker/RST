@@ -106,6 +106,32 @@ class CoordinateCalcUtil {
   };
 
   /**
+   * kmをmに変換する（位置ベクトル用）
+   * @param {Location3} location3 位置ベクトル[単位:km]
+   * @returns {Location3} 位置ベクトル[単位:m]
+   */
+  public static km3ToM3 = (location3: Location3): Location3 => {
+    return {
+      x: this.kmToM(location3.x),
+      y: this.kmToM(location3.y),
+      z: this.kmToM(location3.z),
+    };
+  };
+
+  /**
+   * mをkmに変換する（位置ベクトル用）
+   * @param {Location3} location3 位置ベクトル[単位:m]
+   * @returns {Location3} 位置ベクトル[単位:km]
+   */
+  public static m3ToKm3 = (location3: Location3): Location3 => {
+    return {
+      x: this.mToKm(location3.x),
+      y: this.mToKm(location3.y),
+      z: this.mToKm(location3.z),
+    };
+  };
+
+  /**
    * 緯度/経度から地心直交座標(WGS84回転楕円体)を求める
    * @param {number} latitudeDeg 緯度[単位:度]
    * @param {number} longitudeDeg 経度[単位:度]

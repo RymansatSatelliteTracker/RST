@@ -111,8 +111,8 @@ export default class Constant {
     static readonly ECLIPTIC_INCLINATION_DEG = 23.436092;
     // 万有引力定数
     static readonly GRAVITATIONAL_CONSTANT = 6.67428e-11;
-    // 光速[単位:km/s]
-    static readonly LIGHT_SPEED = 299792.458;
+    // 光速[単位:m/s]
+    static readonly LIGHT_SPEED = 299792458.0;
     // 地球の赤道半径[単位:km]
     static readonly EARTH_EQUATOR_RADIUS_KM = 6378.1366;
     // 地球の極半径[単位:km]

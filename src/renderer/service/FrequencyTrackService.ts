@@ -45,16 +45,20 @@ export default class FrequencyTrackService {
    * ドップラーファクターを算出する
    * @param {Date} nowDate 現在日時
    * @param {boolean} isUplink アップリンク判定フラグ
-   * @returns {Promise<number | null>} 速度[単位:m/s]
+   * @returns {Promise<number>} ドップラーファクター
    */
   private async _calcDopplerFactor(nowDate: Date, isUplink: boolean): Promise<number> {
-    const positionEcf = this._satelliteService.getTargetLocation3(nowDate);
-    const velocityEcf = this._satelliteService.getTargetVelocity3(nowDate);
-    const observerEcf = await this.getGroundStationEcefLocation();
+    let positionEcf = this._satelliteService.getTargetLocation3(nowDate);
+    let velocityEcf = this._satelliteService.getTargetVelocity3(nowDate);
+    let observerEcf = await this.getGroundStationEcefLocation();
 
     if (!positionEcf || !velocityEcf || !observerEcf) {
       return 1.0;
     }
+
+    // 単位をkmからmに変換する
+    positionEcf = CoordinateCalcUtil.km3ToM3(positionEcf);
+    velocityEcf = CoordinateCalcUtil.km3ToM3(velocityEcf);
 
     const gsVel = {
       x: Constant.Astronomy.EARTH_ROTATION_OMEGA * observerEcf.y,
@@ -86,21 +90,19 @@ export default class FrequencyTrackService {
 
   /**
    * 設定ファイルから地上局の位置を取得して地心直交座標に変換する
-   * @returns 地上局の位置(WGS84回転楕円体)
+   * @returns 地上局の位置(WGS84回転楕円体)[単位:m]
    */
   private async getGroundStationEcefLocation(): Promise<Location3> {
     const appConfig = await ApiAppConfig.getAppConfig();
 
-    // 高度は m から km に変換
-    const heightKm = CoordinateCalcUtil.mToKm(appConfig.groundStation.height);
-
-    // 観測地点の地心直交座標(WGS84回転楕円体)を設定する
-    const location3 = CoordinateCalcUtil.geodeticInDegreeToEcef(
+    // 観測地点の地心直交座標(WGS84回転楕円体)をkm単位で取得
+    const location3Km = CoordinateCalcUtil.geodeticInDegreeToEcef(
       appConfig.groundStation.lat,
       appConfig.groundStation.lon,
-      heightKm
+      CoordinateCalcUtil.mToKm(appConfig.groundStation.height)
     );
 
-    return location3;
+    // 単位をkmからmに変換する
+    return CoordinateCalcUtil.km3ToM3(location3Km);
   }
 }
