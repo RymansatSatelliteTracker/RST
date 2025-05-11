@@ -58,18 +58,9 @@ export default class I18nMsgs {
     en: "Please enter in Grid Locator format",
     ja: "グリッドロケーターの形式で入力してください",
   };
-  public static readonly CHK_ERR_NOT_ENTERED_LAT: I18nMsgItem = {
-    en: "Latitude not entered",
-    ja: "緯度が未入力です",
-  };
-  public static readonly CHK_ERR_NOT_ENTERED_LON: I18nMsgItem = {
-    en: "Longitude not entered",
-    ja: "経度が未入力です",
-  };
-  public static readonly CHK_ERR_NOT_ENTERED_HEIGHT: I18nMsgItem = {
-    en: "Height not entered",
-    ja: "高さが未入力です",
-  };
+  public static readonly CHK_ERR_NOT_ENTERED_LAT: I18nMsgItem = { en: "Latitude not entered", ja: "緯度が未入力です" };
+  public static readonly CHK_ERR_NOT_ENTERED_LON: I18nMsgItem = { en: "Longitude not entered", ja: "経度が未入力です" };
+  public static readonly CHK_ERR_NOT_ENTERED_HEIGHT: I18nMsgItem = { en: "Height not entered", ja: "⾼さが未入力です" };
   public static readonly CHK_ERR_DATE: I18nMsgItem = {
     en: "The date you entered is invalid",
     ja: "入力した日付が不正です",
@@ -94,7 +85,6 @@ export default class I18nMsgs {
     en: "The TLE epoch is out of date and may not provide accurate orbit estimation. Is this OK?",
     ja: "TLEのepochが古いため正確な軌道推定ができない可能性があります。よろしいですか？",
   };
-
   public static readonly CHK_ERR_ALL_ORBIT: I18nMsgItem = {
     en: "Please enter all 6 Orbital Elements",
     ja: "軌道6要素は全て入力してください",
@@ -115,11 +105,11 @@ export default class I18nMsgs {
 
   // AppConfig系エラーメッセージ
   public static readonly CHK_ERR_APPCONFIG_NOT_EXISTS_FILE: I18nMsgItem = {
-    en: "Application configuration file does not exist",
+    en: "The application configuration file does not exist",
     ja: "アプリケーション設定ファイルが存在しません",
   };
   public static readonly CHK_ERR_APPCONFIG_NOT_JSON_FORMAT: I18nMsgItem = {
-    en: "Application configuration file is written in a format other than JSON",
+    en: "The application configuration file is not in JSON format",
     ja: "アプリケーション設定ファイルがJSON形式以外で記載されています",
   };
   public static readonly CHK_ERR_APPCONFIG_INVALID_ITEM: I18nMsgItem = {
@@ -138,10 +128,13 @@ export default class I18nMsgs {
     en: "Failed to fetch GeoLocation.",
     ja: "GeoLocationの取得に失敗しました。",
   };
-
   public static readonly ERR_NO_MAKER_SELECT: I18nMsgItem = {
     en: "Please select a Maker",
     ja: "メーカーを選択してください",
+  };
+  public static readonly ERR_FAIL_TO_UPDATE_TLE_URL: I18nMsgItem = {
+    en: "Failed to update data based on the specified TLE URL",
+    ja: "指定したTLEのURLに基づいたデータ更新に失敗しました",
   };
 
   // Frequency.json系エラーメッセージ
@@ -191,11 +184,6 @@ export default class I18nMsgs {
     ja: "シリアル接続に成功しました。",
   };
 
-  public static readonly ERR_FAIL_TO_UPDATE_TLE_URL: I18nMsgItem = {
-    en: "Failed to update data based on the specified TLE URL",
-    ja: "指定したTLEのURLに基づいたデータ更新に失敗しました",
-  };
-
   // 画面項目系／共通系
   public static readonly GCOM_SATELLITE: I18nMsgItem = { en: "Satellite", ja: "衛星" };
   public static readonly GCOM_RADIO: I18nMsgItem = { en: "Radio", ja: "無線機" };
@@ -221,7 +209,6 @@ export default class I18nMsgs {
   public static readonly GCOM_OR: I18nMsgItem = { en: "or", ja: "or" };
   public static readonly GCOM_NA: I18nMsgItem = { en: "―", ja: "―" };
   public static readonly GCOM_ERROR: I18nMsgItem = { en: "Error", ja: "エラー" };
-
   // 画面項目系／メニュー
   public static readonly GCOM_MENU_ABOUT_RSP: I18nMsgItem = { en: "About RST", ja: "RSTについて" };
   public static readonly GCOM_MENU_QUIT: I18nMsgItem = { en: "Quit", ja: "終了" };
@@ -236,7 +223,10 @@ export default class I18nMsgs {
   public static readonly GCOM_MENU_LANG_EN: I18nMsgItem = { en: "English", ja: "English" };
   public static readonly GCOM_MENU_HELP: I18nMsgItem = { en: "Help", ja: "ヘルプ" };
   public static readonly GCOM_MENU_VERSION: I18nMsgItem = { en: "Version", ja: "バージョン" };
-
+  // 画面項目系／無線機
+  public static readonly G2_FIXED_SAT: I18nMsgItem = { en: "Fixed Sat", ja: "衛星固定" };
+  public static readonly G2_FIXED_RX: I18nMsgItem = { en: "Fixed RX", ja: "受信固定" };
+  public static readonly G2_FIXED_TX: I18nMsgItem = { en: "Fixed TX", ja: "送信固定" };
   // 画面項目系／無線機設定画面
   public static readonly G41_TAB_CONNECTION: I18nMsgItem = { en: "Device", ja: "機種設定" };
   public static readonly G41_TAB_BEHIVIOR: I18nMsgItem = { en: "Behivior", ja: "動作設定" };
@@ -248,11 +238,7 @@ export default class I18nMsgs {
   public static readonly G41_TEST_CONNECT: I18nMsgItem = { en: "Test Connect", ja: "接続テスト" };
   public static readonly G41_IPADDRESS: I18nMsgItem = { en: "IP Address", ja: "IPアドレス" };
   public static readonly G41_IPADDRESS_PORT: I18nMsgItem = { en: "Port", ja: "Port" };
-  public static readonly G41_AUTO_INTERVAL: I18nMsgItem = {
-    en: "Freq Control Interval",
-    ja: "周波数設定インターバル",
-  };
-
+  public static readonly G41_AUTO_INTERVAL: I18nMsgItem = { en: "Freq Control Interval", ja: "周波数設定インターバル" };
   // 画面項目系／ローテータ設定画面
   public static readonly G51_TAB_CONNECTION: I18nMsgItem = { en: "Device", ja: "機種設定" };
   public static readonly G51_TAB_BEHIVIOR: I18nMsgItem = { en: "Behivior", ja: "動作設定" };
@@ -281,11 +267,7 @@ export default class I18nMsgs {
     en: "need select maker",
     ja: "メーカーを選択してください",
   };
-  public static readonly G51_PARK_POS: I18nMsgItem = {
-    en: "Park position",
-    ja: "パークポジション",
-  };
-
+  public static readonly G51_PARK_POS: I18nMsgItem = { en: "Park position", ja: "パークポジション" };
   // 画面項目系／衛星設定画面
   public static readonly G31_DISPLAY_SATELLITE: I18nMsgItem = { en: "Display Sattelite", ja: "表示衛星" };
   public static readonly G32_TLE_LOAD: I18nMsgItem = { en: "TLE Load", ja: "TLE読み込み" };
@@ -322,23 +304,17 @@ export default class I18nMsgs {
   };
   public static readonly G31_EPOCH_YEAR: I18nMsgItem = { en: "Epoch Year", ja: "エポック年" };
   public static readonly G31_EPOCH_DAY: I18nMsgItem = { en: "Epoch Day", ja: "エポック日" };
-  public static readonly G31_NDOT: I18nMsgItem = {
-    en: "First Derivative of Mean Motion",
-    ja: "平均運動の1次微分",
-  };
-  public static readonly G31_NDDOT: I18nMsgItem = {
-    en: "Second Derivative of Mean Motion",
-    ja: "平均運動の2次微分",
-  };
+  public static readonly G31_NDOT: I18nMsgItem = { en: "First Derivative of Mean Motion", ja: "平均運動の1次微分" };
+  public static readonly G31_NDDOT: I18nMsgItem = { en: "Second Derivative of Mean Motion", ja: "平均運動の2次微分" };
   public static readonly G31_B_STAR: I18nMsgItem = { en: "B* Drag Term", ja: "B*抗力項" };
   public static readonly G31_ELEMENT_NUMBER: I18nMsgItem = { en: "Element Set Number", ja: "要素セット番号" };
   public static readonly G31_MEAN_MOTION: I18nMsgItem = { en: "Mean Motion", ja: "平均運動" };
   public static readonly G31_REVOLUTION: I18nMsgItem = { en: "Revolution Number at Epoch", ja: "エポック時の周回数" };
   public static readonly G31_CHECKSUM: I18nMsgItem = { en: "Checksum", ja: "チェックサム" };
   public static readonly G31_EPHEMERIS_TYPE: I18nMsgItem = { en: "Ephemeris Type", ja: "エフェメリスタイプ" };
+  public static readonly G31_SATELLITE_MODE: I18nMsgItem = { en: "Satellite Mode", ja: "サテライトモード" };
   // 画面項目系／衛星設定画面 その他設定
   public static readonly G33_MIN_ELEVATION: I18nMsgItem = { en: "Min. Elevation", ja: "最小仰角" };
-
   // 画面項目系／地上局画面
   public static readonly G61_GROUND_STATION_SETTING: I18nMsgItem = { en: "Ground Station Setting", ja: "地上局設定" };
   public static readonly G61_GROUND_STATION1: I18nMsgItem = { en: "Ground Station1", ja: "地上局1" };
