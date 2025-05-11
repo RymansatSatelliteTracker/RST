@@ -113,6 +113,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     dopplerTxBaseFrequency.value = TransceiverUtil.parseNumber(txFrequency.value);
     dopplerRxBaseFrequency.value = TransceiverUtil.parseNumber(rxFrequency.value);
 
+    // 周波数の更新インターバルを取得
+    autoTrackingIntervalMsec = parseFloat(appConfig.transceiver.autoTrackingIntervalSec) * 1000;
+
     // 周波数の更新を停止（停止されていない場合があるので、複数のタイマが発動することをガード）
     stopUpdateFreq();
 
