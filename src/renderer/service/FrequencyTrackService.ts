@@ -75,12 +75,12 @@ export default class FrequencyTrackService {
     const dx = positionEcf.x - observerEcf.x;
     const dy = positionEcf.y - observerEcf.y;
     const dz = positionEcf.z - observerEcf.z;
-    const rangeMag = Math.hypot(dx, dy, dz);
+    const rangeNorm = CoordinateCalcUtil.getVectorNorm({ x: dx, y: dy, z: dz });
 
     const rHat = {
-      x: dx / rangeMag,
-      y: dy / rangeMag,
-      z: dz / rangeMag,
+      x: dx / rangeNorm,
+      y: dy / rangeNorm,
+      z: dz / rangeNorm,
     };
 
     const dot = vRel.x * rHat.x + vRel.y * rHat.y + vRel.z * rHat.z;
