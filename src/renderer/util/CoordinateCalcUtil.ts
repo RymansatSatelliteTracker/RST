@@ -88,6 +88,16 @@ class CoordinateCalcUtil {
   };
 
   /**
+   * 3次元ベクトルの内積を取得する
+   * @param {Location3} vector1 3次元ベクトル
+   * @param {Location3} vector2 3次元ベクトル
+   * @returns {number} ベクトルの内積
+   */
+  public static getVectorDotProduct = (vector1: Location3, vector2: Location3): number => {
+    return vector1.x * vector2.x + vector1.y * vector2.y + vector1.z * vector2.z;
+  };
+
+  /**
    * kmをmに変換する
    * @param {number} km 距離[単位:km]
    * @returns {number} 距離[単位:m]

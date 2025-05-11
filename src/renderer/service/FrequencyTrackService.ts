@@ -64,34 +64,28 @@ export default class FrequencyTrackService {
     );
 
     // 単位をkmからmに変換する
-    positionEcf = CoordinateCalcUtil.km3ToM3(positionEcf);
+    positionEcf = CoordinateCalcUtil.km3ToM3({ x: positionEcf.x, y: -positionEcf.z, z: positionEcf.y });
     velocityEcf = CoordinateCalcUtil.km3ToM3(velocityEcf);
 
-    const gsVel = {
-      x: Constant.Astronomy.EARTH_ROTATION_OMEGA * observerEcf.y,
-      y: Constant.Astronomy.EARTH_ROTATION_OMEGA * observerEcf.x,
-      z: 0,
+    const rangeVel = {
+      x: velocityEcf.x + Constant.Astronomy.EARTH_ROTATION_OMEGA * observerEcf.y,
+      y: velocityEcf.y - Constant.Astronomy.EARTH_ROTATION_OMEGA * observerEcf.x,
+      z: velocityEcf.z,
     };
 
-    // RSTの座標系に合わせてY軸とZ軸を入れ替える
-    const vRel = {
-      x: velocityEcf.x + gsVel.x,
-      y: velocityEcf.z - gsVel.y,
-      z: -velocityEcf.y + gsVel.z,
+    const rangeX = positionEcf.x - observerEcf.x;
+    const rangeY = positionEcf.y - observerEcf.y;
+    const rangeZ = positionEcf.z - observerEcf.z;
+    const rangeNorm = CoordinateCalcUtil.getVectorNorm({ x: rangeX, y: rangeY, z: rangeZ });
+
+    const rangeHat = {
+      x: rangeX / rangeNorm,
+      y: rangeY / rangeNorm,
+      z: rangeZ / rangeNorm,
     };
 
-    const dx = positionEcf.x - observerEcf.x;
-    const dy = positionEcf.y - observerEcf.y;
-    const dz = positionEcf.z - observerEcf.z;
-    const rangeNorm = CoordinateCalcUtil.getVectorNorm({ x: dx, y: dy, z: dz });
-
-    const rHat = {
-      x: dx / rangeNorm,
-      y: dy / rangeNorm,
-      z: dz / rangeNorm,
-    };
-
-    const dot = vRel.x * rHat.x + vRel.y * rHat.y + vRel.z * rHat.z;
+    // 人工衛星の速度ベクトルと地上局の位置ベクトルの内積を計算する
+    const dot = CoordinateCalcUtil.getVectorDotProduct(rangeVel, rangeHat);
 
     return 1.0 + (isUplink ? -dot : dot) / Constant.Astronomy.LIGHT_SPEED;
   }
@@ -111,6 +105,6 @@ export default class FrequencyTrackService {
     );
 
     // 単位をkmからmに変換する
-    return CoordinateCalcUtil.km3ToM3(location3Km);
+    return CoordinateCalcUtil.km3ToM3({ x: location3Km.x, y: -location3Km.z, z: location3Km.y });
   }
 }
