@@ -42,10 +42,10 @@ describe("FrequencyTrackService", () => {
    * 衛星通信入門記載の観測値で検証する
    */
   it.each`
-    observedTime              | expectedFreq
-    ${"2000-11-28T08:30:00Z"} | ${145899}
-    ${"2000-11-28T08:39:00Z"} | ${145898}
-    ${"2000-11-28T08:41:00Z"} | ${145897}
+    observedTime                   | expectedFreq
+    ${"2000-11-28T17:30:00+09:00"} | ${145899}
+    ${"2000-11-28T17:39:00+09:00"} | ${145898}
+    ${"2000-11-28T17:41:00+09:00"} | ${145897}
   `("観測日時 $observedTime のダウンリンク周波数は $expectedFreq である", async ({ observedTime, expectedFreq }) => {
     //Arrange
     const BASE_FREQ_kHz = 145898;
@@ -67,7 +67,7 @@ describe("FrequencyTrackService", () => {
    */
   it("衛星が向かってくる時のアップリンクのドップラーファクターは1より小さい", async () => {
     //Arrange
-    const dt = new Date("2000-11-28T08:30:00Z");
+    const dt = new Date("2000-11-28T17:30:00+09:00");
     const satService = getSatelliteService();
     const freqTrack = new FrequencyTrackService(satService);
 
