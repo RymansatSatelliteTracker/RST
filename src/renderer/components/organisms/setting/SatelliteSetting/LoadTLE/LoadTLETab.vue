@@ -42,6 +42,9 @@ const items = defineModel<AppConfigTleUrl[]>("tleUrls", { default: [] });
 // 選択されたアイテムのインデックス
 const selectedItem = ref(null);
 
+// 画面表示時の初期設定値
+const initialItems: AppConfigTleUrl[] = [];
+
 // 入力チェック関係
 const { validateForm, errors } = useLoadTLETabValidate();
 
@@ -53,6 +56,9 @@ onMounted(() => {
   if (items.value.length < 1) {
     addItem();
   }
+  items.value.forEach((item) => {
+    initialItems.push({ ...item });
+  });
 });
 
 /**
@@ -101,8 +107,20 @@ function selectItem(index: any) {
   selectedItem.value = index;
 }
 
+/**
+ * TLEのURLが更新されているか確認する
+ * @return boolean true:更新されている/false:更新されていない
+ */
+function isTLEUpdated(): boolean {
+  if (JSON.stringify(initialItems) === JSON.stringify(items.value)) {
+    // 初期値と同じなら更新されていない
+    return false;
+  }
+  return true;
+}
+
 // 外部に公開する
-defineExpose({ onOk });
+defineExpose({ onOk, isTLEUpdated });
 </script>
 <style lang="scss" scoped>
 @import "./LoadTLETab.scss";

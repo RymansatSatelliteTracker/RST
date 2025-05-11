@@ -105,7 +105,7 @@ async function onOk() {
 
   // TLEのURLが更新されているか確認
   // 保存の前にやらないとURLの情報が同期してしまう
-  const isTLEUpdated = await checkeTLEUpdated();
+  const isTLEUpdated = loadTLETabRef.value.isTLEUpdated();
 
   // 保存
   await saveAppConfig();
@@ -168,17 +168,6 @@ async function saveAppConfig() {
 
   // 衛星設定を更新したことを通知
   await ApiActiveSat.refreshAppConfig();
-}
-/**
- * TLEのURLが更新されているか
- */
-async function checkeTLEUpdated(): Promise<boolean> {
-  // 次のgetAppConfigすると値が変わってしまうのでdeepcopyする
-  const outputData = JSON.parse(JSON.stringify(toRaw(apiConfigData.value)));
-  // satellites配下が変わることがあるので最新のアプリケーション設定を取得
-  const AppConfig = await ApiConfig.getAppConfigSatSetting();
-  // TLEが更新されたかチェック
-  return JSON.stringify({ ...AppConfig.tle.urls }) !== JSON.stringify({ ...outputData.tle.urls });
 }
 </script>
 <style lang="scss" scoped>
