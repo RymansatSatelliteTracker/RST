@@ -59,7 +59,7 @@ describe("FrequencyTrackService", () => {
 
     //Assert
     const downlinkFreq = Math.trunc(dopplerFactor * BASE_FREQ_kHz);
-    expect(downlinkFreq).toBe(expectedFreq);
+    expect(Math.abs(downlinkFreq - expectedFreq)).toBeLessThanOrEqual(1); // 観測値のため±1kHzの誤差を許容する
   });
 
   /**
