@@ -16,9 +16,9 @@ describe("FrequencyTrackService", () => {
     jest.spyOn(ApiAppConfig, "getAppConfig").mockImplementation(async () => {
       const appConfigModel = new AppConfigModel();
       // 衛星通信入門では神奈川に受信局があるため神奈川の適当な場所を指定する
-      appConfigModel.groundStation.lat = 35.384;
-      appConfigModel.groundStation.lon = 139.61;
-      appConfigModel.groundStation.height = 10.0;
+      appConfigModel.groundStation.lat = 35.38408;
+      appConfigModel.groundStation.lon = 139.610193;
+      appConfigModel.groundStation.height = 36.5485;
       return appConfigModel;
     });
   });
@@ -57,6 +57,8 @@ describe("FrequencyTrackService", () => {
 
     //Act
     const dopplerFactor = await freqTrack.calcDownlinkDopplerFactor(dt, INTERVAL_MS);
+
+    console.log(observedTime, dopplerFactor * BASE_FREQ_kHz);
 
     //Assert
     const downlinkFreq = Math.trunc(dopplerFactor * BASE_FREQ_kHz);
