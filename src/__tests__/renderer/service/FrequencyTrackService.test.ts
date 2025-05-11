@@ -48,7 +48,6 @@ describe("FrequencyTrackService", () => {
     ${"2000-11-28T08:41:00Z"} | ${145897}
   `("観測日時 $observedTime のダウンリンク周波数は $expectedFreq である", async ({ observedTime, expectedFreq }) => {
     //Arrange
-    const INTERVAL_MS = 1000.0;
     const BASE_FREQ_kHz = 145898;
 
     const dt = new Date(observedTime);
@@ -56,7 +55,7 @@ describe("FrequencyTrackService", () => {
     const freqTrack = new FrequencyTrackService(satService);
 
     //Act
-    const dopplerFactor = await freqTrack.calcDownlinkDopplerFactor(dt, INTERVAL_MS);
+    const dopplerFactor = await freqTrack.calcDownlinkDopplerFactor(dt);
 
     console.log(observedTime, dopplerFactor * BASE_FREQ_kHz);
 
@@ -70,13 +69,12 @@ describe("FrequencyTrackService", () => {
    */
   it("衛星が向かってくる時のアップリンクのドップラーファクターは1より小さい", async () => {
     //Arrange
-    const INTERVAL_MS = 1000.0;
     const dt = new Date("2000-11-28T08:30:00Z");
     const satService = getSatelliteService();
     const freqTrack = new FrequencyTrackService(satService);
 
     //Act
-    const dopplerFactor = await freqTrack.calcUplinkDopplerFactor(dt, INTERVAL_MS);
+    const dopplerFactor = await freqTrack.calcUplinkDopplerFactor(dt);
 
     //Assert
     expect(dopplerFactor).toBeLessThan(1);

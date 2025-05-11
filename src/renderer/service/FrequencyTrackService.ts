@@ -27,7 +27,7 @@ export default class FrequencyTrackService {
    * @param {number} intervalMs 現在と以前の時間差[単位:ミリ秒]
    * @returns ドップラーファクター(ダウンリンク)
    */
-  public async calcDownlinkDopplerFactor(nowDate: Date, intervalMs: number = 1000): Promise<number> {
+  public async calcDownlinkDopplerFactor(nowDate: Date): Promise<number> {
     return this._calcDopplerFactor(new Date(nowDate.getTime()), false);
   }
 
@@ -37,7 +37,7 @@ export default class FrequencyTrackService {
    * @param {number} intervalMs 現在と以前の時間差[単位:ミリ秒]
    * @returns ドップラーファクター(アップリンク)
    */
-  public async calcUplinkDopplerFactor(nowDate: Date, intervalMs: number = 1000): Promise<number> {
+  public async calcUplinkDopplerFactor(nowDate: Date): Promise<number> {
     return this._calcDopplerFactor(new Date(nowDate.getTime()), true);
   }
 
