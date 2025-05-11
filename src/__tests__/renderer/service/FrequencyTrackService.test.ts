@@ -57,8 +57,6 @@ describe("FrequencyTrackService", () => {
     //Act
     const dopplerFactor = await freqTrack.calcDownlinkDopplerFactor(dt);
 
-    console.log(observedTime, dopplerFactor * BASE_FREQ_kHz);
-
     //Assert
     const downlinkFreq = Math.trunc(dopplerFactor * BASE_FREQ_kHz);
     expect(downlinkFreq).toBe(expectedFreq);
