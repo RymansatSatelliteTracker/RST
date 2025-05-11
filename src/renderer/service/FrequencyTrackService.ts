@@ -28,7 +28,7 @@ export default class FrequencyTrackService {
    * @returns ドップラーファクター(ダウンリンク)
    */
   public async calcDownlinkDopplerFactor(nowDate: Date, intervalMs: number = 1000): Promise<number> {
-    return this._calcDopplerFactor(new Date(nowDate.getTime() - intervalMs / 2.0), false);
+    return this._calcDopplerFactor(new Date(nowDate.getTime() - intervalMs), false);
   }
 
   /**
@@ -38,7 +38,7 @@ export default class FrequencyTrackService {
    * @returns ドップラーファクター(アップリンク)
    */
   public async calcUplinkDopplerFactor(nowDate: Date, intervalMs: number = 1000): Promise<number> {
-    return this._calcDopplerFactor(new Date(nowDate.getTime() - intervalMs / 2.0), true);
+    return this._calcDopplerFactor(new Date(nowDate.getTime() - intervalMs), true);
   }
 
   /**
