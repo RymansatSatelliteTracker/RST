@@ -28,7 +28,7 @@ export default class FrequencyTrackService {
    * @returns ドップラーファクター(ダウンリンク)
    */
   public async calcDownlinkDopplerFactor(nowDate: Date, intervalMs: number = 1000): Promise<number> {
-    return this._calcDopplerFactor(new Date(nowDate.getTime() - intervalMs), false);
+    return this._calcDopplerFactor(new Date(nowDate.getTime()), false);
   }
 
   /**
@@ -38,7 +38,7 @@ export default class FrequencyTrackService {
    * @returns ドップラーファクター(アップリンク)
    */
   public async calcUplinkDopplerFactor(nowDate: Date, intervalMs: number = 1000): Promise<number> {
-    return this._calcDopplerFactor(new Date(nowDate.getTime() - intervalMs), true);
+    return this._calcDopplerFactor(new Date(nowDate.getTime()), true);
   }
 
   /**
@@ -48,13 +48,20 @@ export default class FrequencyTrackService {
    * @returns {Promise<number>} ドップラーファクター
    */
   private async _calcDopplerFactor(nowDate: Date, isUplink: boolean): Promise<number> {
-    let positionEcf = this._satelliteService.getTargetLocation3(nowDate);
+    const targetPosition = this._satelliteService.getTargetPolarLocationInDegree(nowDate);
+    const observerEcf = await this.getGroundStationEcefLocation();
     let velocityEcf = this._satelliteService.getTargetVelocity3(nowDate);
-    let observerEcf = await this.getGroundStationEcefLocation();
 
-    if (!positionEcf || !velocityEcf || !observerEcf) {
+    if (!targetPosition || !observerEcf || !velocityEcf) {
       return 1.0;
     }
+
+    // 人工衛星の緯度/経度を地心直交座標に変換する
+    let positionEcf = CoordinateCalcUtil.geodeticInDegreeToEcef(
+      targetPosition.latitude,
+      targetPosition.longitude,
+      targetPosition.height
+    );
 
     // 単位をkmからmに変換する
     positionEcf = CoordinateCalcUtil.km3ToM3(positionEcf);
@@ -66,10 +73,11 @@ export default class FrequencyTrackService {
       z: 0,
     };
 
+    // RSTの座標系に合わせてY軸とZ軸を入れ替える
     const vRel = {
       x: velocityEcf.x + gsVel.x,
-      y: velocityEcf.y - gsVel.y,
-      z: velocityEcf.z - gsVel.z,
+      y: velocityEcf.z - gsVel.y,
+      z: -velocityEcf.y + gsVel.z,
     };
 
     const dx = positionEcf.x - observerEcf.x;
@@ -85,7 +93,7 @@ export default class FrequencyTrackService {
 
     const dot = vRel.x * rHat.x + vRel.y * rHat.y + vRel.z * rHat.z;
 
-    return 1.0 - (isUplink ? -dot : dot) / Constant.Astronomy.LIGHT_SPEED;
+    return 1.0 + (isUplink ? -dot : dot) / Constant.Astronomy.LIGHT_SPEED;
   }
 
   /**
