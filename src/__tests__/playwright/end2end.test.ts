@@ -5,14 +5,14 @@ import { _electron, ElectronApplication, expect, Page, test } from "playwright/t
 let electronApp: ElectronApplication;
 let page: Page;
 
-const AppConfigStore = new Store({ name: Constant.Config.CONFIG_FILENAME });
-const WinodwStore = new Store({ name: Constant.Config.CONFIG_WINDOW });
+const appConfigStore = new Store({ name: Constant.Config.CONFIG_FILENAME });
+const winodwStore = new Store({ name: Constant.Config.CONFIG_WINDOW });
 
 //electoronのアプリを開く
 test.beforeEach(async () => {
   // electron-storeのデータをクリア
-  AppConfigStore.clear();
-  WinodwStore.clear();
+  appConfigStore.clear();
+  winodwStore.clear();
 
   // 起動
   electronApp = await _electron.launch({
@@ -25,8 +25,8 @@ test.beforeEach(async () => {
 test.afterEach(async () => {
   await electronApp.close();
   // electron-storeのデータをクリア
-  AppConfigStore.clear();
-  WinodwStore.clear();
+  appConfigStore.clear();
+  winodwStore.clear();
 });
 
 //テスト内容
