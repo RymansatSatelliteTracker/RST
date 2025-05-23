@@ -130,6 +130,14 @@ export default class Constant {
   };
 
   /**
+   * 単位関係
+   */
+  public static readonly Unit = class {
+    // 10e6
+    static readonly Mega = 1000000;
+  };
+
+  /**
    * 表示設定関係
    */
   public static readonly Display = class {
