@@ -2,7 +2,6 @@ import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel";
 import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
 import { AppConfigModel, AppConfigRotator, AppConfigTransceiver } from "@/common/model/AppConfigModel";
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
-import { Message } from "@/common/model/Message";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse, LangType } from "@/common/types/types";
 import WebClient from "@/common/WebClient";
@@ -278,8 +277,8 @@ export function initializeIpcEvents() {
   /**
    * 通知メッセージイベント
    */
-  ipcMain.handle("onNoticeMessage", async (event, message: Message) => {
-    return message;
+  ipcMain.handle("onNoticeMessage", async (event, args: any) => {
+    return args;
   });
 }
 

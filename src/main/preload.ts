@@ -303,11 +303,11 @@ const apiHandler = {
   /**
    * 通知メッセージイベント
    * メイン側で以下の記載を行うと"onNoticeMessage"が発火し、レンダラ側のコールバックが実行される
-   * mainWindow.webContents.send("onNoticeMessage", noticeType, message);
+   * mainWindow.webContents.send("onNoticeMessage", message);
    */
   onNoticeMessage: (callback: Function) => {
-    ipcRenderer.on("onNoticeMessage", (event: IpcRendererEvent, message: Message) => {
-      callback(message);
+    ipcRenderer.on("onNoticeMessage", (event: IpcRendererEvent, args: any) => {
+      callback(args[0] as Message);
     });
   },
 };
