@@ -84,21 +84,23 @@ export default class TleService {
         continue;
       }
 
-      const res = await webClient.get(tleUrl.url);
-      if (res.status !== 200) {
-        AppMainLogger.warn(`指定のURLでTLEが取得できませんでした。 ${res.status} ${tleUrl} `);
-        continue;
-      }
+      const res = await this.getTleTextByUrl(tleUrl.url, webClient);
 
-      if (!CommonUtil.isEmpty(res.data.trim())) {
+      if (!CommonUtil.isEmpty(res)) {
         // 取得できたTLEデータを結合する
-        tleTexts.push(res.data.trim());
+        tleTexts.push(res);
       }
     }
 
     return tleTexts.join("\r\n");
   }
 
+  /**
+   * 指定のURLからTLEを取得する
+   * @param url
+   * @param webClient
+   * @returns
+   */
   private async getTleTextByUrl(url: string, webClient: WebClient): Promise<string> {
     const res = await webClient.get(url);
     if (res.status !== 200) {
@@ -296,6 +298,12 @@ export default class TleService {
     return tleJsonModel;
   }
 
+  /**
+   * URLから読み込み可能なTLEが取得できるか確認する
+   * @param url
+   * @param webClient
+   * @returns
+   */
   public async canGetValidTle(url: string, webClient: WebClient): Promise<boolean> {
     // URLからTLEを取得する
     const tleText = await this.getTleTextByUrl(url, webClient);
