@@ -90,6 +90,10 @@ export default class I18nMsgs {
     ja: "軌道6要素は全て入力してください",
   };
   public static readonly CHK_ERR_TLE: I18nMsgItem = { en: "TLE format is invalid", ja: "TLEのフォーマットが不正です" };
+  public static readonly CHK_ERR_GET_TLE: I18nMsgItem = {
+    en: "Cannot retrieve TLE from the specified URL ({0})",
+    ja: "指定のURLからTLEを取得できません ({0})",
+  };
   public static readonly CHK_ERR_TLE_2LINE: I18nMsgItem = {
     en: "Please enter TLE on two lines",
     ja: "TLEは2行で入力してください",

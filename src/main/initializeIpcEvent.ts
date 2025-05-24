@@ -265,6 +265,13 @@ export function initializeIpcEvents() {
    * 無線機周波数保存イベント
    */
   ipcMain.handle("onSaveTransceiverFrequency", async (evnet) => {});
+
+  /**
+   * URLから読み込み可能なTLEが取得できるか確認する
+   */
+  ipcMain.handle("canGetValidTle", async (event, url: string): Promise<boolean> => {
+    return new TleService().canGetValidTle(url);
+  });
 }
 
 /**
@@ -301,6 +308,7 @@ export function releaseIpcEvents() {
   ipcMain.removeAllListeners("onChangeTransceiverMode");
   ipcMain.removeAllListeners("setSatelliteMode");
   ipcMain.removeAllListeners("onSaveTransceiverFrequency");
+  ipcMain.removeAllListeners("canGetValidTle");
 
   initialized = false;
 }

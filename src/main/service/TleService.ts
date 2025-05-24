@@ -99,6 +99,20 @@ export default class TleService {
     return tleTexts.join("\r\n");
   }
 
+  private async getTleTextByUrl(url: string): Promise<string> {
+    const webClient = new WebClient();
+    const res = await webClient.get(url);
+    if (res.status !== 200) {
+      AppMainLogger.warn(`指定のURLでTLEが取得できませんでした。 ${res.status} ${url} `);
+      return "";
+    }
+    if (!CommonUtil.isEmpty(res.data.trim())) {
+      return res.data.trim();
+    } else {
+      return "";
+    }
+  }
+
   /**
    * TLEが取得可能か判定する
    * @returns true: 取得可能
@@ -281,5 +295,32 @@ export default class TleService {
     TleService.cachedTleStringMap = {};
 
     return tleJsonModel;
+  }
+
+  public async canGetValidTle(url: string): Promise<boolean> {
+    // URLからTLEを取得する
+    const tleText = await this.getTleTextByUrl(url);
+    // TLEがブランクの場合
+    if (CommonUtil.isEmpty(tleText)) {
+      return false;
+    }
+
+    // 各OSの改行コードを想定してスプリットする
+    const lines = tleText.split(/\r\n|\r|\n/).filter((line) => !CommonUtil.isEmpty(line.trim()));
+    // TLEの2行目が「1 」、3行目が「2 」で始まる行を探す
+    // 一つでも見つけたらOK
+    let i = 0;
+    while (i < lines.length) {
+      if (
+        lines[i + 1] &&
+        lines[i + 1].substring(0, 2) === "1 " &&
+        lines[i + 2] &&
+        lines[i + 2].substring(0, 2) === "2 "
+      ) {
+        return true;
+      }
+      i++;
+    }
+    return false;
   }
 }

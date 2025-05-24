@@ -31,6 +31,10 @@ import I18nMsgs from "@/common/I18nMsgs";
 import { AppConfigTleUrl } from "@/common/model/AppConfigModel";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
 import TleUrlEditableCheckbox from "@/renderer/components/molecules/TleUrlEditableCheckbox/TleUrlEditableCheckbox.vue";
+import {
+  getUrlofInvalidContents,
+  isUpdated,
+} from "@/renderer/components/organisms/setting/SatelliteSetting/LoadTLE/useLoadTLE";
 import "@mdi/font/css/materialdesignicons.css";
 import { mdiDelete, mdiPlusCircle } from "@mdi/js";
 import { onMounted, ref } from "vue";
@@ -70,6 +74,7 @@ async function onOk(): Promise<string> {
   // URLの設定がない
   if (items.value.length === 0) return I18nUtil.getMsg(I18nMsgs.CHK_ERR_NO_URL);
 
+  // バリデーションチェック
   for await (const item of items.value) {
     const result = await validateForm(item);
     if (!result) {
@@ -78,6 +83,12 @@ async function onOk(): Promise<string> {
       // エラーなら必ず1件以上メッセージがある
       return messages[0];
     }
+  }
+  // 指定されたURLが有効か確認する
+  if (isTLEUpdated()) {
+    // 全てOKならOK、異常があればエラーメッセージを返す
+    const message = await checkTleUrlAccessibility();
+    return message;
   }
   return "OK";
 }
@@ -112,11 +123,20 @@ function selectItem(index: any) {
  * @return boolean true:更新されている/false:更新されていない
  */
 function isTLEUpdated(): boolean {
-  if (JSON.stringify(initialItems) === JSON.stringify(items.value)) {
-    // 初期値と同じなら更新されていない
-    return false;
+  return isUpdated(initialItems, items.value);
+}
+
+/**
+ * TLEのURLが正しいか確認する
+ * @return string OK:すべてのチェックが成功/一つ目のメッセージ:チェックが一つ以上失敗
+ */
+async function checkTleUrlAccessibility(): Promise<string> {
+  const invalidUrls = await getUrlofInvalidContents(initialItems, items.value);
+  if (invalidUrls.length > 0) {
+    // エラーメッセージを表示する
+    return I18nUtil.getMsg(I18nMsgs.CHK_ERR_GET_TLE, invalidUrls[0].url);
   }
-  return true;
+  return "OK";
 }
 
 // 外部に公開する
