@@ -46,8 +46,10 @@
         </v-card-text>
 
         <v-card-actions>
-          <v-btn @click="onOk" variant="outlined" size="large">{{ I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_OK) }}</v-btn>
-          <v-btn @click="onCancel" variant="outlined" size="large" class="ml-5">{{
+          <v-btn @click="onOk" variant="outlined" size="large" :disabled="loading">{{
+            I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_OK)
+          }}</v-btn>
+          <v-btn @click="onCancel" variant="outlined" size="large" class="ml-5" :disabled="loading">{{
             I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_CANCEL)
           }}</v-btn>
         </v-card-actions>
@@ -78,6 +80,8 @@ const tab = ref(null);
 const apiConfigData = ref<AppConfigSatSettingModel>(new AppConfigSatSettingModel());
 // バリデーションチェック用のformのref
 const loadTLETabRef = ref();
+// 更新中を示すref
+const loading = ref(false);
 
 // ダイアログの表示可否
 const isShow = defineModel("isShow");
@@ -93,13 +97,31 @@ onMounted(() => {
  */
 async function onOk() {
   await nextTick();
+
+  // 登録中に再度ボタンを押せないようにする
+  loading.value = true;
+
+  // 登録処理を実施
+  const ret = await regist();
+
+  loading.value = false;
+
+  // 処理が正常終了したら親へ通知て閉じる
+  if (ret) emits("onOk");
+}
+
+/**
+ * アプリケーション設定を登録する
+ * @returns {Promise<boolean>} true:登録成功/false:登録失敗
+ */
+async function regist(): Promise<boolean> {
   // 画面を開かないとロードしないので判定する
   // 画面を開かない場合は編集もできないのでチェックしない
   if (loadTLETabRef.value) {
     const result = await loadTLETabRef.value.onOk();
     if (result !== "OK") {
       emitter.emit(Constant.GlobalEvent.NOTICE_ERR, result);
-      return;
+      return false;
     }
   }
 
@@ -121,12 +143,10 @@ async function onOk() {
     const ret = await ApiDefaultSatellite.reCreateDefaultSatellite();
     if (!ret) {
       emitter.emit(Constant.GlobalEvent.NOTICE_INFO, I18nUtil.getMsg(I18nMsgs.ERR_FAIL_TO_UPDATE_TLE_URL));
-      return;
+      return false;
     }
   }
-
-  // 親へ通知
-  emits("onOk");
+  return true;
 }
 
 /**
