@@ -98,7 +98,7 @@ async function onOk() {
   if (loadTLETabRef.value) {
     const result = await loadTLETabRef.value.onOk();
     if (result !== "OK") {
-      emitter.emit(Constant.GlobalEvent.NOTICE_INFO, result);
+      emitter.emit(Constant.GlobalEvent.NOTICE_ERR, result);
       return;
     }
   }
