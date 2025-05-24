@@ -292,6 +292,13 @@ const apiHandler = {
       callback();
     });
   },
+  /**
+   * URLから読み込み可能なTLEが取得できるか確認する
+   * 呼び出し例）const canGet = await window.rstApi.canGetValidTle(url);
+   */
+  canGetValidTle: function (url: string): Promise<boolean> {
+    return ipcRenderer.invoke("canGetValidTle", url);
+  },
 };
 
 // rendererプロセスに公開（アプリ関係）
