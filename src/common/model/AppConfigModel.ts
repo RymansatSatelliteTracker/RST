@@ -178,6 +178,10 @@ export class AppConfigRotator {
   public rangeAzMin = 0;
   // ローテーター最大方位
   public rangeAzMax = 360;
+  // ローテーター最小仰角
+  public rangeElMin = 0;
+  // ローテーター最大仰角
+  public rangeElMax = 180;
   // 動作モード
   public moveMode = Constant.Config.Rotator.MOVE_MODE_NORMAL;
   // 自動追尾開始分

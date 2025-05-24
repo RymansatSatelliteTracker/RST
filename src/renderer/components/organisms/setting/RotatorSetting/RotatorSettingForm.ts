@@ -8,6 +8,8 @@ export default class RotatorSettingForm extends RotatorConnForm {
   public basePositionDegree = "";
   public rangeAzMin = "";
   public rangeAzMax = "";
+  public rangeElMin = "";
+  public rangeElMax = "";
   public moveMode = "";
   public startAgoMinute = "";
   public parkPosAz = "";

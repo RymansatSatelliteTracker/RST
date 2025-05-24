@@ -37,6 +37,16 @@ export const valiSchemaRotatorBehavior = zod.object({
     return ZodUtil.numRequire(message, 0, azRange.max);
   }),
 
+  rangeElMin: zod.lazy(() => {
+    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_MIN_MAX, `${elRange.min}`, "0");
+    return ZodUtil.numRequire(message, elRange.min, 0);
+  }),
+
+  rangeElMax: zod.lazy(() => {
+    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_MIN_MAX, "0", `${elRange.max}`);
+    return ZodUtil.numRequire(message, 0, elRange.max);
+  }),
+
   basePositionDegree: zod.lazy(() => {
     const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_MIN_MAX, "0", "360");
     return ZodUtil.num(message, 0, 360);
