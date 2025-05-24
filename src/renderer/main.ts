@@ -3,7 +3,7 @@ import router from "@/renderer/router/router";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger";
 import { createApp } from "vue";
 
-import { LangType, Message } from "@/common/types/types";
+import { LangType } from "@/common/types/types";
 import { useStoreDispLang } from "@/renderer/store/useStoreDispLang";
 import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
@@ -18,6 +18,7 @@ import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 // 全体SCSSの適用
 import Constant from "@/common/Constant";
 import I18nMsgs from "@/common/I18nMsgs";
+import { Message } from "@/common/model/Message";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
 import emitter from "@/renderer/util/EventBus";
 import "./components/styles/global.scss";

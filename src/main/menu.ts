@@ -1,8 +1,9 @@
 import Constant from "@/common/Constant";
 import I18nMsgs from "@/common/I18nMsgs";
-import { LangType, Message } from "@/common/types/types";
+import { Message } from "@/common/model/Message";
+import { LangType } from "@/common/types/types";
 import EnvUtil from "@/common/util/EnvUtil";
-import { getMainWindow } from "@/main/main";
+import { fireIpcEvent, getMainWindow } from "@/main/main";
 import AppConfigExportSerivce from "@/main/service/AppConfigExportSerivce";
 import AppConfigImportSerivce from "@/main/service/AppConfigImportSerivce";
 import DefaultSatelliteService from "@/main/service/DefaultSatelliteService";
@@ -25,12 +26,11 @@ async function onUpdateTleClick() {
   const isSuccess = await defsat.reCreateDefaultSatellite();
 
   const message: Message = isSuccess
-    ? { type: Constant.GlobalEvent.NOTICE_INFO, text: I18nUtil4Main.getMsg(I18nMsgs.UPDATE_TLE_SUCCESS) }
-    : { type: Constant.GlobalEvent.NOTICE_ERR, text: I18nUtil4Main.getMsg(I18nMsgs.ERR_FAIL_TO_UPDATE_TLE_URL) };
+    ? new Message(Constant.GlobalEvent.NOTICE_INFO, I18nUtil4Main.getMsg(I18nMsgs.UPDATE_TLE_SUCCESS))
+    : new Message(Constant.GlobalEvent.NOTICE_ERR, I18nUtil4Main.getMsg(I18nMsgs.ERR_FAIL_TO_UPDATE_TLE_URL));
 
-  getMainWindow().webContents.send("onNoticeMessage", message);
+  fireIpcEvent("onNoticeMessage", message);
 }
-
 /**
  * 表示言語クリック
  */
