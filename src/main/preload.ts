@@ -9,7 +9,7 @@ import {
 import { AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel";
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
 import { AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel";
-import { Message } from "@/common/model/Message";
+import { MessageModel } from "@/common/model/MessageModel";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse, LangType } from "@/common/types/types";
 import type { TleStrings } from "@/renderer/types/satellite-type";
@@ -307,7 +307,7 @@ const apiHandler = {
    */
   onNoticeMessage: (callback: Function) => {
     ipcRenderer.on("onNoticeMessage", (event: IpcRendererEvent, args: any) => {
-      callback(args[0] as Message);
+      callback(args[0] as MessageModel);
     });
   },
 };

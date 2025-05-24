@@ -1,6 +1,6 @@
 import Constant from "@/common/Constant";
 import I18nMsgs from "@/common/I18nMsgs";
-import { Message } from "@/common/model/Message";
+import { MessageModel } from "@/common/model/MessageModel";
 import { LangType } from "@/common/types/types";
 import EnvUtil from "@/common/util/EnvUtil";
 import { fireIpcEvent, getMainWindow } from "@/main/main";
@@ -25,9 +25,9 @@ async function onUpdateTleClick() {
   const defsat = new DefaultSatelliteService();
   const isSuccess = await defsat.reCreateDefaultSatellite();
 
-  const message: Message = isSuccess
-    ? new Message(Constant.GlobalEvent.NOTICE_INFO, I18nUtil4Main.getMsg(I18nMsgs.UPDATE_TLE_SUCCESS))
-    : new Message(Constant.GlobalEvent.NOTICE_ERR, I18nUtil4Main.getMsg(I18nMsgs.ERR_FAIL_TO_UPDATE_TLE_URL));
+  const message: MessageModel = isSuccess
+    ? new MessageModel(Constant.GlobalEvent.NOTICE_INFO, I18nUtil4Main.getMsg(I18nMsgs.UPDATE_TLE_SUCCESS))
+    : new MessageModel(Constant.GlobalEvent.NOTICE_ERR, I18nUtil4Main.getMsg(I18nMsgs.ERR_FAIL_TO_UPDATE_TLE_URL));
 
   fireIpcEvent("onNoticeMessage", message);
 }

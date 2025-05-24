@@ -1,6 +1,6 @@
 import Constant from "@/common/Constant";
 import I18nMsgs from "@/common/I18nMsgs";
-import { Message } from "@/common/model/Message";
+import { MessageModel } from "@/common/model/MessageModel";
 import ValidatorResultModel from "@/main/common/model/ValidatorResultModel";
 import { fireIpcEvent, getMainWindow } from "@/main/main";
 import ActiveSatService from "@/main/service/ActiveSatService";
@@ -34,7 +34,7 @@ export default class AppConfigImportSerivce {
     if (results.length !== 0) {
       // エラーが発生した項目名を２行目に表示する
       const msg = I18nUtil4Main.getMsg(results[0].errMsgItem) + "\n" + results[0].errItemName;
-      fireIpcEvent("onNoticeMessage", new Message(Constant.GlobalEvent.NOTICE_ERR, msg));
+      fireIpcEvent("onNoticeMessage", new MessageModel(Constant.GlobalEvent.NOTICE_ERR, msg));
       return;
     }
 
