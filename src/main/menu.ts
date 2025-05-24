@@ -26,7 +26,7 @@ async function onUpdateTleClick() {
   const isSuccess = await defsat.reCreateDefaultSatellite();
 
   const message: MessageModel = isSuccess
-    ? new MessageModel(Constant.GlobalEvent.NOTICE_INFO, I18nUtil4Main.getMsg(I18nMsgs.UPDATE_TLE_SUCCESS))
+    ? new MessageModel(Constant.GlobalEvent.NOTICE_INFO, I18nUtil4Main.getMsg(I18nMsgs.SYSTEM_UPDATE_TLE_SUCCESS))
     : new MessageModel(Constant.GlobalEvent.NOTICE_ERR, I18nUtil4Main.getMsg(I18nMsgs.ERR_FAIL_TO_UPDATE_TLE_URL));
 
   fireIpcEvent("onNoticeMessage", message);
