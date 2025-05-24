@@ -254,9 +254,10 @@ export default class I18nMsgs {
   public static readonly G51_TEST_MODE: I18nMsgItem = { en: "Test Mode", ja: "テストモード" };
   public static readonly G51_IPADDRESS: I18nMsgItem = { en: "IP Address", ja: "IPアドレス" };
   public static readonly G51_IPADDRESS_PORT: I18nMsgItem = { en: "Port", ja: "Port" };
-  public static readonly G51_AZ_KADO_HANI: I18nMsgItem = { en: "Orientation Range", ja: "方位可動範囲" };
-  public static readonly G51_AZ_KADO_HANI_MIN: I18nMsgItem = { en: "Min", ja: "最小" };
-  public static readonly G51_AZ_KADO_HANI_MAX: I18nMsgItem = { en: "Max", ja: "最大" };
+  public static readonly G51_AZ_KADO_HANI: I18nMsgItem = { en: "Az Range", ja: "方位可動範囲" };
+  public static readonly G51_EL_KADO_HANI: I18nMsgItem = { en: "El Range", ja: "仰角可動範囲" };
+  public static readonly G51_KADO_HANI_MIN: I18nMsgItem = { en: "Min", ja: "最小" };
+  public static readonly G51_KADO_HANI_MAX: I18nMsgItem = { en: "Max", ja: "最大" };
   public static readonly G51_BASE_POSITION_DEGREE: I18nMsgItem = { en: "Base Position", ja: "起点" };
   public static readonly G51_BASE_POSITION_DEGREE_GUIDE: I18nMsgItem = { en: "North is 0°", ja: "北を0°とする" };
   public static readonly G51_MOVE_MODE: I18nMsgItem = { en: "Mode", ja: "モード" };
