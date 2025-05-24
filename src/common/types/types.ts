@@ -40,3 +40,11 @@ export type I18nMsgItem = {
  * 言語種別
  */
 export type LangType = "ja" | "en";
+
+/**
+ * メッセージ
+ */
+export type Message = {
+  type: "NOTICE_INFO" | "NOTICE_ERR" | "NOTICE_CONFIRM";
+  text: string;
+};

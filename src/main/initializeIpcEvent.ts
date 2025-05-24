@@ -3,7 +3,7 @@ import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
 import { AppConfigModel, AppConfigRotator, AppConfigTransceiver } from "@/common/model/AppConfigModel";
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
-import { ApiResponse, LangType } from "@/common/types/types";
+import { ApiResponse, LangType, Message } from "@/common/types/types";
 import WebClient from "@/common/WebClient";
 import SerialComm from "@/main/common/SerialComm";
 import ActiveSatService from "@/main/service/ActiveSatService";
@@ -273,6 +273,13 @@ export function initializeIpcEvents() {
   ipcMain.handle("canGetValidTle", async (event, url: string): Promise<boolean> => {
     return new TleService().canGetValidTle(url, new WebClient());
   });
+
+  /**
+   * 通知メッセージイベント
+   */
+  ipcMain.handle("onNoticeMessage", async (event, message: Message) => {
+    return message;
+  });
 }
 
 /**
@@ -310,6 +317,7 @@ export function releaseIpcEvents() {
   ipcMain.removeAllListeners("setSatelliteMode");
   ipcMain.removeAllListeners("onSaveTransceiverFrequency");
   ipcMain.removeAllListeners("canGetValidTle");
+  ipcMain.removeAllListeners("onNoticeMessage");
 
   initialized = false;
 }

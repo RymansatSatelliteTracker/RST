@@ -140,7 +140,10 @@ export default class I18nMsgs {
     en: "Failed to update data based on the specified TLE URL",
     ja: "指定したTLEのURLに基づいたデータ更新に失敗しました",
   };
-
+  public static readonly UPDATE_TLE_SUCCESS: I18nMsgItem = {
+    en: "TLE update completed",
+    ja: "TLEの更新が完了しました",
+  };
   // Frequency.json系エラーメッセージ
   public static readonly CHK_ERR_FREQUENCY_INVALID_ITEM: I18nMsgItem = {
     en: "The item value in the satellite frequency setting file is invalid",

@@ -1,6 +1,6 @@
 import Constant from "@/common/Constant";
 import I18nMsgs from "@/common/I18nMsgs";
-import { LangType } from "@/common/types/types";
+import { LangType, Message } from "@/common/types/types";
 import EnvUtil from "@/common/util/EnvUtil";
 import { getMainWindow } from "@/main/main";
 import AppConfigExportSerivce from "@/main/service/AppConfigExportSerivce";
@@ -8,7 +8,6 @@ import AppConfigImportSerivce from "@/main/service/AppConfigImportSerivce";
 import DefaultSatelliteService from "@/main/service/DefaultSatelliteService";
 import I18nService from "@/main/service/I18nService";
 import I18nUtil4Main from "@/main/util/I18nUtil4Main";
-import { showMsgBox } from "@/main/util/MainMessageDialog";
 import { app, Menu, MenuItem, shell } from "electron";
 import { MenuItemConstructorOptions } from "electron/main";
 
@@ -23,10 +22,13 @@ interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
  */
 async function onUpdateTleClick() {
   const defsat = new DefaultSatelliteService();
-  const ret = await defsat.reCreateDefaultSatellite();
-  if (!ret) {
-    showMsgBox(I18nUtil4Main.getMsg(I18nMsgs.ERR_FAIL_TO_UPDATE_TLE_URL));
-  }
+  const isSuccess = await defsat.reCreateDefaultSatellite();
+
+  const message: Message = isSuccess
+    ? { type: Constant.GlobalEvent.NOTICE_INFO, text: I18nUtil4Main.getMsg(I18nMsgs.UPDATE_TLE_SUCCESS) }
+    : { type: Constant.GlobalEvent.NOTICE_ERR, text: I18nUtil4Main.getMsg(I18nMsgs.ERR_FAIL_TO_UPDATE_TLE_URL) };
+
+  getMainWindow().webContents.send("onNoticeMessage", message);
 }
 
 /**
@@ -93,8 +95,7 @@ export function makeElectronMenu(): Electron.Menu {
 
         { type: "separator" },
         // TLE更新
-        // TODO 完了通知トーストが未実装のため、無効化
-        { label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_UPDATE_TLE), click: () => onUpdateTleClick(), enabled: false },
+        { label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_UPDATE_TLE), click: () => onUpdateTleClick() },
       ],
     });
 

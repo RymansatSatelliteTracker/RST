@@ -10,7 +10,7 @@ import { AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel";
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
 import { AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
-import { ApiResponse, LangType } from "@/common/types/types";
+import { ApiResponse, LangType, Message } from "@/common/types/types";
 import type { TleStrings } from "@/renderer/types/satellite-type";
 import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";
 
@@ -298,6 +298,16 @@ const apiHandler = {
    */
   canGetValidTle: function (url: string): Promise<boolean> {
     return ipcRenderer.invoke("canGetValidTle", url);
+  },
+  /**
+   * 通知メッセージイベント
+   * メイン側で以下の記載を行うと"onNoticeMessage"が発火し、レンダラ側のコールバックが実行される
+   * mainWindow.webContents.send("onNoticeMessage", noticeType, message);
+   */
+  onNoticeMessage: (callback: Function) => {
+    ipcRenderer.on("onNoticeMessage", (event: IpcRendererEvent, message: Message) => {
+      callback(message);
+    });
   },
 };
 

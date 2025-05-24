@@ -3,7 +3,7 @@ import router from "@/renderer/router/router";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger";
 import { createApp } from "vue";
 
-import { LangType } from "@/common/types/types";
+import { LangType, Message } from "@/common/types/types";
 import { useStoreDispLang } from "@/renderer/store/useStoreDispLang";
 import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
@@ -82,6 +82,11 @@ async function startUp() {
   // 言語設定の変更イベントを受信したら、ストアに設定する
   window.rstApi.onDispLangChange(function (lang: LangType) {
     dispLangStore.setLang(lang);
+  });
+
+  // 通知メッセージイベントを受信したら、メッセージを表示する
+  window.rstApi.onNoticeMessage(function (message: Message) {
+    emitter.emit(message.type, message.text);
   });
 }
 
