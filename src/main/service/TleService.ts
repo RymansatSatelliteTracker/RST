@@ -99,8 +99,7 @@ export default class TleService {
     return tleTexts.join("\r\n");
   }
 
-  private async getTleTextByUrl(url: string): Promise<string> {
-    const webClient = new WebClient();
+  private async getTleTextByUrl(url: string, webClient: WebClient): Promise<string> {
     const res = await webClient.get(url);
     if (res.status !== 200) {
       AppMainLogger.warn(`指定のURLでTLEが取得できませんでした。 ${res.status} ${url} `);
@@ -297,9 +296,9 @@ export default class TleService {
     return tleJsonModel;
   }
 
-  public async canGetValidTle(url: string): Promise<boolean> {
+  public async canGetValidTle(url: string, webClient: WebClient): Promise<boolean> {
     // URLからTLEを取得する
-    const tleText = await this.getTleTextByUrl(url);
+    const tleText = await this.getTleTextByUrl(url, webClient);
     // TLEがブランクの場合
     if (CommonUtil.isEmpty(tleText)) {
       return false;

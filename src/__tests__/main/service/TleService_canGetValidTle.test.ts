@@ -1,3 +1,4 @@
+import WebClient, { AppHttpResponse } from "@/common/WebClient";
 import TleService from "@/main/service/TleService";
 
 /**
@@ -5,13 +6,29 @@ import TleService from "@/main/service/TleService";
  */
 describe("TleService - canGetValidTle", () => {
   /**
-   * TLEがブランク
-   * 保持TLEもブランク
+   * 取得したTLEが読み込み可能な場合true
    */
-  test("TLEが取得できないURLの場合false", async () => {
-    const tleService = new TleService();
+  test("取得したTLEが読み込み可能な場合true", async () => {
+    // Arrange
+    jest.spyOn(WebClient.prototype, "get").mockResolvedValue(new AppHttpResponse(200, "", "test\n1 abcde\n2 12345\n"));
     const url = "https://example.com/tle.txt";
-    const result = await tleService.canGetValidTle(url);
+    const sut = new TleService();
+    // Act
+    const result = await sut.canGetValidTle(url, new WebClient());
+    // Assert
+    expect(result).toBe(true);
+  });
+  /**
+   * 取得したTLEが読み込み不可の場合false
+   */
+  test("取得したTLEが読み込み不可の場合false", async () => {
+    // Arrange
+    jest.spyOn(WebClient.prototype, "get").mockResolvedValue(new AppHttpResponse(200, "", "hoge"));
+    const url = "https://example.com/tle.txt";
+    const sut = new TleService();
+    // Act
+    const result = await sut.canGetValidTle(url, new WebClient());
+    // Assert
     expect(result).toBe(false);
   });
 });

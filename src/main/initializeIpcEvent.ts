@@ -4,6 +4,7 @@ import { AppConfigModel, AppConfigRotator, AppConfigTransceiver } from "@/common
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse, LangType } from "@/common/types/types";
+import WebClient from "@/common/WebClient";
 import SerialComm from "@/main/common/SerialComm";
 import ActiveSatService from "@/main/service/ActiveSatService";
 import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService";
@@ -270,7 +271,7 @@ export function initializeIpcEvents() {
    * URLから読み込み可能なTLEが取得できるか確認する
    */
   ipcMain.handle("canGetValidTle", async (event, url: string): Promise<boolean> => {
-    return new TleService().canGetValidTle(url);
+    return new TleService().canGetValidTle(url, new WebClient());
   });
 }
 
