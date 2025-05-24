@@ -273,6 +273,13 @@ export function initializeIpcEvents() {
   ipcMain.handle("canGetValidTle", async (event, url: string): Promise<boolean> => {
     return new TleService().canGetValidTle(url, new WebClient());
   });
+
+  /**
+   * 通知メッセージイベント
+   */
+  ipcMain.handle("onNoticeMessage", async (event, args: any) => {
+    return args;
+  });
 }
 
 /**
@@ -310,6 +317,7 @@ export function releaseIpcEvents() {
   ipcMain.removeAllListeners("setSatelliteMode");
   ipcMain.removeAllListeners("onSaveTransceiverFrequency");
   ipcMain.removeAllListeners("canGetValidTle");
+  ipcMain.removeAllListeners("onNoticeMessage");
 
   initialized = false;
 }
