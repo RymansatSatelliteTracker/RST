@@ -37,7 +37,7 @@ export default class RotatorSimController extends RotatorControllerBase {
   /**
    * ローテーター位置を設定する
    */
-  public override setPosition(pos: AntennaPositionModel) {
+  public override doSetPosition(pos: AntennaPositionModel) {
     this.az = pos.azimuth;
     this.el = pos.elevation;
   }
