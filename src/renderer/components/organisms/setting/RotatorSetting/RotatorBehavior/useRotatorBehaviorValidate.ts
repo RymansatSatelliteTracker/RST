@@ -69,5 +69,5 @@ export const valiSchemaRotatorBehavior = zod.object({
 });
 
 // AZ、ELの角度範囲
-export const azRange: RotatorRage = { min: -90, max: 450 };
-export const elRange: RotatorRage = { min: -90, max: 180 };
+export const azRange: RotatorRage = { min: -180, max: 540 };
+export const elRange: RotatorRage = { min: -180, max: 180 };
