@@ -56,6 +56,7 @@
         </v-row>
         <v-row>
           <!-- アップリンク周波数 -->
+          <!-- アップリンク周波数1 -->
           <v-col cols="4">
             <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_UPLINK) }}</label>
           </v-col>
@@ -74,6 +75,7 @@
             <v-radio-group v-model="form.autoModeUplinkFreq" hide-details density="compact">
               <v-radio value="1"></v-radio></v-radio-group
           ></v-col>
+          <!-- アップリンク周波数2 -->
           <v-col cols="4"> </v-col>
           <v-col cols="4">
             <TextField
@@ -93,9 +95,46 @@
             <v-radio-group v-model="form.autoModeUplinkFreq" hide-details density="compact">
               <v-radio value="2" :disabled="!(form.uplink1Mhz && form.uplink1Mode)"></v-radio></v-radio-group
           ></v-col>
+          <!-- アップリンク周波数3 -->
+          <v-col cols="4"> </v-col>
+          <v-col cols="4">
+            <TextField
+              v-model="form.uplink3Mhz"
+              suffix="Mhz"
+              :valiSchema="valiSchemaEditSatelliteInfo"
+              valiSchemaFieldPath="uplink3Mhz"
+              v-model:error-text="errors.uplink3Mhz"
+              :disabled="!(form.uplink2Mhz && form.uplink2Mode)"
+              maxlength="8"
+            />
+          </v-col>
+          <v-col cols="3">
+            <OpeModeSelect v-model="form.uplink3Mode" :disabled="!(form.uplink2Mhz && form.uplink2Mode)"
+          /></v-col>
+          <v-col col="1">
+            <v-radio-group v-model="form.autoModeUplinkFreq" hide-details density="compact">
+              <v-radio value="3" :disabled="!(form.uplink2Mhz && form.uplink2Mode)"></v-radio></v-radio-group
+          ></v-col>
+        </v-row>
+        <v-row>
+          <!-- トーン周波数 -->
+          <v-col cols="4">
+            <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_TONE) }}</label>
+          </v-col>
+          <v-col cols="4">
+            <DigitTextField
+              v-model="form.toneHz"
+              suffix="Hz"
+              :valiSchema="valiSchemaEditSatelliteInfo"
+              valiSchemaFieldPath="toneHz"
+              v-model:error-text="errors.toneHz"
+              maxlength="15"
+            />
+          </v-col>
         </v-row>
         <v-row>
           <!-- ダウンリンク周波数 -->
+          <!-- ダウンリンク周波数1 -->
           <v-col cols="4">
             <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_DOWNLINK) }}</label>
           </v-col>
@@ -114,6 +153,7 @@
             <v-radio-group v-model="form.autoModeDownlinkFreq" hide-details density="compact">
               <v-radio value="1"></v-radio></v-radio-group
           ></v-col>
+          <!-- ダウンリンク周波数2 -->
           <v-col cols="4"> </v-col>
           <v-col cols="4">
             <TextField
@@ -131,23 +171,75 @@
           /></v-col>
           <v-col col="1">
             <v-radio-group v-model="form.autoModeDownlinkFreq" hide-details density="compact">
-              <v-radio value="2" :disabled="!(form.downlink1Mhz && form.downlink1Mode)"></v-radio></v-radio-group
+              <v-radio value="2" :disabled="!(form.downlink2Mhz && form.downlink2Mode)"></v-radio></v-radio-group
+          ></v-col>
+          <!-- ダウンリンク周波数3 -->
+          <v-col cols="4"> </v-col>
+          <v-col cols="4">
+            <TextField
+              v-model="form.downlink3Mhz"
+              suffix="Mhz"
+              :valiSchema="valiSchemaEditSatelliteInfo"
+              valiSchemaFieldPath="downlink3Mhz"
+              v-model:error-text="errors.downlink3Mhz"
+              :disabled="!(form.downlink2Mhz && form.downlink2Mode)"
+              maxlength="8"
+            />
+          </v-col>
+          <v-col cols="3">
+            <OpeModeSelect v-model="form.downlink3Mode" :disabled="!(form.downlink2Mhz && form.downlink2Mode)"
+          /></v-col>
+          <v-col col="1">
+            <v-radio-group v-model="form.autoModeDownlinkFreq" hide-details density="compact">
+              <v-radio value="3" :disabled="!(form.downlink3Mhz && form.downlink3Mode)"></v-radio></v-radio-group
           ></v-col>
         </v-row>
         <v-row>
-          <!-- トーン周波数 -->
+          <!-- ビーコン周波数 -->
           <v-col cols="4">
-            <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_TONE) }}</label>
+            <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_BEACON) }}</label>
           </v-col>
           <v-col cols="4">
-            <DigitTextField
-              v-model="form.toneHz"
-              suffix="Hz"
+            <TextField
+              v-model="form.beaconMhz"
+              suffix="Mhz"
               :valiSchema="valiSchemaEditSatelliteInfo"
-              valiSchemaFieldPath="toneHz"
-              v-model:error-text="errors.toneHz"
-              maxlength="15"
+              valiSchemaFieldPath="beaconMhz"
+              v-model:error-text="errors.beaconMhz"
+              maxlength="8"
             />
+          </v-col>
+          <v-col cols="3"> <OpeModeSelect v-model="form.beaconMode" /></v-col>
+          <v-col col="1"></v-col>
+        </v-row>
+        <v-row>
+          <!-- サテライトモード -->
+          <v-col cols="4">
+            <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_SATELLITE_MODE) }}</label>
+          </v-col>
+          <v-col cols="2">
+            <v-checkbox-btn
+              v-model="form.enableSatelliteMode"
+              hide-details
+              density="compact"
+              :label="I18nUtil.getMsg(I18nMsgs.GCOM_ENABLED)"
+            ></v-checkbox-btn>
+          </v-col>
+          <v-col cols="6">
+            <v-radio-group row v-model="form.satelliteMode" hide-details density="compact">
+              <v-radio
+                value="1"
+                :disabled="!form.enableSatelliteMode"
+                class="radio"
+                :label="I18nUtil.getMsg(I18nMsgs.G31_NORMAL)"
+              ></v-radio>
+              <v-radio
+                value="2"
+                :disabled="!form.enableSatelliteMode"
+                class="radio"
+                :label="I18nUtil.getMsg(I18nMsgs.G31_REVERSE)"
+              ></v-radio>
+            </v-radio-group>
           </v-col>
         </v-row>
         <v-row>

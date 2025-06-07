@@ -48,12 +48,22 @@ export type DefaultSatelliteType = {
   uplink1: UplinkType;
   // 対象衛星アップリンク設定2
   uplink2: UplinkType;
+  // 対象衛星アップリンク設定3
+  uplink3: UplinkType;
   // 対象衛星ダウンリンク設定1
   downlink1: DownlinkType;
   // 対象衛星ダウンリンク設定2
   downlink2: DownlinkType;
+  // 対象衛星ダウンリンク設定3
+  downlink3: DownlinkType;
+  // 対象衛星ビーコン設定
+  beacon: BeaconType;
   // トーン周波数
   toneHz: number | null;
+  // 衛星モード有効化フラグ
+  enableSatelliteMode: boolean;
+  // 衛星モード
+  satelliteMode: string;
   // 対象衛星概要
   outline: string;
 };
@@ -76,4 +86,14 @@ export type DownlinkType = {
   downlinkHz: number | null;
   // ダウンリンクモード
   downlinkMode: string;
+};
+
+/**
+ * ビーコン設定タイプ
+ */
+export type BeaconType = {
+  // ビーコン周波数(Hz)
+  beaconHz: number | null;
+  // ビーコンモード
+  beaconMode: string;
 };
