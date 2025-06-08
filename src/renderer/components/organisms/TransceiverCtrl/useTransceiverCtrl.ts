@@ -244,15 +244,16 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
   /**
    * アップリンク周波数をドップラーシフト補正して更新する
+   * @param {number} intervalMs 時間間隔[単位：ミリ秒]
    */
-  async function updateTxFrequencyWithDopplerShift() {
+  async function updateTxFrequencyWithDopplerShift(intervalMs: number) {
     const frequencyTrackService = ActiveSatServiceHub.getInstance().getFrequencyTrackService();
     if (!frequencyTrackService) {
       return;
     }
 
     // ドップラーファクターを計算する
-    const txDopplerFactor = await frequencyTrackService.calcUplinkDopplerFactor(currentDate.value);
+    const txDopplerFactor = await frequencyTrackService.calcUplinkDopplerFactor(currentDate.value, intervalMs);
     // 無線機のアップリンク周波数を更新する
     await updateTxFrequency(dopplerTxBaseFrequency.value * txDopplerFactor);
     // 画面のアップリンク周波数を更新する
@@ -269,15 +270,16 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
   /**
    * ダウンリンク周波数をドップラーシフト補正して更新する
+   * @param {number} intervalMs 時間間隔[単位：ミリ秒]
    */
-  async function updateRxFrequencyWithDopplerShift() {
+  async function updateRxFrequencyWithDopplerShift(intervalMs: number) {
     const frequencyTrackService = ActiveSatServiceHub.getInstance().getFrequencyTrackService();
     if (!frequencyTrackService) {
       return;
     }
 
     // ドップラーファクターを計算する
-    const rxDopplerFactor = await frequencyTrackService.calcDownlinkDopplerFactor(currentDate.value);
+    const rxDopplerFactor = await frequencyTrackService.calcDownlinkDopplerFactor(currentDate.value, intervalMs);
     // 無線機のダウンリンク周波数を更新する
     await updateRxFrequency(dopplerRxBaseFrequency.value * rxDopplerFactor);
     // 画面のダウンリンク周波数を更新する
@@ -442,10 +444,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     }
 
     // アップリンク周波数をドップラーシフト補正して更新する
-    await updateTxFrequencyWithDopplerShift();
+    await updateTxFrequencyWithDopplerShift(autoTrackingIntervalMsec);
     if (isSatelliteMode.value) {
       // サテライトモードがONの場合、ダウンリンク周波数をドップラーシフト補正して更新する
-      await updateRxFrequencyWithDopplerShift();
+      await updateRxFrequencyWithDopplerShift(autoTrackingIntervalMsec);
     }
   }
 

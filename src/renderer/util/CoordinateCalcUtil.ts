@@ -88,16 +88,6 @@ class CoordinateCalcUtil {
   };
 
   /**
-   * 3次元ベクトルの内積を取得する
-   * @param {Location3} vector1 3次元ベクトル
-   * @param {Location3} vector2 3次元ベクトル
-   * @returns {number} ベクトルの内積
-   */
-  public static getVectorDotProduct = (vector1: Location3, vector2: Location3): number => {
-    return vector1.x * vector2.x + vector1.y * vector2.y + vector1.z * vector2.z;
-  };
-
-  /**
    * kmをmに変換する
    * @param {number} km 距離[単位:km]
    * @returns {number} 距離[単位:m]
@@ -113,32 +103,6 @@ class CoordinateCalcUtil {
    */
   public static mToKm = (m: number): number => {
     return m / 1000;
-  };
-
-  /**
-   * kmをmに変換する（位置ベクトル用）
-   * @param {Location3} location3 位置ベクトル[単位:km]
-   * @returns {Location3} 位置ベクトル[単位:m]
-   */
-  public static km3ToM3 = (location3: Location3): Location3 => {
-    return {
-      x: this.kmToM(location3.x),
-      y: this.kmToM(location3.y),
-      z: this.kmToM(location3.z),
-    };
-  };
-
-  /**
-   * mをkmに変換する（位置ベクトル用）
-   * @param {Location3} location3 位置ベクトル[単位:m]
-   * @returns {Location3} 位置ベクトル[単位:km]
-   */
-  public static m3ToKm3 = (location3: Location3): Location3 => {
-    return {
-      x: this.mToKm(location3.x),
-      y: this.mToKm(location3.y),
-      z: this.mToKm(location3.z),
-    };
   };
 
   /**
@@ -281,7 +245,7 @@ class CoordinateCalcUtil {
    */
   public static translateCartesianToPolarInRadian = (location: Location3): PolarLocation => {
     // 半径
-    const radius = Math.hypot(location.x, location.y, location.z);
+    const radius = Math.sqrt(location.x * location.x + location.y * location.y + location.z * location.z);
     // 仰角（緯度）
     const latitudeRad = Math.asin(location.y / radius);
     // 方位角（経度）

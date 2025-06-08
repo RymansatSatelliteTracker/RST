@@ -119,8 +119,6 @@ export default class Constant {
     static readonly EARTH_POLAR_RADIUS_KM = 6356.7523;
     // 地球の離心率^2
     static readonly EARTH_ECCENTRICITY = 0.006694259853221781;
-    // 地球の自転角速度[単位:rad/s]
-    static readonly EARTH_ROTATION_OMEGA = 7.2921159e-5;
     // 地球の質量
     static readonly EARTH_MASS = 5.9722e24;
     // 薄明曲線の描画ポイントの数

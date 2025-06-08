@@ -16,9 +16,9 @@ describe("FrequencyTrackService", () => {
     jest.spyOn(ApiAppConfig, "getAppConfig").mockImplementation(async () => {
       const appConfigModel = new AppConfigModel();
       // 衛星通信入門では神奈川に受信局があるため神奈川の適当な場所を指定する
-      appConfigModel.groundStation.lat = 35.38408;
-      appConfigModel.groundStation.lon = 139.610193;
-      appConfigModel.groundStation.height = 36.5485;
+      appConfigModel.groundStation.lat = 35.384;
+      appConfigModel.groundStation.lon = 139.61;
+      appConfigModel.groundStation.height = 10.0;
       return appConfigModel;
     });
   });
@@ -42,12 +42,13 @@ describe("FrequencyTrackService", () => {
    * 衛星通信入門記載の観測値で検証する
    */
   it.each`
-    observedTime                   | expectedFreq
-    ${"2000-11-28T17:30:00+09:00"} | ${145899}
-    ${"2000-11-28T17:39:00+09:00"} | ${145898}
-    ${"2000-11-28T17:41:00+09:00"} | ${145897}
+    observedTime              | expectedFreq
+    ${"2000-11-28T08:30:00Z"} | ${145899}
+    ${"2000-11-28T08:39:00Z"} | ${145898}
+    ${"2000-11-28T08:41:00Z"} | ${145897}
   `("観測日時 $observedTime のダウンリンク周波数は $expectedFreq である", async ({ observedTime, expectedFreq }) => {
     //Arrange
+    const INTERVAL_MS = 1000.0;
     const BASE_FREQ_kHz = 145898;
 
     const dt = new Date(observedTime);
@@ -55,11 +56,11 @@ describe("FrequencyTrackService", () => {
     const freqTrack = new FrequencyTrackService(satService);
 
     //Act
-    const dopplerFactor = await freqTrack.calcDownlinkDopplerFactor(dt);
+    const dopplerFactor = await freqTrack.calcDownlinkDopplerFactor(dt, INTERVAL_MS);
 
     //Assert
-    const downlinkFreq = Math.trunc(dopplerFactor * BASE_FREQ_kHz);
-    expect(Math.abs(downlinkFreq - expectedFreq)).toBeLessThanOrEqual(1); // 観測値のため±1kHzの誤差を許容する
+    const downlinkFreq = Math.floor(dopplerFactor * BASE_FREQ_kHz);
+    expect(downlinkFreq).toBe(expectedFreq);
   });
 
   /**
@@ -67,12 +68,13 @@ describe("FrequencyTrackService", () => {
    */
   it("衛星が向かってくる時のアップリンクのドップラーファクターは1より小さい", async () => {
     //Arrange
-    const dt = new Date("2000-11-28T17:30:00+09:00");
+    const INTERVAL_MS = 1000.0;
+    const dt = new Date("2000-11-28T08:30:00Z");
     const satService = getSatelliteService();
     const freqTrack = new FrequencyTrackService(satService);
 
     //Act
-    const dopplerFactor = await freqTrack.calcUplinkDopplerFactor(dt);
+    const dopplerFactor = await freqTrack.calcUplinkDopplerFactor(dt, INTERVAL_MS);
 
     //Assert
     expect(dopplerFactor).toBeLessThan(1);
