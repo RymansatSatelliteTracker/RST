@@ -132,8 +132,7 @@ export function makeElectronMenu(): Electron.Menu {
 
         { type: "separator" },
         // TLE更新
-        // TODO 完了通知トーストが未実装のため、無効化
-        { label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_UPDATE_TLE), click: () => onUpdateTleClick(), enabled: false },
+        { label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_UPDATE_TLE), click: () => onUpdateTleClick() },
         // 終了
         {
           label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_QUIT),
