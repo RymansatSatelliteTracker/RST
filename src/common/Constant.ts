@@ -294,6 +294,14 @@ export default class Constant {
       static readonly FM = "FM";
       // 運用モードAM
       static readonly AM = "AM";
+      // 運用モードRTTY
+      static readonly RTTY = "RTTY";
+      // 運用モードUSB-D
+      static readonly USB_D = "USB-D";
+      // 運用モードLSB-D
+      static readonly LSB_D = "LSB-D";
+      // 運用モードFM-D
+      static readonly FM_D = "FM-D";
     };
     // グループごとの最大衛星数
     static readonly MAX_NUM_OF_SAT_IN_GROUP = 10;
