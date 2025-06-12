@@ -275,6 +275,18 @@ export default class Constant {
   };
 
   /**
+   * 無線機運用モード
+   */
+  public static readonly DopplerShiftMode = class {
+    // 衛星固定
+    static readonly FIXED_SAT = "FIXED_SAT";
+    // 受信固定
+    static readonly FIXED_RX = "FIXED_RX";
+    // 送信固定
+    static readonly FIXED_TX = "FIXED_TX";
+  };
+
+  /**
    * 衛星設定関係
    */
   public static readonly SatSetting = class {

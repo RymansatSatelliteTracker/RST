@@ -61,6 +61,13 @@
   background-color: $black90 !important;
   color: $white !important;
 }
+// ドップラーシフトモードセレクトボックス
+.doppler_shift_mode_select {
+  width: 100%;
+  height: 30px !important;
+  font-size: 1rem !important;
+  margin-top: 5px;
+}
 
 // Modeボタン
 .mode_btn {
@@ -94,6 +101,17 @@
   @extend .sat_btn;
   background-color: $black90;
   color: $white;
+}
+
+// Beaconボタン
+.beacon_btn {
+  width: 100px;
+  margin: 5px;
+  height: 30px;
+}
+.beacon_btn_right {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .grayed_out_on {

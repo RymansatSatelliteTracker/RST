@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <!-- Autoモードボタン -->
     <Button
       styleType="primary-transparent"
       :loading="loadingAutoBtn"
@@ -7,6 +8,8 @@
       @click="autoBtnClick"
       >Auto</Button
     >
+    <!-- ドップラーシフトモード-->
+    <DopplerShiftModeSelect class="doppler_shift_mode_select" />
 
     <!-- 無線機・周波数 -->
     <fieldset class="fieldset_area">
@@ -30,11 +33,19 @@
           >
         </div>
       </div>
+      <div class="beacon_btn_right">
+        <Button class="beacon_btn" styleType="primary-transparent">Beacon</Button>
+      </div>
     </fieldset>
 
     <!-- 無線機・モード -->
     <fieldset class="fieldset_area">
       <legend class="item_group_legend">Mode</legend>
+      Tx<OpeModeSelect v-model="txOpeMode" />
+      <br class="br_no_select" />
+      Rx<OpeModeSelect v-model="rxOpeMode" />
+      <br class="br_no_select" />
+
       <Button
         styleType="primary-transparent"
         :class="
@@ -190,7 +201,9 @@ import Constant from "@/common/Constant";
 import I18nMsgs from "@/common/I18nMsgs";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
 import Button from "@/renderer/components/atoms/Button/Button.vue";
+import DopplerShiftModeSelect from "@/renderer/components/molecules/DopplerShiftModeSelect/DopplerShiftModeSelect.vue";
 import FrequencySelect from "@/renderer/components/molecules/FrequencySelect/FrequencySelect.vue";
+import OpeModeSelect from "@/renderer/components/molecules/OpeModeSelect/OpeModeSelect.vue";
 import DateTimePicker from "@/renderer/components/organisms/DateTimePicker/DateTimePicker.vue";
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
 import CanvasUtil from "@/renderer/util/CanvasUtil";
