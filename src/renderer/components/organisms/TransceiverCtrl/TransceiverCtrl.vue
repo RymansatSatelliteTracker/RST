@@ -41,9 +41,13 @@
     <!-- 無線機・モード -->
     <fieldset class="fieldset_area">
       <legend class="item_group_legend">Mode</legend>
-      Tx<OpeModeSelect v-model="txOpeMode" />
+      <div class="mode_area">
+        <div>Tx<OpeModeSelect class="mode_select_box" v-model="txOpeMode" /></div>
+      </div>
       <br class="br_no_select" />
-      Rx<OpeModeSelect v-model="rxOpeMode" />
+      <div class="mode_area">
+        <div>Rx<OpeModeSelect class="mode_select_box" v-model="rxOpeMode" /></div>
+      </div>
       <br class="br_no_select" />
 
       <Button
