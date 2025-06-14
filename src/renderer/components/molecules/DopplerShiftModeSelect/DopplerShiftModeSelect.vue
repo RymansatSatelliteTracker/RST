@@ -16,14 +16,14 @@ import Constant from "@/common/Constant";
 import { ref } from "vue";
 import createDopplerShiftLabelMapping from "./useDopplerShiftModeSelect";
 
-const DopplerShiftMode = Constant.DopplerShiftMode;
+const DopplerShiftMode = Constant.Transceiver.DopplerShiftMode;
 // 和名のマッピング
 const DopplerShiftModeLabel = createDopplerShiftLabelMapping();
 // items配列を生成
 const DopplerShiftModeRange = ref(
   Object.values(DopplerShiftMode).map((mode) => ({ value: mode, title: DopplerShiftModeLabel[mode] }))
 );
-const dopplerShiftMode = defineModel("dopplerShiftMode", { default: Constant.DopplerShiftMode.FIXED_SAT });
+const dopplerShiftMode = defineModel("dopplerShiftMode", { default: Constant.Transceiver.DopplerShiftMode.FIXED_SAT });
 </script>
 
 <style lang="scss" scoped></style>

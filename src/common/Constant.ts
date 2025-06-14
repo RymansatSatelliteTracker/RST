@@ -227,6 +227,18 @@ export default class Constant {
 
     // ドップラーシフトが有効となるパス前後の追加時間範囲[単位:秒]
     static readonly DOPPLER_SHIFT_RANGE_SEC = 60;
+
+    /**
+     * 無線機運用モード
+     */
+    public static readonly DopplerShiftMode = class {
+      // 衛星固定
+      static readonly FIXED_SAT = "FIXED_SAT";
+      // 受信固定
+      static readonly FIXED_RX = "FIXED_RX";
+      // 送信固定
+      static readonly FIXED_TX = "FIXED_TX";
+    };
   };
 
   /**
@@ -272,18 +284,6 @@ export default class Constant {
   public static readonly SnackBar = class {
     // 表示時間（ミリ秒）
     static readonly DISP_TIMEOUT_MS = 5000;
-  };
-
-  /**
-   * 無線機運用モード
-   */
-  public static readonly DopplerShiftMode = class {
-    // 衛星固定
-    static readonly FIXED_SAT = "FIXED_SAT";
-    // 受信固定
-    static readonly FIXED_RX = "FIXED_RX";
-    // 送信固定
-    static readonly FIXED_TX = "FIXED_TX";
   };
 
   /**
