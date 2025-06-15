@@ -50,77 +50,17 @@
       </div>
       <br class="br_no_select" />
 
+      <!-- Satelliteモード -->
       <Button
         styleType="primary-transparent"
-        :class="
-          txOpeMode === Constant.Transceiver.OpeMode.USB || txOpeMode === Constant.Transceiver.OpeMode.LSB
-            ? 'mode_btn_on'
-            : 'mode_btn_off'
-        "
-        @click="
-          modeBtnClick(
-            txOpeMode === Constant.Transceiver.OpeMode.USB
-              ? Constant.Transceiver.OpeMode.LSB
-              : Constant.Transceiver.OpeMode.USB,
-            true
-          )
-        "
-        >{{ isTxUsbMode ? "USB" : "LSB"
-        }}<span
-          :class="
-            txOpeMode === Constant.Transceiver.OpeMode.USB || txOpeMode === Constant.Transceiver.OpeMode.LSB
-              ? 'grayed_out_on'
-              : 'grayed_out_off'
-          "
-          >{{ isTxUsbMode ? "LSB" : "USB" }}</span
-        >
+        :class="isSatelliteMode ? 'sat_btn_on' : 'sat_btn_off'"
+        @click="satBtnClick(satelliteMode)"
+      >
+        {{ isSatelliteMode ? satelliteMode : "SATELLITE"
+        }}<span :class="isSatelliteMode ? 'grayed_out_on' : 'grayed_out_off'">{{
+          satelliteMode === "SPLIT" ? "SATELLITE" : "SPLIT"
+        }}</span>
       </Button>
-      <Button
-        styleType="primary-transparent"
-        :class="txOpeMode === Constant.Transceiver.OpeMode.CW ? 'mode_btn_on' : 'mode_btn_off'"
-        @click="modeBtnClick(Constant.Transceiver.OpeMode.CW, true)"
-        >CW</Button
-      >
-      <br class="br_no_select" />
-      <Button
-        styleType="primary-transparent"
-        :class="
-          txOpeMode === Constant.Transceiver.OpeMode.AM || txOpeMode === Constant.Transceiver.OpeMode.FM
-            ? 'mode_btn_on'
-            : 'mode_btn_off'
-        "
-        @click="
-          modeBtnClick(
-            txOpeMode === Constant.Transceiver.OpeMode.FM
-              ? Constant.Transceiver.OpeMode.AM
-              : Constant.Transceiver.OpeMode.FM,
-            true
-          )
-        "
-      >
-        {{ isTxAmMode ? "AM" : "FM"
-        }}<span
-          :class="
-            txOpeMode === Constant.Transceiver.OpeMode.AM || txOpeMode === Constant.Transceiver.OpeMode.FM
-              ? 'grayed_out_on'
-              : 'grayed_out_off'
-          "
-          >{{ isTxAmMode ? "FM" : "AM" }}</span
-        >
-      </Button>
-      <Button
-        styleType="primary-transparent"
-        :class="txOpeMode === Constant.Transceiver.OpeMode.DV ? 'mode_btn_on' : 'mode_btn_off'"
-        @click="modeBtnClick(Constant.Transceiver.OpeMode.DV, true)"
-        >DV</Button
-      >
-      <br class="br_no_select" />
-      <Button
-        styleType="primary-transparent"
-        :class="isSatelliteMode === true ? 'sat_btn_on' : 'sat_btn_off'"
-        @click="satBtnClick()"
-        >Satellite</Button
-      >
       <br class="br_no_select" />
       <Button
         styleType="primary-transparent"
@@ -243,6 +183,7 @@ const {
   isTxAmMode,
   isRxUsbMode,
   isRxAmMode,
+  satelliteMode,
   isSatelliteMode,
   isSatTrackingModeNormal,
 } = useTransceiverCtrl(currentDate);
@@ -284,71 +225,30 @@ async function autoBtnClick() {
 }
 
 /**
- * Modeボタンクリック
- */
-async function modeBtnClick(btnmode: string, isTx: boolean) {
-  if (isTx) {
-    // TxのUSB/LSBモードの切り替え
-    if (
-      (txOpeMode.value === Constant.Transceiver.OpeMode.USB && btnmode === Constant.Transceiver.OpeMode.LSB) ||
-      (txOpeMode.value === Constant.Transceiver.OpeMode.LSB && btnmode === Constant.Transceiver.OpeMode.USB)
-    ) {
-      isTxUsbMode.value = !isTxUsbMode.value;
-    }
-    if (btnmode === Constant.Transceiver.OpeMode.USB || btnmode === Constant.Transceiver.OpeMode.LSB) {
-      if (!isTxUsbMode.value) {
-        btnmode = Constant.Transceiver.OpeMode.LSB;
-      }
-    }
-
-    // TxのAM/FMモードの切り替え
-    if (
-      (txOpeMode.value === Constant.Transceiver.OpeMode.AM && btnmode === Constant.Transceiver.OpeMode.FM) ||
-      (txOpeMode.value === Constant.Transceiver.OpeMode.FM && btnmode === Constant.Transceiver.OpeMode.AM)
-    ) {
-      isTxAmMode.value = !isTxAmMode.value;
-    }
-    if (btnmode === Constant.Transceiver.OpeMode.AM || btnmode === Constant.Transceiver.OpeMode.FM) {
-      if (!isTxAmMode.value) {
-        btnmode = Constant.Transceiver.OpeMode.FM;
-      }
-    }
-    txOpeMode.value = btnmode;
-  } else {
-    // RxのUSB/LSBモードの切り替え
-    if (
-      (rxOpeMode.value === Constant.Transceiver.OpeMode.USB && btnmode === Constant.Transceiver.OpeMode.LSB) ||
-      (rxOpeMode.value === Constant.Transceiver.OpeMode.LSB && btnmode === Constant.Transceiver.OpeMode.USB)
-    ) {
-      isRxUsbMode.value = !isRxUsbMode.value;
-    }
-    if (btnmode === Constant.Transceiver.OpeMode.USB || btnmode === Constant.Transceiver.OpeMode.LSB) {
-      if (!isRxUsbMode.value) {
-        btnmode = Constant.Transceiver.OpeMode.LSB;
-      }
-    }
-
-    // RxのAM/FMモードの切り替え
-    if (
-      (rxOpeMode.value === Constant.Transceiver.OpeMode.AM && btnmode === Constant.Transceiver.OpeMode.FM) ||
-      (rxOpeMode.value === Constant.Transceiver.OpeMode.FM && btnmode === Constant.Transceiver.OpeMode.AM)
-    ) {
-      isRxAmMode.value = !isRxAmMode.value;
-    }
-    if (btnmode === Constant.Transceiver.OpeMode.AM || btnmode === Constant.Transceiver.OpeMode.FM) {
-      if (!isRxAmMode.value) {
-        btnmode = Constant.Transceiver.OpeMode.FM;
-      }
-    }
-    rxOpeMode.value = btnmode;
-  }
-}
-
-/**
  * Satelliteボタンクリック
  */
-async function satBtnClick() {
-  isSatelliteMode.value = !isSatelliteMode.value;
+async function satBtnClick(btnmode: string) {
+  const satModeList = [
+    Constant.Transceiver.SatelliteMode.SATELLITE,
+    Constant.Transceiver.SatelliteMode.SPLIT,
+    Constant.Transceiver.SatelliteMode.UNSET,
+  ];
+  // 次のモードを取得する
+  const nextIndex = (satModeList.indexOf(btnmode) + 1) % satModeList.length;
+  const nextMode = satModeList[nextIndex];
+  satelliteMode.value = nextMode;
+
+  switch (satelliteMode.value) {
+    case Constant.Transceiver.SatelliteMode.SATELLITE:
+      isSatelliteMode.value = true;
+      break;
+    case Constant.Transceiver.SatelliteMode.SPLIT:
+      isSatelliteMode.value = true;
+      break;
+    default:
+      isSatelliteMode.value = false;
+      return;
+  }
 }
 
 /**

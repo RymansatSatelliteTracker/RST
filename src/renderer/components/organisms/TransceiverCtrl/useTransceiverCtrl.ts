@@ -38,6 +38,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   const isRxUsbMode = ref<boolean>(true);
   // ダウンリンクFMモード判定
   const isRxAmMode = ref<boolean>(true);
+  // サテライトモード
+  const satelliteMode = ref<string>(Constant.Transceiver.SatelliteMode.UNSET);
   // サテライトモード判定
   const isSatelliteMode = ref<boolean>(false);
   // サテライトモードのトラッキングモード
@@ -578,6 +580,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     isTxAmMode,
     isRxUsbMode,
     isRxAmMode,
+    satelliteMode,
     isSatelliteMode,
     isSatTrackingModeNormal,
   };

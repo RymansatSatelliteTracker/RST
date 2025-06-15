@@ -239,6 +239,18 @@ export default class Constant {
       // 送信固定
       static readonly FIXED_TX = "FIXED_TX";
     };
+
+    /**
+     * 無線機の衛星モード設定
+     */
+    public static readonly SatelliteMode = class {
+      // 未設定
+      static readonly UNSET = "UNSET";
+      // SATELLITEモード
+      static readonly SATELLITE = "SATELLITE";
+      // SPLITモード
+      static readonly SPLIT = "SPLIT";
+    };
   };
 
   /**
