@@ -244,8 +244,6 @@ export default class Constant {
      * 無線機の衛星モード設定
      */
     public static readonly SatelliteMode = class {
-      // 未設定
-      static readonly UNSET = "UNSET";
       // SATELLITEモード
       static readonly SATELLITE = "SATELLITE";
       // SPLITモード

@@ -1,0 +1,23 @@
+@import "@/renderer/components/styles/global.scss";
+.btn_on {
+  background-color: $green;
+  color: $black100;
+}
+.btn_off {
+  background-color: $black90;
+  color: $white;
+}
+
+.grayed_out_on {
+  display: block;
+  font-size: 10px;
+  color: $black50;
+  margin-top: 1px;
+}
+
+.grayed_out_off {
+  display: block;
+  font-size: 10px;
+  color: $black40;
+  margin-top: 1px;
+}

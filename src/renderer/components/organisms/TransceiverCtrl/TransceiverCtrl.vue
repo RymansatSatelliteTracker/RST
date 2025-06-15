@@ -51,16 +51,11 @@
       <br class="br_no_select" />
 
       <!-- Satelliteモード -->
-      <Button
-        styleType="primary-transparent"
-        :class="isSatelliteMode ? 'sat_btn_on' : 'sat_btn_off'"
-        @click="satBtnClick(satelliteMode)"
-      >
-        {{ isSatelliteMode ? satelliteMode : "SATELLITE"
-        }}<span :class="isSatelliteMode ? 'grayed_out_on' : 'grayed_out_off'">{{
-          satelliteMode === "SPLIT" ? "SATELLITE" : "SPLIT"
-        }}</span>
-      </Button>
+      <CycleButton
+        class="sat_btn"
+        v-model:mode="satelliteMode"
+        :modeRange="[Constant.Transceiver.SatelliteMode.SATELLITE, Constant.Transceiver.SatelliteMode.SPLIT]"
+      ></CycleButton>
       <br class="br_no_select" />
       <Button
         styleType="primary-transparent"
@@ -145,6 +140,7 @@ import Constant from "@/common/Constant";
 import I18nMsgs from "@/common/I18nMsgs";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
 import Button from "@/renderer/components/atoms/Button/Button.vue";
+import CycleButton from "@/renderer/components/molecules/CycleButton/CycleButton.vue";
 import DopplerShiftModeSelect from "@/renderer/components/molecules/DopplerShiftModeSelect/DopplerShiftModeSelect.vue";
 import FrequencySelect from "@/renderer/components/molecules/FrequencySelect/FrequencySelect.vue";
 import OpeModeSelect from "@/renderer/components/molecules/OpeModeSelect/OpeModeSelect.vue";
@@ -152,7 +148,7 @@ import DateTimePicker from "@/renderer/components/organisms/DateTimePicker/DateT
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
 import CanvasUtil from "@/renderer/util/CanvasUtil";
 import DateUtil from "@/renderer/util/DateUtil";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import useOrbitalPassList from "./useOrbitalPassList";
 import useOverlapPassList from "./useOverlapPassList";
 import useTransceiverCtrl from "./useTransceiverCtrl";
@@ -190,6 +186,14 @@ const {
 // AutoモードのOnOff管理
 const autoStore = useStoreAutoState();
 
+watch(
+  satelliteMode,
+  () => {
+    isSatelliteMode.value = satelliteMode.value ? true : false;
+  },
+  { immediate: true }
+);
+
 /**
  * 基準日時の変更イベントハンドラ
  */
@@ -222,33 +226,6 @@ async function autoBtnClick() {
   }
 
   loadingAutoBtn.value = false;
-}
-
-/**
- * Satelliteボタンクリック
- */
-async function satBtnClick(btnmode: string) {
-  const satModeList = [
-    Constant.Transceiver.SatelliteMode.SATELLITE,
-    Constant.Transceiver.SatelliteMode.SPLIT,
-    Constant.Transceiver.SatelliteMode.UNSET,
-  ];
-  // 次のモードを取得する
-  const nextIndex = (satModeList.indexOf(btnmode) + 1) % satModeList.length;
-  const nextMode = satModeList[nextIndex];
-  satelliteMode.value = nextMode;
-
-  switch (satelliteMode.value) {
-    case Constant.Transceiver.SatelliteMode.SATELLITE:
-      isSatelliteMode.value = true;
-      break;
-    case Constant.Transceiver.SatelliteMode.SPLIT:
-      isSatelliteMode.value = true;
-      break;
-    default:
-      isSatelliteMode.value = false;
-      return;
-  }
 }
 
 /**
