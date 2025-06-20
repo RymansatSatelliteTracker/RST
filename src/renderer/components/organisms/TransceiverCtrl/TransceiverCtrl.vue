@@ -148,7 +148,7 @@ import DateTimePicker from "@/renderer/components/organisms/DateTimePicker/DateT
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
 import CanvasUtil from "@/renderer/util/CanvasUtil";
 import DateUtil from "@/renderer/util/DateUtil";
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import useOrbitalPassList from "./useOrbitalPassList";
 import useOverlapPassList from "./useOverlapPassList";
 import useTransceiverCtrl from "./useTransceiverCtrl";
@@ -181,14 +181,6 @@ const {
 } = useTransceiverCtrl(currentDate);
 // AutoモードのOnOff管理
 const autoStore = useStoreAutoState();
-
-watch(
-  satelliteMode,
-  () => {
-    isSatelliteMode.value = satelliteMode.value ? true : false;
-  },
-  { immediate: true }
-);
 
 /**
  * 基準日時の変更イベントハンドラ

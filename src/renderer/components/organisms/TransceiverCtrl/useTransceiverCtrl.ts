@@ -260,6 +260,15 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     return false;
   }
 
+  // サテライトモード設定が変更された場合に、isSatelliteModeを更新する
+  watch(
+    satelliteMode,
+    () => {
+      isSatelliteMode.value = satelliteMode.value ? true : false;
+    },
+    { immediate: true }
+  );
+
   // サテライトモード設定が変更された場合にAPIを呼び出す
   watch(isSatelliteMode, async (newIsSatelliteMode) => {
     await ApiTransceiver.setSatelliteMode(newIsSatelliteMode);
