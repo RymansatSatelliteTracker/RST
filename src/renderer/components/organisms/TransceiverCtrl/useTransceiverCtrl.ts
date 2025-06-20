@@ -28,16 +28,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   const diffRxFrequency = ref<number>(0.0);
   // アップリンク運用モード
   const txOpeMode = ref<string>(Constant.Transceiver.OpeMode.UNSET);
-  // アップリンクUSBモード判定
-  const isTxUsbMode = ref<boolean>(true);
-  // アップリンクFMモード判定
-  const isTxAmMode = ref<boolean>(true);
   // ダウンリンク運用モード
   const rxOpeMode = ref<string>(Constant.Transceiver.OpeMode.UNSET);
-  // ダウンリンクUSBモード判定
-  const isRxUsbMode = ref<boolean>(true);
-  // ダウンリンクFMモード判定
-  const isRxAmMode = ref<boolean>(true);
   // サテライトモード
   const satelliteMode = ref<string>("");
   // サテライトモード判定
@@ -96,17 +88,11 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       // アップリンク周波数/運用モードをアクティブ衛星の設定で更新する
       txFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.uplink.uplinkHz);
       txOpeMode.value = transceiverSetting.uplink.uplinkMode;
-
-      // 運用モードによってUSB/LSBモード判定、AM/FMモード判定を更新する
-      await updateTxModeFlags(rxOpeMode.value);
     }
     if (transceiverSetting.downlink && transceiverSetting.downlink.downlinkHz) {
       // ダウンリンク周波数/運用モードをアクティブ衛星の設定で更新する
       rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.downlink.downlinkHz);
       rxOpeMode.value = transceiverSetting.downlink.downlinkMode;
-
-      // 運用モードによってUSB/LSBモード判定、AM/FMモード判定を更新する
-      await updateRxModeFlags(rxOpeMode.value);
     }
 
     // Auto開始をメイン側に連携する
@@ -144,10 +130,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     // Autoモード移行前の周波数を復元する
     txFrequency.value = savedTxFrequency.value;
     rxFrequency.value = savedRxFrequency.value;
-
-    // 運用モードによってUSB/LSBモード判定、AM/FMモード判定を更新する
-    await updateTxModeFlags(txOpeMode.value);
-    await updateRxModeFlags(rxOpeMode.value);
   }
 
   /**
@@ -180,50 +162,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     const config = await ApiAppConfig.getAppConfig();
     txFrequency.value = config.transceiver.txFrequency;
     rxFrequency.value = config.transceiver.rxFrequency;
-  }
-
-  /**
-   * アップリンク運用モードのUSB/LSB、AM/FM判定フラグを更新する
-   * @param {string} txMode アップリンク運用モード
-   */
-  async function updateTxModeFlags(txMode: string) {
-    if (txMode === Constant.Transceiver.OpeMode.UNSET || CommonUtil.isEmpty(txMode)) {
-      isTxUsbMode.value = true;
-    } else if (txMode === Constant.Transceiver.OpeMode.USB) {
-      isTxUsbMode.value = true;
-    } else if (txMode === Constant.Transceiver.OpeMode.LSB) {
-      isTxUsbMode.value = false;
-    }
-
-    if (txMode === Constant.Transceiver.OpeMode.UNSET || CommonUtil.isEmpty(txMode)) {
-      isTxAmMode.value = true;
-    } else if (txMode === Constant.Transceiver.OpeMode.AM) {
-      isTxAmMode.value = true;
-    } else if (txMode === Constant.Transceiver.OpeMode.FM) {
-      isTxAmMode.value = false;
-    }
-  }
-
-  /**
-   * ダウンリンク運用モードのUSB/LSB、AM/FM判定フラグを更新する
-   * @param {string} rxMode ダウンリンク運用モード
-   */
-  async function updateRxModeFlags(rxMode: string) {
-    if (rxMode === Constant.Transceiver.OpeMode.UNSET || CommonUtil.isEmpty(rxMode)) {
-      isRxUsbMode.value = true;
-    } else if (rxMode === Constant.Transceiver.OpeMode.USB) {
-      isRxUsbMode.value = true;
-    } else if (rxMode === Constant.Transceiver.OpeMode.LSB) {
-      isRxUsbMode.value = false;
-    }
-
-    if (rxMode === Constant.Transceiver.OpeMode.UNSET || CommonUtil.isEmpty(rxMode)) {
-      isRxAmMode.value = true;
-    } else if (rxMode === Constant.Transceiver.OpeMode.AM) {
-      isRxAmMode.value = true;
-    } else if (rxMode === Constant.Transceiver.OpeMode.FM) {
-      isRxAmMode.value = false;
-    }
   }
 
   /**
@@ -355,9 +293,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       uplinkHz: null,
       uplinkMode: newTxOpeMode,
     });
-
-    // 運用モードによってUSB/LSBモード判定、AM/FMモード判定を更新する
-    await updateTxModeFlags(newTxOpeMode);
   });
 
   // サテライトモードがONで、個別でダウンリンク周波数が変更された場合にAPIを呼び出す
@@ -424,8 +359,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       downlinkHz: null,
       downlinkMode: newRxOpeMode,
     });
-    // 運用モードによってUSB/LSBモード判定、AM/FMモード判定を更新する
-    await updateRxModeFlags(newRxOpeMode);
   });
 
   /**
@@ -539,8 +472,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
         if (!CommonUtil.isEmpty(opeMode.uplinkMode)) {
           // アップリンク運用モードを更新する
           txOpeMode.value = opeMode.uplinkMode;
-          // 運用モードによってUSB/LSBモード判定、AM/FMモード判定を更新する
-          await updateTxModeFlags(txOpeMode.value);
         } else {
           // 運用モードが取得できない場合はUNSETにする
           txOpeMode.value = Constant.Transceiver.OpeMode.UNSET;
@@ -549,8 +480,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
         if (!CommonUtil.isEmpty(opeMode.downlinkMode)) {
           // ダウンリンク運用モードを更新する
           rxOpeMode.value = opeMode.downlinkMode;
-          // 運用モードによってUSB/LSBモード判定、AM/FMモード判定を更新する
-          await updateRxModeFlags(rxOpeMode.value);
         } else {
           // 運用モードが取得できない場合はUNSETにする
           rxOpeMode.value = Constant.Transceiver.OpeMode.UNSET;
@@ -576,10 +505,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     diffRxFrequency,
     txOpeMode,
     rxOpeMode,
-    isTxUsbMode,
-    isTxAmMode,
-    isRxUsbMode,
-    isRxAmMode,
     satelliteMode,
     isSatelliteMode,
     isSatTrackingModeNormal,
