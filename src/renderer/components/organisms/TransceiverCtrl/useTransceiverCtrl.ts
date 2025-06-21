@@ -7,11 +7,11 @@ import TransceiverUtil from "@/common/util/TransceiverUtil";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
+import { useModeStateManager } from "@/renderer/components/organisms/TransceiverCtrl/useSatelliteModeStateManager";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
 import emitter from "@/renderer/util/EventBus";
 import { onMounted, ref, Ref, watch } from "vue";
-
 /**
  * 無線機を制御する
  * @param {Ref<Date>} currentDate 現在日時
@@ -263,8 +263,11 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   // サテライトモード設定が変更された場合に、isSatelliteModeを更新する
   watch(
     satelliteMode,
-    () => {
-      isSatelliteMode.value = satelliteMode.value ? true : false;
+    (newMode, oldMode) => {
+      if (oldMode === undefined) return;
+      saveState(oldMode);
+      loadState(newMode);
+      isSatelliteMode.value = newMode ? true : false;
     },
     { immediate: true }
   );
@@ -504,6 +507,35 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       await ApiAppConfig.storeAppConfig(config);
     });
   });
+
+  const { save, load } = useModeStateManager();
+
+  /**
+   * モードごとの状態を保存する
+   * @param mode モード名（サテライトモードやSPLITなど）
+   */
+  function saveState(mode: string) {
+    const state = {
+      txFrequency: txFrequency.value,
+      rxFrequency: rxFrequency.value,
+      txOpeMode: txOpeMode.value,
+      rxOpeMode: rxOpeMode.value,
+      isSatTrackingModeNormal: isSatTrackingModeNormal.value,
+    };
+    save(mode, state);
+  }
+  /**
+   * モードごとの状態を呼び出す
+   * @param mode モード名（サテライトモードやSPLITなど）
+   */
+  function loadState(mode: string) {
+    const state = load(mode);
+    txFrequency.value = state.txFrequency;
+    rxFrequency.value = state.rxFrequency;
+    txOpeMode.value = state.txOpeMode;
+    rxOpeMode.value = state.rxOpeMode;
+    isSatTrackingModeNormal.value = state.isSatTrackingModeNormal;
+  }
 
   return {
     startAutoMode,
