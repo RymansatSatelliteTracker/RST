@@ -22,13 +22,11 @@
         </div>
       </div>
       <div class="freq_area">
-        <div v-if="isSatelliteMode">
-          Rx<FrequencySelect class="freq_box" v-model:frequency="rxFrequency" v-model:diffFrequency="diffRxFrequency"
-            ><span class="freq_unit">Hz</span></FrequencySelect
-          >
-        </div>
-        <div v-else>
-          Rx<FrequencySelect class="freq_box" v-model:frequency="txFrequency" v-model:diffFrequency="diffRxFrequency"
+        <div>
+          Rx<FrequencySelect
+            class="freq_box"
+            v-model:frequency="rxFrequencyBinding"
+            v-model:diffFrequency="diffRxFrequency"
             ><span class="freq_unit">Hz</span></FrequencySelect
           >
         </div>
@@ -46,7 +44,7 @@
       </div>
       <br class="br_no_select" />
       <div class="mode_area">
-        <div>Rx<OpeModeSelect class="mode_select_box" v-model="rxOpeMode" /></div>
+        <div>Rx<OpeModeSelect class="mode_select_box" v-model="rxOpeModeBinding" /></div>
       </div>
       <br class="br_no_select" />
 
@@ -59,14 +57,14 @@
       <br class="br_no_select" />
       <Button
         styleType="primary-transparent"
-        :disabled="!isSatelliteMode"
+        :disabled="satelliteMode !== Constant.Transceiver.SatelliteMode.SATELLITE"
         :class="isSatTrackingModeNormal === true ? 'mode_btn_on' : 'mode_btn_off'"
         @click="satTrackingModeBtnClick(true)"
         >Normal</Button
       >
       <Button
         styleType="primary-transparent"
-        :disabled="!isSatelliteMode"
+        :disabled="satelliteMode !== Constant.Transceiver.SatelliteMode.SATELLITE"
         :class="isSatTrackingModeNormal === false ? 'mode_btn_on' : 'mode_btn_off'"
         @click="satTrackingModeBtnClick(false)"
         >Reverse</Button
@@ -170,14 +168,13 @@ const {
   startAutoMode,
   stopAutoMode,
   txFrequency,
-  rxFrequency,
   diffTxFrequency,
   diffRxFrequency,
   txOpeMode,
-  rxOpeMode,
   satelliteMode,
-  isSatelliteMode,
   isSatTrackingModeNormal,
+  rxFrequencyBinding,
+  rxOpeModeBinding,
 } = useTransceiverCtrl(currentDate);
 // AutoモードのOnOff管理
 const autoStore = useStoreAutoState();

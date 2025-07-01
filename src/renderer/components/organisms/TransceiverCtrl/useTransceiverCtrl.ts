@@ -11,7 +11,7 @@ import { useModeStateManager } from "@/renderer/components/organisms/Transceiver
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
 import emitter from "@/renderer/util/EventBus";
-import { onMounted, ref, Ref, watch } from "vue";
+import { computed, onMounted, ref, Ref, watch } from "vue";
 /**
  * 無線機を制御する
  * @param {Ref<Date>} currentDate 現在日時
@@ -537,6 +537,38 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     isSatTrackingModeNormal.value = state.isSatTrackingModeNormal;
   }
 
+  /**
+   * Rx周波数とRx運用モードのバインディングを作成する
+   * サテライトモードがONの場合はRx周波数とRx運用モードを使用し(非同期)、
+   * サテライトモードがOFFの場合はTx周波数とTx運用モードを使用する(同期)
+   */
+  const rxFrequencyBinding = computed({
+    get: () => {
+      if (satelliteMode.value === Constant.Transceiver.SatelliteMode.SATELLITE) return rxFrequency.value;
+      return txFrequency.value;
+    },
+    set: (val: string) => {
+      if (satelliteMode.value === Constant.Transceiver.SatelliteMode.SATELLITE) {
+        rxFrequency.value = val;
+      } else {
+        txFrequency.value = val;
+      }
+    },
+  });
+  const rxOpeModeBinding = computed({
+    get: () => {
+      if (satelliteMode.value === Constant.Transceiver.SatelliteMode.SATELLITE) return rxOpeMode.value;
+      return txOpeMode.value;
+    },
+    set: (val: string) => {
+      if (satelliteMode.value === Constant.Transceiver.SatelliteMode.SATELLITE) {
+        rxOpeMode.value = val;
+      } else {
+        txOpeMode.value = val;
+      }
+    },
+  });
+
   return {
     startAutoMode,
     stopAutoMode,
@@ -549,6 +581,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     satelliteMode,
     isSatelliteMode,
     isSatTrackingModeNormal,
+    rxFrequencyBinding,
+    rxOpeModeBinding,
   };
 };
 
