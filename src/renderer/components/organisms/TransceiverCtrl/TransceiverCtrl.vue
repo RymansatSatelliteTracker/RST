@@ -168,13 +168,13 @@ const {
   startAutoMode,
   stopAutoMode,
   txFrequency,
+  rxFrequencyBinding,
   diffTxFrequency,
   diffRxFrequency,
   txOpeMode,
+  rxOpeModeBinding,
   satelliteMode,
   isSatTrackingModeNormal,
-  rxFrequencyBinding,
-  rxOpeModeBinding,
 } = useTransceiverCtrl(currentDate);
 // AutoモードのOnOff管理
 const autoStore = useStoreAutoState();
