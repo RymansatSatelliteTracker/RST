@@ -267,12 +267,13 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       if (oldMode === undefined) return;
       saveState(oldMode);
       loadState(newMode);
-      isSatelliteMode.value = newMode ? true : false;
+      isSatelliteMode.value = newMode === Constant.Transceiver.SatelliteMode.SATELLITE ? true : false;
     },
     { immediate: true }
   );
 
   // サテライトモード設定が変更された場合にAPIを呼び出す
+  // TODO: サテライトモードON/OFFのAPIにしているがSPLITが入るのでモード自体を渡すべき？
   watch(isSatelliteMode, async (newIsSatelliteMode) => {
     await ApiTransceiver.setSatelliteMode(newIsSatelliteMode);
   });
@@ -308,6 +309,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   });
 
   // サテライトモードがONで、個別でダウンリンク周波数が変更された場合にAPIを呼び出す
+  // TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時は何もしない
   watch(rxFrequency, async (newFrequency) => {
     if (!isSatelliteMode.value) {
       return;
@@ -332,6 +334,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
     if (!isSatelliteMode.value) {
       // サテライトモードがOFFの場合は中断する
+      // TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時も何もしない
       diffRxFrequency.value = 0.0;
       return;
     }
@@ -362,6 +365,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   });
 
   // サテライトモードがONで、個別でダウンリンクの運用モードが変更された場合にAPIを呼び出す
+  // TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時も何もしない
   watch(rxOpeMode, async (newRxOpeMode) => {
     if (!isSatelliteMode.value) {
       return;
@@ -424,6 +428,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     await updateTxFrequencyWithDopplerShift(autoTrackingIntervalMsec);
     if (isSatelliteMode.value) {
       // サテライトモードがONの場合、ダウンリンク周波数をドップラーシフト補正して更新する
+      // TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時も何もしない
       await updateRxFrequencyWithDopplerShift(autoTrackingIntervalMsec);
     }
   }
@@ -534,7 +539,17 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     rxFrequency.value = state.rxFrequency;
     txOpeMode.value = state.txOpeMode;
     rxOpeMode.value = state.rxOpeMode;
-    isSatTrackingModeNormal.value = state.isSatTrackingModeNormal;
+    switch (mode) {
+      case Constant.Transceiver.SatelliteMode.SATELLITE:
+        isSatTrackingModeNormal.value = state.isSatTrackingModeNormal;
+        break;
+      case Constant.Transceiver.SatelliteMode.SPLIT:
+        isSatTrackingModeNormal.value = true; // SPLITモードではトラッキングモードは常にNORMAL
+        break;
+      default:
+        isSatTrackingModeNormal.value = false; // その他のモードではトラッキングモードは無効
+        break;
+    }
   }
 
   /**
