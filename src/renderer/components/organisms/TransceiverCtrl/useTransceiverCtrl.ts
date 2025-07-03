@@ -520,6 +520,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * @param mode モード名（サテライトモードやSPLITなど）
    */
   function saveState(mode: string) {
+    // Autoモード中は状態を保存しない
+    if (autoStore.tranceiverAuto) return;
+
     const state = {
       rxFrequency: rxFrequency.value,
       rxOpeMode: rxOpeMode.value,
@@ -532,6 +535,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * @param mode モード名（サテライトモードやSPLITなど）
    */
   function loadState(mode: string) {
+    // Autoモード中は状態を読み込まない
+    if (autoStore.tranceiverAuto) return;
+
     const state = load(mode);
     rxFrequency.value = state.rxFrequency;
     rxOpeMode.value = state.rxOpeMode;
