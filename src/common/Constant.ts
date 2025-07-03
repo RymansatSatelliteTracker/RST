@@ -210,7 +210,7 @@ export default class Constant {
      */
     public static readonly OpeMode = class {
       // 未設定
-      static readonly UNSET = "UNSET";
+      static readonly UNSET = "";
       // LSB
       static readonly LSB = "LSB";
       // USB
