@@ -94,6 +94,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.downlink.downlinkHz);
       rxOpeMode.value = transceiverSetting.downlink.downlinkMode;
     }
+    if (isSatelliteMode.value && transceiverSetting.satTrackMode) {
+      // サテライトモードのトラッキングモードをアクティブ衛星の設定で更新する
+      isSatTrackingModeNormal.value = transceiverSetting.satTrackMode === "1";
+    }
 
     // Auto開始をメイン側に連携する
     await ApiTransceiver.initAutoOn(
