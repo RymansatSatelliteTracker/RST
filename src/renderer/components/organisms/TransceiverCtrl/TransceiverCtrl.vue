@@ -16,17 +16,17 @@
       <legend class="item_group_legend">Frequency</legend>
       <div class="freq_area">
         <div>
-          Tx<FrequencySelect class="freq_box" v-model:frequency="txFrequency" v-model:diffFrequency="diffTxFrequency"
+          Rx<FrequencySelect
+            class="freq_box"
+            v-model:frequency="rxFrequencyBinding"
+            v-model:diffFrequency="diffRxFrequency"
             ><span class="freq_unit">Hz</span></FrequencySelect
           >
         </div>
       </div>
       <div class="freq_area">
         <div>
-          Rx<FrequencySelect
-            class="freq_box"
-            v-model:frequency="rxFrequencyBinding"
-            v-model:diffFrequency="diffRxFrequency"
+          Tx<FrequencySelect class="freq_box" v-model:frequency="txFrequency" v-model:diffFrequency="diffTxFrequency"
             ><span class="freq_unit">Hz</span></FrequencySelect
           >
         </div>
@@ -40,11 +40,11 @@
     <fieldset class="fieldset_area">
       <legend class="item_group_legend">Mode</legend>
       <div class="mode_area">
-        <div>Tx<OpeModeSelect class="mode_select_box" v-model="txOpeMode" /></div>
+        <div>Rx<OpeModeSelect class="mode_select_box" v-model="rxOpeModeBinding" /></div>
       </div>
       <br class="br_no_select" />
       <div class="mode_area">
-        <div>Rx<OpeModeSelect class="mode_select_box" v-model="rxOpeModeBinding" /></div>
+        <div>Tx<OpeModeSelect class="mode_select_box" v-model="txOpeMode" /></div>
       </div>
       <br class="br_no_select" />
 
