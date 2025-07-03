@@ -4,12 +4,8 @@ import { ref, Ref } from "vue";
 
 // モードごとの状態の型
 export interface ModeState {
-  // アップリンク周波数
-  txFrequency: string;
   // ダウンリンク周波数
   rxFrequency: string;
-  // アップリンク運用モード
-  txOpeMode: string;
   // ダウンリンク運用モード
   rxOpeMode: string;
   // サテライトモードのトラッキングモード
@@ -21,9 +17,7 @@ export interface ModeState {
  * @returns 初期状態のModeState
  */
 const createDefaultState = (): ModeState => ({
-  txFrequency: "2430.000.000",
   rxFrequency: "0480.000.000",
-  txOpeMode: Constant.Transceiver.OpeMode.UNSET,
   rxOpeMode: Constant.Transceiver.OpeMode.UNSET,
   isSatTrackingModeNormal: true,
 });

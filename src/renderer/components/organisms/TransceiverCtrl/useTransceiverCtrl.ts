@@ -521,9 +521,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    */
   function saveState(mode: string) {
     const state = {
-      txFrequency: txFrequency.value,
       rxFrequency: rxFrequency.value,
-      txOpeMode: txOpeMode.value,
       rxOpeMode: rxOpeMode.value,
       isSatTrackingModeNormal: isSatTrackingModeNormal.value,
     };
@@ -535,9 +533,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    */
   function loadState(mode: string) {
     const state = load(mode);
-    txFrequency.value = state.txFrequency;
     rxFrequency.value = state.rxFrequency;
-    txOpeMode.value = state.txOpeMode;
     rxOpeMode.value = state.rxOpeMode;
     switch (mode) {
       case Constant.Transceiver.SatelliteMode.SATELLITE:
