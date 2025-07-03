@@ -3,6 +3,8 @@
   <v-select
     v-model="opeMode"
     :items="opeModeRange"
+    item-title="title"
+    item-value="value"
     no-data-text=""
     density="compact"
     variant="outlined"
@@ -15,9 +17,17 @@
 import Constant from "@/common/Constant";
 import { ref } from "vue";
 
-const OpeMode = Constant.SatSetting.OpeMode;
-const opeModeRange = ref(Object.values(OpeMode));
-opeModeRange.value.unshift("");
+const OpeMode = Constant.Transceiver.OpeMode;
+// DVは画面上は選択できない
+// UNSETは画面上空白とする
+const opeModeRange = ref(
+  Object.values(OpeMode)
+    .filter((mode) => mode !== Constant.Transceiver.OpeMode.DV)
+    .map((mode) => ({
+      value: mode,
+      title: mode === Constant.Transceiver.OpeMode.UNSET ? "" : mode,
+    }))
+);
 const opeMode = defineModel("opeMode");
 </script>
 

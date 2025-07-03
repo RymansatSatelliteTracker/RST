@@ -222,7 +222,16 @@ export default class Constant {
       // FM
       static readonly FM = "FM";
       // DV
+      // 画面上は設定できないが、無線機からの受信時に設定される可能性がある
       static readonly DV = "DV";
+      // RTTY
+      static readonly RTTY = "RTTY";
+      // USB-D
+      static readonly USB_D = "USB-D";
+      // LSB-D
+      static readonly LSB_D = "LSB-D";
+      // FM-D
+      static readonly FM_D = "FM-D";
     };
 
     // ドップラーシフトが有効となるパス前後の追加時間範囲[単位:秒]
@@ -302,29 +311,7 @@ export default class Constant {
   public static readonly SatSetting = class {
     // 衛星パス抽出最小仰角の選択範囲0~85とするための配列の長さ
     static readonly ELEVATION_RANGE_LENGTH = 86;
-    /**
-     * 運用モード
-     */
-    public static readonly OpeMode = class {
-      // 運用モードLSB
-      static readonly LSB = "LSB";
-      // 運用モードUSB
-      static readonly USB = "USB";
-      // 運用モードCW
-      static readonly CW = "CW";
-      // 運用モードFM
-      static readonly FM = "FM";
-      // 運用モードAM
-      static readonly AM = "AM";
-      // 運用モードRTTY
-      static readonly RTTY = "RTTY";
-      // 運用モードUSB-D
-      static readonly USB_D = "USB-D";
-      // 運用モードLSB-D
-      static readonly LSB_D = "LSB-D";
-      // 運用モードFM-D
-      static readonly FM_D = "FM-D";
-    };
+
     // グループごとの最大衛星数
     static readonly MAX_NUM_OF_SAT_IN_GROUP = 10;
 
