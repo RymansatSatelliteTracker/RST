@@ -59,6 +59,8 @@ export default class ActiveSatServiceHub {
   private downlinkFreq: DownlinkType | null = null;
   // アクティブ衛星のビーコン設定
   private beaconFreq: BeaconType | null = null;
+  // アクティブ衛星の衛星モード
+  private satelliteMode: boolean = false;
   // アクティブ衛星のトラッキングモード
   private satTrackMode: string | null = null;
 
@@ -277,6 +279,9 @@ export default class ActiveSatServiceHub {
         beaconMode: appConfigSatellite.beacon.beaconMode,
       };
 
+      // アクティブ衛星の衛星モード
+      this.satelliteMode = appConfigSatellite.enableSatelliteMode;
+
       // アクティブ衛星のトラッキングモード
       this.satTrackMode = appConfigSatellite.enableSatelliteMode ? appConfigSatellite.satelliteMode : null;
     }
@@ -380,12 +385,14 @@ export default class ActiveSatServiceHub {
     downlink: DownlinkType | null;
     uplink: UplinkType | null;
     beacon: BeaconType | null;
+    satelliteMode: boolean;
     satTrackMode: string | null;
   }> {
     return {
       downlink: this.downlinkFreq,
       uplink: this.uplinkFreq,
       beacon: this.beaconFreq,
+      satelliteMode: this.satelliteMode,
       satTrackMode: this.satTrackMode,
     };
   }

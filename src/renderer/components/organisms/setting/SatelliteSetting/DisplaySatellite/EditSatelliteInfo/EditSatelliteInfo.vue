@@ -228,13 +228,13 @@
           <v-col cols="6">
             <v-radio-group row v-model="form.satelliteMode" hide-details density="compact">
               <v-radio
-                value="1"
+                :value="Constant.Transceiver.TrackingMode.NORMAL"
                 :disabled="!form.enableSatelliteMode"
                 class="radio"
                 :label="I18nUtil.getMsg(I18nMsgs.G31_NORMAL)"
               ></v-radio>
               <v-radio
-                value="2"
+                :value="Constant.Transceiver.TrackingMode.REVERSE"
                 :disabled="!form.enableSatelliteMode"
                 class="radio"
                 :label="I18nUtil.getMsg(I18nMsgs.G31_REVERSE)"

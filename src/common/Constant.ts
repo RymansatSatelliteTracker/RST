@@ -258,6 +258,16 @@ export default class Constant {
       // SPLITモード
       static readonly SPLIT = "SPLIT";
     };
+
+    /**
+     * 無線機の衛星モードのトラッキングモード
+     */
+    public static readonly TrackingMode = class {
+      // 通常モード
+      static readonly NORMAL = "NORMAL";
+      // 反転モード
+      static readonly REVERSE = "REVERSE";
+    };
   };
 
   /**
