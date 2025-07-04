@@ -31,7 +31,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   // ダウンリンク運用モード
   const rxOpeMode = ref<string>(Constant.Transceiver.OpeMode.UNSET);
   // サテライトモード
-  const satelliteMode = ref<string>("");
+  const satelliteMode = ref<string>(Constant.Transceiver.SatelliteMode.UNSET);
   // サテライトモード判定
   const isSatelliteMode = ref<boolean>(false);
   // サテライトモードのトラッキングモード
@@ -86,7 +86,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     const transceiverSetting = await ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
 
     // 有効だったらサテライトモードを設定する
-    satelliteMode.value = transceiverSetting.satelliteMode ? Constant.Transceiver.SatelliteMode.SATELLITE : "";
+    satelliteMode.value = transceiverSetting.satelliteMode
+      ? Constant.Transceiver.SatelliteMode.SATELLITE
+      : Constant.Transceiver.SatelliteMode.UNSET;
 
     if (transceiverSetting.uplink && transceiverSetting.uplink.uplinkHz) {
       // アップリンク周波数/運用モードをアクティブ衛星の設定で更新する
