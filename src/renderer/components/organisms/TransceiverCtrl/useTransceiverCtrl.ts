@@ -44,6 +44,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   const dopplerTxBaseFrequency = ref<number>(0.0);
   // ドップラーシフトのダウンリンク基準周波数
   const dopplerRxBaseFrequency = ref<number>(0.0);
+  // ビーコンモード
+  const isBeaconMode = ref<boolean>(false);
 
   // AutoモードのOnOff管理
   const autoStore = useStoreAutoState();
@@ -155,6 +157,19 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     timerId = null;
 
     return true;
+  }
+
+  async function startBeaconMode() {
+    // アクティブ衛星のビーコン周波数/運用モードを取得
+    const transceiverSetting = await ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
+
+    if (transceiverSetting.beacon && transceiverSetting.beacon.beaconHz) {
+      // アップんリンクとダウンリンクの周波数/運用モードをアクティブ衛星の設定で更新する
+      rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.beacon.beaconHz);
+      rxOpeMode.value = transceiverSetting.beacon.beaconMode;
+      txFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.beacon.beaconHz);
+      txOpeMode.value = transceiverSetting.beacon.beaconMode;
+    }
   }
 
   /**
@@ -611,6 +626,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     isSatTrackingModeNormal,
     rxFrequencyBinding,
     rxOpeModeBinding,
+    isBeaconMode,
+    startBeaconMode,
   };
 };
 

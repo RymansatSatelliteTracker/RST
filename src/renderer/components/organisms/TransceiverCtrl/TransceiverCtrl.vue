@@ -32,7 +32,13 @@
         </div>
       </div>
       <div class="beacon_btn_right">
-        <Button class="beacon_btn" styleType="primary-transparent">Beacon</Button>
+        <Button
+          class="beacon_btn"
+          styleType="primary-transparent"
+          :class="isBeaconMode ? 'mode_btn_on' : 'mode_btn_off'"
+          @click="beaconBtnClick()"
+          >Beacon</Button
+        >
       </div>
     </fieldset>
 
@@ -175,6 +181,8 @@ const {
   rxOpeModeBinding,
   satelliteMode,
   isSatTrackingModeNormal,
+  isBeaconMode,
+  startBeaconMode,
 } = useTransceiverCtrl(currentDate);
 // AutoモードのOnOff管理
 const autoStore = useStoreAutoState();
@@ -218,6 +226,14 @@ async function autoBtnClick() {
  */
 async function satTrackingModeBtnClick(isNormal: boolean) {
   isSatTrackingModeNormal.value = isNormal;
+}
+
+async function beaconBtnClick() {
+  isBeaconMode.value = !isBeaconMode.value;
+  if (isBeaconMode.value) {
+    // ビーコンモード開始
+    await startBeaconMode();
+  }
 }
 </script>
 
