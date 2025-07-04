@@ -117,17 +117,17 @@ async function onOk() {
 async function regist(): Promise<boolean> {
   // 画面を開かないとロードしないので判定する
   // 画面を開かない場合は編集もできないのでチェックしない
+  let isTLEUpdated = false;
   if (loadTLETabRef.value) {
     const result = await loadTLETabRef.value.onOk();
     if (result !== "OK") {
       emitter.emit(Constant.GlobalEvent.NOTICE_ERR, result);
       return false;
     }
+    // TLEのURLが更新されているか確認
+    // 保存の前にやらないとURLの情報が同期してしまう
+    isTLEUpdated = loadTLETabRef.value.isTLEUpdated();
   }
-
-  // TLEのURLが更新されているか確認
-  // 保存の前にやらないとURLの情報が同期してしまう
-  const isTLEUpdated = loadTLETabRef.value.isTLEUpdated();
 
   // 保存
   await saveAppConfig();
