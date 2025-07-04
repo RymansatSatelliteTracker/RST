@@ -164,11 +164,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     const transceiverSetting = await ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
 
     if (transceiverSetting.beacon && transceiverSetting.beacon.beaconHz) {
-      // アップんリンクとダウンリンクの周波数/運用モードをアクティブ衛星の設定で更新する
+      // ダウンリンクの周波数/運用モードをアクティブ衛星の設定で更新する
       rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.beacon.beaconHz);
       rxOpeMode.value = transceiverSetting.beacon.beaconMode;
-      txFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.beacon.beaconHz);
-      txOpeMode.value = transceiverSetting.beacon.beaconMode;
     }
   }
 
