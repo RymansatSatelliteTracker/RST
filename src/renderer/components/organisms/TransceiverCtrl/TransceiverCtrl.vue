@@ -225,6 +225,9 @@ async function satTrackingModeBtnClick(isNormal: boolean) {
   isSatTrackingModeNormal.value = isNormal;
 }
 
+/**
+ * ビーコンボタンクリック
+ */
 async function beaconBtnClick() {
   isBeaconMode.value = !isBeaconMode.value;
   if (isBeaconMode.value) {
