@@ -16,10 +16,7 @@
       <legend class="item_group_legend">Frequency</legend>
       <div class="freq_area">
         <div>
-          Rx<FrequencySelect
-            class="freq_box"
-            v-model:frequency="rxFrequencyBinding"
-            v-model:diffFrequency="diffRxFrequency"
+          Rx<FrequencySelect class="freq_box" v-model:frequency="rxFrequency" v-model:diffFrequency="diffRxFrequency"
             ><span class="freq_unit">Hz</span></FrequencySelect
           >
         </div>
@@ -46,7 +43,7 @@
     <fieldset class="fieldset_area">
       <legend class="item_group_legend">Mode</legend>
       <div class="mode_area">
-        <div>Rx<OpeModeSelect class="mode_select_box" v-model="rxOpeModeBinding" /></div>
+        <div>Rx<OpeModeSelect class="mode_select_box" v-model="rxOpeMode" /></div>
       </div>
       <br class="br_no_select" />
       <div class="mode_area">
@@ -174,11 +171,11 @@ const {
   startAutoMode,
   stopAutoMode,
   txFrequency,
-  rxFrequencyBinding,
+  rxFrequency,
   diffTxFrequency,
   diffRxFrequency,
   txOpeMode,
-  rxOpeModeBinding,
+  rxOpeMode,
   satelliteMode,
   isSatTrackingModeNormal,
   isBeaconMode,

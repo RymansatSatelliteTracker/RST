@@ -11,7 +11,7 @@ import { useModeStateManager } from "@/renderer/components/organisms/Transceiver
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
 import emitter from "@/renderer/util/EventBus";
-import { computed, onMounted, ref, Ref, watch } from "vue";
+import { onMounted, ref, Ref, watch } from "vue";
 /**
  * 無線機を制御する
  * @param {Ref<Date>} currentDate 現在日時
@@ -579,35 +579,19 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   }
 
   /**
-   * Rx周波数とRx運用モードのバインディングを作成する
-   * サテライトモードがONの場合はRx周波数とRx運用モードを使用し(非同期)、
-   * サテライトモードがOFFの場合はTx周波数とTx運用モードを使用する(同期)
+   * Rx周波数とRx運用モードを同期する
+   * サテライトモードがONの場合はTx周波数とTx運用モードと同期しない
+   * サテライトモードがOFFの場合はTx周波数とTx運用モード同期する
    */
-  const rxFrequencyBinding = computed({
-    get: () => {
-      if (satelliteMode.value === Constant.Transceiver.SatelliteMode.SATELLITE) return rxFrequency.value;
-      return txFrequency.value;
-    },
-    set: (val: string) => {
-      if (satelliteMode.value === Constant.Transceiver.SatelliteMode.SATELLITE) {
-        rxFrequency.value = val;
-      } else {
-        txFrequency.value = val;
-      }
-    },
+  watch([satelliteMode, txFrequency] as const, ([newSatelliteMode, newTxFrequency]) => {
+    if (newSatelliteMode === Constant.Transceiver.SatelliteMode.SATELLITE) return;
+    if (rxFrequency.value === newTxFrequency) return;
+    rxFrequency.value = newTxFrequency;
   });
-  const rxOpeModeBinding = computed({
-    get: () => {
-      if (satelliteMode.value === Constant.Transceiver.SatelliteMode.SATELLITE) return rxOpeMode.value;
-      return txOpeMode.value;
-    },
-    set: (val: string) => {
-      if (satelliteMode.value === Constant.Transceiver.SatelliteMode.SATELLITE) {
-        rxOpeMode.value = val;
-      } else {
-        txOpeMode.value = val;
-      }
-    },
+  watch([satelliteMode, rxFrequency] as const, ([newSatelliteMode, newRxFrequency]) => {
+    if (newSatelliteMode === Constant.Transceiver.SatelliteMode.SATELLITE) return;
+    if (txFrequency.value === newRxFrequency) return;
+    txFrequency.value = newRxFrequency;
   });
 
   return {
@@ -622,8 +606,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     satelliteMode,
     isSatelliteMode,
     isSatTrackingModeNormal,
-    rxFrequencyBinding,
-    rxOpeModeBinding,
     isBeaconMode,
     startBeaconMode,
   };
