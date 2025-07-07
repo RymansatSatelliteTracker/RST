@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2022",
     "useDefineForClassFields": true,
     "module": "commonjs",
     "moduleResolution": "node",
@@ -11,29 +11,20 @@
     "esModuleInterop": true,
     "inlineSourceMap": true,
     "inlineSources": true,
-    "lib": [
-      "esnext",
-      "dom"
-    ],
+    "lib": ["esnext", "dom"],
     "skipLibCheck": true,
     "outDir": "dist/electron",
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     },
     "plugins": [
       {
-        "@/*": [
-          "./src/*"
-        ]
+        "@/*": ["./src/*"]
       }
     ],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": [
-    "./src/**/*"
-  ]
+  "include": ["./src/**/*"]
 }
