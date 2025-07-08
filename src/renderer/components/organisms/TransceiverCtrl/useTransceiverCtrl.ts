@@ -159,6 +159,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     return true;
   }
 
+  /**
+   * ビーコンモードを開始する
+   */
   async function startBeaconMode() {
     // アクティブ衛星のビーコン周波数/運用モードを取得
     const transceiverSetting = await ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
