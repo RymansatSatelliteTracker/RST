@@ -179,7 +179,6 @@ const {
   satelliteMode,
   isSatTrackingModeNormal,
   isBeaconMode,
-  startBeaconMode,
 } = useTransceiverCtrl(currentDate);
 // AutoモードのOnOff管理
 const autoStore = useStoreAutoState();
@@ -210,6 +209,8 @@ async function autoBtnClick() {
     // 開始の結果をストアに反映（開始できなかった場合はfalseが返ってくる）
     autoStore.tranceiverAuto = result;
   } else {
+    // ビーコンモードをOFFにする
+    isBeaconMode.value = false;
     // Autoモード終了
     await stopAutoMode();
     autoStore.tranceiverAuto = false;
@@ -230,10 +231,6 @@ async function satTrackingModeBtnClick(isNormal: boolean) {
  */
 async function beaconBtnClick() {
   isBeaconMode.value = !isBeaconMode.value;
-  if (isBeaconMode.value) {
-    // ビーコンモード開始
-    await startBeaconMode();
-  }
 }
 </script>
 

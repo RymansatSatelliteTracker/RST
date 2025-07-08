@@ -36,9 +36,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   const isSatelliteMode = ref<boolean>(false);
   // サテライトモードのトラッキングモード
   const isSatTrackingModeNormal = ref<boolean>(true);
-  // Autoモード移行前のTx周波数を保持する変数
+  // Auto/Beaconモード移行前のTx周波数を保持する変数
   const savedTxFrequency = ref<string>("");
-  // Autoモード移行前のRx周波数を保持する変数
+  // Auto/Beaconモード移行前のRx周波数を保持する変数
   const savedRxFrequency = ref<string>("");
   // ドップラーシフトのアップリンク基準周波数
   const dopplerTxBaseFrequency = ref<number>(0.0);
@@ -46,6 +46,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   const dopplerRxBaseFrequency = ref<number>(0.0);
   // ビーコンモード
   const isBeaconMode = ref<boolean>(false);
+  // BeaconモードのTx運用モード
+  const savedTxOpeMode = ref<string>("");
+  // BeaconモードのRx運用モード
+  const savedRxOpeMode = ref<string>("");
 
   // AutoモードのOnOff管理
   const autoStore = useStoreAutoState();
@@ -92,16 +96,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       ? Constant.Transceiver.SatelliteMode.SATELLITE
       : Constant.Transceiver.SatelliteMode.UNSET;
 
-    if (transceiverSetting.uplink && transceiverSetting.uplink.uplinkHz) {
-      // アップリンク周波数/運用モードをアクティブ衛星の設定で更新する
-      txFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.uplink.uplinkHz);
-      txOpeMode.value = transceiverSetting.uplink.uplinkMode;
-    }
-    if (transceiverSetting.downlink && transceiverSetting.downlink.downlinkHz) {
-      // ダウンリンク周波数/運用モードをアクティブ衛星の設定で更新する
-      rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.downlink.downlinkHz);
-      rxOpeMode.value = transceiverSetting.downlink.downlinkMode;
-    }
+    // 周波数と運用モードを設定、保存する
+    setFrequencyAndOpeModeInModeStart();
+    saveFrequencyAndOpeModeInModeStart();
 
     if (isSatelliteMode.value && transceiverSetting.satTrackMode) {
       // サテライトモードのトラッキングモードをアクティブ衛星の設定で更新する
@@ -163,13 +160,82 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * ビーコンモードを開始する
    */
   async function startBeaconMode() {
-    // アクティブ衛星のビーコン周波数/運用モードを取得
+    // 周波数と運用モードを設定、保存する
+    setFrequencyAndOpeModeInModeStart();
+    saveFrequencyAndOpeModeInModeStart();
+  }
+
+  /**
+   * ビーコンモードを停止する
+   */
+  async function stopBeaconMode() {
+    // アクティブ衛星の周波数/運用モードを取得
     const transceiverSetting = await ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
 
-    if (transceiverSetting.beacon && transceiverSetting.beacon.beaconHz) {
-      // ダウンリンクの周波数/運用モードをアクティブ衛星の設定で更新する
-      rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.beacon.beaconHz);
-      rxOpeMode.value = transceiverSetting.beacon.beaconMode;
+    // 周波数と運用モードを設定する
+    if (autoStore.tranceiverAuto) {
+      // Autoモード中の場合は、Autoモードの周波数/運用モードを優先して設定する
+      if (transceiverSetting.uplink && transceiverSetting.uplink.uplinkHz) {
+        // アップリンク周波数/運用モードをアクティブ衛星の設定で更新する
+        txFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.uplink.uplinkHz);
+        txOpeMode.value = transceiverSetting.uplink.uplinkMode;
+      }
+      if (transceiverSetting.downlink && transceiverSetting.downlink.downlinkHz) {
+        // ダウンリンク周波数/運用モードをアクティブ衛星の設定で更新する
+        rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.downlink.downlinkHz);
+        rxOpeMode.value = transceiverSetting.downlink.downlinkMode;
+      }
+    } else {
+      // Autoモード中じゃない場合は移行前の周波数と運用モードを復元する
+      txFrequency.value = savedTxFrequency.value;
+      rxFrequency.value = savedRxFrequency.value;
+      txOpeMode.value = savedTxOpeMode.value;
+      rxOpeMode.value = savedRxOpeMode.value;
+    }
+  }
+
+  async function setFrequencyAndOpeModeInModeStart() {
+    // アクティブ衛星の周波数/運用モードを取得
+    const transceiverSetting = await ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
+
+    // 周波数と運用モードを設定する
+    // ここにはAutoもしくはBeaconの状態変更後に来る
+    if (isBeaconMode.value) {
+      // BeaconModeがONということは
+      // - BeaconモードをONにした
+      // - BeaconモードONの状態でAutoモードを開始した
+      // その場合は、ビーコンモードの周波数/運用モードを優先して設定する
+      if (transceiverSetting.beacon && transceiverSetting.beacon.beaconHz) {
+        // ダウンリンクの周波数/運用モードをアクティブ衛星の設定で更新する
+        rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.beacon.beaconHz);
+        rxOpeMode.value = transceiverSetting.beacon.beaconMode;
+      }
+    } else {
+      // BeaconModeがOFFということは
+      // - BeaconモードOFFの状態でAutoモードを開始した
+      // その場合は、Autoモードの周波数/運用モードを優先して設定する
+      if (transceiverSetting.uplink && transceiverSetting.uplink.uplinkHz) {
+        // アップリンク周波数/運用モードをアクティブ衛星の設定で更新する
+        txFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.uplink.uplinkHz);
+        txOpeMode.value = transceiverSetting.uplink.uplinkMode;
+      }
+      if (transceiverSetting.downlink && transceiverSetting.downlink.downlinkHz) {
+        // ダウンリンク周波数/運用モードをアクティブ衛星の設定で更新する
+        rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.downlink.downlinkHz);
+        rxOpeMode.value = transceiverSetting.downlink.downlinkMode;
+      }
+    }
+  }
+  async function saveFrequencyAndOpeModeInModeStart() {
+    // 何もONにしていない状態でここに来たときは周波数と運用モードを保存する
+    // BeaconモードがONの状態でBeaconを開始はできない、Autoも同様、
+    // なので、どちらかがOFFということは事前状態は何もONにしていない状態
+    if (!(isBeaconMode.value && autoStore.tranceiverAuto)) {
+      // 事前状態が何もONにしていない状態であれば、現在の周波数と運用モードを保存する
+      savedTxFrequency.value = txFrequency.value;
+      savedRxFrequency.value = rxFrequency.value;
+      savedTxOpeMode.value = txOpeMode.value;
+      savedRxOpeMode.value = rxOpeMode.value;
     }
   }
 
@@ -286,6 +352,16 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
     return false;
   }
+
+  watch(isBeaconMode, async (newIsBeaconMode) => {
+    if (newIsBeaconMode) {
+      // ビーコンモード開始
+      await startBeaconMode();
+    } else {
+      // ビーコンモード終了
+      await stopBeaconMode();
+    }
+  });
 
   // サテライトモード設定が変更された場合に、isSatelliteModeを更新する
   watch(
@@ -613,7 +689,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     isSatelliteMode,
     isSatTrackingModeNormal,
     isBeaconMode,
-    startBeaconMode,
   };
 };
 
