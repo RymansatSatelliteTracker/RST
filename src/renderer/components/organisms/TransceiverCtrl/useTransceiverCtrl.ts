@@ -481,9 +481,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   });
 
   /**
-   * Rx周波数とRx運用モードを同期する
-   * サテライトモードがONの場合はTx周波数とTx運用モードと同期しない
-   * サテライトモードがOFFの場合はTx周波数とTx運用モード同期する
+   * Rx周波数を同期する
+   * サテライトモードがONの場合はTx周波数を同期しない
+   * サテライトモードがOFFの場合はTx周波数を同期する
    * Rxから先に更新する
    */
   watch([satelliteMode, txFrequency] as const, ([newSatelliteMode, newTxFrequency]) => {
@@ -498,7 +498,24 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     if (txFrequency.value === newRxFrequency) return;
     txFrequency.value = newRxFrequency;
   });
-
+  /**
+   * Rx運用モードを同期する
+   * サテライトモードがONの場合はTx運用モードを同期しない
+   * サテライトモードがOFFの場合はTx運用モードを同期する
+   * Rxから先に更新する
+   */
+  watch([satelliteMode, txOpeMode] as const, ([newSatelliteMode, newTxOpeMode]) => {
+    if (newSatelliteMode === Constant.Transceiver.SatelliteMode.SATELLITE) return;
+    // 無限更新防止
+    if (rxOpeMode.value === newTxOpeMode) return;
+    rxOpeMode.value = newTxOpeMode;
+  });
+  watch([satelliteMode, rxOpeMode] as const, ([newSatelliteMode, newRxOpeMode]) => {
+    if (newSatelliteMode === Constant.Transceiver.SatelliteMode.SATELLITE) return;
+    // 無限更新防止
+    if (txOpeMode.value === newRxOpeMode) return;
+    txOpeMode.value = newRxOpeMode;
+  });
   /**
    * 周波数の更新を行う
    */
