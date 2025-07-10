@@ -149,6 +149,9 @@ async function onAppClose() {
   // 無線機周波数を保存
   fireIpcEvent("onSaveTransceiverFrequency");
 
+  // 無線機のサテライトモードをOFFにする
+  await TransceiverService.getInstance().setSatelliteMode(false);
+  // Todo: 無線機のスプリットモードをOFFにする
   // 無線機のシリアルポートをクローズ
   await TransceiverService.getInstance().stop();
 

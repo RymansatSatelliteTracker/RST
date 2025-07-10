@@ -56,6 +56,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
   // 周波数の更新タイマ
   let timerId: NodeJS.Timeout | null = null;
+  // ドップラーシフト待機フラグ
+  let isDopplerShiftWaiting = ref<boolean>(false);
+  // ドップラーシフト周波数送信の待機タイマ
+  let dopplerTimerId: NodeJS.Timeout | null = null;
 
   // 周波数の更新インターバル（ミリ秒）
   let autoTrackingIntervalMsec = 1000;
@@ -440,6 +444,32 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     // 人工衛星がドップラーシフトが有効となる範囲にいるか判定する
     const isActive = await isWithinDopplerShiftActiveRange();
     if (!isActive) {
+      return;
+    }
+
+    // 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを2秒間待機する
+    ApiTransceiver.isDopplerShiftWaiting(async (res: ApiResponse<boolean>) => {
+      if (res.data || false) {
+        if (dopplerTimerId) {
+          // ドップラーシフト待機タイマが既に存在する場合は初期化する
+          clearTimeout(dopplerTimerId);
+        }
+        // 2秒間ドップラーシフト待機フラグを有効にする
+        isDopplerShiftWaiting.value = true;
+        dopplerTimerId = setTimeout(() => {
+          dopplerTimerId = null;
+          // ドップラーシフト待機フラグを無効に戻す
+          isDopplerShiftWaiting.value = false;
+          // 変更後の周波数でドップラーシフトの基準周波数を更新する
+          dopplerTxBaseFrequency.value = TransceiverUtil.parseNumber(txFrequency.value);
+          dopplerRxBaseFrequency.value = TransceiverUtil.parseNumber(rxFrequency.value);
+        }, 2000);
+        return;
+      }
+    });
+
+    // ドップラーシフト待機フラグが有効の場合は処理を中断する
+    if (isDopplerShiftWaiting.value) {
       return;
     }
 

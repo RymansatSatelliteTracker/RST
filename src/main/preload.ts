@@ -254,6 +254,15 @@ const apiHandler = {
   },
 
   /**
+   * ドップラーシフト待機イベント
+   */
+  isDopplerShiftWaiting: (callback: Function) => {
+    ipcRenderer.on("isDopplerShiftWaiting", (event: IpcRendererEvent, res: ApiResponse<boolean>) => {
+      callback(res);
+    });
+  },
+
+  /**
    * 共通系・アクティブなシリアルポートのリストを返す
    */
   getActiveSerialPorts: function (): Promise<string[]> {

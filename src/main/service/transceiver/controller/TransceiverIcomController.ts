@@ -611,6 +611,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    * @param {string} recvData 受信データ
    */
   private async handleRecvData(recvData: string) {
+    if (!this.isDopplerShiftWaitingCallback) {
+      return;
+    }
     // プリアンブル以降を読む（先頭に"00"がついている場合があるので、そこは読み捨てる）
     const trimedData = TransceiverIcomRecvParser.trimRecData(recvData);
 
@@ -620,16 +623,31 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       return;
     }
 
+    // 無線機からの周波数データ(トランシーブ)受信があった場合の戻り値
+    const res = new ApiResponse(true);
+
     // コマンド部により処理を切り替え
     switch (trimedData.substring(8, 10)) {
       // 周波数データの設定（トランシーブ）
       case "00":
+        // 表示周波数の取得
+        if (trimedData.length === 22) {
+          // 無線機から受信した周波数データを処理する
+          await this.procRecvFreqData(trimedData);
+        }
+        // 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを2秒間停止する
+        res.data = true;
+        this.isDopplerShiftWaitingCallback(res);
+        return;
+
       // 表示周波数の取得
       case "03":
         if (trimedData.length === 22) {
           // 無線機から受信した周波数データを処理する
           await this.procRecvFreqData(trimedData);
         }
+        res.data = false;
+        this.isDopplerShiftWaitingCallback(res);
         return;
 
       // 運用モードの設定（トランシーブ）
@@ -640,6 +658,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
           // 無線機から受信した運用モードデータを処理する
           this.procRecvModeData(trimedData);
         }
+        res.data = false;
+        this.isDopplerShiftWaitingCallback(res);
         return;
     }
 

@@ -7,6 +7,7 @@ import { ApiResponse } from "@/common/types/types";
 export default abstract class TransceiverControllerBase {
   protected freqCallback: Function | null = null;
   protected modeCallback: Function | null = null;
+  protected isDopplerShiftWaitingCallback: Function | null = null;
 
   /**
    * 無線機の監視、操作を開始する
@@ -56,10 +57,18 @@ export default abstract class TransceiverControllerBase {
   }
 
   /**
+   * 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機するコールバックを設定する
+   */
+  public setIsDopplerShiftWaitingCallback(callback: Function): void {
+    this.isDopplerShiftWaitingCallback = callback;
+  }
+
+  /**
    * コールバックを解除する
    */
   public unsetCallback(): void {
     this.freqCallback = null;
     this.modeCallback = null;
+    this.isDopplerShiftWaitingCallback = null;
   }
 }
