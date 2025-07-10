@@ -82,13 +82,11 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * ビーコンモードが利用可能かどうかを確認する
    * @returns {Promise<boolean>} ビーコンモードが利用可能かどうか
    */
-  async function confirmBeaconModeAvailable() {
+  async function confirmBeaconModeAvailable(): Promise<boolean> {
     // アクティブ衛星の周波数/運用モードを取得
     const transceiverSetting = await ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
 
-    return transceiverSetting.beacon && transceiverSetting.beacon.beaconHz && transceiverSetting.beacon.beaconMode
-      ? true
-      : false;
+    return !!(transceiverSetting.beacon && transceiverSetting.beacon.beaconHz && transceiverSetting.beacon.beaconMode);
   }
 
   /**
