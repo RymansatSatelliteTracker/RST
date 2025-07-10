@@ -50,6 +50,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   const savedTxOpeMode = ref<string>("");
   // BeaconモードのRx運用モード
   const savedRxOpeMode = ref<string>("");
+  // ドップラーシフトモード
+  const dopplerShiftMode = ref<string>(Constant.Transceiver.DopplerShiftMode.FIXED_SAT);
 
   // AutoモードのOnOff管理
   const autoStore = useStoreAutoState();
@@ -562,10 +564,19 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     if (isDopplerShiftWaiting.value) {
       return;
     }
+    // ドップラーシフト補正を実行するかどうかを判定する
+    const execTxDopplerShiftCorrection =
+      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_SAT ||
+      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_RX;
+    const execRxDopplerShiftCorrection =
+      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_SAT ||
+      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_TX;
 
     // アップリンク周波数をドップラーシフト補正して更新する
-    await updateTxFrequencyWithDopplerShift(autoTrackingIntervalMsec);
-    if (isSatelliteMode.value) {
+    if (execTxDopplerShiftCorrection) {
+      await updateTxFrequencyWithDopplerShift(autoTrackingIntervalMsec);
+    }
+    if (isSatelliteMode.value && execRxDopplerShiftCorrection) {
       // サテライトモードがONの場合、ダウンリンク周波数をドップラーシフト補正して更新する
       // TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時も何もしない
       await updateRxFrequencyWithDopplerShift(autoTrackingIntervalMsec);
@@ -706,6 +717,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     isSatelliteMode,
     isSatTrackingModeNormal,
     isBeaconMode,
+    dopplerShiftMode,
   };
 };
 

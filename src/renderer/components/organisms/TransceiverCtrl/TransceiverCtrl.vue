@@ -9,7 +9,7 @@
       >Auto</Button
     >
     <!-- ドップラーシフトモード-->
-    <DopplerShiftModeSelect class="doppler_shift_mode_select" />
+    <DopplerShiftModeSelect class="doppler_shift_mode_select" v-model="dopplerShiftMode" />
 
     <!-- 無線機・周波数 -->
     <fieldset class="fieldset_area">
@@ -179,6 +179,7 @@ const {
   satelliteMode,
   isSatTrackingModeNormal,
   isBeaconMode,
+  dopplerShiftMode,
 } = useTransceiverCtrl(currentDate);
 // AutoモードのOnOff管理
 const autoStore = useStoreAutoState();
