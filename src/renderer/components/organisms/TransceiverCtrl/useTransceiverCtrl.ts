@@ -116,9 +116,12 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     setFrequencyAndOpeModeInModeStart();
     saveFrequencyAndOpeModeInModeStart();
 
-    if (isSatelliteMode.value && transceiverSetting.satTrackMode) {
-      // サテライトモードのトラッキングモードをアクティブ衛星の設定で更新する
-      isSatTrackingModeNormal.value = transceiverSetting.satTrackMode === Constant.Transceiver.TrackingMode.NORMAL;
+    // サテライトモードのトラッキングモードをアクティブ衛星の設定で更新する
+    // Reverseを明示的に指定している場合以外はNormal
+    if (isSatelliteMode.value && transceiverSetting.satTrackMode === Constant.Transceiver.TrackingMode.REVERSE) {
+      isSatTrackingModeNormal.value = false;
+    } else {
+      isSatTrackingModeNormal.value = true;
     }
 
     // Auto開始をメイン側に連携する
