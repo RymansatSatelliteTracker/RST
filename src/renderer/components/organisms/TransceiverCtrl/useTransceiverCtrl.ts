@@ -46,6 +46,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   const dopplerRxBaseFrequency = ref<number>(0.0);
   // ビーコンモード
   const isBeaconMode = ref<boolean>(false);
+  // ビーコンモードが利用可能かどうか
+  const isBeaconModeAvailable = ref<boolean>(false);
   // BeaconモードのTx運用モード
   const savedTxOpeMode = ref<string>("");
   // BeaconモードのRx運用モード
@@ -70,9 +72,23 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * 表示中の衛星グループが変更された場合のイベントハンドラ
    */
   async function onChangeSatGrp() {
+    isBeaconModeAvailable.value = await confirmBeaconModeAvailable();
     if (autoStore.tranceiverAuto) {
       await startAutoMode();
     }
+  }
+
+  /**
+   * ビーコンモードが利用可能かどうかを確認する
+   * @returns {Promise<boolean>} ビーコンモードが利用可能かどうか
+   */
+  async function confirmBeaconModeAvailable() {
+    // アクティブ衛星の周波数/運用モードを取得
+    const transceiverSetting = await ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
+
+    return transceiverSetting.beacon && transceiverSetting.beacon.beaconHz && transceiverSetting.beacon.beaconMode
+      ? true
+      : false;
   }
 
   /**
@@ -717,6 +733,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     isSatelliteMode,
     isSatTrackingModeNormal,
     isBeaconMode,
+    isBeaconModeAvailable,
     dopplerShiftMode,
   };
 };

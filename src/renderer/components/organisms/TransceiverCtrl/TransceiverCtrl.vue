@@ -34,6 +34,7 @@
           styleType="primary-transparent"
           :class="isBeaconMode ? 'mode_btn_on' : 'mode_btn_off'"
           @click="beaconBtnClick()"
+          :disabled="!isBeaconModeAvailable"
           >Beacon</Button
         >
       </div>
@@ -179,6 +180,7 @@ const {
   satelliteMode,
   isSatTrackingModeNormal,
   isBeaconMode,
+  isBeaconModeAvailable,
   dopplerShiftMode,
 } = useTransceiverCtrl(currentDate);
 // AutoモードのOnOff管理
