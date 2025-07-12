@@ -25,7 +25,8 @@
     "ts": "tsc",
     "watch": "tsc -w",
     "test": "jest --config ./jest.config.json --coverage",
-    "test:e2e": "playwright test src/__tests__/playwright"
+    "test:e2e": "playwright test src/__tests__/playwright",
+    "format": "prettier --write ."
   },
   "build": {
     "appId": "RST",
