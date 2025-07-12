@@ -47,7 +47,9 @@ class SatelliteService {
     expirationDate.setDate(new Date().getDate() - Constant.Tle.TLE_EXPIRATION_DAYS);
     if (this.getSgp4Epoc() < expirationDate) {
       AppRendererLogger.warn(
-        "TLE data has expired. EpocDate: " +
+        "TLE(ID:" +
+          this.getNoradId() +
+          ") data has expired. EpocDate: " +
           DateUtil.formatDateTime(this.getSgp4Epoc(), { year: "numeric", month: "2-digit", day: "2-digit" })
       );
     }
