@@ -101,7 +101,6 @@
   },
   "dependencies": {
     "@mdi/font": "7.4.47",
-    "@types/geojson": "7946.0.15",
     "@vue-leaflet/vue-leaflet": "0.10.1",
     "axios": "1.7.7",
     "dayjs": "1.11.11",
@@ -125,6 +124,7 @@
   },
   "devDependencies": {
     "@mdi/js": "7.4.47",
+    "@types/geojson": "^7946.0.15",
     "@types/jest": "29.5.12",
     "@types/serialport": "8.0.5",
     "@vitejs/plugin-vue": "5.0.4",
