@@ -1,4 +1,4 @@
-<!-- モード選択 -->
+<!-- 無線機運用モードSelectBox -->
 <template>
   <v-select
     v-model="opeMode"
@@ -24,3 +24,4 @@ const opeMode = defineModel("opeMode");
 </script>
 
 <style lang="scss" scoped></style>
+

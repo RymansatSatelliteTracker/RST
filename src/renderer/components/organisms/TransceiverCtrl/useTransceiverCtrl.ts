@@ -192,27 +192,33 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     const transceiverSetting = await ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
 
     // 周波数と運用モードを設定する
-    if (autoStore.tranceiverAuto) {
-      // Autoモード中の場合は、Autoモードの周波数/運用モードを優先して設定する
-      if (transceiverSetting.uplink && transceiverSetting.uplink.uplinkHz) {
-        // アップリンク周波数/運用モードをアクティブ衛星の設定で更新する
-        txFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.uplink.uplinkHz);
-        txOpeMode.value = transceiverSetting.uplink.uplinkMode;
-      }
-      if (transceiverSetting.downlink && transceiverSetting.downlink.downlinkHz) {
-        // ダウンリンク周波数/運用モードをアクティブ衛星の設定で更新する
-        rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.downlink.downlinkHz);
-        rxOpeMode.value = transceiverSetting.downlink.downlinkMode;
-      }
-    } else {
-      // Autoモード中じゃない場合は移行前の周波数と運用モードを復元する
+    // Autoモード中じゃない場合は移行前の周波数と運用モードを復元して抜ける
+    if (!autoStore.tranceiverAuto) {
       txFrequency.value = savedTxFrequency.value;
       rxFrequency.value = savedRxFrequency.value;
       txOpeMode.value = savedTxOpeMode.value;
       rxOpeMode.value = savedRxOpeMode.value;
+      return;
+    }
+
+    // Autoモード中の場合
+    // Autoモードの周波数/運用モードを優先して設定する
+
+    if (transceiverSetting.uplink && transceiverSetting.uplink.uplinkHz) {
+      // アップリンク周波数/運用モードをアクティブ衛星の設定で更新する
+      txFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.uplink.uplinkHz);
+      txOpeMode.value = transceiverSetting.uplink.uplinkMode;
+    }
+    if (transceiverSetting.downlink && transceiverSetting.downlink.downlinkHz) {
+      // ダウンリンク周波数/運用モードをアクティブ衛星の設定で更新する
+      rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.downlink.downlinkHz);
+      rxOpeMode.value = transceiverSetting.downlink.downlinkMode;
     }
   }
 
+  /**
+   * ビーコンもしくはAutoのモード開始時に状態に応じて周波数と運用モードを設定する
+   */
   async function setFrequencyAndOpeModeInModeStart() {
     // アクティブ衛星の周波数/運用モードを取得
     const transceiverSetting = await ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
@@ -245,6 +251,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       }
     }
   }
+
+  /**
+   * ビーコンもしくはAutoのモード開始時に現在の周波数と運用モードを保存する
+   */
   async function saveFrequencyAndOpeModeInModeStart() {
     // 何もONにしていない状態でここに来たときは周波数と運用モードを保存する
     // BeaconモードがONの状態でBeaconを開始はできない、Autoも同様、
@@ -740,3 +750,4 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 };
 
 export default useTransceiverCtrl;
+

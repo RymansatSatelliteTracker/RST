@@ -1,4 +1,4 @@
-<!-- モード選択 -->
+<!-- サイクルボタン -->
 <template>
   <Button styleType="primary-transparent" :class="btnClass" @click="btnClick(mode)">
     {{ mainText }}<span :class="subTextClass">{{ subText }}</span>
@@ -63,3 +63,4 @@ async function btnClick(btnmode: string) {
 <style lang="scss" scoped>
 @import "./CycleButton.scss";
 </style>
+

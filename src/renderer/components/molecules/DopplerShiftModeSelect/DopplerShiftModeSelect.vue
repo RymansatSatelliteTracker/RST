@@ -2,7 +2,7 @@
 <template>
   <v-select
     v-model="dopplerShiftMode"
-    :items="DopplerShiftModeRange"
+    :items="dopplerShiftModeRange"
     no-data-text=""
     density="compact"
     variant="outlined"
@@ -18,12 +18,13 @@ import createDopplerShiftLabelMapping from "./useDopplerShiftModeSelect";
 
 const DopplerShiftMode = Constant.Transceiver.DopplerShiftMode;
 // 和名のマッピング
-const DopplerShiftModeLabel = createDopplerShiftLabelMapping();
+const dopplerShiftModeLabel = createDopplerShiftLabelMapping();
 // items配列を生成
-const DopplerShiftModeRange = ref(
-  Object.values(DopplerShiftMode).map((mode) => ({ value: mode, title: DopplerShiftModeLabel[mode] }))
+const dopplerShiftModeRange = ref(
+  Object.values(DopplerShiftMode).map((mode) => ({ value: mode, title: dopplerShiftModeLabel[mode] }))
 );
 const dopplerShiftMode = defineModel("dopplerShiftMode", { default: Constant.Transceiver.DopplerShiftMode.FIXED_SAT });
 </script>
 
 <style lang="scss" scoped></style>
+
