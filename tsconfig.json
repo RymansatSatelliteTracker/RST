@@ -11,7 +11,7 @@
     "esModuleInterop": true,
     "inlineSourceMap": true,
     "inlineSources": true,
-    "lib": ["esnext", "dom"],
+    "lib": ["es2022", "dom"],
     "skipLibCheck": true,
     "outDir": "dist/electron",
     "baseUrl": ".",
