@@ -136,7 +136,7 @@ function createWindow() {
       contextIsolation: true,
       // 一旦、サンドボックスは無効にしておく（preloadでapiHandler.tsをインポートしたいので）
       sandbox: false,
-      preload: path.join(__dirname, "./preload.js"),
+      preload: path.join(import.meta.dirname, "./preload.js"),
     },
   });
 
@@ -159,7 +159,7 @@ function createWindow() {
     //       開発時のみであることと、実害なしのようなのでエラーは無視して良い
     mainWindow.webContents.openDevTools();
   } else {
-    mainWindow.loadFile(path.join(__dirname, "../../index.html"));
+    mainWindow.loadFile(path.join(import.meta.dirname, "../../index.html"));
   }
 
   // アプリ終了時
@@ -199,10 +199,10 @@ async function onAppClose() {
  */
 function enableHotReload() {
   const electronPath = path.resolve(
-    __dirname,
+    import.meta.dirname,
     "../../../node_modules/electron/dist/electron" + (process.platform === "win32" ? ".exe" : "")
   );
-  electronReload(__dirname, {
+  electronReload(import.meta.dirname, {
     electron: electronPath,
     forceHardReset: true,
   });

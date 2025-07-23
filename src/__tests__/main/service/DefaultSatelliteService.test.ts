@@ -9,8 +9,8 @@ import fs from "fs";
 import * as path from "path";
 
 describe("DefaultSatelliteService", () => {
-  const TEST_HOME_DIR = path.resolve(__dirname, "data_DefaultSatelliteService");
-  const TEST_WORK_DIR = path.resolve(__dirname, "data_DefaultSatelliteService", "temp");
+  const TEST_HOME_DIR = path.resolve(import.meta.dirname, "data_DefaultSatelliteService");
+  const TEST_WORK_DIR = path.resolve(import.meta.dirname, "data_DefaultSatelliteService", "temp");
   const TARGET_FILES = [
     Constant.Config.DEFAULT_SATELLITE_FILENAME,
     Constant.Tle.TLE_FILENAME,
