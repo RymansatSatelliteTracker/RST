@@ -24,7 +24,7 @@ test("empty", () => {
  */
 test("param_only", () => {
   // テストデータ
-  const dataPath = path.resolve(__dirname, "data_AppConfigValidator_exec", "param_only.json");
+  const dataPath = path.resolve(import.meta.dirname, "data_AppConfigValidator_exec", "param_only.json");
   const text = FileUtil.readText(dataPath);
   const appConfig = JSON.parse(text);
 
@@ -64,7 +64,7 @@ test("param_only", () => {
  */
 test("appVersion_num", () => {
   // テストデータ
-  const dataPath = path.resolve(__dirname, "data_AppConfigValidator_exec", "appVersion_num.json");
+  const dataPath = path.resolve(import.meta.dirname, "data_AppConfigValidator_exec", "appVersion_num.json");
   const text = FileUtil.readText(dataPath);
   const appConfig = JSON.parse(text);
 
@@ -84,7 +84,7 @@ test("appVersion_num", () => {
  */
 test("app_config", () => {
   // テストデータ
-  const dataPath = path.resolve(__dirname, "data_AppConfigValidator_exec", "app_config.json");
+  const dataPath = path.resolve(import.meta.dirname, "data_AppConfigValidator_exec", "app_config.json");
   const text = FileUtil.readText(dataPath);
   const appConfig = JSON.parse(text);
 
