@@ -1,6 +1,7 @@
 {
   "name": "rst",
   "private": true,
+  "type": "module",
   "version": "0.1.2",
   "author": {
     "name": "rsp.",
