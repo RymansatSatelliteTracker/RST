@@ -265,7 +265,7 @@ export function initializeIpcEvents() {
   /**
    * ドップラーシフト待機イベント
    */
-  ipcMain.handle("isDopplerShiftWaiting", async (event, res: ApiResponse<boolean>) => {
+  ipcMain.handle("dopplerShiftWaitingCallback", async (event, res: ApiResponse<boolean>) => {
     return res;
   });
 
@@ -322,7 +322,7 @@ export function releaseIpcEvents() {
   ipcMain.removeAllListeners("setTransceiverMode");
   ipcMain.removeAllListeners("onChangeTransceiverMode");
   ipcMain.removeAllListeners("setSatelliteMode");
-  ipcMain.removeAllListeners("isDopplerShiftWaiting");
+  ipcMain.removeAllListeners("dopplerShiftWaitingCallback");
   ipcMain.removeAllListeners("onSaveTransceiverFrequency");
   ipcMain.removeAllListeners("canGetValidTle");
   ipcMain.removeAllListeners("onNoticeMessage");

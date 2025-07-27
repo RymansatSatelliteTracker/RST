@@ -567,7 +567,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     }
 
     // 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機する
-    ApiTransceiver.isDopplerShiftWaiting(async (res: ApiResponse<boolean>) => {
+    ApiTransceiver.dopplerShiftWaitingCallback(async (res: ApiResponse<boolean>) => {
       if (res.data || false) {
         if (dopplerTimerId) {
           // ドップラーシフト待機タイマが既に存在する場合は初期化する
@@ -750,4 +750,3 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 };
 
 export default useTransceiverCtrl;
-

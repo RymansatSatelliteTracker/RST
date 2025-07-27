@@ -67,7 +67,7 @@ export default class TransceiverService {
 
     this.controller.setFrequencyCallback(this.onChangeTransceiverFrequency);
     this.controller.setModeCallback(this.onChangeTransceiverMode);
-    this.controller.setIsDopplerShiftWaitingCallback(this.isDopplerShiftWaiting);
+    this.controller.setIsDopplerShiftWaitingCallback(this.dopplerShiftWaitingCallback);
     return await this.controller.start();
   }
 
@@ -144,8 +144,8 @@ export default class TransceiverService {
   /**
    * ドップラーシフト待機イベントを設定する
    */
-  private isDopplerShiftWaiting(res: ApiResponse<UplinkType | DownlinkType>) {
-    getMainWindow().webContents.send("isDopplerShiftWaiting", res);
+  private dopplerShiftWaitingCallback(res: ApiResponse<UplinkType | DownlinkType>) {
+    getMainWindow().webContents.send("dopplerShiftWaitingCallback", res);
   }
 
   /**

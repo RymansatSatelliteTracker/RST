@@ -256,8 +256,8 @@ const apiHandler = {
   /**
    * ドップラーシフト待機イベント
    */
-  isDopplerShiftWaiting: (callback: Function) => {
-    ipcRenderer.on("isDopplerShiftWaiting", (event: IpcRendererEvent, res: ApiResponse<boolean>) => {
+  dopplerShiftWaitingCallback: (callback: Function) => {
+    ipcRenderer.on("dopplerShiftWaitingCallback", (event: IpcRendererEvent, res: ApiResponse<boolean>) => {
       callback(res);
     });
   },
