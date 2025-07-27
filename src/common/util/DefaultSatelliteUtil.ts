@@ -18,8 +18,13 @@ export function createDefaultSatellite(
     noradId,
     uplink1: { uplinkHz: null, uplinkMode: "" },
     uplink2: { uplinkHz: null, uplinkMode: "" },
+    uplink3: { uplinkHz: null, uplinkMode: "" },
     downlink1: { downlinkHz: null, downlinkMode: "" },
     downlink2: { downlinkHz: null, downlinkMode: "" },
+    downlink3: { downlinkHz: null, downlinkMode: "" },
+    beacon: { beaconHz: null, beaconMode: "" },
+    enableSatelliteMode: false,
+    satelliteMode: "1",
     toneHz: null,
     outline: "",
   };

@@ -78,12 +78,22 @@ export class AppConfigSatellite {
   public uplink1 = new Uplink();
   // 対象衛星アップリンク設定2
   public uplink2 = new Uplink();
+  // 対象衛星アップリンク設定3
+  public uplink3 = new Uplink();
   // 自動設定時に使用するダウンリンク設定
   public autoModeDownlinkFreq: number = 1;
   // 対象衛星ダウンリンク設定1
   public downlink1 = new Downlink();
   // 対象衛星ダウンリンク設定2
   public downlink2 = new Downlink();
+  // 対象衛星ダウンリンク設定3
+  public downlink3 = new Downlink();
+  // 対象衛星ビーコン設定
+  public beacon = new Beacon();
+  // 衛星モード有効フラグ
+  public enableSatelliteMode = false;
+  // 衛星モード
+  public satelliteMode = "1";
   // トーン周波数
   public toneHz: number | null = null;
   // 対象衛星概要
@@ -108,6 +118,16 @@ export class Downlink {
   public downlinkHz: number | null = null;
   // ダウンリンクモード
   public downlinkMode = "";
+}
+
+/**
+ * ビーコン設定タイプ
+ */
+export class Beacon {
+  // ビーコン周波数(Hz)
+  public beaconHz: number | null = null;
+  // ビーコンモード
+  public beaconMode = "";
 }
 
 /**

@@ -46,6 +46,10 @@ export default class I18nMsgs {
     en: "Either the downlink frequency or mode has not been entered.",
     ja: "ダウンリンク周波数の周波数かモードいずれかが未入力です",
   };
+  public static readonly CHK_ERR_NOT_ENTERED_BEACON: I18nMsgItem = {
+    en: "Either the beacon frequency or mode has not been entered.",
+    ja: "ビーコン周波数の周波数かモードいずれかが未入力です",
+  };
   public static readonly CHK_ERR_DUPLICATE_MOVE: I18nMsgItem = {
     en: "Duplicate data cannot be moved",
     ja: "重複したデータは移動できません",
@@ -216,6 +220,7 @@ export default class I18nMsgs {
   public static readonly GCOM_OR: I18nMsgItem = { en: "or", ja: "or" };
   public static readonly GCOM_NA: I18nMsgItem = { en: "―", ja: "―" };
   public static readonly GCOM_ERROR: I18nMsgItem = { en: "Error", ja: "エラー" };
+  public static readonly GCOM_ENABLED: I18nMsgItem = { en: "Enabled", ja: "有効" };
   // 画面項目系／メニュー
   public static readonly GCOM_MENU_ABOUT_RSP: I18nMsgItem = { en: "About RST", ja: "RSTについて" };
   public static readonly GCOM_MENU_QUIT: I18nMsgItem = { en: "Quit", ja: "終了" };
@@ -292,6 +297,10 @@ export default class I18nMsgs {
   public static readonly G31_TONE: I18nMsgItem = { en: "Tone Freq.", ja: "トーン周波数" };
   public static readonly G31_OUTLINE: I18nMsgItem = { en: "Outline", ja: "概要" };
   public static readonly G31_MANUAL_SET: I18nMsgItem = { en: "Manual", ja: "マニュアル設定" };
+  public static readonly G31_BEACON: I18nMsgItem = { en: "Tone Freq.", ja: "ビーコン周波数" };
+  public static readonly G31_NORMAL: I18nMsgItem = { en: "Normal", ja: "ノーマル" };
+  public static readonly G31_REVERSE: I18nMsgItem = { en: "Reverse", ja: "リバース" };
+
   // 画面項目系／衛星設定画面 衛星登録
   public static readonly G31_REGIST_SATELLITE: I18nMsgItem = { en: "Satellite Registration", ja: "衛星登録" };
   public static readonly G31_ORBITAL_ELEMENTS: I18nMsgItem = { en: "Orbital Elements", ja: "軌道6要素" };

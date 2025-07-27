@@ -7,11 +7,11 @@ import TransceiverUtil from "@/common/util/TransceiverUtil";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
+import { useModeStateManager } from "@/renderer/components/organisms/TransceiverCtrl/useSatelliteModeStateManager";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
 import emitter from "@/renderer/util/EventBus";
 import { onMounted, ref, Ref, watch } from "vue";
-
 /**
  * 無線機を制御する
  * @param {Ref<Date>} currentDate 現在日時
@@ -28,28 +28,32 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   const diffRxFrequency = ref<number>(0.0);
   // アップリンク運用モード
   const txOpeMode = ref<string>(Constant.Transceiver.OpeMode.UNSET);
-  // アップリンクUSBモード判定
-  const isTxUsbMode = ref<boolean>(true);
-  // アップリンクFMモード判定
-  const isTxAmMode = ref<boolean>(true);
   // ダウンリンク運用モード
   const rxOpeMode = ref<string>(Constant.Transceiver.OpeMode.UNSET);
-  // ダウンリンクUSBモード判定
-  const isRxUsbMode = ref<boolean>(true);
-  // ダウンリンクFMモード判定
-  const isRxAmMode = ref<boolean>(true);
+  // サテライトモード
+  const satelliteMode = ref<string>(Constant.Transceiver.SatelliteMode.UNSET);
   // サテライトモード判定
   const isSatelliteMode = ref<boolean>(false);
   // サテライトモードのトラッキングモード
   const isSatTrackingModeNormal = ref<boolean>(true);
-  // Autoモード移行前のTx周波数を保持する変数
+  // Auto/Beaconモード移行前のTx周波数を保持する変数
   const savedTxFrequency = ref<string>("");
-  // Autoモード移行前のRx周波数を保持する変数
+  // Auto/Beaconモード移行前のRx周波数を保持する変数
   const savedRxFrequency = ref<string>("");
   // ドップラーシフトのアップリンク基準周波数
   const dopplerTxBaseFrequency = ref<number>(0.0);
   // ドップラーシフトのダウンリンク基準周波数
   const dopplerRxBaseFrequency = ref<number>(0.0);
+  // ビーコンモード
+  const isBeaconMode = ref<boolean>(false);
+  // ビーコンモードが利用可能かどうか
+  const isBeaconModeAvailable = ref<boolean>(false);
+  // BeaconモードのTx運用モード
+  const savedTxOpeMode = ref<string>("");
+  // BeaconモードのRx運用モード
+  const savedRxOpeMode = ref<string>("");
+  // ドップラーシフトモード
+  const dopplerShiftMode = ref<string>(Constant.Transceiver.DopplerShiftMode.FIXED_SAT);
 
   // AutoモードのOnOff管理
   const autoStore = useStoreAutoState();
@@ -68,9 +72,21 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * 表示中の衛星グループが変更された場合のイベントハンドラ
    */
   async function onChangeSatGrp() {
+    isBeaconModeAvailable.value = await confirmBeaconModeAvailable();
     if (autoStore.tranceiverAuto) {
       await startAutoMode();
     }
+  }
+
+  /**
+   * ビーコンモードが利用可能かどうかを確認する
+   * @returns {Promise<boolean>} ビーコンモードが利用可能かどうか
+   */
+  async function confirmBeaconModeAvailable(): Promise<boolean> {
+    // アクティブ衛星の周波数/運用モードを取得
+    const transceiverSetting = await ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
+
+    return !!(transceiverSetting.beacon && transceiverSetting.beacon.beaconHz && transceiverSetting.beacon.beaconMode);
   }
 
   /**
@@ -88,23 +104,24 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     savedTxFrequency.value = txFrequency.value;
     savedRxFrequency.value = rxFrequency.value;
 
-    // アクティブ衛星の周波数/運用モードを取得
+    // アクティブ衛星の周波数/運用モード/サテライトモード/トラッキングモードを取得
     const transceiverSetting = await ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
-    if (transceiverSetting.uplink && transceiverSetting.uplink.uplinkHz) {
-      // アップリンク周波数/運用モードをアクティブ衛星の設定で更新する
-      txFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.uplink.uplinkHz);
-      txOpeMode.value = transceiverSetting.uplink.uplinkMode;
 
-      // 運用モードによってUSB/LSBモード判定、AM/FMモード判定を更新する
-      await updateTxModeFlags(rxOpeMode.value);
-    }
-    if (transceiverSetting.downlink && transceiverSetting.downlink.downlinkHz) {
-      // ダウンリンク周波数/運用モードをアクティブ衛星の設定で更新する
-      rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.downlink.downlinkHz);
-      rxOpeMode.value = transceiverSetting.downlink.downlinkMode;
+    // 有効だったらサテライトモードを設定する
+    satelliteMode.value = transceiverSetting.satelliteMode
+      ? Constant.Transceiver.SatelliteMode.SATELLITE
+      : Constant.Transceiver.SatelliteMode.UNSET;
 
-      // 運用モードによってUSB/LSBモード判定、AM/FMモード判定を更新する
-      await updateRxModeFlags(rxOpeMode.value);
+    // 周波数と運用モードを設定、保存する
+    setFrequencyAndOpeModeInModeStart();
+    saveFrequencyAndOpeModeInModeStart();
+
+    // サテライトモードのトラッキングモードをアクティブ衛星の設定で更新する
+    // Reverseを明示的に指定している場合以外はNormal
+    if (isSatelliteMode.value && transceiverSetting.satTrackMode === Constant.Transceiver.TrackingMode.REVERSE) {
+      isSatTrackingModeNormal.value = false;
+    } else {
+      isSatTrackingModeNormal.value = true;
     }
 
     // Auto開始をメイン側に連携する
@@ -142,10 +159,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     // Autoモード移行前の周波数を復元する
     txFrequency.value = savedTxFrequency.value;
     rxFrequency.value = savedRxFrequency.value;
-
-    // 運用モードによってUSB/LSBモード判定、AM/FMモード判定を更新する
-    await updateTxModeFlags(txOpeMode.value);
-    await updateRxModeFlags(rxOpeMode.value);
   }
 
   /**
@@ -160,6 +173,99 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     timerId = null;
 
     return true;
+  }
+
+  /**
+   * ビーコンモードを開始する
+   */
+  async function startBeaconMode() {
+    // 周波数と運用モードを設定、保存する
+    setFrequencyAndOpeModeInModeStart();
+    saveFrequencyAndOpeModeInModeStart();
+  }
+
+  /**
+   * ビーコンモードを停止する
+   */
+  async function stopBeaconMode() {
+    // アクティブ衛星の周波数/運用モードを取得
+    const transceiverSetting = await ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
+
+    // 周波数と運用モードを設定する
+    // Autoモード中じゃない場合は移行前の周波数と運用モードを復元して抜ける
+    if (!autoStore.tranceiverAuto) {
+      txFrequency.value = savedTxFrequency.value;
+      rxFrequency.value = savedRxFrequency.value;
+      txOpeMode.value = savedTxOpeMode.value;
+      rxOpeMode.value = savedRxOpeMode.value;
+      return;
+    }
+
+    // Autoモード中の場合
+    // Autoモードの周波数/運用モードを優先して設定する
+
+    if (transceiverSetting.uplink && transceiverSetting.uplink.uplinkHz) {
+      // アップリンク周波数/運用モードをアクティブ衛星の設定で更新する
+      txFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.uplink.uplinkHz);
+      txOpeMode.value = transceiverSetting.uplink.uplinkMode;
+    }
+    if (transceiverSetting.downlink && transceiverSetting.downlink.downlinkHz) {
+      // ダウンリンク周波数/運用モードをアクティブ衛星の設定で更新する
+      rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.downlink.downlinkHz);
+      rxOpeMode.value = transceiverSetting.downlink.downlinkMode;
+    }
+  }
+
+  /**
+   * ビーコンもしくはAutoのモード開始時に状態に応じて周波数と運用モードを設定する
+   */
+  async function setFrequencyAndOpeModeInModeStart() {
+    // アクティブ衛星の周波数/運用モードを取得
+    const transceiverSetting = await ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
+
+    // 周波数と運用モードを設定する
+    // ここにはAutoもしくはBeaconの状態変更後に来る
+    if (isBeaconMode.value) {
+      // BeaconModeがONということは
+      // - BeaconモードをONにした
+      // - BeaconモードONの状態でAutoモードを開始した
+      // その場合は、ビーコンモードの周波数/運用モードを優先して設定する
+      if (transceiverSetting.beacon && transceiverSetting.beacon.beaconHz) {
+        // ダウンリンクの周波数/運用モードをアクティブ衛星の設定で更新する
+        rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.beacon.beaconHz);
+        rxOpeMode.value = transceiverSetting.beacon.beaconMode;
+      }
+    } else {
+      // BeaconModeがOFFということは
+      // - BeaconモードOFFの状態でAutoモードを開始した
+      // その場合は、Autoモードの周波数/運用モードを優先して設定する
+      if (transceiverSetting.uplink && transceiverSetting.uplink.uplinkHz) {
+        // アップリンク周波数/運用モードをアクティブ衛星の設定で更新する
+        txFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.uplink.uplinkHz);
+        txOpeMode.value = transceiverSetting.uplink.uplinkMode;
+      }
+      if (transceiverSetting.downlink && transceiverSetting.downlink.downlinkHz) {
+        // ダウンリンク周波数/運用モードをアクティブ衛星の設定で更新する
+        rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.downlink.downlinkHz);
+        rxOpeMode.value = transceiverSetting.downlink.downlinkMode;
+      }
+    }
+  }
+
+  /**
+   * ビーコンもしくはAutoのモード開始時に現在の周波数と運用モードを保存する
+   */
+  async function saveFrequencyAndOpeModeInModeStart() {
+    // 何もONにしていない状態でここに来たときは周波数と運用モードを保存する
+    // BeaconモードがONの状態でBeaconを開始はできない、Autoも同様、
+    // なので、どちらかがOFFということは事前状態は何もONにしていない状態
+    if (!(isBeaconMode.value && autoStore.tranceiverAuto)) {
+      // 事前状態が何もONにしていない状態であれば、現在の周波数と運用モードを保存する
+      savedTxFrequency.value = txFrequency.value;
+      savedRxFrequency.value = rxFrequency.value;
+      savedTxOpeMode.value = txOpeMode.value;
+      savedRxOpeMode.value = rxOpeMode.value;
+    }
   }
 
   /**
@@ -178,50 +284,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     const config = await ApiAppConfig.getAppConfig();
     txFrequency.value = config.transceiver.txFrequency;
     rxFrequency.value = config.transceiver.rxFrequency;
-  }
-
-  /**
-   * アップリンク運用モードのUSB/LSB、AM/FM判定フラグを更新する
-   * @param {string} txMode アップリンク運用モード
-   */
-  async function updateTxModeFlags(txMode: string) {
-    if (txMode === Constant.Transceiver.OpeMode.UNSET || CommonUtil.isEmpty(txMode)) {
-      isTxUsbMode.value = true;
-    } else if (txMode === Constant.Transceiver.OpeMode.USB) {
-      isTxUsbMode.value = true;
-    } else if (txMode === Constant.Transceiver.OpeMode.LSB) {
-      isTxUsbMode.value = false;
-    }
-
-    if (txMode === Constant.Transceiver.OpeMode.UNSET || CommonUtil.isEmpty(txMode)) {
-      isTxAmMode.value = true;
-    } else if (txMode === Constant.Transceiver.OpeMode.AM) {
-      isTxAmMode.value = true;
-    } else if (txMode === Constant.Transceiver.OpeMode.FM) {
-      isTxAmMode.value = false;
-    }
-  }
-
-  /**
-   * ダウンリンク運用モードのUSB/LSB、AM/FM判定フラグを更新する
-   * @param {string} rxMode ダウンリンク運用モード
-   */
-  async function updateRxModeFlags(rxMode: string) {
-    if (rxMode === Constant.Transceiver.OpeMode.UNSET || CommonUtil.isEmpty(rxMode)) {
-      isRxUsbMode.value = true;
-    } else if (rxMode === Constant.Transceiver.OpeMode.USB) {
-      isRxUsbMode.value = true;
-    } else if (rxMode === Constant.Transceiver.OpeMode.LSB) {
-      isRxUsbMode.value = false;
-    }
-
-    if (rxMode === Constant.Transceiver.OpeMode.UNSET || CommonUtil.isEmpty(rxMode)) {
-      isRxAmMode.value = true;
-    } else if (rxMode === Constant.Transceiver.OpeMode.AM) {
-      isRxAmMode.value = true;
-    } else if (rxMode === Constant.Transceiver.OpeMode.FM) {
-      isRxAmMode.value = false;
-    }
   }
 
   /**
@@ -320,7 +382,30 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     return false;
   }
 
+  watch(isBeaconMode, async (newIsBeaconMode) => {
+    if (newIsBeaconMode) {
+      // ビーコンモード開始
+      await startBeaconMode();
+    } else {
+      // ビーコンモード終了
+      await stopBeaconMode();
+    }
+  });
+
+  // サテライトモード設定が変更された場合に、isSatelliteModeを更新する
+  watch(
+    satelliteMode,
+    (newMode, oldMode) => {
+      if (oldMode === undefined) return;
+      saveState(oldMode);
+      loadState(newMode);
+      isSatelliteMode.value = newMode === Constant.Transceiver.SatelliteMode.SATELLITE ? true : false;
+    },
+    { immediate: true }
+  );
+
   // サテライトモード設定が変更された場合にAPIを呼び出す
+  // TODO: サテライトモードON/OFFのAPIにしているがSPLITが入るのでモード自体を渡すべき？
   watch(isSatelliteMode, async (newIsSatelliteMode) => {
     await ApiTransceiver.setSatelliteMode(newIsSatelliteMode);
   });
@@ -353,12 +438,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       uplinkHz: null,
       uplinkMode: newTxOpeMode,
     });
-
-    // 運用モードによってUSB/LSBモード判定、AM/FMモード判定を更新する
-    await updateTxModeFlags(newTxOpeMode);
   });
 
   // サテライトモードがONで、個別でダウンリンク周波数が変更された場合にAPIを呼び出す
+  // TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時は何もしない
   watch(rxFrequency, async (newFrequency) => {
     if (!isSatelliteMode.value) {
       return;
@@ -383,6 +466,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
     if (!isSatelliteMode.value) {
       // サテライトモードがOFFの場合は中断する
+      // TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時も何もしない
       diffRxFrequency.value = 0.0;
       return;
     }
@@ -413,6 +497,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   });
 
   // サテライトモードがONで、個別でダウンリンクの運用モードが変更された場合にAPIを呼び出す
+  // TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時も何もしない
   watch(rxOpeMode, async (newRxOpeMode) => {
     if (!isSatelliteMode.value) {
       return;
@@ -422,10 +507,44 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       downlinkHz: null,
       downlinkMode: newRxOpeMode,
     });
-    // 運用モードによってUSB/LSBモード判定、AM/FMモード判定を更新する
-    await updateRxModeFlags(newRxOpeMode);
   });
 
+  /**
+   * Rx周波数を同期する
+   * サテライトモードがONの場合はTx周波数を同期しない
+   * サテライトモードがOFFの場合はTx周波数を同期する
+   * Rxから先に更新する
+   */
+  watch([satelliteMode, txFrequency] as const, ([newSatelliteMode, newTxFrequency]) => {
+    if (newSatelliteMode === Constant.Transceiver.SatelliteMode.SATELLITE) return;
+    // 無限更新防止
+    if (rxFrequency.value === newTxFrequency) return;
+    rxFrequency.value = newTxFrequency;
+  });
+  watch([satelliteMode, rxFrequency] as const, ([newSatelliteMode, newRxFrequency]) => {
+    if (newSatelliteMode === Constant.Transceiver.SatelliteMode.SATELLITE) return;
+    // 無限更新防止
+    if (txFrequency.value === newRxFrequency) return;
+    txFrequency.value = newRxFrequency;
+  });
+  /**
+   * Rx運用モードを同期する
+   * サテライトモードがONの場合はTx運用モードを同期しない
+   * サテライトモードがOFFの場合はTx運用モードを同期する
+   * Rxから先に更新する
+   */
+  watch([satelliteMode, txOpeMode] as const, ([newSatelliteMode, newTxOpeMode]) => {
+    if (newSatelliteMode === Constant.Transceiver.SatelliteMode.SATELLITE) return;
+    // 無限更新防止
+    if (rxOpeMode.value === newTxOpeMode) return;
+    rxOpeMode.value = newTxOpeMode;
+  });
+  watch([satelliteMode, rxOpeMode] as const, ([newSatelliteMode, newRxOpeMode]) => {
+    if (newSatelliteMode === Constant.Transceiver.SatelliteMode.SATELLITE) return;
+    // 無限更新防止
+    if (txOpeMode.value === newRxOpeMode) return;
+    txOpeMode.value = newRxOpeMode;
+  });
   /**
    * 周波数の更新を行う
    */
@@ -472,11 +591,21 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     if (isDopplerShiftWaiting.value) {
       return;
     }
+    // ドップラーシフト補正を実行するかどうかを判定する
+    const execTxDopplerShiftCorrection =
+      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_SAT ||
+      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_RX;
+    const execRxDopplerShiftCorrection =
+      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_SAT ||
+      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_TX;
 
     // アップリンク周波数をドップラーシフト補正して更新する
-    await updateTxFrequencyWithDopplerShift(autoTrackingIntervalMsec);
-    if (isSatelliteMode.value) {
+    if (execTxDopplerShiftCorrection) {
+      await updateTxFrequencyWithDopplerShift(autoTrackingIntervalMsec);
+    }
+    if (isSatelliteMode.value && execRxDopplerShiftCorrection) {
       // サテライトモードがONの場合、ダウンリンク周波数をドップラーシフト補正して更新する
+      // TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時も何もしない
       await updateRxFrequencyWithDopplerShift(autoTrackingIntervalMsec);
     }
   }
@@ -537,8 +666,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
         if (!CommonUtil.isEmpty(opeMode.uplinkMode)) {
           // アップリンク運用モードを更新する
           txOpeMode.value = opeMode.uplinkMode;
-          // 運用モードによってUSB/LSBモード判定、AM/FMモード判定を更新する
-          await updateTxModeFlags(txOpeMode.value);
         } else {
           // 運用モードが取得できない場合はUNSETにする
           txOpeMode.value = Constant.Transceiver.OpeMode.UNSET;
@@ -547,8 +674,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
         if (!CommonUtil.isEmpty(opeMode.downlinkMode)) {
           // ダウンリンク運用モードを更新する
           rxOpeMode.value = opeMode.downlinkMode;
-          // 運用モードによってUSB/LSBモード判定、AM/FMモード判定を更新する
-          await updateRxModeFlags(rxOpeMode.value);
         } else {
           // 運用モードが取得できない場合はUNSETにする
           rxOpeMode.value = Constant.Transceiver.OpeMode.UNSET;
@@ -565,6 +690,47 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     });
   });
 
+  const { save, load } = useModeStateManager();
+
+  /**
+   * モードごとの状態を保存する
+   * @param mode モード名（サテライトモードやSPLITなど）
+   */
+  function saveState(mode: string) {
+    // Autoモード中は状態を保存しない
+    if (autoStore.tranceiverAuto) return;
+
+    const state = {
+      rxFrequency: rxFrequency.value,
+      rxOpeMode: rxOpeMode.value,
+      isSatTrackingModeNormal: isSatTrackingModeNormal.value,
+    };
+    save(mode, state);
+  }
+  /**
+   * モードごとの状態を呼び出す
+   * @param mode モード名（サテライトモードやSPLITなど）
+   */
+  function loadState(mode: string) {
+    // Autoモード中は状態を読み込まない
+    if (autoStore.tranceiverAuto) return;
+
+    const state = load(mode);
+    rxFrequency.value = state.rxFrequency;
+    rxOpeMode.value = state.rxOpeMode;
+    switch (mode) {
+      case Constant.Transceiver.SatelliteMode.SATELLITE:
+        isSatTrackingModeNormal.value = state.isSatTrackingModeNormal;
+        break;
+      case Constant.Transceiver.SatelliteMode.SPLIT:
+        isSatTrackingModeNormal.value = true; // SPLITモードではトラッキングモードは常にNORMAL
+        break;
+      default:
+        isSatTrackingModeNormal.value = false; // その他のモードではトラッキングモードは無効
+        break;
+    }
+  }
+
   return {
     startAutoMode,
     stopAutoMode,
@@ -574,13 +740,14 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     diffRxFrequency,
     txOpeMode,
     rxOpeMode,
-    isTxUsbMode,
-    isTxAmMode,
-    isRxUsbMode,
-    isRxAmMode,
+    satelliteMode,
     isSatelliteMode,
     isSatTrackingModeNormal,
+    isBeaconMode,
+    isBeaconModeAvailable,
+    dopplerShiftMode,
   };
 };
 
 export default useTransceiverCtrl;
+

@@ -2,7 +2,7 @@
  * 定数
  */
 export default class Constant {
-  public static readonly appVersion = "0.1.2";
+  public static readonly appVersion = "0.1.3";
 
   /**
    * ロガー関係
@@ -210,7 +210,7 @@ export default class Constant {
      */
     public static readonly OpeMode = class {
       // 未設定
-      static readonly UNSET = "UNSET";
+      static readonly UNSET = "";
       // LSB
       static readonly LSB = "LSB";
       // USB
@@ -222,11 +222,54 @@ export default class Constant {
       // FM
       static readonly FM = "FM";
       // DV
+      // 画面上は設定できないが、無線機からの受信時に設定される可能性がある
       static readonly DV = "DV";
+      // RTTY
+      static readonly RTTY = "RTTY";
+      // USB-D
+      static readonly USB_D = "USB-D";
+      // LSB-D
+      static readonly LSB_D = "LSB-D";
+      // FM-D
+      static readonly FM_D = "FM-D";
     };
 
     // ドップラーシフトが有効となるパス前後の追加時間範囲[単位:秒]
     static readonly DOPPLER_SHIFT_RANGE_SEC = 60;
+
+    /**
+     * 無線機運用モード
+     */
+    public static readonly DopplerShiftMode = class {
+      // 衛星固定
+      static readonly FIXED_SAT = "FIXED_SAT";
+      // 受信固定
+      static readonly FIXED_RX = "FIXED_RX";
+      // 送信固定
+      static readonly FIXED_TX = "FIXED_TX";
+    };
+
+    /**
+     * 無線機の衛星モード設定
+     */
+    public static readonly SatelliteMode = class {
+      // 未設定
+      static readonly UNSET = "";
+      // SATELLITEモード
+      static readonly SATELLITE = "SATELLITE";
+      // SPLITモード
+      static readonly SPLIT = "SPLIT";
+    };
+
+    /**
+     * 無線機の衛星モードのトラッキングモード
+     */
+    public static readonly TrackingMode = class {
+      // 通常モード
+      static readonly NORMAL = "NORMAL";
+      // 反転モード
+      static readonly REVERSE = "REVERSE";
+    };
   };
 
   /**
@@ -280,21 +323,7 @@ export default class Constant {
   public static readonly SatSetting = class {
     // 衛星パス抽出最小仰角の選択範囲0~85とするための配列の長さ
     static readonly ELEVATION_RANGE_LENGTH = 86;
-    /**
-     * 運用モード
-     */
-    public static readonly OpeMode = class {
-      // 運用モードLSB
-      static readonly LSB = "LSB";
-      // 運用モードUSB
-      static readonly USB = "USB";
-      // 運用モードCW
-      static readonly CW = "CW";
-      // 運用モードFM
-      static readonly FM = "FM";
-      // 運用モードAM
-      static readonly AM = "AM";
-    };
+
     // グループごとの最大衛星数
     static readonly MAX_NUM_OF_SAT_IN_GROUP = 10;
 
