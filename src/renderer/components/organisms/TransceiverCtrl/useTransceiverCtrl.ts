@@ -566,14 +566,14 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       return;
     }
 
-    // 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを2秒間待機する
+    // 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機する
     ApiTransceiver.isDopplerShiftWaiting(async (res: ApiResponse<boolean>) => {
       if (res.data || false) {
         if (dopplerTimerId) {
           // ドップラーシフト待機タイマが既に存在する場合は初期化する
           clearTimeout(dopplerTimerId);
         }
-        // 2秒間ドップラーシフト待機フラグを有効にする
+        // ドップラーシフト待機フラグを有効にする
         isDopplerShiftWaiting.value = true;
         dopplerTimerId = setTimeout(() => {
           dopplerTimerId = null;
@@ -582,7 +582,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
           // 変更後の周波数でドップラーシフトの基準周波数を更新する
           dopplerTxBaseFrequency.value = TransceiverUtil.parseNumber(txFrequency.value);
           dopplerRxBaseFrequency.value = TransceiverUtil.parseNumber(rxFrequency.value);
-        }, 2000);
+        }, Constant.Transceiver.TRANSCEIVE_WAIT_MS);
         return;
       }
     });

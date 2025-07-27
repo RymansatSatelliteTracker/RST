@@ -1,4 +1,5 @@
 import CommonUtil from "@/common/CommonUtil";
+import Constant from "@/common/Constant";
 import { synchronized } from "@/common/decorator/synchronized";
 import I18nMsgs from "@/common/I18nMsgs";
 import { AppConfigTransceiver } from "@/common/model/AppConfigModel";
@@ -57,6 +58,11 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   // 無線機への送信間隔制御
   private prevSendTimeMsec = 0;
 
+  // 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機するフラグ
+  private isRecvTransceiveFreq = false;
+  // 周波数データ(トランシーブ)受信時の待機用タイマー
+  private transceiveWaitTimer: NodeJS.Timeout | null = null;
+
   public constructor(transceiverConfig: AppConfigTransceiver) {
     super(transceiverConfig);
     this.state.resetAll();
@@ -89,6 +95,11 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // 間隔が1秒の場合は、メイン0.5s、サブ0.5sで交互に処理を行う
     const interval = (parseFloat(this.transceiverConfig.autoTrackingIntervalSec) * 1000) / 2;
     this.sendAndRecvTimer = setInterval(async () => {
+      // 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機する
+      if (this.isRecvTransceiveFreq) {
+        return;
+      }
+
       // 前回処理が終わっていない場合はスキップ
       if (isProcessing) {
         return;
@@ -118,6 +129,12 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
     // 定期コマンド送信を停止
     this.cancelTimer();
+
+    // 周波数データ(トランシーブ)受信時のタイマーを停止
+    if (this.transceiveWaitTimer) {
+      clearTimeout(this.transceiveWaitTimer);
+      this.transceiveWaitTimer = null;
+    }
   }
 
   /**
@@ -638,6 +655,18 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         // 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを2秒間停止する
         res.data = true;
         this.isDopplerShiftWaitingCallback(res);
+        this.isRecvTransceiveFreq = true;
+
+        // 既存のタイマーがあればクリア
+        if (this.transceiveWaitTimer) {
+          clearTimeout(this.transceiveWaitTimer);
+        }
+
+        // 指定した秒数後にフラグをfalseに戻す
+        this.transceiveWaitTimer = setTimeout(() => {
+          this.isRecvTransceiveFreq = false;
+          this.transceiveWaitTimer = null;
+        }, Constant.Transceiver.TRANSCEIVE_WAIT_MS);
         return;
 
       // 表示周波数の取得
@@ -648,6 +677,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         }
         res.data = false;
         this.isDopplerShiftWaitingCallback(res);
+        this.isRecvTransceiveFreq = false;
         return;
 
       // 運用モードの設定（トランシーブ）
@@ -660,6 +690,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         }
         res.data = false;
         this.isDopplerShiftWaitingCallback(res);
+        this.isRecvTransceiveFreq = false;
         return;
     }
 
