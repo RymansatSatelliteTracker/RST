@@ -234,9 +234,6 @@ export default class Constant {
       static readonly FM_D = "FM-D";
     };
 
-    // ドップラーシフトが有効となるパス前後の追加時間範囲[単位:秒]
-    static readonly DOPPLER_SHIFT_RANGE_SEC = 60;
-
     /**
      * 無線機運用モード
      */
@@ -270,6 +267,11 @@ export default class Constant {
       // 反転モード
       static readonly REVERSE = "REVERSE";
     };
+
+    // ドップラーシフトが有効となるパス前後の追加時間範囲[単位:秒]
+    static readonly DOPPLER_SHIFT_RANGE_SEC = 60;
+    // 周波数データ(トランシーブ)受信時の待機時間[単位:ミリ秒]
+    static readonly TRANSCEIVE_WAIT_MS = 2000;
   };
 
   /**

@@ -66,8 +66,8 @@ export default class ApiTransceiver {
   /**
    * ドップラーシフト待機イベント
    */
-  public static async isDopplerShiftWaiting(callback: Function) {
-    await window.rstApi.isDopplerShiftWaiting(callback);
+  public static async dopplerShiftWaitingCallback(callback: Function) {
+    await window.rstApi.dopplerShiftWaitingCallback(callback);
   }
 
   /**
