@@ -575,13 +575,37 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
         }
         // ドップラーシフト待機フラグを有効にする
         isDopplerShiftWaiting.value = true;
-        dopplerTimerId = setTimeout(() => {
+        dopplerTimerId = setTimeout(async () => {
           dopplerTimerId = null;
           // ドップラーシフト待機フラグを無効に戻す
           isDopplerShiftWaiting.value = false;
-          // 変更後の周波数でドップラーシフトの基準周波数を更新する
-          dopplerTxBaseFrequency.value = TransceiverUtil.parseNumber(txFrequency.value);
-          dopplerRxBaseFrequency.value = TransceiverUtil.parseNumber(rxFrequency.value);
+
+          const frequencyTrackService = ActiveSatServiceHub.getInstance().getFrequencyTrackService();
+          if (frequencyTrackService) {
+            // Txドップラーファクターを計算する
+            const txDopplerFactor = await frequencyTrackService.calcUplinkDopplerFactor(
+              currentDate.value,
+              autoTrackingIntervalMsec
+            );
+            // 変更後のTx周波数でドップラーシフトの基準周波数を更新する
+            const tempTxFrequency = TransceiverUtil.parseNumber(txFrequency.value);
+            dopplerTxBaseFrequency.value = TransceiverUtil.subtractFrequencies(
+              tempTxFrequency,
+              tempTxFrequency * (1 - txDopplerFactor)
+            );
+
+            // Rxドップラーファクターを計算する
+            const rxDopplerFactor = await frequencyTrackService.calcDownlinkDopplerFactor(
+              currentDate.value,
+              autoTrackingIntervalMsec
+            );
+            // 変更後のRx周波数でドップラーシフトの基準周波数を更新する
+            const tempRxFrequency = TransceiverUtil.parseNumber(rxFrequency.value);
+            dopplerRxBaseFrequency.value = TransceiverUtil.subtractFrequencies(
+              tempRxFrequency,
+              tempRxFrequency * (1 - rxDopplerFactor)
+            );
+          }
         }, Constant.Transceiver.TRANSCEIVE_WAIT_MS);
         return;
       }
