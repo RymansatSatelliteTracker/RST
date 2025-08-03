@@ -106,7 +106,7 @@ export default class TleService {
     try {
       res = await webClient.get(url);
     } catch (e) {
-      throw new Error(`指定のURLでTLEが取得できませんでした: ${url}`);
+      throw new Error(`Could not access the URL: ${url}`);
     }
 
     if (res.status !== 200) {
