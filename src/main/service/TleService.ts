@@ -102,9 +102,15 @@ export default class TleService {
    * @returns
    */
   private async getTleTextByUrl(url: string, webClient: WebClient): Promise<string> {
-    const res = await webClient.get(url);
+    let res;
+    try {
+      res = await webClient.get(url);
+    } catch (e) {
+      throw new Error(`Could not access the URL: ${url}`);
+    }
+
     if (res.status !== 200) {
-      AppMainLogger.warn(`指定のURLでTLEが取得できませんでした。 ${res.status} ${url} `);
+      AppMainLogger.warn(`指定のURLでTLEが取得できませんでした: ${res.status} ${url} `);
       return "";
     }
     if (!CommonUtil.isEmpty(res.data.trim())) {
