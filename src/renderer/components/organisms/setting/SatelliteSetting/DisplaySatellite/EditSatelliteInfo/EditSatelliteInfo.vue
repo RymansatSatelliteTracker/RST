@@ -63,7 +63,7 @@
           <v-col cols="4">
             <TextField
               v-model="form.uplink1Mhz"
-              suffix="Mhz"
+              suffix="MHz"
               :valiSchema="valiSchemaEditSatelliteInfo"
               valiSchemaFieldPath="uplink1Mhz"
               v-model:error-text="errors.uplink1Mhz"
@@ -80,7 +80,7 @@
           <v-col cols="4">
             <TextField
               v-model="form.uplink2Mhz"
-              suffix="Mhz"
+              suffix="MHz"
               :valiSchema="valiSchemaEditSatelliteInfo"
               valiSchemaFieldPath="uplink2Mhz"
               v-model:error-text="errors.uplink2Mhz"
@@ -100,7 +100,7 @@
           <v-col cols="4">
             <TextField
               v-model="form.uplink3Mhz"
-              suffix="Mhz"
+              suffix="MHz"
               :valiSchema="valiSchemaEditSatelliteInfo"
               valiSchemaFieldPath="uplink3Mhz"
               v-model:error-text="errors.uplink3Mhz"
@@ -141,7 +141,7 @@
           <v-col cols="4">
             <TextField
               v-model="form.downlink1Mhz"
-              suffix="Mhz"
+              suffix="MHz"
               :valiSchema="valiSchemaEditSatelliteInfo"
               valiSchemaFieldPath="downlink1Mhz"
               v-model:error-text="errors.downlink1Mhz"
@@ -158,7 +158,7 @@
           <v-col cols="4">
             <TextField
               v-model="form.downlink2Mhz"
-              suffix="Mhz"
+              suffix="MHz"
               :valiSchema="valiSchemaEditSatelliteInfo"
               valiSchemaFieldPath="downlink2Mhz"
               v-model:error-text="errors.downlink2Mhz"
@@ -178,7 +178,7 @@
           <v-col cols="4">
             <TextField
               v-model="form.downlink3Mhz"
-              suffix="Mhz"
+              suffix="MHz"
               :valiSchema="valiSchemaEditSatelliteInfo"
               valiSchemaFieldPath="downlink3Mhz"
               v-model:error-text="errors.downlink3Mhz"
@@ -202,7 +202,7 @@
           <v-col cols="4">
             <TextField
               v-model="form.beaconMhz"
-              suffix="Mhz"
+              suffix="MHz"
               :valiSchema="valiSchemaEditSatelliteInfo"
               valiSchemaFieldPath="beaconMhz"
               v-model:error-text="errors.beaconMhz"
@@ -421,3 +421,4 @@ async function onReset() {
 <style lang="scss" scoped>
 @import "./EditSatelliteInfo.scss";
 </style>
+
