@@ -8,12 +8,15 @@
       @click="autoBtnClick"
       >Auto</Button
     >
-    <!-- ドップラーシフトモード-->
-    <DopplerShiftModeSelect class="doppler_shift_mode_select" v-model="dopplerShiftMode" />
 
     <!-- 無線機・周波数 -->
     <fieldset class="fieldset_area">
       <legend class="item_group_legend">Frequency</legend>
+      <!-- ドップラーシフトモード-->
+      <div class="doppler_area">
+        <DopplerShiftModeSelect class="doppler_shift_mode_select" v-model="dopplerShiftMode" />
+      </div>
+      <!-- 周波数 -->
       <div class="freq_area">
         <div>
           Rx<FrequencySelect class="freq_box" v-model:frequency="rxFrequency" v-model:diffFrequency="diffRxFrequency"
@@ -28,6 +31,7 @@
           >
         </div>
       </div>
+      <!-- ビーコン -->
       <div class="beacon_btn_right">
         <Button
           class="beacon_btn"
@@ -240,3 +244,4 @@ async function beaconBtnClick() {
 <style lang="scss" scoped>
 @import "./TransceiverCtrl.scss";
 </style>
+
