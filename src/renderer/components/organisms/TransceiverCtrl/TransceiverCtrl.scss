@@ -144,6 +144,13 @@
   margin-top: 1px;
 }
 
+.doppler_area {
+  user-select: none;
+  margin-right: 7px;
+  margin-left: 7px;
+  margin-bottom: 7px;
+}
+
 .freq_area {
   user-select: none;
   display: inline-block;
@@ -185,3 +192,4 @@
 .br_no_select {
   user-select: none;
 }
+
