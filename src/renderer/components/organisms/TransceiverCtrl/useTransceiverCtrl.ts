@@ -721,6 +721,12 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     switch (mode) {
       case Constant.Transceiver.SatelliteMode.SATELLITE:
         isSatTrackingModeNormal.value = state.isSatTrackingModeNormal;
+        // このモード以外はtx/rxが同期している
+        // モードを切り替えるとsatelliteにしたときにrx設定あり->rxが空欄という挙動になる
+        // tx入力してるのにrxを空欄にしたいというケースはないので、txをrxに合わせる
+        const isRxOpeModeUNSET: boolean = rxOpeMode.value === Constant.Transceiver.OpeMode.UNSET;
+        const isTxOpeModeUNSET: boolean = txOpeMode.value === Constant.Transceiver.OpeMode.UNSET;
+        if (isRxOpeModeUNSET && !isTxOpeModeUNSET) rxOpeMode.value = txOpeMode.value;
         break;
       case Constant.Transceiver.SatelliteMode.SPLIT:
         isSatTrackingModeNormal.value = true; // SPLITモードではトラッキングモードは常にNORMAL
@@ -750,3 +756,4 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 };
 
 export default useTransceiverCtrl;
+
