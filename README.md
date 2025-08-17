@@ -10,17 +10,15 @@
 
 #### Windows
 
-- nodeのバージョン管理はnvmを使用した場合の手順を記載する。nvm以外を使用する場合は適宜読み替える事。
+- nodeのバージョン管理はvoltaを使用した場合の手順を記載する。volta以外を使用する場合は適宜読み替える事。
 - PCにnode, nodistがインストールされている場合、アンインストールする。
 - 注意）nodistをアンインストールした後、$HOME\.npmrc 内のnodistの記載を手動で削除する。
 
-- 以下からnvmをインストールする。
-  `https://github.com/coreybutler/nvm-windows`
-
 ```bash
+# voltaのインストール
+winget install Volta.Volta
 # nodeのインストール
-nvm install v21.7.3
-nvm use 21.7.3
+volta install node@22
 
 # ライブラリなどのインストール
 npm i
