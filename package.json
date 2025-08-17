@@ -147,5 +147,9 @@
     "vite-tsconfig-paths": "5.0.1",
     "vue-router": "4.3.2",
     "vue-tsc": "2.0.29"
+  },
+  "volta": {
+    "node": "20.19.4"
   }
 }
+
