@@ -1,7 +1,7 @@
 {
   "editor.formatOnSave": false,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit",
+    "source.fixAll.eslint": "explicit"
   },
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -45,5 +45,5 @@
   },
   "typescript.preferences.importModuleSpecifier": "non-relative",
   // すべてのTypeScriptの静的解析エラーが問題タブに表示されるようにする
-  "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+  "typescript.tsserver.experimental.enableProjectDiagnostics": true
 }

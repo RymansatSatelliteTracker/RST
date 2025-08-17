@@ -24,4 +24,3 @@ const opeMode = defineModel("opeMode");
 </script>
 
 <style lang="scss" scoped></style>
-

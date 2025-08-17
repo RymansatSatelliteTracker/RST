@@ -63,4 +63,3 @@ async function btnClick(btnmode: string) {
 <style lang="scss" scoped>
 @import "./CycleButton.scss";
 </style>
-

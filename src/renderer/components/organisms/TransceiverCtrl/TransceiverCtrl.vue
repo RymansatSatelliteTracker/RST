@@ -244,4 +244,3 @@ async function beaconBtnClick() {
 <style lang="scss" scoped>
 @import "./TransceiverCtrl.scss";
 </style>
-

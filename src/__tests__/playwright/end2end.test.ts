@@ -1,5 +1,5 @@
 import Constant from "@/common/Constant";
-import Store from 'electron-store';
+import Store from "electron-store";
 import { _electron, ElectronApplication, expect, Page, test } from "playwright/test";
 
 let electronApp: ElectronApplication;
@@ -40,11 +40,13 @@ test("起動チェック", async () => {
   });
   expect(width).toBeGreaterThan(0);
   expect(height).toBeGreaterThan(0);
-
 });
 
 test("衛星の追加", async () => {
-  const satellite = page.locator('div').filter({ hasText: /^衛星$/ }).getByRole('img');
+  const satellite = page
+    .locator("div")
+    .filter({ hasText: /^衛星$/ })
+    .getByRole("img");
   expect(satellite).not.toBeNull();
   await satellite.click();
 
@@ -52,15 +54,15 @@ test("衛星の追加", async () => {
   await page.waitForTimeout(500);
 
   // 衛星の選択
-  const firstSatelliteData = page.locator('.v-virtual-scroll').first();
+  const firstSatelliteData = page.locator(".v-virtual-scroll").first();
   expect(firstSatelliteData).not.toBeNull();
   await page.waitForTimeout(500);
   await firstSatelliteData.click();
   await page.waitForTimeout(500);
 
   // 衛星の追加
-  await page.locator('.v-row > div:nth-child(2)').first().click();
+  await page.locator(".v-row > div:nth-child(2)").first().click();
   await page.waitForTimeout(500);
-  await page.getByRole('button', { name: 'OK' }).click();
+  await page.getByRole("button", { name: "OK" }).click();
   await page.waitForTimeout(500);
-})
+});

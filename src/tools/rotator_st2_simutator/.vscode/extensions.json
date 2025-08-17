@@ -1,7 +1,3 @@
 {
-  "recommendations": [
-    "ronaldosena.arduino-snippets",
-    "ms-vscode.cpptools",
-    "platformio.platformio-ide"
-  ]
+  "recommendations": ["ronaldosena.arduino-snippets", "ms-vscode.cpptools", "platformio.platformio-ide"]
 }

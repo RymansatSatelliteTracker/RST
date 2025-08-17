@@ -4,5 +4,5 @@
   "editor.formatOnType": true,
   "editor.autoClosingBrackets": "never",
   "C_Cpp.clang_format_style": "{BasedOnStyle: Google, IndentWidth: 2, BreakBeforeBraces: Stroustrup, UseTab: Never}",
-  "C_Cpp.intelliSenseEngine": "Tag Parser",
+  "C_Cpp.intelliSenseEngine": "Tag Parser"
 }

@@ -421,4 +421,3 @@ async function onReset() {
 <style lang="scss" scoped>
 @import "./EditSatelliteInfo.scss";
 </style>
-
