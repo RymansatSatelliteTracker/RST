@@ -2,6 +2,7 @@ import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
 import { ApiResponse } from "@/common/types/types";
 import RotatorHelper from "@/common/util/RotatorHelper";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil";
+import AppMainLogger from "@/main/util/AppMainLogger";
 
 /**
  * ローテーターのコントローラ親クラス
@@ -26,6 +27,7 @@ export default abstract class RotatorControllerBase {
     // 指定のローテータ設定が範囲外の場合は何もしない
     const rotatorConfig = AppConfigUtil.getConfig().rotator;
     if (!RotatorHelper.isWithinRange(rotatorConfig, pos)) {
+      AppMainLogger.info(`AZ、ELがローテータ設定の範囲外です。 pos=${pos.azimuth}, ${pos.elevation}`);
       return;
     }
 
