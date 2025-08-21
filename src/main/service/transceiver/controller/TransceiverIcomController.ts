@@ -156,9 +156,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // トランシーブOn
     await this.sendAndWaitRecv(this.cmdMaker.setTranceive(0x01), "SWITCH");
 
-    // 無線機側のサテライトモードの取得
-    const recvData = await this.sendAndWaitRecv(this.cmdMaker.getSatelliteMode(), "GET_MODE");
-    this.state.isSatelliteMode = TransceiverIcomRecvParser.parseSatelliteMode(recvData);
+    // サテライトモードOff
+    await this.setSatelliteMode(false);
 
     // 現状の周波数データ取得
     this.getFreqFromIcom();
