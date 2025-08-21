@@ -566,6 +566,14 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       return;
     }
 
+    // ドップラーシフト補正を実行するかどうかを判定する
+    const execTxDopplerShiftCorrection =
+      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_SAT ||
+      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_RX;
+    const execRxDopplerShiftCorrection =
+      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_SAT ||
+      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_TX;
+
     // 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機する
     ApiTransceiver.dopplerShiftWaitingCallback(async (res: ApiResponse<boolean>) => {
       if (res.data || false) {
@@ -582,29 +590,35 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
           const frequencyTrackService = ActiveSatServiceHub.getInstance().getFrequencyTrackService();
           if (frequencyTrackService) {
-            // Txドップラーファクターを計算する
-            const txDopplerFactor = await frequencyTrackService.calcUplinkDopplerFactor(
-              currentDate.value,
-              autoTrackingIntervalMsec
-            );
-            // 変更後のTx周波数でドップラーシフトの基準周波数を更新する
-            const tempTxFrequency = TransceiverUtil.parseNumber(txFrequency.value);
-            dopplerTxBaseFrequency.value = TransceiverUtil.subtractFrequencies(
-              tempTxFrequency,
-              tempTxFrequency * (1 - txDopplerFactor)
-            );
+            // 衛星固定または受信固定の場合
+            if (execTxDopplerShiftCorrection) {
+              // Txドップラーファクターを計算する
+              const txDopplerFactor = await frequencyTrackService.calcUplinkDopplerFactor(
+                currentDate.value,
+                autoTrackingIntervalMsec
+              );
+              // 変更後のTx周波数でドップラーシフトの基準周波数を更新する
+              const tempTxFrequency = TransceiverUtil.parseNumber(txFrequency.value);
+              dopplerTxBaseFrequency.value = TransceiverUtil.subtractFrequencies(
+                tempTxFrequency,
+                tempTxFrequency * (1 - txDopplerFactor)
+              );
+            }
 
-            // Rxドップラーファクターを計算する
-            const rxDopplerFactor = await frequencyTrackService.calcDownlinkDopplerFactor(
-              currentDate.value,
-              autoTrackingIntervalMsec
-            );
-            // 変更後のRx周波数でドップラーシフトの基準周波数を更新する
-            const tempRxFrequency = TransceiverUtil.parseNumber(rxFrequency.value);
-            dopplerRxBaseFrequency.value = TransceiverUtil.subtractFrequencies(
-              tempRxFrequency,
-              tempRxFrequency * (1 - rxDopplerFactor)
-            );
+            // サテライトモードがONかつ(衛星固定または送信固定)の場合
+            if (isSatelliteMode.value && execRxDopplerShiftCorrection) {
+              // Rxドップラーファクターを計算する
+              const rxDopplerFactor = await frequencyTrackService.calcDownlinkDopplerFactor(
+                currentDate.value,
+                autoTrackingIntervalMsec
+              );
+              // 変更後のRx周波数でドップラーシフトの基準周波数を更新する
+              const tempRxFrequency = TransceiverUtil.parseNumber(rxFrequency.value);
+              dopplerRxBaseFrequency.value = TransceiverUtil.subtractFrequencies(
+                tempRxFrequency,
+                tempRxFrequency * (1 - rxDopplerFactor)
+              );
+            }
           }
         }, Constant.Transceiver.TRANSCEIVE_WAIT_MS);
         return;
@@ -615,13 +629,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     if (isDopplerShiftWaiting.value) {
       return;
     }
-    // ドップラーシフト補正を実行するかどうかを判定する
-    const execTxDopplerShiftCorrection =
-      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_SAT ||
-      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_RX;
-    const execRxDopplerShiftCorrection =
-      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_SAT ||
-      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_TX;
 
     // アップリンク周波数をドップラーシフト補正して更新する
     if (execTxDopplerShiftCorrection) {
