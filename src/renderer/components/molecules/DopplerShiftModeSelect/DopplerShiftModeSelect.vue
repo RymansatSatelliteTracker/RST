@@ -21,9 +21,16 @@ const DopplerShiftMode = Constant.Transceiver.DopplerShiftMode;
 const dopplerShiftModeLabel = createDopplerShiftLabelMapping();
 // items配列を生成
 const dopplerShiftModeRange = ref(
-  Object.values(DopplerShiftMode).map((mode) => ({ value: mode, title: dopplerShiftModeLabel[mode] }))
+  Object.values(DopplerShiftMode).map((mode) => ({
+    value: mode,
+    title: dopplerShiftModeLabel[mode],
+    // TODO: 受信固定、送信固定に対応するまでは衛星固定のみを有効化
+    //       対応後は、以下のpropsは削除して良い
+    props: { disabled: mode !== DopplerShiftMode.FIXED_SAT },
+  }))
 );
 const dopplerShiftMode = defineModel("dopplerShiftMode", { default: Constant.Transceiver.DopplerShiftMode.FIXED_SAT });
 </script>
 
 <style lang="scss" scoped></style>
+
