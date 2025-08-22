@@ -1,7 +1,7 @@
 {
   "name": "rst",
   "private": true,
-  "version": "0.1.2",
+  "version": "v0.1.2a",
   "author": {
     "name": "rsp.",
     "email": "xxx@rymansat.com"
@@ -152,3 +152,4 @@
     "node": "22.18.0"
   }
 }
+
