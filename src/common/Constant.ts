@@ -2,7 +2,7 @@
  * 定数
  */
 export default class Constant {
-  public static readonly appVersion = "0.1.3";
+  public static readonly appVersion = "v0.1.2a";
 
   /**
    * ロガー関係
