@@ -19,7 +19,7 @@ import { onMounted, ref, watch } from "vue";
 
 const model = defineModel<any>();
 const errorText = defineModel<string>("errorText", { required: false, default: "" });
-// 表示用の文字列（カンマ区切り）
+// 表示用の文字列（ドット区切り）
 const displayValue = ref<string>("");
 
 const props = defineProps({
@@ -90,3 +90,4 @@ function formatWithComma() {
 }
 </script>
 <style module lang="scss" scoped></style>
+
