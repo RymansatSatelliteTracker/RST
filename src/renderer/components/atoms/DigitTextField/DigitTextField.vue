@@ -47,7 +47,7 @@ onMounted(() => {
  */
 async function onInput(val: string) {
   errorText.value = await validateAt(props.valiSchemaFieldPath, val);
-  formatWithComma();
+  formatWithDot();
 }
 // model → displayValue への変換
 watch(
@@ -64,20 +64,21 @@ watch(displayValue, (newVal) => {
 });
 
 /**
- * 数値 → カンマ付き文字列
+ * 数値 → ドット付き文字列
  * @param value
  */
 function formatNumber(value: number): string {
   if (!value) return "";
-  return value.toLocaleString();
+  // ドイツ式のドット区切りで表示
+  return value.toLocaleString("de-DE");
 }
 
 /**
- * カンマ付き文字列 → 数値（数値でない場合は null にフォールバック）
+ * ドット付き文字列 → 数値（数値でない場合は null にフォールバック）
  * @param value
  */
 function parseNumber(value: string): number | null {
-  const numeric = value.replace(/,/g, "");
+  const numeric = value.replace(/\./g, "");
   const parsed = parseFloat(numeric);
   return isNaN(parsed) ? null : parsed;
 }
@@ -85,7 +86,7 @@ function parseNumber(value: string): number | null {
 /**
  * カンマ付きで表示
  */
-function formatWithComma() {
+function formatWithDot() {
   displayValue.value = formatNumber(model.value);
 }
 </script>
