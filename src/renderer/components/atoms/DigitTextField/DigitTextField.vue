@@ -33,6 +33,11 @@ const props = defineProps({
     required: false,
     default: "",
   },
+  padEndDigit: {
+    type: Number,
+    required: false,
+    default: 0,
+  },
 });
 
 const { validateAt } = useValidate(props.valiSchema);
@@ -47,6 +52,13 @@ onMounted(() => {
  */
 async function onInput(val: string) {
   errorText.value = await validateAt(props.valiSchemaFieldPath, val);
+  // 指定された桁数に満たない場合、末尾に0を追加する
+  if (props.padEndDigit > 0 && model.value !== null) {
+    const str = model.value.toString();
+    if (str.length <= props.padEndDigit) {
+      model.value = parseFloat(str.padEnd(props.padEndDigit, "0"));
+    }
+  }
   formatWithDot();
 }
 // model → displayValue への変換
