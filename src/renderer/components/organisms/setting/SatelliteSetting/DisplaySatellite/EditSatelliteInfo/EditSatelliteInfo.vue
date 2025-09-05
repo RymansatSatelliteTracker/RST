@@ -122,13 +122,13 @@
             <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_TONE) }}</label>
           </v-col>
           <v-col cols="4">
-            <DigitTextField
+            <TextField
               v-model="form.toneHz"
               suffix="Hz"
               :valiSchema="valiSchemaEditSatelliteInfo"
               valiSchemaFieldPath="toneHz"
               v-model:error-text="errors.toneHz"
-              maxlength="15"
+              maxlength="12"
             />
           </v-col>
         </v-row>

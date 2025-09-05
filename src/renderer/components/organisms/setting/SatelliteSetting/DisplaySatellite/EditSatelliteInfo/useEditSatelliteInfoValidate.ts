@@ -7,7 +7,7 @@ import * as zod from "zod";
 // 最大周波数
 const MAX_FREQ = 9999999999;
 // 最小周波数
-const MIN_FREQ = 0.001;
+const MIN_FREQ = 0;
 /**
  * 衛星情報編集画面の入力チェックフック
  */
@@ -104,7 +104,7 @@ export const valiSchemaEditSatelliteInfo = zod.object({
   beaconHz: frequencyHzSchema,
 
   toneHz: zod.lazy(() => {
-    const message1 = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_POSITIVE);
+    const message1 = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_MIN_MAX, String(MIN_FREQ), String(MAX_FREQ));
     const message2 = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_DECIMAL, "1");
     return (
       zod
@@ -128,7 +128,7 @@ export const valiSchemaEditSatelliteInfo = zod.object({
               (val) => {
                 // 正の数値かを確認
                 const numVal = parseFloat(val);
-                return !isNaN(numVal) && numVal > 0;
+                return !isNaN(numVal) && numVal >= MIN_FREQ && numVal <= MAX_FREQ;
               },
               {
                 message: message1,
