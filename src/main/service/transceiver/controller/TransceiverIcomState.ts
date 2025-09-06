@@ -18,25 +18,25 @@ export default class TransceiverIcomState {
   private recvRxFreqHz = 0;
 
   // 更新フラグ
-  public isTxFreqUpdate = false;
-  public isRxFreqUpdate = false;
-  public isRxModeUpdate = false;
-  public isTxModeUpdate = false;
-  public isRecvTxFreqUpdate = false;
-  public isRecvRxFreqUpdate = false;
+  public isTxSendFreqUpdate = false;
+  public isRxSendFreqUpdate = false;
+  public isRxSendModeUpdate = false;
+  public isTxSendModeUpdate = false;
+  public isTxRecvFreqUpdate = false;
+  public isRxRecvFreqUpdate = false;
 
   /**
    * Rx（メインバンド）の周波数、モードが更新されているかを返す
    */
   public isRxUpdate(): boolean {
-    return this.isRxFreqUpdate || this.isRxModeUpdate || this.isRecvRxFreqUpdate;
+    return this.isRxSendFreqUpdate || this.isRxSendModeUpdate || this.isRxRecvFreqUpdate;
   }
 
   /**
    * Tx（サブバンド）の周波数、モードが更新されているかを返す
    */
   public isTxUpdate(): boolean {
-    return this.isTxFreqUpdate || this.isTxModeUpdate || this.isRecvTxFreqUpdate;
+    return this.isTxSendFreqUpdate || this.isTxSendModeUpdate || this.isTxRecvFreqUpdate;
   }
 
   /**
@@ -48,7 +48,7 @@ export default class TransceiverIcomState {
       return;
     }
     this.reqRxFreqHz = freqHz;
-    this.isRxFreqUpdate = true;
+    this.isRxSendFreqUpdate = true;
   }
 
   /**
@@ -60,7 +60,7 @@ export default class TransceiverIcomState {
       return;
     }
     this.reqTxFreqHz = freq;
-    this.isTxFreqUpdate = true;
+    this.isTxSendFreqUpdate = true;
   }
 
   /**
@@ -72,7 +72,7 @@ export default class TransceiverIcomState {
       return;
     }
     this.reqRxMode = mode;
-    this.isRxModeUpdate = true;
+    this.isRxSendModeUpdate = true;
   }
 
   /**
@@ -84,7 +84,7 @@ export default class TransceiverIcomState {
       return;
     }
     this.reqTxMode = mode;
-    this.isTxModeUpdate = true;
+    this.isTxSendModeUpdate = true;
   }
 
   /**
@@ -96,9 +96,9 @@ export default class TransceiverIcomState {
       return;
     }
     this.recvRxFreqHz = freq;
-    this.isRecvRxFreqUpdate = true;
+    this.isRxRecvFreqUpdate = true;
     // 無線機での周波数変更は片側の変更のみが通知されるため、Tx側の周波数も更新されたものとして、データ取得対象としておく
-    this.isRecvTxFreqUpdate = true;
+    this.isTxRecvFreqUpdate = true;
   }
 
   /**
@@ -110,19 +110,19 @@ export default class TransceiverIcomState {
       return;
     }
     this.recvTxFreqHz = freq;
-    this.isRecvTxFreqUpdate = true;
+    this.isTxRecvFreqUpdate = true;
     // 無線機での周波数変更は片側の変更のみが通知されるため、Rx側の周波数も更新されたものとして、データ取得対象としておく
-    this.isRecvRxFreqUpdate = true;
+    this.isRxRecvFreqUpdate = true;
   }
 
   /**
    * Rx（メインバンド）の周波数、モードの更新状態をリセットする
    */
   public resetRx(): void {
-    this.isRxFreqUpdate = false;
-    this.isRxModeUpdate = false;
-    this.isRecvRxFreqUpdate = false;
-    this.isRecvTxFreqUpdate = false;
+    this.isRxSendFreqUpdate = false;
+    this.isRxSendModeUpdate = false;
+    this.isRxRecvFreqUpdate = false;
+    this.isTxRecvFreqUpdate = false;
   }
 
   /**
@@ -130,10 +130,10 @@ export default class TransceiverIcomState {
    */
   public resetTx(): void {
     this.reqTxMode = "";
-    this.isTxFreqUpdate = false;
-    this.isTxModeUpdate = false;
-    this.isRecvTxFreqUpdate = false;
-    this.isRecvRxFreqUpdate = false;
+    this.isTxSendFreqUpdate = false;
+    this.isTxSendModeUpdate = false;
+    this.isTxRecvFreqUpdate = false;
+    this.isRxRecvFreqUpdate = false;
   }
 
   /**

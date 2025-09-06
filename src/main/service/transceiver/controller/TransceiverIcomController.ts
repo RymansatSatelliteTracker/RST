@@ -224,7 +224,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   }
 
   /**
-   * メインバンドの周波数、モードを設定、取得する
+   * メインバンドの周波数の設定／取得、およびモードの設定／取得を行う
    */
   private async sendAndRecvForMain() {
     // メイン（Rx）の周波数、モードの更新がない場合は処理終了
@@ -239,33 +239,33 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // メインバンドの周波数を元に、必要であればメインとサブの周波数帯の入れ替えを行う
     await this.switchBandIfNeed();
 
-    // Rx周波数の設定
-    if (this.state.isRxFreqUpdate) {
+    // 無線機へ送信するRx周波数の設定
+    if (this.state.isRxSendFreqUpdate) {
       await this.sendFreq(this.state.getReqRxFreqHz());
-      this.state.isRxFreqUpdate = false;
-    } else if (this.state.isRecvRxFreqUpdate) {
-      // Rx周波数の取得
+      this.state.isRxSendFreqUpdate = false;
+    } else if (this.state.isRxRecvFreqUpdate) {
+      // Rx周波数を無線機から取得
       // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、周波数の取得は行わない
       const recvDataMainFreq = await this.sendAndWaitRecv(this.cmdMaker.getFreq(), "GET_FREQ");
       await this.handleRecvData(recvDataMainFreq);
-      this.state.isRecvRxFreqUpdate = false;
+      this.state.isRxRecvFreqUpdate = false;
     }
 
-    // Rx運用モードの設定
-    if (this.state.isRxModeUpdate) {
+    // 無線機へ送信する運用モードの設定
+    if (this.state.isRxSendModeUpdate) {
       const cmdData = this.cmdMaker.setMode(this.state.getReqRxMode());
       await this.sendAndWaitRecv(cmdData, "SET_MODE");
-      this.state.isRxModeUpdate = false;
+      this.state.isRxSendModeUpdate = false;
     } else {
-      // Rx運用モードの取得
-      // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、周波数の取得は行わない
+      // 運用モードを無線機から取得
+      // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、運用モードの取得は行わない
       const recvDataMode = await this.sendAndWaitRecv(this.cmdMaker.getMode(), "GET_MODE");
       await this.handleRecvData(recvDataMode);
     }
   }
 
   /**
-   * サブバンドの周波数、モードを設定、取得する
+   * サブバンドの周波数の設定／取得、およびモードの設定／取得を行う
    */
   private async sendAndRecvForSub() {
     // サブ（Tx）の周波数、モードの更新がない場合は処理終了
@@ -277,26 +277,27 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     this.state.isMain = false;
     await this.sendAndWaitRecv(this.cmdMaker.switchToSubBand(), "SWITCH");
 
-    // Tx周波数の設定
-    if (this.state.isTxFreqUpdate) {
+    // 無線機へ送信するTx周波数の設定
+    if (this.state.isTxSendFreqUpdate) {
       await this.sendFreq(this.state.getReqTxFreqHz());
-      this.state.isTxFreqUpdate = false;
-    } else if (this.state.isRecvTxFreqUpdate) {
-      // Rx周波数の取得
+      this.state.isTxSendFreqUpdate = false;
+    } else if (this.state.isTxRecvFreqUpdate) {
+      // Rx周波数を無線機から取得
       // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、周波数の取得は行わない
       const recvDataSubFreq = await this.sendAndWaitRecv(this.cmdMaker.getFreq(), "GET_FREQ");
       await this.handleRecvData(recvDataSubFreq);
-      this.state.isRecvTxFreqUpdate = false;
+      this.state.isTxRecvFreqUpdate = false;
     }
 
-    // Tx運用モードの設定
-    if (this.state.isTxModeUpdate) {
+    // 無線機へ送信するTx運用モードの設定
+    if (this.state.isTxSendModeUpdate) {
       const cmdData = this.cmdMaker.setMode(this.state.getReqTxMode());
       await this.sendAndWaitRecv(cmdData, "SET_MODE");
-      this.state.isTxModeUpdate = false;
+      this.state.isTxSendModeUpdate = false;
     } else {
-      // Tx運用モードの取得
-      // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、周波数の取得は行わない
+      // Tx運用モードを無線機から取得
+      // memo: 運用モードの送信時以外は、運用モードの取得は必ず行う。
+      // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、運用モードの取得は行わない。
       const recvDataMode = await this.sendAndWaitRecv(this.cmdMaker.getMode(), "GET_MODE");
       await this.handleRecvData(recvDataMode);
     }
@@ -626,9 +627,11 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    * @param {string} recvData 受信データ
    */
   private async handleRecvData(recvData: string) {
+    // コールバックが未設定の場合は処理終了
     if (!this.isDopplerShiftWaitingCallback) {
       return;
     }
+
     // プリアンブル以降を読む（先頭に"00"がついている場合があるので、そこは読み捨てる）
     const trimedData = TransceiverIcomRecvParser.trimRecData(recvData);
 
