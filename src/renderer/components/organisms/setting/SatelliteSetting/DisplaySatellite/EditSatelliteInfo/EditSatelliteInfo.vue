@@ -61,13 +61,14 @@
             <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_UPLINK) }}</label>
           </v-col>
           <v-col cols="4">
-            <TextField
-              v-model="form.uplink1Mhz"
-              suffix="MHz"
+            <DigitTextField
+              v-model="form.uplink1Hz"
+              suffix="Hz"
               :valiSchema="valiSchemaEditSatelliteInfo"
-              valiSchemaFieldPath="uplink1Mhz"
-              v-model:error-text="errors.uplink1Mhz"
-              maxlength="8"
+              valiSchemaFieldPath="uplink1Hz"
+              v-model:error-text="errors.uplink1Hz"
+              :padEndDigit="9"
+              maxlength="10"
             />
           </v-col>
           <v-col cols="3"> <OpeModeSelect v-model="form.uplink1Mode" /></v-col>
@@ -78,42 +79,44 @@
           <!-- アップリンク周波数2 -->
           <v-col cols="4"> </v-col>
           <v-col cols="4">
-            <TextField
-              v-model="form.uplink2Mhz"
-              suffix="MHz"
+            <DigitTextField
+              v-model="form.uplink2Hz"
+              suffix="Hz"
               :valiSchema="valiSchemaEditSatelliteInfo"
-              valiSchemaFieldPath="uplink2Mhz"
-              v-model:error-text="errors.uplink2Mhz"
-              :disabled="!(form.uplink1Mhz && form.uplink1Mode)"
-              maxlength="8"
+              valiSchemaFieldPath="uplink2Hz"
+              v-model:error-text="errors.uplink2Hz"
+              :disabled="!(form.uplink1Hz && form.uplink1Mode)"
+              :padEndDigit="9"
+              maxlength="10"
             />
           </v-col>
           <v-col cols="3">
-            <OpeModeSelect v-model="form.uplink2Mode" :disabled="!(form.uplink1Mhz && form.uplink1Mode)"
+            <OpeModeSelect v-model="form.uplink2Mode" :disabled="!(form.uplink1Hz && form.uplink1Mode)"
           /></v-col>
           <v-col col="1">
             <v-radio-group v-model="form.autoModeUplinkFreq" hide-details density="compact">
-              <v-radio value="2" :disabled="!(form.uplink1Mhz && form.uplink1Mode)"></v-radio></v-radio-group
+              <v-radio value="2" :disabled="!(form.uplink1Hz && form.uplink1Mode)"></v-radio></v-radio-group
           ></v-col>
           <!-- アップリンク周波数3 -->
           <v-col cols="4"> </v-col>
           <v-col cols="4">
-            <TextField
-              v-model="form.uplink3Mhz"
-              suffix="MHz"
+            <DigitTextField
+              v-model="form.uplink3Hz"
+              suffix="Hz"
               :valiSchema="valiSchemaEditSatelliteInfo"
-              valiSchemaFieldPath="uplink3Mhz"
-              v-model:error-text="errors.uplink3Mhz"
-              :disabled="!(form.uplink2Mhz && form.uplink2Mode)"
-              maxlength="8"
+              valiSchemaFieldPath="uplink3Hz"
+              v-model:error-text="errors.uplink3Hz"
+              :disabled="!(form.uplink2Hz && form.uplink2Mode)"
+              :padEndDigit="9"
+              maxlength="10"
             />
           </v-col>
           <v-col cols="3">
-            <OpeModeSelect v-model="form.uplink3Mode" :disabled="!(form.uplink2Mhz && form.uplink2Mode)"
+            <OpeModeSelect v-model="form.uplink3Mode" :disabled="!(form.uplink2Hz && form.uplink2Mode)"
           /></v-col>
           <v-col col="1">
             <v-radio-group v-model="form.autoModeUplinkFreq" hide-details density="compact">
-              <v-radio value="3" :disabled="!(form.uplink2Mhz && form.uplink2Mode)"></v-radio></v-radio-group
+              <v-radio value="3" :disabled="!(form.uplink2Hz && form.uplink2Mode)"></v-radio></v-radio-group
           ></v-col>
         </v-row>
         <v-row>
@@ -122,13 +125,13 @@
             <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_TONE) }}</label>
           </v-col>
           <v-col cols="4">
-            <DigitTextField
+            <TextField
               v-model="form.toneHz"
               suffix="Hz"
               :valiSchema="valiSchemaEditSatelliteInfo"
               valiSchemaFieldPath="toneHz"
               v-model:error-text="errors.toneHz"
-              maxlength="15"
+              maxlength="12"
             />
           </v-col>
         </v-row>
@@ -139,13 +142,14 @@
             <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_DOWNLINK) }}</label>
           </v-col>
           <v-col cols="4">
-            <TextField
-              v-model="form.downlink1Mhz"
-              suffix="MHz"
+            <DigitTextField
+              v-model="form.downlink1Hz"
+              suffix="Hz"
               :valiSchema="valiSchemaEditSatelliteInfo"
-              valiSchemaFieldPath="downlink1Mhz"
-              v-model:error-text="errors.downlink1Mhz"
-              maxlength="8"
+              valiSchemaFieldPath="downlink1Hz"
+              v-model:error-text="errors.downlink1Hz"
+              :padEndDigit="9"
+              maxlength="10"
             />
           </v-col>
           <v-col cols="3"> <OpeModeSelect v-model="form.downlink1Mode" /></v-col>
@@ -156,42 +160,44 @@
           <!-- ダウンリンク周波数2 -->
           <v-col cols="4"> </v-col>
           <v-col cols="4">
-            <TextField
-              v-model="form.downlink2Mhz"
-              suffix="MHz"
+            <DigitTextField
+              v-model="form.downlink2Hz"
+              suffix="Hz"
               :valiSchema="valiSchemaEditSatelliteInfo"
-              valiSchemaFieldPath="downlink2Mhz"
-              v-model:error-text="errors.downlink2Mhz"
-              :disabled="!(form.downlink1Mhz && form.downlink1Mode)"
-              maxlength="8"
+              valiSchemaFieldPath="downlink2Hz"
+              v-model:error-text="errors.downlink2Hz"
+              :disabled="!(form.downlink1Hz && form.downlink1Mode)"
+              :padEndDigit="9"
+              maxlength="10"
             />
           </v-col>
           <v-col cols="3">
-            <OpeModeSelect v-model="form.downlink2Mode" :disabled="!(form.downlink1Mhz && form.downlink1Mode)"
+            <OpeModeSelect v-model="form.downlink2Mode" :disabled="!(form.downlink1Hz && form.downlink1Mode)"
           /></v-col>
           <v-col col="1">
             <v-radio-group v-model="form.autoModeDownlinkFreq" hide-details density="compact">
-              <v-radio value="2" :disabled="!(form.downlink2Mhz && form.downlink2Mode)"></v-radio></v-radio-group
+              <v-radio value="2" :disabled="!(form.downlink2Hz && form.downlink2Mode)"></v-radio></v-radio-group
           ></v-col>
           <!-- ダウンリンク周波数3 -->
           <v-col cols="4"> </v-col>
           <v-col cols="4">
-            <TextField
-              v-model="form.downlink3Mhz"
-              suffix="MHz"
+            <DigitTextField
+              v-model="form.downlink3Hz"
+              suffix="Hz"
               :valiSchema="valiSchemaEditSatelliteInfo"
-              valiSchemaFieldPath="downlink3Mhz"
-              v-model:error-text="errors.downlink3Mhz"
-              :disabled="!(form.downlink2Mhz && form.downlink2Mode)"
-              maxlength="8"
+              valiSchemaFieldPath="downlink3Hz"
+              v-model:error-text="errors.downlink3Hz"
+              :disabled="!(form.downlink2Hz && form.downlink2Mode)"
+              :padEndDigit="9"
+              maxlength="10"
             />
           </v-col>
           <v-col cols="3">
-            <OpeModeSelect v-model="form.downlink3Mode" :disabled="!(form.downlink2Mhz && form.downlink2Mode)"
+            <OpeModeSelect v-model="form.downlink3Mode" :disabled="!(form.downlink2Hz && form.downlink2Mode)"
           /></v-col>
           <v-col col="1">
             <v-radio-group v-model="form.autoModeDownlinkFreq" hide-details density="compact">
-              <v-radio value="3" :disabled="!(form.downlink3Mhz && form.downlink3Mode)"></v-radio></v-radio-group
+              <v-radio value="3" :disabled="!(form.downlink3Hz && form.downlink3Mode)"></v-radio></v-radio-group
           ></v-col>
         </v-row>
         <v-row>
@@ -200,13 +206,14 @@
             <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_BEACON) }}</label>
           </v-col>
           <v-col cols="4">
-            <TextField
-              v-model="form.beaconMhz"
-              suffix="MHz"
+            <DigitTextField
+              v-model="form.beaconHz"
+              suffix="Hz"
               :valiSchema="valiSchemaEditSatelliteInfo"
-              valiSchemaFieldPath="beaconMhz"
-              v-model:error-text="errors.beaconMhz"
-              maxlength="8"
+              valiSchemaFieldPath="beaconHz"
+              v-model:error-text="errors.beaconHz"
+              :padEndDigit="9"
+              maxlength="10"
             />
           </v-col>
           <v-col cols="3"> <OpeModeSelect v-model="form.beaconMode" /></v-col>
@@ -421,3 +428,4 @@ async function onReset() {
 <style lang="scss" scoped>
 @import "./EditSatelliteInfo.scss";
 </style>
+

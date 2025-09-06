@@ -5,9 +5,9 @@ import EditSatelliteInfoForm from "@/renderer/components/organisms/setting/Satel
 import * as zod from "zod";
 
 // 最大周波数
-const MAX_FREQ = 9999.999;
+const MAX_FREQ = 9999999999;
 // 最小周波数
-const MIN_FREQ = 0.001;
+const MIN_FREQ = 0;
 /**
  * 衛星情報編集画面の入力チェックフック
  */
@@ -27,36 +27,36 @@ export function useEditSatelliteInfoValidate() {
     // 相関チェック
     // アップリンク周波数の周波数かモードの片方が未入力の場合はエラー
     if (
-      (form.uplink1Mhz && !form.uplink1Mode) ||
-      (!form.uplink1Mhz && form.uplink1Mode) ||
-      (form.uplink2Mhz && !form.uplink2Mode) ||
-      (!form.uplink2Mhz && form.uplink2Mode) ||
-      (form.uplink3Mhz && !form.uplink3Mode) ||
-      (!form.uplink3Mhz && form.uplink3Mode)
+      (form.uplink1Hz && !form.uplink1Mode) ||
+      (!form.uplink1Hz && form.uplink1Mode) ||
+      (form.uplink2Hz && !form.uplink2Mode) ||
+      (!form.uplink2Hz && form.uplink2Mode) ||
+      (form.uplink3Hz && !form.uplink3Mode) ||
+      (!form.uplink3Hz && form.uplink3Mode)
     ) {
       result = false;
       errors.value["uplink"] = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NOT_ENTERED_UPLINK);
     }
     // ダウンリンク周波数の周波数かモードの片方が未入力の場合はエラー
     if (
-      (form.downlink1Mhz && !form.downlink1Mode) ||
-      (!form.downlink1Mhz && form.downlink1Mode) ||
-      (form.downlink2Mhz && !form.downlink2Mode) ||
-      (!form.downlink2Mhz && form.downlink2Mode) ||
-      (form.downlink3Mhz && !form.downlink3Mode) ||
-      (!form.downlink3Mhz && form.downlink3Mode)
+      (form.downlink1Hz && !form.downlink1Mode) ||
+      (!form.downlink1Hz && form.downlink1Mode) ||
+      (form.downlink2Hz && !form.downlink2Mode) ||
+      (!form.downlink2Hz && form.downlink2Mode) ||
+      (form.downlink3Hz && !form.downlink3Mode) ||
+      (!form.downlink3Hz && form.downlink3Mode)
     ) {
       result = false;
       errors.value["downlink"] = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NOT_ENTERED_DOWNLINK);
     }
     // ビーコン周波数の周波数かモードの片方が未入力の場合はエラー
     if (
-      (form.beaconMhz && !form.beaconMode) ||
-      (!form.beaconMhz && form.beaconMode) ||
-      (form.beaconMhz && !form.beaconMode) ||
-      (!form.beaconMhz && form.beaconMode) ||
-      (form.beaconMhz && !form.beaconMode) ||
-      (!form.beaconMhz && form.beaconMode)
+      (form.beaconHz && !form.beaconMode) ||
+      (!form.beaconHz && form.beaconMode) ||
+      (form.beaconHz && !form.beaconMode) ||
+      (!form.beaconHz && form.beaconMode) ||
+      (form.beaconHz && !form.beaconMode) ||
+      (!form.beaconHz && form.beaconMode)
     ) {
       result = false;
       errors.value["beacon"] = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NOT_ENTERED_BEACON);
@@ -68,42 +68,15 @@ export function useEditSatelliteInfoValidate() {
   return { validateForm, errors };
 }
 
-const frequencyMhzSchema = zod.lazy(() => {
-  const message1 = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_MIN_MAX, String(MIN_FREQ), String(MAX_FREQ));
-  const message2 = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_DECIMAL, "3");
-  return (
-    zod
-      // 小数点第1位までの正の実数か空白
-      .union([
-        zod.coerce
-          .string()
-          .refine(
-            (value) => {
-              // 小数点第3位までかを確認（小数第4位以降はNG）
-              const decimalPart = value.split(".")[1];
-              if (decimalPart && decimalPart.length > 3) return false;
-
-              return true;
-            },
-            {
-              message: message2,
-            }
-          )
-          .refine(
-            (val) => {
-              // 正の数値かを確認
-              const numVal = parseFloat(val);
-              return !isNaN(numVal) && numVal >= MIN_FREQ && numVal <= MAX_FREQ;
-            },
-            {
-              message: message1,
-            }
-          ),
-        zod.null(),
-        // 入力をクリアすると空文字となるためこれを許容する
-        zod.literal(""),
-      ])
-  );
+const frequencyHzSchema = zod.lazy(() => {
+  const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_MIN_MAX, String(MIN_FREQ), String(MAX_FREQ));
+  return zod.union([
+    // 正の実数か空白
+    zod.coerce.number().refine((val) => val >= MIN_FREQ && val <= MAX_FREQ, { message: message }),
+    zod.null(),
+    // 入力をクリアすると空文字となるためこれを許容する
+    zod.literal(""),
+  ]);
 });
 /**
  * 衛星情報編集設定の入力チェックZodスキーマ定義
@@ -120,18 +93,18 @@ export const valiSchemaEditSatelliteInfo = zod.object({
         .regex(/^[A-Za-z0-9&*/ '()+_\[\]-]*$/, { message: message2 })
     );
   }),
-  uplink1Mhz: frequencyMhzSchema,
-  uplink2Mhz: frequencyMhzSchema,
-  uplink3Mhz: frequencyMhzSchema,
+  uplink1Hz: frequencyHzSchema,
+  uplink2Hz: frequencyHzSchema,
+  uplink3Hz: frequencyHzSchema,
 
-  downlink1Mhz: frequencyMhzSchema,
-  downlink2Mhz: frequencyMhzSchema,
-  downlink3Mhz: frequencyMhzSchema,
+  downlink1Hz: frequencyHzSchema,
+  downlink2Hz: frequencyHzSchema,
+  downlink3Hz: frequencyHzSchema,
 
-  beaconMhz: frequencyMhzSchema,
+  beaconHz: frequencyHzSchema,
 
   toneHz: zod.lazy(() => {
-    const message1 = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_POSITIVE);
+    const message1 = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_MIN_MAX, String(MIN_FREQ), String(MAX_FREQ));
     const message2 = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_DECIMAL, "1");
     return (
       zod
@@ -155,7 +128,7 @@ export const valiSchemaEditSatelliteInfo = zod.object({
               (val) => {
                 // 正の数値かを確認
                 const numVal = parseFloat(val);
-                return !isNaN(numVal) && numVal > 0;
+                return !isNaN(numVal) && numVal >= MIN_FREQ && numVal <= MAX_FREQ;
               },
               {
                 message: message1,
