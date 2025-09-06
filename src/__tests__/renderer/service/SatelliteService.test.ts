@@ -26,7 +26,7 @@ describe("[正常系]人工衛星のNoradIDが取得できる", () => {
   it("ひまわり8号機のNoradIDが取得できる", () => {
     // given 前提条件
     // when 実行
-    const himawariNoradId = TleDataHelper.Satellite.HIMAWARI.getNoradId();
+    const himawariNoradId = TleDataHelper.Satellite.HIMAWARI8_20241001.getNoradId();
     // then 結果
     expect(himawariNoradId).toBe("40267");
   });
@@ -104,7 +104,7 @@ describe("[正常系]人工衛星の名称が取得できる", () => {
   it("ひまわり8号機の名称が取得できる", () => {
     // given 前提条件
     // when 実行
-    const himawariResult = TleDataHelper.Satellite.HIMAWARI.getSatelliteName();
+    const himawariResult = TleDataHelper.Satellite.HIMAWARI8_20241001.getSatelliteName();
     // then 結果
     expect(himawariResult).toBe("HIMAWARI 8");
   });
@@ -182,7 +182,7 @@ describe("[正常系]人工衛星の軌道が静止軌道か判定できる", ()
   it("ひまわり8号機の軌道が静止軌道であることが判定できる", () => {
     // given 前提条件
     // when 実行
-    const himawariResult = TleDataHelper.Satellite.HIMAWARI.isGeostationaryOrbit();
+    const himawariResult = TleDataHelper.Satellite.HIMAWARI8_20241001.isGeostationaryOrbit();
     // then 結果
     expect(himawariResult).toBe(true); // ひまわり8号機は静止軌道
   });
@@ -260,7 +260,7 @@ describe("[正常系]人工衛星の軌道周期が1恒星日以上か判定で�
   it("ひまわり8号機の軌道周期が1恒星日以上か判定できる", () => {
     // given 前提条件
     // when 実行
-    const himawariResult = TleDataHelper.Satellite.HIMAWARI.isOverSiderealDay();
+    const himawariResult = TleDataHelper.Satellite.HIMAWARI8_20241001.isOverSiderealDay();
     // then 結果
     expect(himawariResult).toBe(true); // ひまわり8号機は1恒星日以上
   });
