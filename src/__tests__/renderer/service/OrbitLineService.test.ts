@@ -27,7 +27,7 @@ describe("[正常系]人工衛星の軌道配列が取得できる", () => {
 
   it("ひまわり8号機は静止軌道のため軌道配列が取得できない", async () => {
     // given 前提条件
-    const himawariOrbitLine = new OrbitLineService(TleDataHelper.Satellite.HIMAWARI);
+    const himawariOrbitLine = new OrbitLineService(TleDataHelper.Satellite.HIMAWARI8_20241001);
     // when 実行
     const himawariResult = await himawariOrbitLine.getOrbitLineListAsync(new Date("2024-10-01T00:00:00Z"));
     // then 結果
@@ -120,7 +120,7 @@ describe("[正常系]人工衛星の軌道配列が5分間隔で取得できる"
 
   it("ひまわり8号機は静止軌道のため軌道配列が取得できない", async () => {
     // given 前提条件
-    const himawariOrbitLine = new OrbitLineService(TleDataHelper.Satellite.HIMAWARI, 5);
+    const himawariOrbitLine = new OrbitLineService(TleDataHelper.Satellite.HIMAWARI8_20241001, 5);
     // when 実行
     const himawariResult = await himawariOrbitLine.getOrbitLineListAsync(new Date("2024-10-01T00:00:00Z"));
     // then 結果
@@ -215,7 +215,7 @@ describe("[正常系]人工衛星の軌道配列がラップアラウンドし�
 
   it("ひまわり8号機は静止軌道のため軌道配列が取得できない", async () => {
     // given 前提条件
-    const himawariOrbitLine = new OrbitLineService(TleDataHelper.Satellite.HIMAWARI, 1, false);
+    const himawariOrbitLine = new OrbitLineService(TleDataHelper.Satellite.HIMAWARI8_20241001, 1, false);
     // when 実行
     const himawariResult = await himawariOrbitLine.getOrbitLineListAsync(new Date("2024-10-01T00:00:00Z"));
     // then 結果
@@ -320,7 +320,7 @@ describe("[正常系]人工衛星の軌道配列が指定時間で分割して�
 
   it("ひまわり8号機は静止軌道のため軌道配列が取得できない", async () => {
     // given 前提条件
-    const himawariOrbitLine = new OrbitLineService(TleDataHelper.Satellite.HIMAWARI);
+    const himawariOrbitLine = new OrbitLineService(TleDataHelper.Satellite.HIMAWARI8_20241001);
     // when 実行
     const himawariResult = await himawariOrbitLine.getOrbitLineListAsync(new Date("2024-10-01T00:00:00Z"), [
       new Date("2024-10-01T00:00:00Z"),

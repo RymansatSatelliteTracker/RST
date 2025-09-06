@@ -59,7 +59,7 @@ describe("[正常系]人工衛星の可視種別が取得できる", () => {
   it("ひまわり8号機は常時可視種別が取得できる", () => {
     // given 前提条件
     const himawariGroundStation = new GroundStationService(
-      TleDataHelper.Satellite.HIMAWARI,
+      TleDataHelper.Satellite.HIMAWARI8_20241001,
       GROUND_STATION.latitudeDeg,
       GROUND_STATION.longitudeDeg,
       0.0,
@@ -211,7 +211,7 @@ describe("[正常系]人工衛星の可視/不可視判定が取得できる", (
   it("ひまわり8号機の可視判定が取得できる", async () => {
     // given 前提条件
     const himawariGroundStation = new GroundStationService(
-      TleDataHelper.Satellite.HIMAWARI,
+      TleDataHelper.Satellite.HIMAWARI8_20241001,
       GROUND_STATION.latitudeDeg,
       GROUND_STATION.longitudeDeg,
       0.0,
@@ -378,7 +378,7 @@ describe("[正常系]人工衛星の可視時間が一つ取得できる", () =>
   it("ひまわり8号機の可視時間が一つ取得できる", async () => {
     // given 前提条件
     const himawariGroundStation = new GroundStationService(
-      TleDataHelper.Satellite.HIMAWARI,
+      TleDataHelper.Satellite.HIMAWARI8_20241001,
       GROUND_STATION.latitudeDeg,
       GROUND_STATION.longitudeDeg,
       0.0,
@@ -543,7 +543,7 @@ describe("[正常系]人工衛星の可視時間がキャッシュから取得�
   it("ひまわり8号機の可視時間がキャッシュから取得できる", async () => {
     // given 前提条件
     const himawariGroundStation = new GroundStationService(
-      TleDataHelper.Satellite.HIMAWARI,
+      TleDataHelper.Satellite.HIMAWARI8_20241001,
       GROUND_STATION.latitudeDeg,
       GROUND_STATION.longitudeDeg,
       0.0,
@@ -867,7 +867,7 @@ describe("[正常系]人工衛星の可視時間リストが取得できる", ()
   it("ひまわり8号機の可視時間リストが取得できる", async () => {
     // given 前提条件
     const himawariGroundStation = new GroundStationService(
-      TleDataHelper.Satellite.HIMAWARI,
+      TleDataHelper.Satellite.HIMAWARI8_20241001,
       GROUND_STATION.latitudeDeg,
       GROUND_STATION.longitudeDeg,
       0.0,
@@ -1042,7 +1042,7 @@ describe("[正常系]人工衛星の可視時間リストがキャッシュか�
   it("ひまわり8号機の可視時間リストがキャッシュから取得できる", async () => {
     // given 前提条件
     const himawariGroundStation = new GroundStationService(
-      TleDataHelper.Satellite.HIMAWARI,
+      TleDataHelper.Satellite.HIMAWARI8_20241001,
       GROUND_STATION.latitudeDeg,
       GROUND_STATION.longitudeDeg,
       0.0,
@@ -1822,7 +1822,7 @@ describe("[準正常系]時系列が逆転した日時を指定した場合に�
   it("ひまわり8号機の可視時間リストが取得できない", async () => {
     // given 前提条件
     const himawariGroundStation = new GroundStationService(
-      TleDataHelper.Satellite.HIMAWARI,
+      TleDataHelper.Satellite.HIMAWARI8_20241001,
       GROUND_STATION.latitudeDeg,
       GROUND_STATION.longitudeDeg,
       0.0,
@@ -1932,7 +1932,7 @@ describe("[準正常系]過去日時を指定した場合に人工衛星の可�
   it("ひまわり8号機の可視時間リストが取得できない", async () => {
     // given 前提条件
     const himawariGroundStation = new GroundStationService(
-      TleDataHelper.Satellite.HIMAWARI,
+      TleDataHelper.Satellite.HIMAWARI8_20241001,
       GROUND_STATION.latitudeDeg,
       GROUND_STATION.longitudeDeg,
       0.0,

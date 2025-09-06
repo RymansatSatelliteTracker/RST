@@ -20,12 +20,19 @@ class TleDataHelper {
       tleLine1: "1 60182U 24123A   24254.83486561  .00001922  00000-0  26417-3 0  9995",
       tleLine2: "2 60182  97.9211 351.2488 0001529  96.9564 263.1822 14.79474015 10754",
     };
-    // （静止軌道）ひまわり8号機
-    static readonly HIMAWARI = {
+    // （静止軌道）ひまわり8号機（2024年指定向け）
+    static readonly HIMAWARI8_20241001 = {
       noradId: "40267",
       satelliteName: "HIMAWARI 8",
       tleLine1: "1 40267U 14060A   24255.96883338 -.00000272  00000-0  00000+0 0  9997",
       tleLine2: "2 40267   0.0097 194.8537 0000918 318.0173 328.0486  1.00272067 36415",
+    };
+    // （静止軌道）ひまわり8号機（2025年指定向け）
+    static readonly HIMAWARI8_20250906 = {
+      noradId: "40267",
+      satelliteName: "HIMAWARI 8",
+      tleLine1: "1 40267U 14060A   25249.19168663 -.00000278  00000-0  00000-0 0  9990",
+      tleLine2: "2 40267   0.0382 234.2716 0000984 269.5569  51.3711  1.00273644 39908",
     };
     // （準天頂軌道）みちびき
     static readonly MICHIBIKI = {
@@ -86,7 +93,9 @@ class TleDataHelper {
     // （太陽同期軌道）だいち4号機
     static readonly DAICHI = new SatelliteService(TleDataHelper.Tle.DAICHI);
     // （静止軌道）ひまわり8号機
-    static readonly HIMAWARI = new SatelliteService(TleDataHelper.Tle.HIMAWARI);
+    static readonly HIMAWARI8_20241001 = new SatelliteService(TleDataHelper.Tle.HIMAWARI8_20241001);
+    // （静止軌道）ひまわり8号機
+    static readonly HIMAWARI8_20250906 = new SatelliteService(TleDataHelper.Tle.HIMAWARI8_20250906);
     // （準天頂軌道）みちびき
     static readonly MICHIBIKI = new SatelliteService(TleDataHelper.Tle.MICHIBIKI);
     // （常に不可視）静止軌道（GOES 17）
@@ -114,7 +123,7 @@ class TleDataHelper {
     // （太陽同期軌道）だいち4号機
     static readonly DAICHI = TleDataHelper.Satellite.DAICHI.getNoradId();
     // （静止軌道）ひまわり8号機
-    static readonly HIMAWARI = TleDataHelper.Satellite.HIMAWARI.getNoradId();
+    static readonly HIMAWARI8_20241001 = TleDataHelper.Satellite.HIMAWARI8_20241001.getNoradId();
     // （準天頂軌道）みちびき
     static readonly MICHIBIKI = TleDataHelper.Satellite.MICHIBIKI.getNoradId();
     // （常に不可視）静止軌道（GOES 17）

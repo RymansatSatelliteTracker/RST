@@ -29,12 +29,13 @@ describe("[正常系]2か所の地上局から観測できる人工衛星の可�
   });
 
   it("2か所の地上局から常に可視の人工衛星の可視時間リストが取得できる", async () => {
-    const nowDate = new Date();
+    // const nowDate = new Date();
+    const nowDate = new Date("2025-09-06T00:00:00Z");
     const oneDayLaterDate = new Date(nowDate.getTime() + 24 * 60 * 60 * 1000);
 
     // 宮本工場(東京都江戸川区)と種子島宇宙センターで常に可視の人工衛星の可視時間リストが取得できる
     const himawariOverlapPasses = new OverlapPassesService(
-      TleDataHelper.Satellite.HIMAWARI,
+      TleDataHelper.Satellite.HIMAWARI8_20250906,
       GROUND_STATION.latitudeDeg,
       GROUND_STATION.longitudeDeg,
       GROUND2_STATION.latitudeDeg,
