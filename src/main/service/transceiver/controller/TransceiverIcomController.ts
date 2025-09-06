@@ -15,7 +15,7 @@ import AppMainLogger from "@/main/util/AppMainLogger";
 // 受信タイムアウト（秒）（起動時）
 const RECV_TIEOUT_SEC_FOR_BOOT = 2;
 // 受信タイムアウト（ミリ秒）（通常のデータ受信時）
-const RECV_TIEOUT_MSEC = 250;
+const RECV_TIMEOUT_MSEC = 250;
 
 // コマンド種別
 type CommandType = "GET_FREQ" | "GET_MODE" | "SET_FREQ" | "SET_MODE" | "SWITCH";
@@ -505,7 +505,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
         resetCallback();
         resolve("");
-      }, RECV_TIEOUT_MSEC);
+      }, RECV_TIMEOUT_MSEC);
 
       // 応答なしのコマンドは、送信後に処理を終了する
       if (!this.recvCallbackType.isResponsive) {
