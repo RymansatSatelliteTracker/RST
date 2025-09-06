@@ -106,12 +106,10 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
       // サテライトモードの場合のみ、サブの処理を一瞬だけ実行
       if (this.state.isSatelliteMode) {
-        AppMainLogger.info(`　　サブ`);
         await this.sendAndRecv(false);
       }
 
       // メインの処理を実行
-      AppMainLogger.info(`　　メイン`);
       await this.sendAndRecv(true);
 
       isProcessing = false;
