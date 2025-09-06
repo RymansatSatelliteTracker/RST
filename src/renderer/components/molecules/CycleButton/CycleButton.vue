@@ -34,11 +34,12 @@ watch(
         btnClass.value = "btn_on";
         subTextClass.value = "grayed_out_on";
         break;
+      // TODO SPLITモード未対応のため一旦btn_off、grayed_out_offで対応
       case modeRange.value[1]:
         mainText.value = modeRange.value[1];
         subText.value = modeRange.value[0];
-        btnClass.value = "btn_on";
-        subTextClass.value = "grayed_out_on";
+        btnClass.value = "btn_off";
+        subTextClass.value = "grayed_out_off";
         break;
       default:
         mainText.value = modeRange.value[0];
