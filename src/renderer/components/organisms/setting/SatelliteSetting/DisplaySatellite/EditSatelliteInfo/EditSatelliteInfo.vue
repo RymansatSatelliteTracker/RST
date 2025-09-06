@@ -67,7 +67,7 @@
               :valiSchema="valiSchemaEditSatelliteInfo"
               valiSchemaFieldPath="uplink1Hz"
               v-model:error-text="errors.uplink1Hz"
-              :padDigit="9"
+              :padEndDigit="9"
               maxlength="13"
             />
           </v-col>
@@ -86,7 +86,7 @@
               valiSchemaFieldPath="uplink2Hz"
               v-model:error-text="errors.uplink2Hz"
               :disabled="!(form.uplink1Hz && form.uplink1Mode)"
-              :padDigit="9"
+              :padEndDigit="9"
               maxlength="13"
             />
           </v-col>
@@ -107,7 +107,7 @@
               valiSchemaFieldPath="uplink3Hz"
               v-model:error-text="errors.uplink3Hz"
               :disabled="!(form.uplink2Hz && form.uplink2Mode)"
-              :padDigit="9"
+              :padEndDigit="9"
               maxlength="13"
             />
           </v-col>
@@ -148,7 +148,7 @@
               :valiSchema="valiSchemaEditSatelliteInfo"
               valiSchemaFieldPath="downlink1Hz"
               v-model:error-text="errors.downlink1Hz"
-              :padDigit="9"
+              :padEndDigit="9"
               maxlength="13"
             />
           </v-col>
@@ -167,7 +167,7 @@
               valiSchemaFieldPath="downlink2Hz"
               v-model:error-text="errors.downlink2Hz"
               :disabled="!(form.downlink1Hz && form.downlink1Mode)"
-              :padDigit="9"
+              :padEndDigit="9"
               maxlength="13"
             />
           </v-col>
@@ -188,7 +188,7 @@
               valiSchemaFieldPath="downlink3Hz"
               v-model:error-text="errors.downlink3Hz"
               :disabled="!(form.downlink2Hz && form.downlink2Mode)"
-              :padDigit="9"
+              :padEndDigit="9"
               maxlength="13"
             />
           </v-col>
