@@ -45,5 +45,9 @@
   },
   "typescript.preferences.importModuleSpecifier": "non-relative",
   // すべてのTypeScriptの静的解析エラーが問題タブに表示されるようにする
-  "typescript.tsserver.experimental.enableProjectDiagnostics": true
+  "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+  // 最終行の改行はPrettierの設定を優先する
+  "files.insertFinalNewline": false,
+  // 不要な最終行の改行は削除する
+  "files.trimFinalNewlines": true
 }
