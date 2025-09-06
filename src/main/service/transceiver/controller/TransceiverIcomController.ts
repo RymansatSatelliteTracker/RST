@@ -280,7 +280,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       await this.sendFreq(this.state.getReqTxFreqHz());
       this.state.isTxSendFreqUpdate = false;
     } else if (this.state.isTxRecvFreqUpdate) {
-      // Rx周波数を無線機から取得
+      // Tx周波数を無線機から取得
       // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、周波数の取得は行わない
       const recvDataSubFreq = await this.sendAndWaitRecv(this.cmdMaker.getFreq(), "GET_FREQ");
       await this.handleRecvData(recvDataSubFreq);
