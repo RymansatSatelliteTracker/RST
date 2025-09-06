@@ -527,6 +527,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     if (txFrequency.value === newRxFrequency) return;
     txFrequency.value = newRxFrequency;
   });
+
   /**
    * Rx運用モードを同期する
    * サテライトモードがONの場合はTx運用モードを同期しない
@@ -545,6 +546,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     if (txOpeMode.value === newRxOpeMode) return;
     txOpeMode.value = newRxOpeMode;
   });
+
   /**
    * 周波数の更新を行う
    */
@@ -738,6 +740,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     };
     save(mode, state);
   }
+
   /**
    * モードごとの状態を呼び出す
    * @param mode モード名（サテライトモードやSPLITなど）
