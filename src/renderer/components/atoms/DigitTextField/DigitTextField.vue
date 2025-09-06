@@ -5,7 +5,7 @@
     hide-details
     :error="!CommonUtil.isEmpty(errorText)"
     class="textfield"
-    @blur="onInput(model)"
+    @blur="onBlur(model)"
   >
     <ValidateTooltip :target="errorText" />
   </v-text-field>
@@ -48,9 +48,9 @@ onMounted(() => {
 });
 
 /**
- * 入力イベントのハンドラ
+ * blurイベントのハンドラ
  */
-async function onInput(val: string) {
+async function onBlur(val: string) {
   errorText.value = await validateAt(props.valiSchemaFieldPath, val);
   // 指定された桁数に満たない場合、末尾に0を追加する
   if (props.padEndDigit > 0 && model.value !== null) {
