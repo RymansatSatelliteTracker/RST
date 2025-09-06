@@ -68,7 +68,7 @@
               valiSchemaFieldPath="uplink1Hz"
               v-model:error-text="errors.uplink1Hz"
               :padEndDigit="9"
-              maxlength="13"
+              maxlength="10"
             />
           </v-col>
           <v-col cols="3"> <OpeModeSelect v-model="form.uplink1Mode" /></v-col>
@@ -87,7 +87,7 @@
               v-model:error-text="errors.uplink2Hz"
               :disabled="!(form.uplink1Hz && form.uplink1Mode)"
               :padEndDigit="9"
-              maxlength="13"
+              maxlength="10"
             />
           </v-col>
           <v-col cols="3">
@@ -108,7 +108,7 @@
               v-model:error-text="errors.uplink3Hz"
               :disabled="!(form.uplink2Hz && form.uplink2Mode)"
               :padEndDigit="9"
-              maxlength="13"
+              maxlength="10"
             />
           </v-col>
           <v-col cols="3">
@@ -149,7 +149,7 @@
               valiSchemaFieldPath="downlink1Hz"
               v-model:error-text="errors.downlink1Hz"
               :padEndDigit="9"
-              maxlength="13"
+              maxlength="10"
             />
           </v-col>
           <v-col cols="3"> <OpeModeSelect v-model="form.downlink1Mode" /></v-col>
@@ -168,7 +168,7 @@
               v-model:error-text="errors.downlink2Hz"
               :disabled="!(form.downlink1Hz && form.downlink1Mode)"
               :padEndDigit="9"
-              maxlength="13"
+              maxlength="10"
             />
           </v-col>
           <v-col cols="3">
@@ -189,7 +189,7 @@
               v-model:error-text="errors.downlink3Hz"
               :disabled="!(form.downlink2Hz && form.downlink2Mode)"
               :padEndDigit="9"
-              maxlength="13"
+              maxlength="10"
             />
           </v-col>
           <v-col cols="3">
@@ -213,7 +213,7 @@
               valiSchemaFieldPath="beaconHz"
               v-model:error-text="errors.beaconHz"
               :padEndDigit="9"
-              maxlength="13"
+              maxlength="10"
             />
           </v-col>
           <v-col cols="3"> <OpeModeSelect v-model="form.beaconMode" /></v-col>
