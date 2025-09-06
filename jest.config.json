@@ -7,5 +7,6 @@
   "moduleNameMapper": {
     "^@/(.*)$": "<rootDir>/src/$1"
   },
-  "testPathIgnorePatterns": ["<rootDir>/src/__tests__/playwright/"]
+  "testPathIgnorePatterns": ["<rootDir>/src/__tests__/playwright/"],
+  "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"]
 }
