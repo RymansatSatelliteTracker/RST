@@ -287,13 +287,13 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       this.state.isTxRecvFreqUpdate = false;
     }
 
-    // 無線機へ送信するTx運用モードの設定
+    // 無線機へ送信する運用モードの設定
     if (this.state.isTxSendModeUpdate) {
       const cmdData = this.cmdMaker.setMode(this.state.getReqTxMode());
       await this.sendAndWaitRecv(cmdData, "SET_MODE");
       this.state.isTxSendModeUpdate = false;
     } else {
-      // Tx運用モードを無線機から取得
+      // 運用モードを無線機から取得
       // memo: 運用モードの送信時以外は、運用モードの取得は必ず行う。
       // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、運用モードの取得は行わない。
       const recvDataMode = await this.sendAndWaitRecv(this.cmdMaker.getMode(), "GET_MODE");
