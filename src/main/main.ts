@@ -63,7 +63,7 @@ let mainWindow: BrowserWindow;
   });
 
   // アプリ初期化時に例外が発生した場合は、mainWindowが読み込み終わってからエラーメッセージを表示する
-  mainWindow.webContents.on("did-finish-load", () => {
+  mainWindow.once("ready-to-show", () => {
     if (errorMessage) {
       fireIpcEvent("onNoticeMessage", new MessageModel(Constant.GlobalEvent.NOTICE_ERR, errorMessage));
     }
