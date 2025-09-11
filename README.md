@@ -24,6 +24,18 @@ volta install node@22
 npm i
 ```
 
+#### Mac
+- PCにnode, nodebrewがインストールされている場合、アンインストールする
+```bash
+# voltaのインストール
+brew install volta
+# nodeのインストール
+volta install node@22
+
+# ライブラリなどのインストール
+npm i
+```
+
 ## 2. 実行方法
 
 ```bash
