@@ -44,6 +44,9 @@ export default class AntennaAutoTrackingService {
 
     const controller = await RotatorControllerFactory.getController(rotDevice);
 
+    // 既に自動追尾が開始されている場合は一旦停止する
+    this.stop();
+
     // 1秒ごとにローテータ位置の更新を要求する
     this.timerId = setInterval(async () => {
       this.doTracking(controller, date);

@@ -275,8 +275,8 @@ class GroundStationService {
     // AOS/LOS/Melの一時キャッシュ配列を初期化する
     let tempPassesCache: PassesCache[] = [];
 
+    // 計算済み終端時間が未設定の場合（初回実行時の場合）
     if (this._calculatedTime === 0) {
-      // 初回実行時の場合
       if (startDate <= currentDate) {
         // 日時期間(開始)が過去日時の場合は現在日時に設定する
         startDate = currentDate;
@@ -295,8 +295,9 @@ class GroundStationService {
         await this._updatePassListAsync(startDate.getTime(), null);
         tempPassesCache = [...this._passesCache];
       }
-    } else {
-      // 2回目以降実行時の場合
+    }
+    // 計算済み終端時間が設定済みの場合（2回目以降実行時の場合）
+    else {
       // 過去日時のLOSが含まれるキャッシュ配列要素を除外してメンバ変数を更新する
       this._passesCache = [...this._passesCache].filter((cache) => cache.los && currentDate < cache.los.date);
       // 過去日時の未探索日時区間(終了)が含まれる配列要素を除外してメンバ変数を更新する
