@@ -30,7 +30,10 @@ export default class ActiveSatHelper {
     const sats: ActiveSatelliteModel[] = [];
     for (let ii = 0; ii < gr.satelliteIds.length; ii++) {
       const satId = gr.satelliteIds[ii];
-      const sat: AppConfigSatellite = await ApiAppConfigSatellite.getUserRegisteredAppConfigSatellite(satId);
+      const sat: AppConfigSatellite = await ApiAppConfigSatellite.getUserRegisteredAppConfigSatellite(
+        satId,
+        gr.groupId
+      );
 
       const satModel = new ActiveSatelliteModel();
       satModel.satelliteId = satId;

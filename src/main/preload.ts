@@ -123,8 +123,8 @@ const apiHandler = {
    * 衛星IDに一致するアプリケーション設定かデフォルト衛星情報を取得を返す
    * 呼び出し例）const ret = await window.rstApi.getUserRegisteredAppConfigSatellite(satelliteId);
    */
-  getUserRegisteredAppConfigSatellite: function (satelliteId: number): Promise<AppConfigSatellite> {
-    return ipcRenderer.invoke("getUserRegisteredAppConfigSatellite", satelliteId);
+  getUserRegisteredAppConfigSatellite: function (satelliteId: number, groupdId: number): Promise<AppConfigSatellite> {
+    return ipcRenderer.invoke("getUserRegisteredAppConfigSatellite", satelliteId, groupdId);
   },
 
   /**

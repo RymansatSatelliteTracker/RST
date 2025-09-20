@@ -131,8 +131,8 @@ export function initializeIpcEvents() {
   /**
    * 衛星IDに一致するアプリケーション設定かデフォルト衛星情報を取得を返す
    */
-  ipcMain.handle("getUserRegisteredAppConfigSatellite", (event, satelliteId: number) => {
-    return new AppConfigSatelliteService().getUserRegisteredAppConfigSatellite(satelliteId);
+  ipcMain.handle("getUserRegisteredAppConfigSatellite", (event, satelliteId: number, groupdId: number) => {
+    return new AppConfigSatelliteService().getUserRegisteredAppConfigSatellite(satelliteId, groupdId);
   });
 
   /**

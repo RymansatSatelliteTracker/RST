@@ -6,12 +6,14 @@
       <v-col col="9">
         <v-select
           v-model="selectedGroup"
-          :items="groupNames"
-          @update:modelValue="selectGroup"
+          :items="satelliteGroups"
+          item-title="groupName"
+          item-value="groupId"
           density="compact"
           variant="outlined"
           hide-details
           class="selectbox"
+          return-object
         ></v-select>
       </v-col>
       <!-- グループボタン -->
@@ -46,6 +48,7 @@
           v-if="enableEditSatelliteInfo"
           :isShow="enableEditSatelliteInfo"
           :selectedItem="selectedSatelliteItem"
+          :selectedGroupId="selectedGroup.groupId"
           @onOk="onCloseEditSatelliteInfo"
           @onCancel="onCloseEditSatelliteInfo"
         />
@@ -64,7 +67,7 @@
               v-if="enableRegistSatellite"
               :isShow="enableRegistSatellite"
               :selectedSatelliteItem="selectedSatelliteItem"
-              :selectedGroup="selectedGroup"
+              :selectedGroup="selectedGroup.groupId"
               :selectedSatellites="selectedSatellites"
               @onOk="onCloseRegistSatellite"
               @onCancel="onCloseRegistSatellite"
@@ -102,10 +105,8 @@ import { mdiArrowDownBold, mdiArrowUpBold, mdiDelete } from "@mdi/js";
 
 // 衛星グループリスト
 const satelliteGroups = defineModel<AppConfigSatelliteGroupForSatSetting[]>("satelliteGroups", { default: [] });
-// グループ名リスト
-const groupNames = ref<string[]>([]);
 // 選択されたグループ
-const selectedGroup = ref("");
+const selectedGroup = ref({ groupName: "", groupId: -1, satellites: [] } as AppConfigSatelliteGroupForSatSetting);
 // グループに所属する衛星リスト
 const selectedSatellites = defineModel<SatelliteIdentiferType[]>("selectedSatellites", { default: [] });
 // 衛星リストから選択したアイテムのインデックス
@@ -134,19 +135,24 @@ watch(
     if (newGroupNames === oldGroupNames) return;
 
     if (satelliteGroups.value.length > 0) {
-      // グループ名リスト
-      groupNames.value = satelliteGroups.value.map((group) => group.groupName);
       // 選択されたグループの初期値
-      selectedGroup.value = satelliteGroups.value[0].groupName;
+      selectedGroup.value = satelliteGroups.value[0];
       // グループに所属する衛星リストの初期値
       selectedSatellites.value = satelliteGroups.value[0].satellites;
     } else {
-      groupNames.value = [];
-      selectedGroup.value = "";
+      selectedGroup.value = { groupName: "", groupId: -1, satellites: [] };
       selectedSatellites.value = [];
     }
   },
   { deep: true } // ここはdeepじゃないと反応しない
+);
+
+watch(
+  () => selectedGroup.value,
+  () => {
+    selectGroup();
+  },
+  { deep: true }
 );
 
 // watchで見ているので画面を閉じる際にデータをクリアする
@@ -180,11 +186,8 @@ function checkCanRegist(item: SatelliteIdentiferType | null): boolean {
  * グループ選択時にTLEリストを更新
  */
 function selectGroup() {
-  const group = satelliteGroups.value.find((g) => g.groupName === selectedGroup.value);
-  if (group) {
-    selectedSatellites.value = group.satellites;
-    selectedItemIndex.value = null; // リセット
-  }
+  selectedSatellites.value = selectedGroup.value.satellites;
+  selectedItemIndex.value = null; // リセット
 }
 
 /**

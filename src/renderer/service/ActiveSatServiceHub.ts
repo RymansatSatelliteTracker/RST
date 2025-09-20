@@ -221,7 +221,10 @@ export default class ActiveSatServiceHub {
       return 0;
     }
 
-    const appConfigSatellite = await ApiAppConfigSatellite.getUserRegisteredAppConfigSatellite(satGrp.mainSatelliteId);
+    const appConfigSatellite = await ApiAppConfigSatellite.getUserRegisteredAppConfigSatellite(
+      satGrp.mainSatelliteId,
+      satGrp.activeSatelliteGroupId
+    );
     if (appConfigSatellite) {
       // アクティブ衛星のアップリンク設定
       switch (appConfigSatellite.autoModeUplinkFreq) {
