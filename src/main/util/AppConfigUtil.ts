@@ -399,7 +399,7 @@ export class AppConfigUtil {
       const satIdentifers = groups.satelliteIds
         .map((satelliteId) => {
           // 衛星IDから該当する衛星デフォルト情報を取得する
-          const appConfigSat = appConfSatService.getUserRegisteredAppConfigSatellite(satelliteId);
+          const appConfigSat = appConfSatService.getUserRegisteredAppConfigSatellite(satelliteId, groups.groupId);
           // 返却に必要な衛星IDと衛星名の組み合わせにする
           if (appConfigSat === null) {
             // ないはずだが衛星IDがヒットしなければundefined

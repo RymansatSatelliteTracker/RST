@@ -9,11 +9,12 @@ export default class AppConfigSatelliteService {
   /**
    * 衛星IDでデフォルト衛星情報とアプリケーション設定を検索してデータがあるものを返す
    * @param satelliteId
+   * @param groupId
    * @returns null:一致するデフォルト衛星がない
    *          デフォルト衛星情報:アプリケーション設定がない
    *          アプリケーション設定の衛星:アプリケーション設定がある
    */
-  public getUserRegisteredAppConfigSatellite(satelliteId: number): AppConfigSatellite | null {
+  public getUserRegisteredAppConfigSatellite(satelliteId: number, groupId: number): AppConfigSatellite | null {
     const defSatService: DefaultSatelliteService = new DefaultSatelliteService();
     const defSat = defSatService.getDefaultSatelliteBySatelliteIdSync(satelliteId);
 
@@ -29,7 +30,14 @@ export default class AppConfigSatelliteService {
     const appConfig: AppConfigModel = AppConfigUtil.getConfig();
     if (!appConfig) return appConfigSatellite;
 
-    const satellite = appConfig.satellites.find((sat: AppConfigSatellite) => sat.satelliteId === satelliteId);
+    let satellite = appConfig.satellites.find(
+      (sat: AppConfigSatellite) => sat.satelliteId === satelliteId && sat.groupId === groupId
+    );
+    if (!satellite) {
+      // グループIDが一致する衛星がない場合はグループIDを無視して探す
+      satellite = appConfig.satellites.find((sat: AppConfigSatellite) => sat.satelliteId === satelliteId);
+    }
+
     if (satellite) {
       AppConfigUtil.copyMatchingProperties(appConfigSatellite, satellite);
     }
