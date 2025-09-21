@@ -90,12 +90,19 @@ export default class DefaultSatelliteService {
   /**
    * 衛星IDに一致するデフォルト衛星を取得
    * @param satelliteId
+   * @param useAppConfigIfExists true:アプリケーション設定にデフォルト設定があれば使用する/false:アプリケーション設定を無視してデフォルト衛星情報を取得する
    * @returns
    */
-  public async getDefaultSatelliteBySatelliteId(satelliteId: number): Promise<DefaultSatelliteType | null> {
+  public async getDefaultSatelliteBySatelliteId(
+    satelliteId: number,
+    useAppConfigIfExists = true
+  ): Promise<DefaultSatelliteType | null> {
     // デフォルト衛星定義から衛星識別情報を取得
 
     const defsat: DefaultSatelliteType | null = this.defSatJson.getDefaultSatelliteBySatelliteId(satelliteId);
+    if (!useAppConfigIfExists) {
+      return defsat;
+    }
     const appDefSat = AppConfigUtil.searchAppConfigSatellite(
       satelliteId,
       Constant.SatSetting.DEFAULT_SATELLITE_GROUP_ID
@@ -112,12 +119,20 @@ export default class DefaultSatelliteService {
   /**
    * 衛星IDに一致するデフォルト衛星を取得(同期)
    * @param satelliteId
+   * @param useAppConfigIfExists true:アプリケーション設定にデフォルト設定があれば使用する/false:アプリケーション設定を無視してデフォルト衛星情報を取得する
    * @returns
    */
-  public getDefaultSatelliteBySatelliteIdSync(satelliteId: number): DefaultSatelliteType | null {
+  public getDefaultSatelliteBySatelliteIdSync(
+    satelliteId: number,
+    useAppConfigIfExists = true
+  ): DefaultSatelliteType | null {
     // デフォルト衛星定義から衛星識別情報を取得
 
     const defsat: DefaultSatelliteType | null = this.defSatJson.getDefaultSatelliteBySatelliteId(satelliteId);
+    if (!useAppConfigIfExists) {
+      return defsat;
+    }
+
     const appDefSat = AppConfigUtil.searchAppConfigSatellite(
       satelliteId,
       Constant.SatSetting.DEFAULT_SATELLITE_GROUP_ID

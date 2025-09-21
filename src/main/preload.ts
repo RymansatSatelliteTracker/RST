@@ -99,8 +99,11 @@ const apiHandler = {
    * 衛星IDに一致するデフォルト衛星情報を取得を返す
    * 呼び出し例）const ret = await window.rstApi.getDefaultSatelliteBySatelliteId();
    */
-  getDefaultSatelliteBySatelliteId: function (satelliteId: number): Promise<string> {
-    return ipcRenderer.invoke("getDefaultSatelliteBySatelliteId", satelliteId);
+  getDefaultSatelliteBySatelliteId: function (
+    satelliteId: number,
+    useDefaultAppConfigIfExists: boolean
+  ): Promise<string> {
+    return ipcRenderer.invoke("getDefaultSatelliteBySatelliteId", satelliteId, useDefaultAppConfigIfExists);
   },
 
   /**

@@ -110,8 +110,8 @@ export function initializeIpcEvents() {
   /**
    * 衛星IDに一致するデフォルト衛星情報を取得を返す
    */
-  ipcMain.handle("getDefaultSatelliteBySatelliteId", (event, satelliteId: number) => {
-    return new DefaultSatelliteService().getDefaultSatelliteBySatelliteId(satelliteId);
+  ipcMain.handle("getDefaultSatelliteBySatelliteId", (event, satelliteId: number, useAppConfigIfExists: boolean) => {
+    return new DefaultSatelliteService().getDefaultSatelliteBySatelliteId(satelliteId, useAppConfigIfExists);
   });
 
   /**
