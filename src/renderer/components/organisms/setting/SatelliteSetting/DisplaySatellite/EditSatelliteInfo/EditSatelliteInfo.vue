@@ -387,8 +387,9 @@ async function onOk() {
     // アプリケーション設定にあった場合
     // リセットを押してなければ(マニュアル設定がON)更新する
     // リセットを押していたら(マニュアル設定がOFF)削除する
-    if (manualEditFlg.value) {
-      const sat: AppConfigSatellite = appConfig.satellites[index];
+    // 手動登録衛星の場合はsatellitesにTLEの情報とかがあるので更新とする
+    const sat: AppConfigSatellite = appConfig.satellites[index];
+    if (manualEditFlg.value || sat.userRegistered) {
       transformFormToAppConfig(sat, form.value);
       sat.groupId = selectedGroupId.value;
     } else {

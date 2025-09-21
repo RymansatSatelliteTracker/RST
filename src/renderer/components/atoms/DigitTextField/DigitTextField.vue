@@ -22,7 +22,7 @@ const model = defineModel<any>();
 const errorText = defineModel<string>("errorText", { required: false, default: "" });
 // 表示用の文字列（ドット区切り）
 const displayValue = ref<string>("");
-
+let isEditing = false;
 const props = defineProps({
   valiSchema: {
     type: Object, // as () => ZodObject<any>,
@@ -52,6 +52,7 @@ onMounted(async () => {
  * focusイベントのハンドラ
  */
 async function onFocus() {
+  isEditing = true;
   // フォーカス時はドット区切りを外す
   displayValue.value = model.value ? model.value.toString() : "";
 }
@@ -60,6 +61,7 @@ async function onFocus() {
  * blurイベントのハンドラ
  */
 async function onBlur(val: string) {
+  isEditing = false;
   errorText.value = await validateAt(props.valiSchemaFieldPath, val);
   if (errorText.value) return;
   // 数値に変換して model にセットする
@@ -75,19 +77,12 @@ async function onBlur(val: string) {
   displayValue.value = formatWithDot(numVal);
 }
 // model → displayValue への変換
-// mountだとデータが入っていないので表示時に一回だけ実行
-let stop: any;
-stop = watch(
-  model,
-  async (newVal) => {
-    if (!newVal) return;
-    await nextTick();
-    displayValue.value = formatWithDot(newVal);
-    stop();
-  },
-  { immediate: true }
-);
-
+// 編集中は更新しないようにしないと無限ループが発生する
+watch(model, async (newVal) => {
+  if (isEditing) return;
+  await nextTick();
+  displayValue.value = formatWithDot(newVal);
+});
 // displayValue → model への変換
 // modelとの同期はこいつに任せる
 watch(displayValue, (newVal) => {
@@ -115,4 +110,3 @@ function parseNumber(value: string): number | null {
 }
 </script>
 <style module lang="scss" scoped></style>
-
