@@ -97,11 +97,11 @@ export default class DefaultSatelliteService {
     satelliteId: number,
     useAppConfigIfExists = true
   ): Promise<DefaultSatelliteType | null> {
-    // デフォルト衛星定義から衛星識別情報を取得
+    // デフォルト衛星定義を取得
 
-    const defsat: DefaultSatelliteType | null = this.defSatJson.getDefaultSatelliteBySatelliteId(satelliteId);
+    const defSat: DefaultSatelliteType | null = this.defSatJson.getDefaultSatelliteBySatelliteId(satelliteId);
     if (!useAppConfigIfExists) {
-      return defsat;
+      return defSat;
     }
     const appDefSat = AppConfigUtil.searchAppConfigSatellite(
       satelliteId,
@@ -109,13 +109,14 @@ export default class DefaultSatelliteService {
     );
 
     // 編集したデフォルト衛星定義がある場合は上書き
-    if (appDefSat && defsat) {
-      AppConfigUtil.copyMatchingProperties(defsat, appDefSat);
-      defsat.satelliteName = appDefSat.userRegisteredSatelliteName;
+    if (appDefSat && defSat) {
+      AppConfigUtil.copyMatchingProperties(defSat, appDefSat);
+      defSat.satelliteName = appDefSat.userRegisteredSatelliteName;
     }
 
-    return defsat;
+    return defSat;
   }
+
   /**
    * 衛星IDに一致するデフォルト衛星を取得(同期)
    * @param satelliteId
@@ -126,11 +127,11 @@ export default class DefaultSatelliteService {
     satelliteId: number,
     useAppConfigIfExists = true
   ): DefaultSatelliteType | null {
-    // デフォルト衛星定義から衛星識別情報を取得
+    // デフォルト衛星定義を取得
 
-    const defsat: DefaultSatelliteType | null = this.defSatJson.getDefaultSatelliteBySatelliteId(satelliteId);
+    const defSat: DefaultSatelliteType | null = this.defSatJson.getDefaultSatelliteBySatelliteId(satelliteId);
     if (!useAppConfigIfExists) {
-      return defsat;
+      return defSat;
     }
 
     const appDefSat = AppConfigUtil.searchAppConfigSatellite(
@@ -139,11 +140,11 @@ export default class DefaultSatelliteService {
     );
 
     // 編集したデフォルト衛星定義がある場合は上書き
-    if (appDefSat && defsat) {
-      AppConfigUtil.copyMatchingProperties(defsat, appDefSat);
-      defsat.satelliteName = appDefSat.userRegisteredSatelliteName;
+    if (appDefSat && defSat) {
+      AppConfigUtil.copyMatchingProperties(defSat, appDefSat);
+      defSat.satelliteName = appDefSat.userRegisteredSatelliteName;
     }
-    return defsat;
+    return defSat;
   }
 
   /**
