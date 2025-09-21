@@ -53,6 +53,7 @@ export async function setAppConfig(
 
   // 画面入力項目を反映
   apiSat.userRegistered = true;
+  apiSat.groupId = groupdId;
   apiSat.userRegisteredSatelliteName = srcFrom.satelliteName;
   // TLE入力の場合は軌道6要素が入っててもTLEを優先する
   let tle = srcFrom.tle;

@@ -67,7 +67,7 @@
               v-if="enableRegistSatellite"
               :isShow="enableRegistSatellite"
               :selectedSatelliteItem="selectedSatelliteItem"
-              :selectedGroup="selectedGroup.groupId"
+              :selectedGroupId="selectedGroup.groupId"
               :selectedSatellites="selectedSatellites"
               @onOk="onCloseRegistSatellite"
               @onCancel="onCloseRegistSatellite"
