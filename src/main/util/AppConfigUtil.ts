@@ -1,5 +1,10 @@
 import Constant from "@/common/Constant";
-import { AppConfigMainDisplay, AppConfigModel, AppConfigSatelliteGroup } from "@/common/model/AppConfigModel";
+import {
+  AppConfigMainDisplay,
+  AppConfigModel,
+  AppConfigSatellite,
+  AppConfigSatelliteGroup,
+} from "@/common/model/AppConfigModel";
 import { AppConfigRotatorDevice, AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel";
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
 import { AppConfigTransceiverDevice, AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel";
@@ -455,5 +460,17 @@ export class AppConfigUtil {
         (target as any)[key] = (source as any)[key]; // 型安全のため `any` を使用
       }
     });
+  }
+
+  /**
+   * アプリケーション設定の衛星を検索する
+   * @param satelliteId
+   * @param groupdId
+   * @returns 見つからなければnull
+   */
+  public static searchAppConfigSatellite(satelliteId: number, groupdId: number): AppConfigSatellite | null {
+    const appConfigSats = this.getConfig().satellites;
+    if (appConfigSats.length === 0) return null;
+    return appConfigSats.find((sat) => sat.satelliteId === satelliteId && sat.groupId === groupdId) ?? null;
   }
 }
