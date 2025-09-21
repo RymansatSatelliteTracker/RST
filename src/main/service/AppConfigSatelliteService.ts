@@ -1,5 +1,4 @@
-import Constant from "@/common/Constant";
-import { AppConfigModel, AppConfigSatellite } from "@/common/model/AppConfigModel";
+import { AppConfigSatellite } from "@/common/model/AppConfigModel";
 import DefaultSatelliteService from "@/main/service/DefaultSatelliteService";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil";
 
@@ -28,23 +27,11 @@ export default class AppConfigSatelliteService {
     appConfigSatellite.userRegisteredSatelliteName = defSat.satelliteName;
 
     // アプリケーション設定の衛星があれば設定する
-    const appConfig: AppConfigModel = AppConfigUtil.getConfig();
-    if (!appConfig) return appConfigSatellite;
+    const satellite: AppConfigSatellite | null = AppConfigUtil.searchAppConfigSatellite(satelliteId, groupId);
+    if (!satellite) return appConfigSatellite;
 
-    // デフォルトグループの衛星を探す
-    let satellite = appConfig.satellites.find(
-      (sat: AppConfigSatellite) =>
-        sat.satelliteId === satelliteId && sat.groupId === Constant.SatSetting.DEFAULT_SATELLITE_GROUP_ID
-    );
+    AppConfigUtil.copyMatchingProperties(appConfigSatellite, satellite);
 
-    // グループIDが一致する衛星があったら上書き
-    satellite = appConfig.satellites.find(
-      (sat: AppConfigSatellite) => sat.satelliteId === satelliteId && sat.groupId === groupId
-    );
-
-    if (satellite) {
-      AppConfigUtil.copyMatchingProperties(appConfigSatellite, satellite);
-    }
     return appConfigSatellite;
   }
 }

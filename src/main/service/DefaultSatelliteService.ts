@@ -88,26 +88,47 @@ export default class DefaultSatelliteService {
   }
 
   /**
-   * 衛星IDに一致する衛星識別情報を取得
+   * 衛星IDに一致するデフォルト衛星を取得
    * @param satelliteId
    * @returns
    */
   public async getDefaultSatelliteBySatelliteId(satelliteId: number): Promise<DefaultSatelliteType | null> {
     // デフォルト衛星定義から衛星識別情報を取得
 
-    const satIdentifer: DefaultSatelliteType | null = this.defSatJson.getDefaultSatelliteBySatelliteId(satelliteId);
-    return satIdentifer;
+    const defsat: DefaultSatelliteType | null = this.defSatJson.getDefaultSatelliteBySatelliteId(satelliteId);
+    const appDefSat = AppConfigUtil.searchAppConfigSatellite(
+      satelliteId,
+      Constant.SatSetting.DEFAULT_SATELLITE_GROUP_ID
+    );
+
+    // 編集したデフォルト衛星定義がある場合は上書き
+    if (appDefSat && defsat) {
+      AppConfigUtil.copyMatchingProperties(defsat, appDefSat);
+      defsat.satelliteName = appDefSat.userRegisteredSatelliteName;
+    }
+
+    return defsat;
   }
   /**
-   * 衛星IDに一致する衛星識別情報を取得(同期)
+   * 衛星IDに一致するデフォルト衛星を取得(同期)
    * @param satelliteId
    * @returns
    */
   public getDefaultSatelliteBySatelliteIdSync(satelliteId: number): DefaultSatelliteType | null {
     // デフォルト衛星定義から衛星識別情報を取得
 
-    const satIdentifer: DefaultSatelliteType | null = this.defSatJson.getDefaultSatelliteBySatelliteId(satelliteId);
-    return satIdentifer;
+    const defsat: DefaultSatelliteType | null = this.defSatJson.getDefaultSatelliteBySatelliteId(satelliteId);
+    const appDefSat = AppConfigUtil.searchAppConfigSatellite(
+      satelliteId,
+      Constant.SatSetting.DEFAULT_SATELLITE_GROUP_ID
+    );
+
+    // 編集したデフォルト衛星定義がある場合は上書き
+    if (appDefSat && defsat) {
+      AppConfigUtil.copyMatchingProperties(defsat, appDefSat);
+      defsat.satelliteName = appDefSat.userRegisteredSatelliteName;
+    }
+    return defsat;
   }
 
   /**
