@@ -64,6 +64,8 @@ export class AppConfigTleUrl {
 export class AppConfigSatellite {
   // 衛星ID
   public satelliteId: number = -1;
+  // グループID
+  public groupId: number = Constant.SatSetting.DEFAULT_SATELLITE_GROUP_ID;
   // ユーザ登録衛星フラグ
   public userRegistered = false;
   //ユーザ登録衛星名

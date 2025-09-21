@@ -36,7 +36,11 @@ export function setForm(targetForm: RegistSatelliteForm, srcObject: AppConfigSat
  * @param srcFrom
  * @returns
  */
-export async function setAppConfig(targetAppConfig: AppConfigModel, srcFrom: RegistSatelliteForm): Promise<boolean> {
+export async function setAppConfig(
+  targetAppConfig: AppConfigModel,
+  srcFrom: RegistSatelliteForm,
+  groupdId: number
+): Promise<boolean> {
   // 新規追加フラグ
   const isNewItem = srcFrom.satelliteId === -1;
   // 衛星ID
@@ -45,10 +49,11 @@ export async function setAppConfig(targetAppConfig: AppConfigModel, srcFrom: Reg
     // 新規の場合衛星IDを採番
     satelliteId = await ApiDefaultSatellite.addDefaultSatellite(srcFrom.satelliteName);
   }
-  const apiSat = await ApiAppConfigSatellite.getUserRegisteredAppConfigSatellite(satelliteId);
+  const apiSat = await ApiAppConfigSatellite.getUserRegisteredAppConfigSatellite(satelliteId, groupdId);
 
   // 画面入力項目を反映
   apiSat.userRegistered = true;
+  apiSat.groupId = groupdId;
   apiSat.userRegisteredSatelliteName = srcFrom.satelliteName;
   // TLE入力の場合は軌道6要素が入っててもTLEを優先する
   let tle = srcFrom.tle;
@@ -82,7 +87,7 @@ export async function setAppConfig(targetAppConfig: AppConfigModel, srcFrom: Reg
   } else {
     // 更新の場合、衛星設定を反映する
     targetAppConfig.satellites.forEach((sat) => {
-      if (sat.satelliteId === apiSat.satelliteId) {
+      if (sat.satelliteId === apiSat.satelliteId && sat.groupId === groupdId) {
         Object.assign(sat, apiSat);
       }
     });

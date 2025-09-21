@@ -88,26 +88,63 @@ export default class DefaultSatelliteService {
   }
 
   /**
-   * 衛星IDに一致する衛星識別情報を取得
+   * 衛星IDに一致するデフォルト衛星を取得
    * @param satelliteId
+   * @param useAppConfigIfExists true:アプリケーション設定にデフォルト設定があれば使用する/false:アプリケーション設定を無視してデフォルト衛星情報を取得する
    * @returns
    */
-  public async getDefaultSatelliteBySatelliteId(satelliteId: number): Promise<DefaultSatelliteType | null> {
-    // デフォルト衛星定義から衛星識別情報を取得
+  public async getDefaultSatelliteBySatelliteId(
+    satelliteId: number,
+    useAppConfigIfExists = true
+  ): Promise<DefaultSatelliteType | null> {
+    // デフォルト衛星定義を取得
 
-    const satIdentifer: DefaultSatelliteType | null = this.defSatJson.getDefaultSatelliteBySatelliteId(satelliteId);
-    return satIdentifer;
+    const defSat: DefaultSatelliteType | null = this.defSatJson.getDefaultSatelliteBySatelliteId(satelliteId);
+    if (!useAppConfigIfExists) {
+      return defSat;
+    }
+    const appDefSat = AppConfigUtil.searchAppConfigSatellite(
+      satelliteId,
+      Constant.SatSetting.DEFAULT_SATELLITE_GROUP_ID
+    );
+
+    // 編集したデフォルト衛星定義がある場合は上書き
+    if (appDefSat && defSat) {
+      AppConfigUtil.copyMatchingProperties(defSat, appDefSat);
+      defSat.satelliteName = appDefSat.userRegisteredSatelliteName;
+    }
+
+    return defSat;
   }
+
   /**
-   * 衛星IDに一致する衛星識別情報を取得(同期)
+   * 衛星IDに一致するデフォルト衛星を取得(同期)
    * @param satelliteId
+   * @param useAppConfigIfExists true:アプリケーション設定にデフォルト設定があれば使用する/false:アプリケーション設定を無視してデフォルト衛星情報を取得する
    * @returns
    */
-  public getDefaultSatelliteBySatelliteIdSync(satelliteId: number): DefaultSatelliteType | null {
-    // デフォルト衛星定義から衛星識別情報を取得
+  public getDefaultSatelliteBySatelliteIdSync(
+    satelliteId: number,
+    useAppConfigIfExists = true
+  ): DefaultSatelliteType | null {
+    // デフォルト衛星定義を取得
 
-    const satIdentifer: DefaultSatelliteType | null = this.defSatJson.getDefaultSatelliteBySatelliteId(satelliteId);
-    return satIdentifer;
+    const defSat: DefaultSatelliteType | null = this.defSatJson.getDefaultSatelliteBySatelliteId(satelliteId);
+    if (!useAppConfigIfExists) {
+      return defSat;
+    }
+
+    const appDefSat = AppConfigUtil.searchAppConfigSatellite(
+      satelliteId,
+      Constant.SatSetting.DEFAULT_SATELLITE_GROUP_ID
+    );
+
+    // 編集したデフォルト衛星定義がある場合は上書き
+    if (appDefSat && defSat) {
+      AppConfigUtil.copyMatchingProperties(defSat, appDefSat);
+      defSat.satelliteName = appDefSat.userRegisteredSatelliteName;
+    }
+    return defSat;
   }
 
   /**

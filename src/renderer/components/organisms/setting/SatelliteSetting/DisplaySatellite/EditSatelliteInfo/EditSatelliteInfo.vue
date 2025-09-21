@@ -304,6 +304,10 @@ const isShow = defineModel<boolean>("isShow", {
 const selectedItem = defineModel<SatelliteIdentiferType>("selectedItem", {
   default: {},
 });
+// 衛星追加用の親のグループ
+const selectedGroupId = defineModel<number>("selectedGroupId", {
+  default: Constant.SatSetting.DEFAULT_SATELLITE_GROUP_ID,
+});
 // 親に通知用のイベント
 const emits = defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
 // 画面を使って設定をしたかどうか
@@ -323,10 +327,14 @@ const { transformAppConfigToForm, transformDefSatToForm, transformFormToAppConfi
 onMounted(async function () {
   // 衛星を取得
   const registedSatellite = await ApiAppConfigSatellite.getUserRegisteredAppConfigSatellite(
-    selectedItem.value.satelliteId
+    selectedItem.value.satelliteId,
+    selectedGroupId.value
   );
   // ユーザ登録されているか確認する
-  const appConfigSatellite = await ApiAppConfigSatellite.getAppConfigSatellite(selectedItem.value.satelliteId);
+  const appConfigSatellite = await ApiAppConfigSatellite.getAppConfigSatellite(
+    selectedItem.value.satelliteId,
+    selectedGroupId.value
+  );
 
   // 画面に設定する
   transformAppConfigToForm(form.value, registedSatellite);
@@ -367,20 +375,23 @@ async function onOk() {
     return;
   }
 
+  // データ削除をするのであえてindexで処理する
   const appConfig = await ApiAppConfig.getAppConfig();
   const formSatId = form.value.satelliteId;
 
   const index = appConfig.satellites.findIndex((sat) => {
-    return sat.satelliteId === formSatId;
+    return sat.satelliteId === formSatId && sat.groupId === selectedGroupId.value;
   });
 
   if (index > -1) {
     // アプリケーション設定にあった場合
     // リセットを押してなければ(マニュアル設定がON)更新する
     // リセットを押していたら(マニュアル設定がOFF)削除する
-    if (manualEditFlg.value) {
-      const sat: AppConfigSatellite = appConfig.satellites[index];
+    // 手動登録衛星の場合はsatellitesにTLEの情報とかがあるので更新とする
+    const sat: AppConfigSatellite = appConfig.satellites[index];
+    if (manualEditFlg.value || sat.userRegistered) {
       transformFormToAppConfig(sat, form.value);
+      sat.groupId = selectedGroupId.value;
     } else {
       appConfig.satellites.splice(index, 1);
     }
@@ -388,6 +399,7 @@ async function onOk() {
     // アプリケーション設定になければ新規追加
     const sat: AppConfigSatellite = new AppConfigSatellite();
     transformFormToAppConfig(sat, form.value);
+    sat.groupId = selectedGroupId.value;
     appConfig.satellites.push(sat);
   }
 
@@ -416,7 +428,8 @@ async function onCancel() {
 async function onReset() {
   // デフォルト衛星情報を取得
   const defsat: DefaultSatelliteType = await ApiDefaultSatellite.getDefaultSatelliteBySatelliteId(
-    selectedItem.value.satelliteId
+    selectedItem.value.satelliteId,
+    false
   );
   if (defsat) {
     transformDefSatToForm(form.value, defsat);
@@ -428,4 +441,3 @@ async function onReset() {
 <style lang="scss" scoped>
 @import "./EditSatelliteInfo.scss";
 </style>
-
