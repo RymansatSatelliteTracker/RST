@@ -87,7 +87,7 @@ export default class I18nMsgs {
   };
   public static readonly CHK_ERR_EXPIRED_TLE: I18nMsgItem = {
     en: "The TLE epoch is out of date and may not provide accurate orbit estimation. Is this OK?",
-    ja: "TLEのepochが古いため正確な軌道推定ができない可能性があります。よろしいですか？",
+    ja: "epochが古いため正確な軌道推定ができない可能性があります。よろしいですか？",
   };
   public static readonly CHK_ERR_ALL_ORBIT: I18nMsgItem = {
     en: "Please enter all 6 Orbital Elements",

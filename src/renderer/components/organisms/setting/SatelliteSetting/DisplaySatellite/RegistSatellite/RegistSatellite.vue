@@ -228,8 +228,8 @@ async function onOk() {
     // キャンセルが押下されたら終了
     if (!isOk) return;
   }
-  // TLEが有効期限切れの場合は確認
-  if (errors.value["tleEpoch"]) {
+  // Epochが有効期限切れの場合は確認
+  if (errors.value["tleEpoch"] || errors.value["epochUtcDate"]) {
     const isOk = await showConfirm(I18nUtil.getMsg(I18nMsgs.CHK_ERR_EXPIRED_TLE));
 
     // キャンセルが押下されたら終了
