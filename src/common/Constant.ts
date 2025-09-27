@@ -2,7 +2,7 @@
  * 定数
  */
 export default class Constant {
-  public static readonly appVersion = "v0.1.2a";
+  public static readonly appVersion = "v0.1.3";
 
   /**
    * ロガー関係
@@ -332,6 +332,9 @@ export default class Constant {
     // 周波数設定ファイルのURL
     static readonly FREQUENCY_URL =
       "https://raw.githubusercontent.com/RymansatSatelliteTracker/RST/refs/heads/main/satellite_data/frequency.json";
+
+    // デフォルトの衛星グループID
+    static readonly DEFAULT_SATELLITE_GROUP_ID = -1;
   };
 
   /**

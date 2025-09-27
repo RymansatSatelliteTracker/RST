@@ -183,7 +183,9 @@ const selectedSatelliteItem = defineModel<SatelliteIdentiferType>("selectedSatel
   default: { satelliteId: -1, satelliteName: "" },
 });
 // 衛星追加用の親のグループ
-const selectedGroup = defineModel("selectedGroup");
+const selectedGroupId = defineModel<number>("selectedGroupId", {
+  default: Constant.SatSetting.DEFAULT_SATELLITE_GROUP_ID,
+});
 // 衛星追加用の親の衛星リスト
 const selectedSatellites = defineModel<SatelliteIdentiferType[]>("selectedSatellites", { default: [] });
 // 親に通知用のイベント
@@ -199,7 +201,8 @@ onMounted(async function () {
   if (selectedSatelliteItem.value.satelliteId > -1) {
     // ユーザ登録されている情報を探す
     const registedSatellite = await ApiAppConfigSatellite.getUserRegisteredAppConfigSatellite(
-      selectedSatelliteItem.value.satelliteId
+      selectedSatelliteItem.value.satelliteId,
+      selectedGroupId.value
     );
     // 画面反映
     setForm(form.value, registedSatellite);
@@ -225,8 +228,8 @@ async function onOk() {
     // キャンセルが押下されたら終了
     if (!isOk) return;
   }
-  // TLEが有効期限切れの場合は確認
-  if (errors.value["tleEpoch"]) {
+  // Epochが有効期限切れの場合は確認
+  if (errors.value["tleEpoch"] || errors.value["epochUtcDate"]) {
     const isOk = await showConfirm(I18nUtil.getMsg(I18nMsgs.CHK_ERR_EXPIRED_TLE));
 
     // キャンセルが押下されたら終了
@@ -236,7 +239,7 @@ async function onOk() {
   // 取得
   const appConfig = await ApiAppConfig.getAppConfig();
   // 画面情報を反映
-  const isNewItem = await setAppConfig(appConfig, form.value);
+  const isNewItem = await setAppConfig(appConfig, form.value, selectedGroupId.value);
 
   if (isNewItem) {
     // 追加した場合はリストの一番後ろが追加した衛星
@@ -244,7 +247,7 @@ async function onOk() {
     // ここでないなんてことないのだけどエラーが出るので存在確認しておく
     if (apiSat) {
       // 登録した衛星が消えないようにグループに登録しておく
-      const group = appConfig.satelliteGroups.find((gp) => gp.groupName === selectedGroup.value);
+      const group = appConfig.satelliteGroups.find((gp) => gp.groupId === selectedGroupId.value);
       group?.satelliteIds.push(apiSat.satelliteId);
       // 親のリストに追加
       selectedSatellites.value.push({
