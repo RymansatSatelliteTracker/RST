@@ -381,13 +381,13 @@ export default class ActiveSatServiceHub {
   /**
    * アクティブ衛星の無線設定を返す
    */
-  public async getActiveSatTransceiverSetting(): Promise<{
+  public getActiveSatTransceiverSetting(): {
     downlink: DownlinkType | null;
     uplink: UplinkType | null;
     beacon: BeaconType | null;
     satelliteMode: boolean;
     satTrackMode: string | null;
-  }> {
+  } {
     return {
       downlink: this.downlinkFreq,
       uplink: this.uplinkFreq,

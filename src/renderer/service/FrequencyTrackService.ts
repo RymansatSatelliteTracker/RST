@@ -50,6 +50,16 @@ export default class FrequencyTrackService {
     return 1.0 - velocity / Constant.Astronomy.LIGHT_SPEED;
   }
 
+  public calcBaseFreq(
+    freqSum: number,
+    rxFreq: number,
+    rxDopplerFactor: number
+  ): { rxBaseFreq: number; txBaseFreq: number } {
+    const dopplerRxBaseFrequency = rxFreq / rxDopplerFactor;
+    const dopplerTxBaseFrequency = freqSum - dopplerRxBaseFrequency;
+    return { rxBaseFreq: dopplerRxBaseFrequency, txBaseFreq: dopplerTxBaseFrequency };
+  }
+
   /**
    * 距離の変化量から速度を算出する
    * 観測者に向かう方が正の値
