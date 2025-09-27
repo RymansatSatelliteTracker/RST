@@ -35,6 +35,7 @@ export default class FrequencyTrackService {
 
     return 1.0 + velocity / Constant.Astronomy.LIGHT_SPEED;
   }
+
   /**
    * ドップラーファクター(アップリンク)を算出する
    * @param {Date} nowDate 現在日時
@@ -50,6 +51,13 @@ export default class FrequencyTrackService {
     return 1.0 - velocity / Constant.Astronomy.LIGHT_SPEED;
   }
 
+  /**
+   * 指定の受信周波数とドップラーファクターを元に基準周波数を算出する（逆ヘテロダイン）
+   * @param freqSum 送受信周波数の和
+   * @param rxFreq 受信周波数
+   * @param rxDopplerFactor 受信ドップラーファクター
+   * @returns { rxBaseFreq: number; txBaseFreq: number } 基準受信周波数、基準送信周波数
+   */
   public calcBaseFreq(
     freqSum: number,
     rxFreq: number,

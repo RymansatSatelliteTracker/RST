@@ -770,16 +770,25 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       autoTrackingIntervalMsec
     );
 
-    // Rxのドップラーシフトの基準周波数を更新する
-    const tempRxFrequency = TransceiverUtil.parseNumber(rxFrequency.value);
-    dopplerRxBaseFrequency.value = tempRxFrequency / rxDopplerFactor;
+    // // Rxのドップラーシフトの基準周波数を更新する
+    // const tempRxFrequency = TransceiverUtil.parseNumber(rxFrequency.value);
+    // dopplerRxBaseFrequency.value = tempRxFrequency / rxDopplerFactor;
 
-    // ドップラー基準周波数(Tx)を計算する
-    dopplerTxBaseFrequency.value = freqSum - dopplerRxBaseFrequency.value;
+    // // ドップラー基準周波数(Tx)を計算する
+    // dopplerTxBaseFrequency.value = freqSum - dopplerRxBaseFrequency.value;
 
     AppMainLogger.debug(
-      `RxBase: Sum:${freqSum}  Rx:${dopplerRxBaseFrequency.value} Tx:${dopplerTxBaseFrequency.value}`
+      `1 Sum:${freqSum}  RxBase:${dopplerRxBaseFrequency.value} TxBase:${dopplerTxBaseFrequency.value}`
     );
+
+    // Rx、Txのの基準周波数を更新する
+    const nowRxDreq = TransceiverUtil.parseNumber(rxFrequency.value);
+    const { rxBaseFreq, txBaseFreq } = frequencyTrackService.calcBaseFreq(freqSum, nowRxDreq, rxDopplerFactor);
+    AppMainLogger.debug(`2 NowRx:${rxFrequency.value}`);
+    AppMainLogger.debug(`2 Sum:${freqSum}  RxBase:${rxBaseFreq} TxBase:${txBaseFreq}`);
+
+    dopplerRxBaseFrequency.value = rxBaseFreq;
+    dopplerTxBaseFrequency.value = txBaseFreq;
 
     // // 衛星固定または受信固定の場合
     // if (execTxDopplerShiftCorrection) {
