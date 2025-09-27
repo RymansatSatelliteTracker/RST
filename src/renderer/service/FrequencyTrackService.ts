@@ -63,8 +63,11 @@ export default class FrequencyTrackService {
     rxFreq: number,
     rxDopplerFactor: number
   ): { rxBaseFreq: number; txBaseFreq: number } {
+    // Rx周波数をドップラーファクターで割り戻して、Rx基準周波数を算出する
     const dopplerRxBaseFrequency = Math.round(rxFreq / rxDopplerFactor);
+    // Tx基準周波数は、送受信周波数の和からRx基準周波数を引いて算出する
     const dopplerTxBaseFrequency = Math.round(freqSum) - dopplerRxBaseFrequency;
+
     return { rxBaseFreq: dopplerRxBaseFrequency, txBaseFreq: dopplerTxBaseFrequency };
   }
 
