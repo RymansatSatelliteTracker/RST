@@ -58,13 +58,13 @@ export default class FrequencyTrackService {
    * @param rxDopplerFactor 受信ドップラーファクター
    * @returns { rxBaseFreq: number; txBaseFreq: number } 基準受信周波数、基準送信周波数
    */
-  public calcBaseFreq(
+  public calcInvertingHeterodyneBaseFreq(
     freqSum: number,
     rxFreq: number,
     rxDopplerFactor: number
   ): { rxBaseFreq: number; txBaseFreq: number } {
-    const dopplerRxBaseFrequency = rxFreq / rxDopplerFactor;
-    const dopplerTxBaseFrequency = freqSum - dopplerRxBaseFrequency;
+    const dopplerRxBaseFrequency = Math.round(rxFreq / rxDopplerFactor);
+    const dopplerTxBaseFrequency = Math.round(freqSum) - dopplerRxBaseFrequency;
     return { rxBaseFreq: dopplerRxBaseFrequency, txBaseFreq: dopplerTxBaseFrequency };
   }
 
