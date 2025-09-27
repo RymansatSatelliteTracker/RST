@@ -8,10 +8,10 @@ describe("FrequencyTrackService.calcInvertingHeterodyneBaseFreqのテスト", ()
   beforeAll(() => {});
 
   it("逆ヘテロダウンでRx、Txの基準周波数を計算する", () => {
-    const servie = new FrequencyTrackService(
+    const service = new FrequencyTrackService(
       new SatelliteService({ tleLine1: "dummy", tleLine2: "dummy", satelliteName: "dummy" })
     );
-    const { rxBaseFreq, txBaseFreq } = servie.calcInvertingHeterodyneBaseFreq(1000, 500, 0.8);
+    const { rxBaseFreq, txBaseFreq } = service.calcInvertingHeterodyneBaseFreq(1000, 500, 0.8);
 
     expect(rxBaseFreq).toBe(625); // 500 / 0.8 = 625
     expect(txBaseFreq).toBe(375); // 1000 - 625 = 375
