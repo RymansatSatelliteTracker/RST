@@ -14,6 +14,7 @@ export default class ApiAppConfigSatellite {
   ): Promise<AppConfigSatellite> {
     return await window.rstApi.getUserRegisteredAppConfigSatellite(satelliteId, groupId);
   }
+
   /**
    * アプリケーション設定の衛星を取得する
    */
