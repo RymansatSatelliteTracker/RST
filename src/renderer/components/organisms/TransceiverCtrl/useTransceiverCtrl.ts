@@ -403,8 +403,13 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     (newMode, oldMode) => {
       if (oldMode === undefined) return;
       saveState(oldMode);
-      loadState(newMode);
-      isSatelliteMode.value = newMode === Constant.Transceiver.SatelliteMode.SATELLITE ? true : false;
+
+      // UNSETモードに遷移する場合は過去状態をロードする
+      if (newMode === Constant.Transceiver.SatelliteMode.UNSET) {
+        loadState(newMode);
+      }
+
+      isSatelliteMode.value = newMode === Constant.Transceiver.SatelliteMode.SATELLITE;
     },
     { immediate: true }
   );
