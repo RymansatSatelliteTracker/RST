@@ -1,4 +1,3 @@
-// useModeStateManager.ts
 import Constant from "@/common/Constant";
 import { ref, Ref } from "vue";
 
