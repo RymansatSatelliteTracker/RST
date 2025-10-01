@@ -64,6 +64,8 @@ export class AppConfigTleUrl {
 export class AppConfigSatellite {
   // 衛星ID
   public satelliteId: number = -1;
+  // グループID
+  public groupId: number = Constant.SatSetting.DEFAULT_SATELLITE_GROUP_ID;
   // ユーザ登録衛星フラグ
   public userRegistered = false;
   //ユーザ登録衛星名
@@ -78,12 +80,22 @@ export class AppConfigSatellite {
   public uplink1 = new Uplink();
   // 対象衛星アップリンク設定2
   public uplink2 = new Uplink();
+  // 対象衛星アップリンク設定3
+  public uplink3 = new Uplink();
   // 自動設定時に使用するダウンリンク設定
   public autoModeDownlinkFreq: number = 1;
   // 対象衛星ダウンリンク設定1
   public downlink1 = new Downlink();
   // 対象衛星ダウンリンク設定2
   public downlink2 = new Downlink();
+  // 対象衛星ダウンリンク設定3
+  public downlink3 = new Downlink();
+  // 対象衛星ビーコン設定
+  public beacon = new Beacon();
+  // 衛星モード有効フラグ
+  public enableSatelliteMode = false;
+  // 衛星モード
+  public satelliteMode = "1";
   // トーン周波数
   public toneHz: number | null = null;
   // 対象衛星概要
@@ -108,6 +120,16 @@ export class Downlink {
   public downlinkHz: number | null = null;
   // ダウンリンクモード
   public downlinkMode = "";
+}
+
+/**
+ * ビーコン設定タイプ
+ */
+export class Beacon {
+  // ビーコン周波数(Hz)
+  public beaconHz: number | null = null;
+  // ビーコンモード
+  public beaconMode = "";
 }
 
 /**
@@ -178,6 +200,10 @@ export class AppConfigRotator {
   public rangeAzMin = 0;
   // ローテーター最大方位
   public rangeAzMax = 360;
+  // ローテーター最小仰角
+  public rangeElMin = 0;
+  // ローテーター最大仰角
+  public rangeElMax = 180;
   // 動作モード
   public moveMode = Constant.Config.Rotator.MOVE_MODE_NORMAL;
   // 自動追尾開始分

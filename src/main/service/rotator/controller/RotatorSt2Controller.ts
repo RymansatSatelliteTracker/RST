@@ -58,7 +58,7 @@ export default class RotatorSt2Controller extends RotatorSerialControllerBase {
   /**
    * アンテナ位置を変更する
    */
-  public override async setPosition(pos: AntennaPositionModel): Promise<void> {
+  public override async doSetPosition(pos: AntennaPositionModel): Promise<void> {
     // "AZ000.0 EL000.0"形式の文字列を生成
     const az = pos.azimuth.toFixed(1);
     const el = pos.elevation.toFixed(1);

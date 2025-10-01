@@ -56,6 +56,7 @@
         </v-row>
         <v-row>
           <!-- アップリンク周波数 -->
+          <!-- アップリンク周波数1 -->
           <v-col cols="4">
             <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_UPLINK) }}</label>
           </v-col>
@@ -66,7 +67,8 @@
               :valiSchema="valiSchemaEditSatelliteInfo"
               valiSchemaFieldPath="uplink1Hz"
               v-model:error-text="errors.uplink1Hz"
-              maxlength="13"
+              :padEndDigit="9"
+              maxlength="10"
             />
           </v-col>
           <v-col cols="3"> <OpeModeSelect v-model="form.uplink1Mode" /></v-col>
@@ -74,6 +76,7 @@
             <v-radio-group v-model="form.autoModeUplinkFreq" hide-details density="compact">
               <v-radio value="1"></v-radio></v-radio-group
           ></v-col>
+          <!-- アップリンク周波数2 -->
           <v-col cols="4"> </v-col>
           <v-col cols="4">
             <DigitTextField
@@ -83,7 +86,8 @@
               valiSchemaFieldPath="uplink2Hz"
               v-model:error-text="errors.uplink2Hz"
               :disabled="!(form.uplink1Hz && form.uplink1Mode)"
-              maxlength="13"
+              :padEndDigit="9"
+              maxlength="10"
             />
           </v-col>
           <v-col cols="3">
@@ -93,9 +97,47 @@
             <v-radio-group v-model="form.autoModeUplinkFreq" hide-details density="compact">
               <v-radio value="2" :disabled="!(form.uplink1Hz && form.uplink1Mode)"></v-radio></v-radio-group
           ></v-col>
+          <!-- アップリンク周波数3 -->
+          <v-col cols="4"> </v-col>
+          <v-col cols="4">
+            <DigitTextField
+              v-model="form.uplink3Hz"
+              suffix="Hz"
+              :valiSchema="valiSchemaEditSatelliteInfo"
+              valiSchemaFieldPath="uplink3Hz"
+              v-model:error-text="errors.uplink3Hz"
+              :disabled="!(form.uplink2Hz && form.uplink2Mode)"
+              :padEndDigit="9"
+              maxlength="10"
+            />
+          </v-col>
+          <v-col cols="3">
+            <OpeModeSelect v-model="form.uplink3Mode" :disabled="!(form.uplink2Hz && form.uplink2Mode)"
+          /></v-col>
+          <v-col col="1">
+            <v-radio-group v-model="form.autoModeUplinkFreq" hide-details density="compact">
+              <v-radio value="3" :disabled="!(form.uplink2Hz && form.uplink2Mode)"></v-radio></v-radio-group
+          ></v-col>
+        </v-row>
+        <v-row>
+          <!-- トーン周波数 -->
+          <v-col cols="4">
+            <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_TONE) }}</label>
+          </v-col>
+          <v-col cols="4">
+            <TextField
+              v-model="form.toneHz"
+              suffix="Hz"
+              :valiSchema="valiSchemaEditSatelliteInfo"
+              valiSchemaFieldPath="toneHz"
+              v-model:error-text="errors.toneHz"
+              maxlength="12"
+            />
+          </v-col>
         </v-row>
         <v-row>
           <!-- ダウンリンク周波数 -->
+          <!-- ダウンリンク周波数1 -->
           <v-col cols="4">
             <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_DOWNLINK) }}</label>
           </v-col>
@@ -106,7 +148,8 @@
               :valiSchema="valiSchemaEditSatelliteInfo"
               valiSchemaFieldPath="downlink1Hz"
               v-model:error-text="errors.downlink1Hz"
-              maxlength="13"
+              :padEndDigit="9"
+              maxlength="10"
             />
           </v-col>
           <v-col cols="3"> <OpeModeSelect v-model="form.downlink1Mode" /></v-col>
@@ -114,6 +157,7 @@
             <v-radio-group v-model="form.autoModeDownlinkFreq" hide-details density="compact">
               <v-radio value="1"></v-radio></v-radio-group
           ></v-col>
+          <!-- ダウンリンク周波数2 -->
           <v-col cols="4"> </v-col>
           <v-col cols="4">
             <DigitTextField
@@ -123,7 +167,8 @@
               valiSchemaFieldPath="downlink2Hz"
               v-model:error-text="errors.downlink2Hz"
               :disabled="!(form.downlink1Hz && form.downlink1Mode)"
-              maxlength="13"
+              :padEndDigit="9"
+              maxlength="10"
             />
           </v-col>
           <v-col cols="3">
@@ -131,23 +176,77 @@
           /></v-col>
           <v-col col="1">
             <v-radio-group v-model="form.autoModeDownlinkFreq" hide-details density="compact">
-              <v-radio value="2" :disabled="!(form.downlink1Hz && form.downlink1Mode)"></v-radio></v-radio-group
+              <v-radio value="2" :disabled="!(form.downlink2Hz && form.downlink2Mode)"></v-radio></v-radio-group
+          ></v-col>
+          <!-- ダウンリンク周波数3 -->
+          <v-col cols="4"> </v-col>
+          <v-col cols="4">
+            <DigitTextField
+              v-model="form.downlink3Hz"
+              suffix="Hz"
+              :valiSchema="valiSchemaEditSatelliteInfo"
+              valiSchemaFieldPath="downlink3Hz"
+              v-model:error-text="errors.downlink3Hz"
+              :disabled="!(form.downlink2Hz && form.downlink2Mode)"
+              :padEndDigit="9"
+              maxlength="10"
+            />
+          </v-col>
+          <v-col cols="3">
+            <OpeModeSelect v-model="form.downlink3Mode" :disabled="!(form.downlink2Hz && form.downlink2Mode)"
+          /></v-col>
+          <v-col col="1">
+            <v-radio-group v-model="form.autoModeDownlinkFreq" hide-details density="compact">
+              <v-radio value="3" :disabled="!(form.downlink3Hz && form.downlink3Mode)"></v-radio></v-radio-group
           ></v-col>
         </v-row>
         <v-row>
-          <!-- トーン周波数 -->
+          <!-- ビーコン周波数 -->
           <v-col cols="4">
-            <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_TONE) }}</label>
+            <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_BEACON) }}</label>
           </v-col>
           <v-col cols="4">
             <DigitTextField
-              v-model="form.toneHz"
+              v-model="form.beaconHz"
               suffix="Hz"
               :valiSchema="valiSchemaEditSatelliteInfo"
-              valiSchemaFieldPath="toneHz"
-              v-model:error-text="errors.toneHz"
-              maxlength="13"
+              valiSchemaFieldPath="beaconHz"
+              v-model:error-text="errors.beaconHz"
+              :padEndDigit="9"
+              maxlength="10"
             />
+          </v-col>
+          <v-col cols="3"> <OpeModeSelect v-model="form.beaconMode" /></v-col>
+          <v-col col="1"></v-col>
+        </v-row>
+        <v-row>
+          <!-- サテライトモード -->
+          <v-col cols="4">
+            <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_SATELLITE_MODE) }}</label>
+          </v-col>
+          <v-col cols="2">
+            <v-checkbox-btn
+              v-model="form.enableSatelliteMode"
+              hide-details
+              density="compact"
+              :label="I18nUtil.getMsg(I18nMsgs.GCOM_ENABLED)"
+            ></v-checkbox-btn>
+          </v-col>
+          <v-col cols="6">
+            <v-radio-group row v-model="form.satelliteMode" hide-details density="compact">
+              <v-radio
+                :value="Constant.Transceiver.TrackingMode.NORMAL"
+                :disabled="!form.enableSatelliteMode"
+                class="radio"
+                :label="I18nUtil.getMsg(I18nMsgs.G31_NORMAL)"
+              ></v-radio>
+              <v-radio
+                :value="Constant.Transceiver.TrackingMode.REVERSE"
+                :disabled="!form.enableSatelliteMode"
+                class="radio"
+                :label="I18nUtil.getMsg(I18nMsgs.G31_REVERSE)"
+              ></v-radio>
+            </v-radio-group>
           </v-col>
         </v-row>
         <v-row>
@@ -205,6 +304,10 @@ const isShow = defineModel<boolean>("isShow", {
 const selectedItem = defineModel<SatelliteIdentiferType>("selectedItem", {
   default: {},
 });
+// 衛星追加用の親のグループ
+const selectedGroupId = defineModel<number>("selectedGroupId", {
+  default: Constant.SatSetting.DEFAULT_SATELLITE_GROUP_ID,
+});
 // 親に通知用のイベント
 const emits = defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
 // 画面を使って設定をしたかどうか
@@ -224,10 +327,14 @@ const { transformAppConfigToForm, transformDefSatToForm, transformFormToAppConfi
 onMounted(async function () {
   // 衛星を取得
   const registedSatellite = await ApiAppConfigSatellite.getUserRegisteredAppConfigSatellite(
-    selectedItem.value.satelliteId
+    selectedItem.value.satelliteId,
+    selectedGroupId.value
   );
   // ユーザ登録されているか確認する
-  const appConfigSatellite = await ApiAppConfigSatellite.getAppConfigSatellite(selectedItem.value.satelliteId);
+  const appConfigSatellite = await ApiAppConfigSatellite.getAppConfigSatellite(
+    selectedItem.value.satelliteId,
+    selectedGroupId.value
+  );
 
   // 画面に設定する
   transformAppConfigToForm(form.value, registedSatellite);
@@ -268,20 +375,23 @@ async function onOk() {
     return;
   }
 
+  // データ削除をするのであえてindexで処理する
   const appConfig = await ApiAppConfig.getAppConfig();
   const formSatId = form.value.satelliteId;
 
   const index = appConfig.satellites.findIndex((sat) => {
-    return sat.satelliteId === formSatId;
+    return sat.satelliteId === formSatId && sat.groupId === selectedGroupId.value;
   });
 
   if (index > -1) {
     // アプリケーション設定にあった場合
     // リセットを押してなければ(マニュアル設定がON)更新する
     // リセットを押していたら(マニュアル設定がOFF)削除する
-    if (manualEditFlg.value) {
-      const sat: AppConfigSatellite = appConfig.satellites[index];
+    // 手動登録衛星の場合はsatellitesにTLEの情報とかがあるので更新とする
+    const sat: AppConfigSatellite = appConfig.satellites[index];
+    if (manualEditFlg.value || sat.userRegistered) {
       transformFormToAppConfig(sat, form.value);
+      sat.groupId = selectedGroupId.value;
     } else {
       appConfig.satellites.splice(index, 1);
     }
@@ -289,6 +399,7 @@ async function onOk() {
     // アプリケーション設定になければ新規追加
     const sat: AppConfigSatellite = new AppConfigSatellite();
     transformFormToAppConfig(sat, form.value);
+    sat.groupId = selectedGroupId.value;
     appConfig.satellites.push(sat);
   }
 
@@ -317,7 +428,8 @@ async function onCancel() {
 async function onReset() {
   // デフォルト衛星情報を取得
   const defsat: DefaultSatelliteType = await ApiDefaultSatellite.getDefaultSatelliteBySatelliteId(
-    selectedItem.value.satelliteId
+    selectedItem.value.satelliteId,
+    false
   );
   if (defsat) {
     transformDefSatToForm(form.value, defsat);

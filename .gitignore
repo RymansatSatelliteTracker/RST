@@ -11,3 +11,6 @@ release
 vite.config.mts.timestamp*
 
 coverage
+
+# playwrightのE2Eテスト実行時のログ
+test-results

@@ -7,7 +7,6 @@ import type SatelliteService from "./SatelliteService";
 /**
  * 人工衛星の軌道配列を作成する
  * @class OrbitLineService
- * @typedef {OrbitLineService}
  */
 class OrbitLineService {
   // SatelliteServiceクラスの実体

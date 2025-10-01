@@ -33,7 +33,6 @@ export const enum VisibilityType {
 /**
  * 地上局から観測できる人工衛星のAOS/LOS/Melを計算する
  * @class GroundStationService
- * @typedef {GroundStationService}
  */
 class GroundStationService {
   // SatelliteServiceクラスの実体

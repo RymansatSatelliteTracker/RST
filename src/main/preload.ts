@@ -9,6 +9,7 @@ import {
 import { AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel";
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
 import { AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel";
+import { MessageModel } from "@/common/model/MessageModel";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse, LangType } from "@/common/types/types";
 import type { TleStrings } from "@/renderer/types/satellite-type";
@@ -98,8 +99,11 @@ const apiHandler = {
    * 衛星IDに一致するデフォルト衛星情報を取得を返す
    * 呼び出し例）const ret = await window.rstApi.getDefaultSatelliteBySatelliteId();
    */
-  getDefaultSatelliteBySatelliteId: function (satelliteId: number): Promise<string> {
-    return ipcRenderer.invoke("getDefaultSatelliteBySatelliteId", satelliteId);
+  getDefaultSatelliteBySatelliteId: function (
+    satelliteId: number,
+    useDefaultAppConfigIfExists: boolean
+  ): Promise<string> {
+    return ipcRenderer.invoke("getDefaultSatelliteBySatelliteId", satelliteId, useDefaultAppConfigIfExists);
   },
 
   /**
@@ -122,8 +126,8 @@ const apiHandler = {
    * 衛星IDに一致するアプリケーション設定かデフォルト衛星情報を取得を返す
    * 呼び出し例）const ret = await window.rstApi.getUserRegisteredAppConfigSatellite(satelliteId);
    */
-  getUserRegisteredAppConfigSatellite: function (satelliteId: number): Promise<AppConfigSatellite> {
-    return ipcRenderer.invoke("getUserRegisteredAppConfigSatellite", satelliteId);
+  getUserRegisteredAppConfigSatellite: function (satelliteId: number, groupdId: number): Promise<AppConfigSatellite> {
+    return ipcRenderer.invoke("getUserRegisteredAppConfigSatellite", satelliteId, groupdId);
   },
 
   /**
@@ -253,6 +257,15 @@ const apiHandler = {
   },
 
   /**
+   * ドップラーシフト待機イベント
+   */
+  dopplerShiftWaitingCallback: (callback: Function) => {
+    ipcRenderer.on("dopplerShiftWaitingCallback", (event: IpcRendererEvent, res: ApiResponse<boolean>) => {
+      callback(res);
+    });
+  },
+
+  /**
    * 共通系・アクティブなシリアルポートのリストを返す
    */
   getActiveSerialPorts: function (): Promise<string[]> {
@@ -290,6 +303,23 @@ const apiHandler = {
   onSaveTransceiverFrequency: (callback: Function) => {
     ipcRenderer.on("onSaveTransceiverFrequency", (event: IpcRendererEvent) => {
       callback();
+    });
+  },
+  /**
+   * URLから読み込み可能なTLEが取得できるか確認する
+   * 呼び出し例）const canGet = await window.rstApi.canGetValidTle(url);
+   */
+  canGetValidTle: function (url: string): Promise<boolean> {
+    return ipcRenderer.invoke("canGetValidTle", url);
+  },
+  /**
+   * 通知メッセージイベント
+   * メイン側で以下の記載を行うと"onNoticeMessage"が発火し、レンダラ側のコールバックが実行される
+   * mainWindow.webContents.send("onNoticeMessage", message);
+   */
+  onNoticeMessage: (callback: Function) => {
+    ipcRenderer.on("onNoticeMessage", (event: IpcRendererEvent, args: any) => {
+      callback(args[0] as MessageModel);
     });
   },
 };

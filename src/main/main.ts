@@ -1,6 +1,8 @@
 // mainプロセスでのimportでaliasを適用するために以下の module-alias を使用
 import "module-alias/register";
 // このコメント行は、 module-alias を先頭のままとするためのものです。（import整形で順序を変更させない）
+import Constant from "@/common/Constant";
+import { MessageModel } from "@/common/model/MessageModel";
 import EnvUtil from "@/common/util/EnvUtil";
 import { initializeIpcEvents, releaseIpcEvents } from "@/main/initializeIpcEvent";
 import { makeElectronMenu } from "@/main/menu";
@@ -29,7 +31,14 @@ let mainWindow: BrowserWindow;
 
   // アプリ関係の初期化処理
   const serive = new StartupService();
-  await serive.initApp();
+  // アプリ初期化時にTLE取得に失敗する場合があるためtry-catchで囲む
+  let errorMessage: string | undefined;
+  try {
+    await serive.initApp();
+  } catch (e) {
+    AppMainLogger.error("StartupService init error", e instanceof Error ? e.stack ?? e.message : String(e));
+    errorMessage = e instanceof Error ? e.message : String(e);
+  }
 
   // メニュー設定
   // memo: makeElectronMenu()内でapp_configを参照しているため、
@@ -51,6 +60,13 @@ let mainWindow: BrowserWindow;
     const menuTemplate = buildMenuTemplate(params);
     const contextMenu = Menu.buildFromTemplate(menuTemplate);
     contextMenu.popup();
+  });
+
+  // アプリ初期化時に例外が発生した場合は、mainWindowが読み込み終わってからエラーメッセージを表示する
+  mainWindow.once("ready-to-show", () => {
+    if (errorMessage) {
+      fireIpcEvent("onNoticeMessage", new MessageModel(Constant.GlobalEvent.NOTICE_ERR, errorMessage));
+    }
   });
 })();
 
@@ -149,6 +165,9 @@ async function onAppClose() {
   // 無線機周波数を保存
   fireIpcEvent("onSaveTransceiverFrequency");
 
+  // 無線機のサテライトモードをOFFにする
+  await TransceiverService.getInstance().setSatelliteMode(false);
+  // Todo: 無線機のスプリットモードをOFFにする
   // 無線機のシリアルポートをクローズ
   await TransceiverService.getInstance().stop();
 

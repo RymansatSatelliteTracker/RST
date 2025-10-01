@@ -37,6 +37,16 @@ export const valiSchemaRotatorBehavior = zod.object({
     return ZodUtil.numRequire(message, 0, azRange.max);
   }),
 
+  rangeElMin: zod.lazy(() => {
+    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_MIN_MAX, `${elRange.min}`, "0");
+    return ZodUtil.numRequire(message, elRange.min, 0);
+  }),
+
+  rangeElMax: zod.lazy(() => {
+    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_MIN_MAX, "0", `${elRange.max}`);
+    return ZodUtil.numRequire(message, 0, elRange.max);
+  }),
+
   basePositionDegree: zod.lazy(() => {
     const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_MIN_MAX, "0", "360");
     return ZodUtil.num(message, 0, 360);
@@ -59,5 +69,5 @@ export const valiSchemaRotatorBehavior = zod.object({
 });
 
 // AZ、ELの角度範囲
-export const azRange: RotatorRage = { min: -90, max: 450 };
-export const elRange: RotatorRage = { min: -90, max: 180 };
+export const azRange: RotatorRage = { min: -180, max: 540 };
+export const elRange: RotatorRage = { min: -180, max: 180 };

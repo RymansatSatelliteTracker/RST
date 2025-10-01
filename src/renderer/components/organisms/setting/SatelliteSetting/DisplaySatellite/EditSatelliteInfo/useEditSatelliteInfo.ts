@@ -19,11 +19,19 @@ export default function useEditSatelliteInfo() {
     targetForm.uplink1Mode = srcObj.uplink1.uplinkMode;
     targetForm.uplink2Hz = srcObj.uplink2.uplinkHz;
     targetForm.uplink2Mode = srcObj.uplink2.uplinkMode;
+    targetForm.uplink3Hz = srcObj.uplink3.uplinkHz;
+    targetForm.uplink3Mode = srcObj.uplink3.uplinkMode;
     targetForm.downlink1Hz = srcObj.downlink1.downlinkHz;
     targetForm.downlink1Mode = srcObj.downlink1.downlinkMode;
     targetForm.downlink2Hz = srcObj.downlink2.downlinkHz;
     targetForm.downlink2Mode = srcObj.downlink2.downlinkMode;
+    targetForm.downlink3Hz = srcObj.downlink3.downlinkHz;
+    targetForm.downlink3Mode = srcObj.downlink3.downlinkMode;
+    targetForm.beaconHz = srcObj.beacon.beaconHz;
+    targetForm.beaconMode = srcObj.beacon.beaconMode;
     targetForm.toneHz = srcObj.toneHz;
+    targetForm.enableSatelliteMode = srcObj.enableSatelliteMode;
+    targetForm.satelliteMode = srcObj.satelliteMode;
     targetForm.outline = srcObj.outline;
   }
   /**
@@ -62,11 +70,21 @@ export default function useEditSatelliteInfo() {
     targetAppConfig.uplink1.uplinkMode = srcForm.uplink1Mode;
     targetAppConfig.uplink2.uplinkHz = srcForm.uplink2Hz ? srcForm.uplink2Hz : null;
     targetAppConfig.uplink2.uplinkMode = srcForm.uplink2Mode;
+    targetAppConfig.uplink3.uplinkHz = srcForm.uplink3Hz ? srcForm.uplink3Hz : null;
+    targetAppConfig.uplink3.uplinkMode = srcForm.uplink3Mode;
     targetAppConfig.autoModeDownlinkFreq = parseInt(srcForm.autoModeDownlinkFreq);
     targetAppConfig.downlink1.downlinkHz = srcForm.downlink1Hz ? srcForm.downlink1Hz : null;
     targetAppConfig.downlink1.downlinkMode = srcForm.downlink1Mode;
     targetAppConfig.downlink2.downlinkHz = srcForm.downlink2Hz ? srcForm.downlink2Hz : null;
     targetAppConfig.downlink2.downlinkMode = srcForm.downlink2Mode;
+    targetAppConfig.downlink3.downlinkHz = srcForm.downlink3Hz ? srcForm.downlink3Hz : null;
+    targetAppConfig.downlink3.downlinkMode = srcForm.downlink3Mode;
+    targetAppConfig.downlink3.downlinkHz = srcForm.downlink3Hz ? srcForm.downlink3Hz : null;
+    targetAppConfig.downlink3.downlinkMode = srcForm.downlink3Mode;
+    targetAppConfig.beacon.beaconHz = srcForm.beaconHz ? srcForm.beaconHz : null;
+    targetAppConfig.beacon.beaconMode = srcForm.beaconMode;
+    targetAppConfig.enableSatelliteMode = srcForm.enableSatelliteMode;
+    targetAppConfig.satelliteMode = srcForm.satelliteMode;
     targetAppConfig.toneHz = srcForm.toneHz ? srcForm.toneHz : null;
     targetAppConfig.outline = srcForm.outline;
   }

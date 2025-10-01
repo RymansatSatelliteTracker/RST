@@ -63,7 +63,12 @@ const { mHzDigits, kHzDigits, hzDigits, hoverIndex, onWheel, onRightClick, onCli
 function handleWheel(event: WheelEvent, index: number) {
   const newValue = onWheel(event, index);
   if (newValue !== null) {
-    diffFrequency.value = TransceiverUtil.subtractFrequencies(Number(frequency.value), Number(newValue));
+    // 数値化
+    const numNewValue = TransceiverUtil.parseNumber(newValue);
+    const numFreq = TransceiverUtil.parseNumber(frequency.value);
+    // 差分を保持
+    diffFrequency.value = TransceiverUtil.subtractFrequencies(numFreq, numNewValue);
+    // 周波数更新
     frequency.value = newValue;
   }
 }

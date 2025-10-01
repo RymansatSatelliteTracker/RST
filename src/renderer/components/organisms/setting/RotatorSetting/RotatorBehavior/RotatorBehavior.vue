@@ -1,32 +1,29 @@
 <template>
-  <!-- 左側 -->
   <v-row>
+    <!-- 左側 -->
     <v-col cols="6">
       <!-- 方位可動範囲 -->
       <div>
         <div class="d-flex">
-          <label class="label form_label g_invalid_item_label">{{ I18nUtil.getMsg(I18nMsgs.G51_AZ_KADO_HANI) }}</label>
+          <label class="label form_label">{{ I18nUtil.getMsg(I18nMsgs.G51_AZ_KADO_HANI) }}</label>
         </div>
         <div class="d-flex">
           <!-- 最小 -->
-          <label class="label form_label_az_min pl-3 g_invalid_item_label"
-            >{{ I18nUtil.getMsg(I18nMsgs.G51_AZ_KADO_HANI_MIN) }}(°)</label
-          >
+          <label class="label form_label_range_min pl-3">{{ I18nUtil.getMsg(I18nMsgs.G51_KADO_HANI_MIN) }}(°)</label>
           <div class="d-flex">
             <TextField
               v-model="form.rangeAzMin"
               suffix="°"
               class="g_right"
-              maxlength="3"
+              maxlength="4"
               :valiSchema="valiSchemaRotatorBehavior"
               valiSchemaFieldPath="rangeAzMin"
               v-model:error-text="errors.rangeAzMin"
-              disabled
             />
 
             <!-- 最大 -->
-            <label class="label form_label_az_max text-right g_invalid_item_label"
-              >{{ I18nUtil.getMsg(I18nMsgs.G51_AZ_KADO_HANI_MAX) }}(°)</label
+            <label class="label form_label_range_max text-right"
+              >{{ I18nUtil.getMsg(I18nMsgs.G51_KADO_HANI_MAX) }}(°)</label
             >
             <TextField
               v-model="form.rangeAzMax"
@@ -36,7 +33,6 @@
               :valiSchema="valiSchemaRotatorBehavior"
               valiSchemaFieldPath="rangeAzMax"
               v-model:error-text="errors.rangeAzMax"
-              disabled
             />
           </div>
         </div>
@@ -131,8 +127,44 @@
       </div>
     </v-col>
 
-    <!-- 右側（ダミー） -->
-    <v-col cols="6" />
+    <!-- 右側 -->
+    <v-col cols="6">
+      <!-- 仰角可動範囲 -->
+      <div>
+        <div class="d-flex">
+          <label class="label form_label">{{ I18nUtil.getMsg(I18nMsgs.G51_EL_KADO_HANI) }}</label>
+        </div>
+        <div class="d-flex">
+          <!-- 最小 -->
+          <label class="label form_label_range_min pl-3">{{ I18nUtil.getMsg(I18nMsgs.G51_KADO_HANI_MIN) }}(°)</label>
+          <div class="d-flex">
+            <TextField
+              v-model="form.rangeElMin"
+              suffix="°"
+              class="g_right"
+              maxlength="4"
+              :valiSchema="valiSchemaRotatorBehavior"
+              valiSchemaFieldPath="rangeElMin"
+              v-model:error-text="errors.rangeElMin"
+            />
+
+            <!-- 最大 -->
+            <label class="label form_label_range_max text-right"
+              >{{ I18nUtil.getMsg(I18nMsgs.G51_KADO_HANI_MAX) }}(°)</label
+            >
+            <TextField
+              v-model="form.rangeElMax"
+              suffix="°"
+              class="g_right ml-2"
+              maxlength="3"
+              :valiSchema="valiSchemaRotatorBehavior"
+              valiSchemaFieldPath="rangeElMax"
+              v-model:error-text="errors.rangeElMax"
+            />
+          </div>
+        </div>
+      </div>
+    </v-col>
   </v-row>
 </template>
 

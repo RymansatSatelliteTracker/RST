@@ -18,6 +18,7 @@ import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 // 全体SCSSの適用
 import Constant from "@/common/Constant";
 import I18nMsgs from "@/common/I18nMsgs";
+import { MessageModel } from "@/common/model/MessageModel";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
 import emitter from "@/renderer/util/EventBus";
 import "./components/styles/global.scss";
@@ -82,6 +83,11 @@ async function startUp() {
   // 言語設定の変更イベントを受信したら、ストアに設定する
   window.rstApi.onDispLangChange(function (lang: LangType) {
     dispLangStore.setLang(lang);
+  });
+
+  // 通知メッセージイベントを受信したら、メッセージを表示する
+  window.rstApi.onNoticeMessage(function (message: MessageModel) {
+    emitter.emit(message.type, message.text);
   });
 }
 

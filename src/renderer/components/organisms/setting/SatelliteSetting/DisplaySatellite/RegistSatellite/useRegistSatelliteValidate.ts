@@ -47,7 +47,7 @@ export function useRegistSatelliteValidate() {
     // 軌道6要素が入力されている場合のチェック
     if (!form.tle && form.epochUtcDate && !validateOrbitalEpoch(form.epochUtcDate)) {
       errors.value["epochUtcDate"] = I18nUtil.getMsg(I18nMsgs.CHK_ERR_DATE_RANGE);
-      return false;
+      // 確認とするためfalseにしない
     }
 
     // TLEが入力されている場合のチェック

@@ -4,7 +4,6 @@ import { Location3, PolarLocation } from "@/renderer/types/location-type";
 /**
  * 座標計算関係のユーティリティ
  * @class CoordinateCalcUtil
- * @typedef {CoordinateCalcUtil}
  */
 class CoordinateCalcUtil {
   /**
@@ -35,9 +34,6 @@ class CoordinateCalcUtil {
     if (radian < 0.0) {
       radian += 2 * Math.PI;
     }
-    if (radian >= 2 * Math.PI) {
-      radian -= 2 * Math.PI;
-    }
     return radian;
   };
 
@@ -50,9 +46,6 @@ class CoordinateCalcUtil {
     degree = degree % 360;
     if (degree < 0.0) {
       degree += 360.0;
-    }
-    if (degree >= 360.0) {
-      degree -= 360.0;
     }
     return degree;
   };

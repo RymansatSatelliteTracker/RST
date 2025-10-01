@@ -4,6 +4,10 @@ import I18nUtil from "@/renderer/common/util/I18nUtil";
 import EditSatelliteInfoForm from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/EditSatelliteInfo/EditSatelliteInfoForm";
 import * as zod from "zod";
 
+// 最大周波数
+const MAX_FREQ = 9999999999;
+// 最小周波数
+const MIN_FREQ = 0;
 /**
  * 衛星情報編集画面の入力チェックフック
  */
@@ -26,7 +30,9 @@ export function useEditSatelliteInfoValidate() {
       (form.uplink1Hz && !form.uplink1Mode) ||
       (!form.uplink1Hz && form.uplink1Mode) ||
       (form.uplink2Hz && !form.uplink2Mode) ||
-      (!form.uplink2Hz && form.uplink2Mode)
+      (!form.uplink2Hz && form.uplink2Mode) ||
+      (form.uplink3Hz && !form.uplink3Mode) ||
+      (!form.uplink3Hz && form.uplink3Mode)
     ) {
       result = false;
       errors.value["uplink"] = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NOT_ENTERED_UPLINK);
@@ -36,10 +42,24 @@ export function useEditSatelliteInfoValidate() {
       (form.downlink1Hz && !form.downlink1Mode) ||
       (!form.downlink1Hz && form.downlink1Mode) ||
       (form.downlink2Hz && !form.downlink2Mode) ||
-      (!form.downlink2Hz && form.downlink2Mode)
+      (!form.downlink2Hz && form.downlink2Mode) ||
+      (form.downlink3Hz && !form.downlink3Mode) ||
+      (!form.downlink3Hz && form.downlink3Mode)
     ) {
       result = false;
       errors.value["downlink"] = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NOT_ENTERED_DOWNLINK);
+    }
+    // ビーコン周波数の周波数かモードの片方が未入力の場合はエラー
+    if (
+      (form.beaconHz && !form.beaconMode) ||
+      (!form.beaconHz && form.beaconMode) ||
+      (form.beaconHz && !form.beaconMode) ||
+      (!form.beaconHz && form.beaconMode) ||
+      (form.beaconHz && !form.beaconMode) ||
+      (!form.beaconHz && form.beaconMode)
+    ) {
+      result = false;
+      errors.value["beacon"] = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NOT_ENTERED_BEACON);
     }
 
     return result;
@@ -48,6 +68,16 @@ export function useEditSatelliteInfoValidate() {
   return { validateForm, errors };
 }
 
+const frequencyHzSchema = zod.lazy(() => {
+  const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_MIN_MAX, String(MIN_FREQ), String(MAX_FREQ));
+  return zod.union([
+    // 正の実数か空白
+    zod.coerce.number().refine((val) => val >= MIN_FREQ && val <= MAX_FREQ, { message: message }),
+    zod.null(),
+    // 入力をクリアすると空文字となるためこれを許容する
+    zod.literal(""),
+  ]);
+});
 /**
  * 衛星情報編集設定の入力チェックZodスキーマ定義
  */
@@ -63,79 +93,47 @@ export const valiSchemaEditSatelliteInfo = zod.object({
         .regex(/^[A-Za-z0-9&*/ '()+_\[\]-]*$/, { message: message2 })
     );
   }),
-  uplink1Hz: zod.lazy(() => {
-    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_POSITIVE_INT);
-    return (
-      zod
-        // 正の実数か空白
-        .union([
-          zod.coerce.number().refine((val) => Number.isInteger(val) && val > 0, {
-            message,
-          }),
-          zod.null(),
-          // 入力をクリアすると空文字となるためこれを許容する
-          zod.literal(""),
-        ])
-    );
-  }),
+  uplink1Hz: frequencyHzSchema,
+  uplink2Hz: frequencyHzSchema,
+  uplink3Hz: frequencyHzSchema,
 
-  uplink2Hz: zod.lazy(() => {
-    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_POSITIVE_INT);
-    return (
-      zod
-        // 正の実数か空白
-        .union([
-          zod.coerce.number().refine((val) => Number.isInteger(val) && val > 0, {
-            message,
-          }),
-          zod.null(),
-          // 入力をクリアすると空文字となるためこれを許容する
-          zod.literal(""),
-        ])
-    );
-  }),
+  downlink1Hz: frequencyHzSchema,
+  downlink2Hz: frequencyHzSchema,
+  downlink3Hz: frequencyHzSchema,
 
-  downlink1Hz: zod.lazy(() => {
-    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_POSITIVE_INT);
-    return (
-      zod
-        // 正の実数か空白
-        .union([
-          zod.coerce.number().refine((val) => Number.isInteger(val) && val > 0, {
-            message,
-          }),
-          zod.null(),
-          // 入力をクリアすると空文字となるためこれを許容する
-          zod.literal(""),
-        ])
-    );
-  }),
-
-  downlink2Hz: zod.lazy(() => {
-    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_POSITIVE_INT);
-    return (
-      zod
-        // 正の実数か空白
-        .union([
-          zod.coerce.number().refine((val) => Number.isInteger(val) && val > 0, {
-            message,
-          }),
-          zod.null(),
-          // 入力をクリアすると空文字となるためこれを許容する
-          zod.literal(""),
-        ])
-    );
-  }),
+  beaconHz: frequencyHzSchema,
 
   toneHz: zod.lazy(() => {
-    const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_POSITIVE_INT);
+    const message1 = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_MIN_MAX, String(MIN_FREQ), String(MAX_FREQ));
+    const message2 = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_DECIMAL, "1");
     return (
       zod
-        // 正の実数か空白
+        // 小数点第1位までの正の実数か空白
         .union([
-          zod.coerce.number().refine((val) => Number.isInteger(val) && val > 0, {
-            message,
-          }),
+          zod.coerce
+            .string()
+            .refine(
+              (value) => {
+                // 小数点第1位までかを確認（小数第2位以降はNG）
+                const decimalPart = value.split(".")[1];
+                if (decimalPart && decimalPart.length > 1) return false;
+
+                return true;
+              },
+              {
+                message: message2,
+              }
+            )
+            .refine(
+              (val) => {
+                // 正の数値かを確認
+                const numVal = parseFloat(val);
+                return !isNaN(numVal) && numVal >= MIN_FREQ && numVal <= MAX_FREQ;
+              },
+              {
+                message: message1,
+              }
+            ),
           zod.null(),
           // 入力をクリアすると空文字となるためこれを許容する
           zod.literal(""),

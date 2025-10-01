@@ -5,7 +5,6 @@ import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil";
 /**
  * 天文計算関係のユーティリティ
  * @class AstronomyUtil
- * @typedef {AstronomyUtil}
  */
 class AstronomyUtil {
   /**

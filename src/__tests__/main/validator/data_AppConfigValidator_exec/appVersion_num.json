@@ -33,6 +33,8 @@
       "basePositionDegree": 0,
       "rangeAzMin": 0,
       "rangeAzMax": 360,
+      "rangeElMin": 0,
+      "rangeElMax": 180,
       "moveMode": "normal",
       "startAgoMinute": 0,
       "parkPosAz": 0,

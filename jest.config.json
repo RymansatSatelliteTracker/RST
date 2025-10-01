@@ -1,10 +1,12 @@
 {
   "roots": ["<rootDir>/src"],
-  "testMatch": ["**/__tests__/**/*.+(ts|js)", "**/?(*.)+(spec|test).+(ts|js)"],
+  "testMatch": ["**/__tests__/**/*.(spec|test).[tj]s?(x)"],
   "transform": {
     "^.+\\.(ts|tsx)$": "ts-jest"
   },
   "moduleNameMapper": {
     "^@/(.*)$": "<rootDir>/src/$1"
-  }
+  },
+  "testPathIgnorePatterns": ["<rootDir>/src/__tests__/playwright/"],
+  "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"]
 }

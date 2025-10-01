@@ -121,6 +121,8 @@ async function reloadConfig() {
   form.value.ipPort = CommonUtil.toString(appConfig.rotator.ipPort);
   form.value.rangeAzMin = appConfig.rotator.rangeAzMin.toString();
   form.value.rangeAzMax = appConfig.rotator.rangeAzMax.toString();
+  form.value.rangeElMin = appConfig.rotator.rangeElMin.toString();
+  form.value.rangeElMax = appConfig.rotator.rangeElMax.toString();
   form.value.basePositionDegree = CommonUtil.toString(appConfig.rotator.basePositionDegree);
   form.value.moveMode = appConfig.rotator.moveMode;
   form.value.startAgoMinute = CommonUtil.toString(appConfig.rotator.startAgoMinute);
@@ -153,6 +155,8 @@ async function onOk() {
   rotatorConfig.rotator.basePositionDegree = parseInt(form.value.basePositionDegree);
   rotatorConfig.rotator.rangeAzMin = parseInt(form.value.rangeAzMin);
   rotatorConfig.rotator.rangeAzMax = parseInt(form.value.rangeAzMax);
+  rotatorConfig.rotator.rangeElMin = parseInt(form.value.rangeElMin);
+  rotatorConfig.rotator.rangeElMax = parseInt(form.value.rangeElMax);
   rotatorConfig.rotator.moveMode = form.value.moveMode;
   rotatorConfig.rotator.startAgoMinute = parseInt(form.value.startAgoMinute);
   rotatorConfig.rotator.parkPosAz = parseInt(form.value.parkPosAz);

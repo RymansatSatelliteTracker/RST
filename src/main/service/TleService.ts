@@ -84,19 +84,40 @@ export default class TleService {
         continue;
       }
 
-      const res = await webClient.get(tleUrl.url);
-      if (res.status !== 200) {
-        AppMainLogger.warn(`指定のURLでTLEが取得できませんでした。 ${res.status} ${tleUrl} `);
-        continue;
-      }
+      const res = await this.getTleTextByUrl(tleUrl.url, webClient);
 
-      if (!CommonUtil.isEmpty(res.data.trim())) {
+      if (!CommonUtil.isEmpty(res)) {
         // 取得できたTLEデータを結合する
-        tleTexts.push(res.data.trim());
+        tleTexts.push(res);
       }
     }
 
     return tleTexts.join("\r\n");
+  }
+
+  /**
+   * 指定のURLからTLEを取得する
+   * @param url
+   * @param webClient
+   * @returns
+   */
+  private async getTleTextByUrl(url: string, webClient: WebClient): Promise<string> {
+    let res;
+    try {
+      res = await webClient.get(url);
+    } catch (e) {
+      throw new Error(`Could not access the URL: ${url}`);
+    }
+
+    if (res.status !== 200) {
+      AppMainLogger.warn(`指定のURLでTLEが取得できませんでした: ${res.status} ${url} `);
+      return "";
+    }
+    if (!CommonUtil.isEmpty(res.data.trim())) {
+      return res.data.trim();
+    } else {
+      return "";
+    }
   }
 
   /**
@@ -281,5 +302,38 @@ export default class TleService {
     TleService.cachedTleStringMap = {};
 
     return tleJsonModel;
+  }
+
+  /**
+   * URLから読み込み可能なTLEが取得できるか確認する
+   * @param url
+   * @param webClient
+   * @returns
+   */
+  public async canGetValidTle(url: string, webClient: WebClient): Promise<boolean> {
+    // URLからTLEを取得する
+    const tleText = await this.getTleTextByUrl(url, webClient);
+    // TLEがブランクの場合
+    if (CommonUtil.isEmpty(tleText)) {
+      return false;
+    }
+
+    // 各OSの改行コードを想定してスプリットする
+    const lines = tleText.split(/\r\n|\r|\n/).filter((line) => !CommonUtil.isEmpty(line.trim()));
+    // TLEの2行目が「1 」、3行目が「2 」で始まる行を探す
+    // 一つでも見つけたらOK
+    let i = 0;
+    while (i < lines.length) {
+      if (
+        lines[i + 1] &&
+        lines[i + 1].substring(0, 2) === "1 " &&
+        lines[i + 2] &&
+        lines[i + 2].substring(0, 2) === "2 "
+      ) {
+        return true;
+      }
+      i++;
+    }
+    return false;
   }
 }

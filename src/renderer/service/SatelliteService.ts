@@ -2,7 +2,7 @@ import CommonUtil from "@/common/CommonUtil";
 import Constant from "@/common/Constant";
 import { InvalidArgumentError } from "@/common/exceptions";
 import type { EcefLocation, Location3 } from "@/renderer/types/location-type";
-import type { TargetPolarLocation, TleStrings } from "@/renderer/types/satellite-type";
+import type { MeanElements, TargetPolarLocation, TleStrings } from "@/renderer/types/satellite-type";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger";
 import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil";
 import DateUtil from "@/renderer/util/DateUtil";
@@ -12,7 +12,6 @@ import * as satellite from "satellite.js";
 /**
  * 人工衛星の軌道要素を管理/各種値を計算する
  * @class SatelliteService
- * @typedef {SatelliteService}
  */
 class SatelliteService {
   // NoradID
@@ -48,7 +47,9 @@ class SatelliteService {
     expirationDate.setDate(new Date().getDate() - Constant.Tle.TLE_EXPIRATION_DAYS);
     if (this.getSgp4Epoc() < expirationDate) {
       AppRendererLogger.warn(
-        "TLE data has expired. EpocDate: " +
+        "TLE(ID:" +
+          this.getNoradId() +
+          ") data has expired. EpocDate: " +
           DateUtil.formatDateTime(this.getSgp4Epoc(), { year: "numeric", month: "2-digit", day: "2-digit" })
       );
     }
@@ -164,6 +165,39 @@ class SatelliteService {
   };
 
   /**
+   * 指定した日時の人工衛星の軌道要素を取得する
+   * @param {Date} date 計算日時
+   * @returns {(MeanElements | null)} 平均軌道要素
+   */
+  public getMeanElements = (date: Date): MeanElements | null => {
+    const propagate = satellite.propagate(this._satRec, date);
+    if (!propagate) {
+      // 人工衛星が消滅した場合はnullを返却する
+      return null;
+    }
+
+    // 人工衛星の高度を算出する
+    const gstime = satellite.gstime(date);
+    const altitude = satellite.eciToGeodetic(propagate.position, gstime).height;
+
+    // 人工衛星の軌道要素を返却する
+    return {
+      semiMajorAxisKm: propagate.meanElements.am,
+      eccentricity: propagate.meanElements.em,
+      inclinationDeg: CoordinateCalcUtil.normalizeAngle(CoordinateCalcUtil.radianToDegree(propagate.meanElements.im)),
+      raanDeg: CoordinateCalcUtil.normalizeAngle(CoordinateCalcUtil.radianToDegree(propagate.meanElements.Om)),
+      argumentOfPerigeeDeg: CoordinateCalcUtil.normalizeAngle(
+        CoordinateCalcUtil.radianToDegree(propagate.meanElements.om)
+      ),
+      altitudeKm: altitude,
+      meanAnomalyDeg: CoordinateCalcUtil.normalizeAngle(CoordinateCalcUtil.radianToDegree(propagate.meanElements.mm)),
+      meanMotion: propagate.meanElements.nm,
+      orbitalPeriodMin: (2.0 * Math.PI) / propagate.meanElements.nm,
+      speedKmSec: CoordinateCalcUtil.getVectorNorm(propagate.velocity as Location3),
+    };
+  };
+
+  /**
    * 指定した日時の人工衛星の緯度/経度を計算する
    * @param {Date} date 計算日時
    * @param {number} offsetLongitude 地図の中心経度のオフセット[単位:度]
@@ -196,15 +230,15 @@ class SatelliteService {
    * @returns {(TargetPolarLocation | null)} 人工衛星の緯度/経度[単位:ラジアン]
    */
   public getTargetPolarLocationInRadian = (date: Date, offsetLongitude: number = 0.0): TargetPolarLocation | null => {
-    const positionEci = satellite.propagate(this._satRec, date).position;
-    if (typeof positionEci === "boolean" || positionEci === undefined) {
-      // 人工衛星の位置が取得できない場合はnullで返却する
+    const propagate = satellite.propagate(this._satRec, date);
+    if (!propagate) {
+      // 人工衛星が消滅した場合はnullを返却する
       return null;
     }
 
-    // GMSTに変換
+    // 測地座標系に変換する
     const gstime = satellite.gstime(date);
-    const location = satellite.eciToGeodetic(positionEci, gstime);
+    const location = satellite.eciToGeodetic(propagate.position, gstime);
     if (Constant.Astronomy.EARTH_POLAR_RADIUS_KM + location.height > this._apogee * 1.1) {
       // SGP4の高度計算が発散した場合はnullを返却する（遠地点距離の偏差を許容する）
       return null;

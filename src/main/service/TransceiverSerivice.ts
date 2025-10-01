@@ -67,6 +67,7 @@ export default class TransceiverService {
 
     this.controller.setFrequencyCallback(this.onChangeTransceiverFrequency);
     this.controller.setModeCallback(this.onChangeTransceiverMode);
+    this.controller.setIsDopplerShiftWaitingCallback(this.dopplerShiftWaitingCallback);
     return await this.controller.start();
   }
 
@@ -138,6 +139,24 @@ export default class TransceiverService {
     }
 
     this.controller?.setModeCallback(callback);
+  }
+
+  /**
+   * ドップラーシフト待機イベントを設定する
+   */
+  private dopplerShiftWaitingCallback(res: ApiResponse<UplinkType | DownlinkType>) {
+    getMainWindow().webContents.send("dopplerShiftWaitingCallback", res);
+  }
+
+  /**
+   * 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機するコールバックを設定する
+   */
+  public setIsDopplerShiftWaitingCallback(callback: Function) {
+    if (!this.isReady()) {
+      return;
+    }
+
+    this.controller?.setIsDopplerShiftWaitingCallback(callback);
   }
 
   /**

@@ -18,4 +18,12 @@ export default class ApiTle {
 
     return tleStrings;
   }
+  /**
+   * URLから読み込み可能なTLEが取得できるか確認する
+   * @param {string} url URL
+   * @returns {Promise<boolean>} true: 取得可能, false: 取得不可
+   */
+  public static async canGetValidTle(url: string): Promise<boolean> {
+    return await window.rstApi.canGetValidTle(url);
+  }
 }

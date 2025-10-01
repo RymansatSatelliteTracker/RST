@@ -64,6 +64,13 @@ export default class ApiTransceiver {
   }
 
   /**
+   * ドップラーシフト待機イベント
+   */
+  public static async dopplerShiftWaitingCallback(callback: Function) {
+    await window.rstApi.dopplerShiftWaitingCallback(callback);
+  }
+
+  /**
    * 無線機周波数保存イベント
    */
   public static async onSaveTransceiverFrequency(callback: Function) {

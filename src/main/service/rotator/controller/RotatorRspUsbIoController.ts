@@ -87,7 +87,7 @@ export default class RotatorRspUsbIoController extends RotatorControllerBase {
   /**
    * アンテナ位置を変更する
    */
-  public override setPosition(pos: AntennaPositionModel): void {
+  public override doSetPosition(pos: AntennaPositionModel): void {
     if (this.antennaControlMode === ANTENNA_TRACKING_MODE_AUTO) {
       return;
     }

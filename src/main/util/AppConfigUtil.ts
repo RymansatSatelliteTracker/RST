@@ -1,5 +1,10 @@
 import Constant from "@/common/Constant";
-import { AppConfigMainDisplay, AppConfigModel, AppConfigSatelliteGroup } from "@/common/model/AppConfigModel";
+import {
+  AppConfigMainDisplay,
+  AppConfigModel,
+  AppConfigSatellite,
+  AppConfigSatelliteGroup,
+} from "@/common/model/AppConfigModel";
 import { AppConfigRotatorDevice, AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel";
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
 import { AppConfigTransceiverDevice, AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel";
@@ -399,7 +404,7 @@ export class AppConfigUtil {
       const satIdentifers = groups.satelliteIds
         .map((satelliteId) => {
           // 衛星IDから該当する衛星デフォルト情報を取得する
-          const appConfigSat = appConfSatService.getUserRegisteredAppConfigSatellite(satelliteId);
+          const appConfigSat = appConfSatService.getUserRegisteredAppConfigSatellite(satelliteId, groups.groupId);
           // 返却に必要な衛星IDと衛星名の組み合わせにする
           if (appConfigSat === null) {
             // ないはずだが衛星IDがヒットしなければundefined
@@ -455,5 +460,17 @@ export class AppConfigUtil {
         (target as any)[key] = (source as any)[key]; // 型安全のため `any` を使用
       }
     });
+  }
+
+  /**
+   * アプリケーション設定の衛星を検索する
+   * @param satelliteId
+   * @param groupdId
+   * @returns 見つからなければnull
+   */
+  public static searchAppConfigSatellite(satelliteId: number, groupdId: number): AppConfigSatellite | null {
+    const appConfigSats = this.getConfig().satellites;
+    if (appConfigSats.length === 0) return null;
+    return appConfigSats.find((sat) => sat.satelliteId === satelliteId && sat.groupId === groupdId) ?? null;
   }
 }

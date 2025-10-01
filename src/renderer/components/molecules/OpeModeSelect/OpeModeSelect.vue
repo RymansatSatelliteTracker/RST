@@ -1,8 +1,10 @@
-<!-- モード選択 -->
+<!-- 無線機運用モードSelectBox -->
 <template>
   <v-select
     v-model="opeMode"
     :items="opeModeRange"
+    item-title="title"
+    item-value="value"
     no-data-text=""
     density="compact"
     variant="outlined"
@@ -15,9 +17,9 @@
 import Constant from "@/common/Constant";
 import { ref } from "vue";
 
-const OpeMode = Constant.SatSetting.OpeMode;
-const opeModeRange = ref(Object.values(OpeMode));
-opeModeRange.value.unshift("");
+const OpeMode = Constant.Transceiver.OpeMode;
+// DVは画面上は選択できない
+const opeModeRange = ref(Object.values(OpeMode).filter((mode) => mode !== Constant.Transceiver.OpeMode.DV));
 const opeMode = defineModel("opeMode");
 </script>
 

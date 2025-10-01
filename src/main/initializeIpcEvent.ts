@@ -4,6 +4,7 @@ import { AppConfigModel, AppConfigRotator, AppConfigTransceiver } from "@/common
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse, LangType } from "@/common/types/types";
+import WebClient from "@/common/WebClient";
 import SerialComm from "@/main/common/SerialComm";
 import ActiveSatService from "@/main/service/ActiveSatService";
 import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService";
@@ -109,8 +110,8 @@ export function initializeIpcEvents() {
   /**
    * 衛星IDに一致するデフォルト衛星情報を取得を返す
    */
-  ipcMain.handle("getDefaultSatelliteBySatelliteId", (event, satelliteId: number) => {
-    return new DefaultSatelliteService().getDefaultSatelliteBySatelliteId(satelliteId);
+  ipcMain.handle("getDefaultSatelliteBySatelliteId", (event, satelliteId: number, useAppConfigIfExists: boolean) => {
+    return new DefaultSatelliteService().getDefaultSatelliteBySatelliteId(satelliteId, useAppConfigIfExists);
   });
 
   /**
@@ -130,8 +131,8 @@ export function initializeIpcEvents() {
   /**
    * 衛星IDに一致するアプリケーション設定かデフォルト衛星情報を取得を返す
    */
-  ipcMain.handle("getUserRegisteredAppConfigSatellite", (event, satelliteId: number) => {
-    return new AppConfigSatelliteService().getUserRegisteredAppConfigSatellite(satelliteId);
+  ipcMain.handle("getUserRegisteredAppConfigSatellite", (event, satelliteId: number, groupdId: number) => {
+    return new AppConfigSatelliteService().getUserRegisteredAppConfigSatellite(satelliteId, groupdId);
   });
 
   /**
@@ -262,9 +263,30 @@ export function initializeIpcEvents() {
   });
 
   /**
+   * ドップラーシフト待機イベント
+   */
+  ipcMain.handle("dopplerShiftWaitingCallback", async (event, res: ApiResponse<boolean>) => {
+    return res;
+  });
+
+  /**
    * 無線機周波数保存イベント
    */
   ipcMain.handle("onSaveTransceiverFrequency", async (evnet) => {});
+
+  /**
+   * URLから読み込み可能なTLEが取得できるか確認する
+   */
+  ipcMain.handle("canGetValidTle", async (event, url: string): Promise<boolean> => {
+    return new TleService().canGetValidTle(url, new WebClient());
+  });
+
+  /**
+   * 通知メッセージイベント
+   */
+  ipcMain.handle("onNoticeMessage", async (event, args: any) => {
+    return args;
+  });
 }
 
 /**
@@ -300,7 +322,10 @@ export function releaseIpcEvents() {
   ipcMain.removeAllListeners("setTransceiverMode");
   ipcMain.removeAllListeners("onChangeTransceiverMode");
   ipcMain.removeAllListeners("setSatelliteMode");
+  ipcMain.removeAllListeners("dopplerShiftWaitingCallback");
   ipcMain.removeAllListeners("onSaveTransceiverFrequency");
+  ipcMain.removeAllListeners("canGetValidTle");
+  ipcMain.removeAllListeners("onNoticeMessage");
 
   initialized = false;
 }
