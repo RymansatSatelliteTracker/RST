@@ -257,6 +257,11 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
         rxOpeMode.value = transceiverSetting.downlink.downlinkMode;
       }
     }
+
+    // memo: ICOM-9700でAutoOn時にTx周波数がずれる（和もずれる）件のデバッグログ
+    AppRendererLogger.info(
+      `Freq更新(setFrequencyAndOpeModeInModeStart) isBeaconMode:${isBeaconMode.value} Rx:${rxFrequency.value} Tx:${txFrequency.value}`
+    );
   }
 
   /**
@@ -530,12 +535,18 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     // 無限更新防止
     if (rxFrequency.value === newTxFrequency) return;
     rxFrequency.value = newTxFrequency;
+
+    // memo: ICOM-9700でAutoOn時にTx周波数がずれる（和もずれる）件のデバッグログ
+    AppRendererLogger.info(`watchでRx更新 Rx:${rxFrequency.value}`);
   });
   watch([satelliteMode, rxFrequency] as const, ([newSatelliteMode, newRxFrequency]) => {
     if (newSatelliteMode === Constant.Transceiver.SatelliteMode.SATELLITE) return;
     // 無限更新防止
     if (txFrequency.value === newRxFrequency) return;
     txFrequency.value = newRxFrequency;
+
+    // memo: ICOM-9700でAutoOn時にTx周波数がずれる（和もずれる）件のデバッグログ
+    AppRendererLogger.info(`watchでRx更新 Tx:${txFrequency.value}`);
   });
 
   /**
@@ -613,6 +624,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
         // ドップラーシフトの基準周波数を変更する
         baseFreqSum.value = await updateBaseFreq();
+
+        // memo: ICOM-9700でAutoOn時にTx周波数がずれる（和もずれる）件のデバッグログ
+        AppRendererLogger.info(`トランシーブ受信 Tx:${baseFreqSum.value}`);
       }, Constant.Transceiver.TRANSCEIVE_WAIT_MS);
     });
 
@@ -633,15 +647,15 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       await updateTxFreqByInvertingHeterodyne();
     }
 
-    // // デバッグログ
-    // const nowRxDreq = TransceiverUtil.parseNumber(rxFrequency.value);
-    // const nowTxDreq = TransceiverUtil.parseNumber(txFrequency.value);
-    // const nowSum = nowRxDreq + nowTxDreq;
-    // const baseSum = dopplerRxBaseFrequency.value + dopplerTxBaseFrequency.value;
-    // AppRendererLogger.debug(
-    //   `ドップラーシフト補正値: ${nowRxDreq} ${nowTxDreq} = ${nowSum}` +
-    //     ` 基準周波数: ${dopplerRxBaseFrequency.value} ${dopplerTxBaseFrequency.value} = ${baseSum}`
-    // );
+    // デバッグログ
+    const nowRxFreq = TransceiverUtil.parseNumber(rxFrequency.value);
+    const nowTxFreq = TransceiverUtil.parseNumber(txFrequency.value);
+    const nowSum = nowRxFreq + nowTxFreq;
+    const baseSum = dopplerRxBaseFrequency.value + dopplerTxBaseFrequency.value;
+    AppRendererLogger.debug(
+      `ドップラーシフト補正後: ${nowRxFreq} ${nowTxFreq} = ${nowSum}` +
+        ` 基準周波数: ${dopplerRxBaseFrequency.value} ${dopplerTxBaseFrequency.value} = ${baseSum}`
+    );
   }
 
   onMounted(async () => {
@@ -670,11 +684,17 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
         txFrequency.value = TransceiverUtil.formatWithDot(frequency.uplinkHz);
         // ドップラーシフトの基準周波数を更新する
         dopplerTxBaseFrequency.value = frequency.uplinkHz;
+
+        // memo: ICOM-9700でAutoOn時にTx周波数がずれる（和もずれる）件のデバッグログ
+        AppRendererLogger.info(`トランシーブ Tx周波数 Tx:${txFrequency.value} Tx:${dopplerTxBaseFrequency.value}`);
       } else if ("downlinkHz" in frequency && frequency.downlinkHz) {
         // ダウンリンク周波数を更新する
         rxFrequency.value = TransceiverUtil.formatWithDot(frequency.downlinkHz);
         // ドップラーシフトの基準周波数を更新する
         dopplerRxBaseFrequency.value = frequency.downlinkHz;
+
+        // memo: ICOM-9700でAutoOn時にTx周波数がずれる（和もずれる）件のデバッグログ
+        AppRendererLogger.info(`トランシーブ Rx周波数 Rx:${rxFrequency.value} Rx:${dopplerRxBaseFrequency.value}`);
       }
     });
 
