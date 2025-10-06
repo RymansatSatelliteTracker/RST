@@ -320,36 +320,47 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     });
   }
 
+  // MEMO: ドップラーシフト補正の計算方法の変更によりコメントアウト（動作確認後に削除する）
+  // /**
+  //  * アップリンク周波数をドップラーシフト補正して更新する
+  //  * @param {number} intervalMs 時間間隔[単位：ミリ秒]
+  //  */
+  // async function updateTxFrequencyWithDopplerShift(intervalMs: number) {
+  //   const frequencyTrackService = ActiveSatServiceHub.getInstance().getFrequencyTrackService();
+  //   if (!frequencyTrackService) {
+  //     return;
+  //   }
+
+  //   // ドップラーファクターを計算する
+  //   const txDopplerFactor = await frequencyTrackService.calcUplinkDopplerFactor(currentDate.value, intervalMs);
+  //   // 無線機のアップリンク周波数を更新する
+  //   await updateTxFrequency(dopplerTxBaseFrequency.value * txDopplerFactor);
+  //   // 画面のアップリンク周波数を更新する
+  //   txFrequency.value = TransceiverUtil.formatWithDot(dopplerTxBaseFrequency.value * txDopplerFactor);
+  // }
+
   /**
    * アップリンク周波数をドップラーシフト補正して更新する
    * @param {number} intervalMs 時間間隔[単位：ミリ秒]
    */
-  async function updateTxFrequencyWithDopplerShift(intervalMs: number) {
+  async function updateTxFreqByInvertingHeterodyne(intervalMs: number) {
     const frequencyTrackService = ActiveSatServiceHub.getInstance().getFrequencyTrackService();
     if (!frequencyTrackService) {
       return;
     }
 
-    // ドップラーファクターを計算する
-    const txDopplerFactor = await frequencyTrackService.calcUplinkDopplerFactor(currentDate.value, intervalMs);
-    // 無線機のアップリンク周波数を更新する
-    await updateTxFrequency(dopplerTxBaseFrequency.value * txDopplerFactor);
-    // 画面のアップリンク周波数を更新する
-    txFrequency.value = TransceiverUtil.formatWithDot(dopplerTxBaseFrequency.value * txDopplerFactor);
-  }
-
-  /**
-   * アップリンク周波数をドップラーシフト補正して更新する
-   */
-  async function updateTxFreqByInvertingHeterodyne() {
-    // 基準周波数の和から現在のダウンリンク周波数を引いて、アップリンク周波数を算出する
+    // 基準周波数の和から現在のダウンリンク周波数を引いて、一時アップリンク周波数を算出する
     const nowRxFreq = TransceiverUtil.parseNumber(rxFrequency.value);
-    const newTxFrequency = baseFreqSum.value - nowRxFreq;
+    const tmpTxFreq = baseFreqSum.value - nowRxFreq;
 
-    // 無線機のダウンリンク周波数を更新する
-    await updateTxFrequency(newTxFrequency);
+    // ドップラーファクターを一時アップリンク周波数に適用して、アップリンク周波数とする
+    const txDopplerFactor = await frequencyTrackService.calcDownlinkDopplerFactor(currentDate.value, intervalMs);
+    const txFreq = tmpTxFreq * txDopplerFactor;
+
+    // 無線機のアップリンク周波数を更新する
+    await updateTxFrequency(txFreq);
     // 画面のアップリンク周波数を更新する
-    txFrequency.value = TransceiverUtil.formatWithDot(newTxFrequency);
+    txFrequency.value = TransceiverUtil.formatWithDot(txFreq);
   }
 
   /**
@@ -643,8 +654,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
     // アップリンク周波数をドップラーシフト補正して更新する
     if (execTxDopplerShiftCorrection) {
-      // await updateTxFrequencyWithDopplerShift(autoTrackingIntervalMsec);
-      await updateTxFreqByInvertingHeterodyne();
+      await updateTxFreqByInvertingHeterodyne(autoTrackingIntervalMsec);
     }
 
     // デバッグログ
