@@ -9,7 +9,7 @@ import AppConfigImportSerivce from "@/main/service/AppConfigImportSerivce";
 import DefaultSatelliteService from "@/main/service/DefaultSatelliteService";
 import I18nService from "@/main/service/I18nService";
 import I18nUtil4Main from "@/main/util/I18nUtil4Main";
-import { app, Menu, MenuItem, shell } from "electron";
+import { app, BaseWindow, BrowserWindow, Menu, MenuItem, shell } from "electron";
 import { MenuItemConstructorOptions } from "electron/main";
 
 // Mac用の定義
@@ -204,8 +204,10 @@ export function makeElectronMenu(): Electron.Menu {
         {
           label: "Reload",
           accelerator: "CmdOrCtrl+R",
-          click(_, focusedWindow) {
-            if (focusedWindow) focusedWindow.reload();
+          click(_: MenuItem, window: BaseWindow | undefined) {
+            if (window && "reload" in window) {
+              (window as BrowserWindow).reload();
+            }
           },
         },
         { role: "toggleDevTools", label: "DevTools" },
