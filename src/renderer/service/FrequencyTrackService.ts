@@ -52,23 +52,41 @@ export default class FrequencyTrackService {
   }
 
   /**
-   * 指定の受信周波数とドップラーファクターを元に基準周波数を算出する（逆ヘテロダイン）
+   * ドップラー補正されたRx周波数とドップラーファクターを元に基準周波数を算出する（逆ヘテロダイン）
    * @param freqSum 送受信周波数の和
-   * @param rxFreq 受信周波数
+   * @param shiftedRxFreq ドップラー補正されたRx周波数
    * @param rxDopplerFactor 受信ドップラーファクター
-   * @returns { rxBaseFreq: number; txBaseFreq: number } 基準受信周波数、基準送信周波数
    */
-  public calcInvertingHeterodyneBaseFreq(
+  public calcInvHeteroBaseFreqByRxFreq(
     freqSum: number,
-    rxFreq: number,
+    shiftedRxFreq: number,
     rxDopplerFactor: number
   ): { rxBaseFreq: number; txBaseFreq: number } {
     // Rx周波数をドップラーファクターで割り戻して、Rx基準周波数を算出する
-    const dopplerRxBaseFrequency = Math.round(rxFreq / rxDopplerFactor);
+    const rxBaseFreq = Math.round(shiftedRxFreq / rxDopplerFactor);
     // Tx基準周波数は、送受信周波数の和からRx基準周波数を引いて算出する
-    const dopplerTxBaseFrequency = Math.round(freqSum) - dopplerRxBaseFrequency;
+    const txBaseFreq = Math.round(freqSum) - rxBaseFreq;
 
-    return { rxBaseFreq: dopplerRxBaseFrequency, txBaseFreq: dopplerTxBaseFrequency };
+    return { rxBaseFreq, txBaseFreq };
+  }
+
+  /**
+   * ドップラー補正されたTx周波数とドップラーファクターを元に基準周波数を算出する（逆ヘテロダイン）
+   * @param freqSum 送受信周波数の和
+   * @param shiftedTxFreq ドップラー補正されたTx周波数
+   * @param rxDopplerFactor Txドップラーファクター
+   */
+  public calcInvHeteroBaseFreqByTxFreq(
+    freqSum: number,
+    shiftedTxFreq: number,
+    txDopplerFactor: number
+  ): { rxBaseFreq: number; txBaseFreq: number } {
+    // Tx周波数をドップラーファクターで割り戻して、Tx基準周波数を算出する
+    const txBaseFreq = Math.round(shiftedTxFreq / txDopplerFactor);
+    // Rx基準周波数は、送受信周波数の和からTx基準周波数を引いて算出する
+    const rxBaseFreq = Math.round(freqSum) - txBaseFreq;
+
+    return { rxBaseFreq, txBaseFreq };
   }
 
   /**
