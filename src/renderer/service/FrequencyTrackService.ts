@@ -28,12 +28,14 @@ export default class FrequencyTrackService {
    * @returns ドップラーファクター(ダウンリンク)
    */
   public async calcDownlinkDopplerFactor(nowDate: Date, intervalMs: number = 1000): Promise<number> {
-    const velocity = await this.calcVelocity(nowDate, intervalMs);
-    if (!velocity) {
-      return 1.0;
-    }
+    // const velocity = await this.calcVelocity(nowDate, intervalMs);
+    // if (!velocity) {
+    //   return 1.0;
+    // }
 
-    return 1.0 + velocity / Constant.Astronomy.LIGHT_SPEED;
+    // return 1.0 + velocity / Constant.Astronomy.LIGHT_SPEED;
+
+    return await this.calcDopplerFactor(nowDate, intervalMs);
   }
 
   /**
@@ -43,12 +45,29 @@ export default class FrequencyTrackService {
    * @returns ドップラーファクター(アップリンク)
    */
   public async calcUplinkDopplerFactor(nowDate: Date, intervalMs: number = 1000): Promise<number> {
+    // const velocity = await this.calcVelocity(nowDate, intervalMs);
+    // if (!velocity) {
+    //   return 1.0;
+    // }
+
+    // return 1.0 - velocity / Constant.Astronomy.LIGHT_SPEED;
+
+    return await this.calcDopplerFactor(nowDate, intervalMs);
+  }
+
+  /**
+   * ドップラーファクターを算出する
+   * @param {Date} nowDate 現在日時
+   * @param {number} intervalMs 現在と以前の時間差[単位:ミリ秒]
+   * @returns ドップラーファクター
+   */
+  public async calcDopplerFactor(nowDate: Date, intervalMs: number = 1000): Promise<number> {
     const velocity = await this.calcVelocity(nowDate, intervalMs);
     if (!velocity) {
       return 1.0;
     }
 
-    return 1.0 - velocity / Constant.Astronomy.LIGHT_SPEED;
+    return 1.0 + velocity / Constant.Astronomy.LIGHT_SPEED;
   }
 
   /**

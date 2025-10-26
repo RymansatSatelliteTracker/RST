@@ -257,11 +257,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
         rxOpeMode.value = transceiverSetting.downlink.downlinkMode;
       }
     }
-
-    // memo: ICOM-9700でAutoOn時にTx周波数がずれる（和もずれる）件のデバッグログ
-    AppRendererLogger.info(
-      `Freq更新(setFrequencyAndOpeModeInModeStart) isBeaconMode:${isBeaconMode.value} Rx:${rxFrequency.value} Tx:${txFrequency.value}`
-    );
   }
 
   /**
@@ -602,9 +597,12 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     // デバッグログ
     const nowRxFreq = TransceiverUtil.parseNumber(rxFrequency.value);
     const nowTxFreq = TransceiverUtil.parseNumber(txFrequency.value);
+    const shiftRx = dopplerRxBaseFreq.value - nowRxFreq;
+    const shiftTx = dopplerTxBaseFreq.value - nowTxFreq;
     const baseSum = dopplerRxBaseFreq.value + dopplerTxBaseFreq.value;
     AppRendererLogger.debug(
       `ドップラーシフト補正後: ${nowRxFreq} ${nowTxFreq}` +
+        ` シフト補正値： ${shiftRx} ${shiftTx}` +
         ` 基準周波数: ${dopplerRxBaseFreq.value} ${dopplerTxBaseFreq.value} = ${baseSum}`
     );
   }
