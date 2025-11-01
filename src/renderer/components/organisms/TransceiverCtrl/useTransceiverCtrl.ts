@@ -345,7 +345,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     }
 
     // ドップラーファクターを一時アップリンク周波数に適用して、アップリンク周波数とする
-    const txDopplerFactor = await frequencyTrackService.calcDownlinkDopplerFactor(currentDate.value, intervalMs);
+    const txDopplerFactor = await frequencyTrackService.calcUplinkDopplerFactor(currentDate.value, intervalMs);
     const txFreq = dopplerTxBaseFreq.value * txDopplerFactor;
 
     // 画面のアップリンク周波数を更新する
