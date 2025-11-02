@@ -504,18 +504,12 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     // 無限更新防止
     if (rxFrequency.value === newTxFrequency) return;
     rxFrequency.value = newTxFrequency;
-
-    // memo: ICOM-9700でAutoOn時にTx周波数がずれる（和もずれる）件のデバッグログ
-    AppRendererLogger.info(`watchでRx更新 Rx:${rxFrequency.value}`);
   });
   watch([satelliteMode, rxFrequency] as const, ([newSatelliteMode, newRxFrequency]) => {
     if (newSatelliteMode === Constant.Transceiver.SatelliteMode.SATELLITE) return;
     // 無限更新防止
     if (txFrequency.value === newRxFrequency) return;
     txFrequency.value = newRxFrequency;
-
-    // memo: ICOM-9700でAutoOn時にTx周波数がずれる（和もずれる）件のデバッグログ
-    AppRendererLogger.info(`watchでTx更新 Tx:${txFrequency.value}`);
   });
 
   /**
@@ -575,6 +569,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       await updateTxFreqByInvertingHeterodyne(autoTrackingIntervalMsec);
     }
 
+    // 以下は、コメントアウトしても良い。2025年11月時点ではデバッグログとして出力しておく。
     // デバッグログ
     const nowRxFreq = TransceiverUtil.parseNumber(rxFrequency.value);
     const nowTxFreq = TransceiverUtil.parseNumber(txFrequency.value);
@@ -625,8 +620,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
         // ドップラーシフト待機フラグを無効に戻す
         isDopplerShiftWaiting.value = false;
 
-        // memo: ICOM-9700でAutoOn時にTx周波数がずれる（和もずれる）件のデバッグログ
-        AppRendererLogger.info(`ダイヤル操作２秒経過 待機解除`);
+        AppRendererLogger.info(`ダイヤル操作N秒経過 待機解除`);
       }, Constant.Transceiver.TRANSCEIVE_WAIT_MS);
     });
 
@@ -642,8 +636,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
       if ("uplinkHz" in freqData && freqData.uplinkHz) {
         const recvTxFreq = freqData.uplinkHz;
-
-        // memo: ICOM-9700でAutoOn時にTx周波数がずれる（和もずれる）件のデバッグログ
         AppRendererLogger.info(`トランシーブ Tx周波数 Tx:${recvTxFreq}`);
 
         // AutoOff時は画面のアップリンク周波数を更新して終了
@@ -666,8 +658,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
         // ダウンリンク周波数を更新する
       } else if ("downlinkHz" in freqData && freqData.downlinkHz) {
         const recvRxFreq = freqData.downlinkHz;
-
-        // memo: ICOM-9700でAutoOn時にTx周波数がずれる（和もずれる）件のデバッグログ
         AppRendererLogger.info(`トランシーブ Rx周波数 Rx:${recvRxFreq}`);
 
         // AutoOff時は画面のダウンリンク周波数を更新して終了

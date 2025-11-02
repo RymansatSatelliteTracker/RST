@@ -498,7 +498,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
       // タイムアウト判定
       timeout = setTimeout(() => {
-        // // 応答タイムアウトは発生しうるためログ出力を行い、処理は継続する
+        // 応答タイムアウトは発生しうるためログ出力を行い、処理は継続する
+        // MEMO: 必要に応じてコメント解除してください
         // AppMainLogger.warn(
         //   `無線機からの応答タイムアウトが発生しました。 ${targetCmdType} コマンド：${Buffer.from(cmdData).toString("hex")}`
         // );
