@@ -315,25 +315,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     });
   }
 
-  // MEMO: ドップラーシフト補正の計算方法の変更によりコメントアウト（動作確認後に削除する）
-  // /**
-  //  * アップリンク周波数をドップラーシフト補正して更新する
-  //  * @param {number} intervalMs 時間間隔[単位：ミリ秒]
-  //  */
-  // async function updateTxFrequencyWithDopplerShift(intervalMs: number) {
-  //   const frequencyTrackService = ActiveSatServiceHub.getInstance().getFrequencyTrackService();
-  //   if (!frequencyTrackService) {
-  //     return;
-  //   }
-
-  //   // ドップラーファクターを計算する
-  //   const txDopplerFactor = await frequencyTrackService.calcUplinkDopplerFactor(currentDate.value, intervalMs);
-  //   // 無線機のアップリンク周波数を更新する
-  //   await updateTxFrequency(dopplerTxBaseFrequency.value * txDopplerFactor);
-  //   // 画面のアップリンク周波数を更新する
-  //   txFrequency.value = TransceiverUtil.formatWithDot(dopplerTxBaseFrequency.value * txDopplerFactor);
-  // }
-
   /**
    * アップリンク周波数をドップラーシフト補正して更新する
    * @param {number} intervalMs 時間間隔[単位：ミリ秒]
