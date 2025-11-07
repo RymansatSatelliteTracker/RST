@@ -1,3 +1,4 @@
+<!-- AOS/LOSまでのカウントダウン表示 -->
 <template>
   <BoxLabel v-if="overlapPassCountdown" class="aos">{{ CanvasUtil.formatNullValue(overlapPassCountdown) }}</BoxLabel>
   <BoxLabel v-else class="aos">{{ CanvasUtil.formatNullValue(passCountdown) }}</BoxLabel>
