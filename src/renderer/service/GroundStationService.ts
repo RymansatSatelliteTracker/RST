@@ -279,7 +279,9 @@ class GroundStationService {
 
     // 現在日時からN分前の時刻を判定用の現在時刻とする
     // memo: LOS後のローテータ、無線機の継続追尾を可能とするため、現在時刻が過ぎたパスも処理対象に含める必要がある
-    const startOffsetDate = new Date(currentDate.getTime() - CURRENT_DATE_OFFSET_MINUTES * 60 * 1000);
+    const startOffsetDate = new Date(
+      currentDate.getTime() - CURRENT_DATE_OFFSET_MINUTES * Constant.Time.MILLISECONDS_IN_MINUTE
+    );
 
     // AOS/LOS/Melの一時キャッシュ配列を初期化する
     let tempPassesCache: PassesCache[] = [];
@@ -324,8 +326,6 @@ class GroundStationService {
         // 日時期間(開始)が計算済み終端時間より新しい場合は、計算済み終端時間から日時期間(開始)を未探索日時区間配列に追加する
         this._addUnexploredTime(this._calculatedTime, targetStartDate.getTime());
       }
-      // 日時期間(開始)以降のパスを取得する
-      tempPassesCache = [...this._passesCache].filter((cache) => cache.los && cache.los.date >= targetStartDate);
 
       if (endDate) {
         // 日時期間(開始)から日時期間(終了)までのパスを取得する場合
