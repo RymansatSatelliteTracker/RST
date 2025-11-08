@@ -4,7 +4,7 @@
     <v-col cols="6">
       <div>
         <!-- 周波数設定インターバル -->
-        <div class="d-flex">
+        <div class="d-flex mt-2">
           <label class="label form_label">{{ I18nUtil.getMsg(I18nMsgs.G41_AUTO_INTERVAL) }}</label>
           <div class="form_select ml-2">
             <v-select
@@ -18,7 +18,7 @@
           </div>
         </div>
         <!-- 自動追尾準備・終了時間 -->
-        <div class="d-flex">
+        <div class="d-flex mt-2">
           <label class="label form_label">{{ I18nUtil.getMsg(I18nMsgs.G41_AUTOTRACK_TIME) }}</label>
           <div class="form_select ml-2">
             <v-select
