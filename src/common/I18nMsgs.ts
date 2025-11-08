@@ -251,6 +251,10 @@ export default class I18nMsgs {
   public static readonly G41_IPADDRESS: I18nMsgItem = { en: "IP Address", ja: "IPアドレス" };
   public static readonly G41_IPADDRESS_PORT: I18nMsgItem = { en: "Port", ja: "Port" };
   public static readonly G41_AUTO_INTERVAL: I18nMsgItem = { en: "Freq Control Interval", ja: "周波数設定インターバル" };
+  public static readonly G41_AUTOTRACK_TIME: I18nMsgItem = {
+    en: "Auto-Tracking Start/End Time",
+    ja: "自動追尾準備・終了時間",
+  };
   // 画面項目系／ローテータ設定画面
   public static readonly G51_TAB_CONNECTION: I18nMsgItem = { en: "Device", ja: "機種設定" };
   public static readonly G51_TAB_BEHIVIOR: I18nMsgItem = { en: "Behivior", ja: "動作設定" };
