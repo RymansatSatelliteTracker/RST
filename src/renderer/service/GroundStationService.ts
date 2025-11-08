@@ -30,6 +30,9 @@ export const enum VisibilityType {
   VISIBLE = 2,
 }
 
+// 可視時間帯を算出する際の現在日時オフセット（分）
+const CURRENT_DATE_OFFSET_MINUTES = 60;
+
 /**
  * 地上局から観測できる人工衛星のAOS/LOS/Melを計算する
  * @class GroundStationService
@@ -266,89 +269,99 @@ class GroundStationService {
       // パスのキャッシュ配列が最大要素数を超えた場合は初期化する
       this._passesClear();
     }
+
     // 現在日時を取得する
     let currentDate = new Date();
     if (this._operationStartUtcDate) {
       // 運用開始日時が設定された場合は現在日時を運用開始日時とする
       currentDate = this._operationStartUtcDate;
     }
+
+    // 現在日時からN分前の時刻を判定用の現在時刻とする
+    // memo: LOS後のローテータ、無線機の継続追尾を可能とするため、現在時刻が過ぎたパスも処理対象に含める必要がある
+    const startOffsetDate = new Date(currentDate.getTime() - CURRENT_DATE_OFFSET_MINUTES * 60 * 1000);
+
     // AOS/LOS/Melの一時キャッシュ配列を初期化する
     let tempPassesCache: PassesCache[] = [];
 
+    // 初回実行時の場合
     if (this._calculatedTime === 0) {
-      // 初回実行時の場合
-      if (startDate <= currentDate) {
-        // 日時期間(開始)が過去日時の場合は現在日時に設定する
-        startDate = currentDate;
+      // 日時期間(開始)が過去日時の場合は現在日時に設定する
+      let targetStartDate = startDate;
+      if (targetStartDate <= startOffsetDate) {
+        targetStartDate = startOffsetDate;
       } else {
         // 日時期間(開始)が未来日時の場合は、現在日時から日時期間(開始)を未探索日時区間配列に追加する
-        this._addUnexploredTime(currentDate.getTime(), startDate.getTime());
+        this._addUnexploredTime(startOffsetDate.getTime(), targetStartDate.getTime());
       }
+
       // 計算済み終端時間を初期化する
       this._initCalculatedTime();
       if (endDate) {
         // 日時期間(開始)から日時期間(終了)までのパスを探索する
-        await this._updatePassListAsync(startDate.getTime(), endDate.getTime());
+        await this._updatePassListAsync(targetStartDate.getTime(), endDate.getTime());
         tempPassesCache = [...this._passesCache];
       } else {
         // 日時期間(開始)から最も近いパスを探索する
-        await this._updatePassListAsync(startDate.getTime(), null);
+        await this._updatePassListAsync(targetStartDate.getTime(), null);
         tempPassesCache = [...this._passesCache];
       }
-    } else {
+
       // 2回目以降実行時の場合
+    } else {
       // 過去日時のLOSが含まれるキャッシュ配列要素を除外してメンバ変数を更新する
-      this._passesCache = [...this._passesCache].filter((cache) => cache.los && currentDate < cache.los.date);
+      this._passesCache = [...this._passesCache].filter((cache) => cache.los && startOffsetDate < cache.los.date);
       // 過去日時の未探索日時区間(終了)が含まれる配列要素を除外してメンバ変数を更新する
       this._unexploredTime = [...this._unexploredTime].filter(
-        (cache) => currentDate.getTime() < cache.endTime && cache.startTime < cache.endTime
+        (cache) => startOffsetDate.getTime() < cache.endTime && cache.startTime < cache.endTime
       );
 
-      if (startDate <= currentDate) {
+      let targetStartDate = startDate;
+      if (targetStartDate <= startOffsetDate) {
         // 日時期間(開始)が過去日時の場合は現在日時に設定する
-        startDate = currentDate;
-      } else if (this._calculatedTime < startDate.getTime()) {
+        targetStartDate = startOffsetDate;
+      } else if (this._calculatedTime < targetStartDate.getTime()) {
         // 日時期間(開始)が計算済み終端時間より新しい場合は、計算済み終端時間から日時期間(開始)を未探索日時区間配列に追加する
-        this._addUnexploredTime(this._calculatedTime, startDate.getTime());
+        this._addUnexploredTime(this._calculatedTime, targetStartDate.getTime());
       }
       // 日時期間(開始)以降のパスを取得する
-      tempPassesCache = [...this._passesCache].filter((cache) => cache.los && cache.los.date >= startDate);
+      tempPassesCache = [...this._passesCache].filter((cache) => cache.los && cache.los.date >= targetStartDate);
 
       if (endDate) {
         // 日時期間(開始)から日時期間(終了)までのパスを取得する場合
         if (this._calculatedTime < endDate.getTime()) {
           // 日時期間(終了)が計算済み終端時間より新しい場合は追加で探索する
-          if (this._calculatedTime < startDate.getTime()) {
+          if (this._calculatedTime < targetStartDate.getTime()) {
             // 日時期間(開始)が計算済み終端時間より新しい場合は日時期間(開始)から日時期間(終了)までのパスを探索する
-            await this._updatePassListAsync(startDate.getTime(), endDate.getTime());
+            await this._updatePassListAsync(targetStartDate.getTime(), endDate.getTime());
           } else {
             // 日時期間(開始)から日時期間(終了)の間に計算済み終端時間が跨る場合は計算済み終端時間から日時期間(終了)のパスを探索する
             await this._updatePassListAsync(this._calculatedTime, endDate.getTime());
             // 日時期間(開始)から日時期間(終了)の間に計算済み終端時間が跨る場合は日時期間(開始)から計算済み終端時間までの未探索日時区間配列を更新する
-            await this._updateUnexploredTime(startDate.getTime(), this._calculatedTime);
+            await this._updateUnexploredTime(targetStartDate.getTime(), this._calculatedTime);
           }
         } else {
           // 日時期間(終了)が計算済み終端時間より古い場合は日時期間(開始)から日時期間(終了)までの未探索日時区間配列を更新する
-          await this._updateUnexploredTime(startDate.getTime(), endDate.getTime());
+          await this._updateUnexploredTime(targetStartDate.getTime(), endDate.getTime());
         }
         // 取得日時期間のパスを取得する
         tempPassesCache = [...this._passesCache].filter(
-          (cache) => cache.los && cache.los.date >= startDate && cache.aos && cache.aos.date <= endDate
+          (cache) => cache.los && cache.los.date >= targetStartDate && cache.aos && cache.aos.date <= endDate
         );
       } else {
-        if (this._calculatedTime < startDate.getTime()) {
+        if (this._calculatedTime < targetStartDate.getTime()) {
           // 日時期間(開始)が計算済み終端時間より新しい場合は日時期間(開始)から最も近いパスを探索する
-          await this._updatePassListAsync(startDate.getTime(), null);
+          await this._updatePassListAsync(targetStartDate.getTime(), null);
         } else {
           // 日時期間(開始)が計算済み終端時間より古い場合はキャッシュ配列を初期化する
           this._passesClear();
           // 計算済み終端時間から日時期間(開始)を未探索日時区間配列に追加する
-          this._addUnexploredTime(this._calculatedTime, startDate.getTime());
+          this._addUnexploredTime(this._calculatedTime, targetStartDate.getTime());
           // 日時期間(開始)から最も近いパスを探索する
-          await this._updatePassListAsync(startDate.getTime(), null);
+          await this._updatePassListAsync(targetStartDate.getTime(), null);
         }
         // 取得日時期間のパスを取得する
-        tempPassesCache = [...this._passesCache].filter((cache) => cache.los && cache.los.date >= startDate);
+        tempPassesCache = [...this._passesCache].filter((cache) => cache.los && cache.los.date >= targetStartDate);
       }
     }
 
