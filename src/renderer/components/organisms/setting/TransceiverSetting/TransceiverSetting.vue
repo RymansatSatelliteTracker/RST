@@ -124,6 +124,7 @@ async function reloadConfig() {
   form.value.ipAddress = transceiverConfig.transceiver.ipAddress;
   form.value.ipPort = transceiverConfig.transceiver.ipPort.toString();
   form.value.autoTrackingIntervalSec = transceiverConfig.transceiver.autoTrackingIntervalSec;
+  form.value.autoTrackingStartEndTime = transceiverConfig.transceiver.autoTrackingStartEndTime;
 }
 
 /**
@@ -151,6 +152,7 @@ async function onOk() {
   transceiverConfig.transceiver.ipAddress = form.value.ipAddress;
   transceiverConfig.transceiver.ipPort = form.value.ipPort;
   transceiverConfig.transceiver.autoTrackingIntervalSec = form.value.autoTrackingIntervalSec;
+  transceiverConfig.transceiver.autoTrackingStartEndTime = form.value.autoTrackingStartEndTime;
 
   // 保存
   await ApiAppConfig.storeAppConfig(transceiverConfig);

@@ -48,6 +48,7 @@
       "ipAddress": "",
       "ipPort": "",
       "autoTrackingIntervalSec": "1",
+      "autoTrackingStartEndTime": "1",
       "txFrequency": "2430.000",
       "rxFrequency": "0480.000"
     },
