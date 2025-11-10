@@ -45,8 +45,8 @@ export default class ApiAppConfig {
   /**
    * 衛星設定画面用のアプリケーション設定を保存する
    */
-  public static async storeAppSatSettingConfig(config: AppConfigSatSettingModel) {
-    return await window.rstApi.storeAppConfigSatSetting(config);
+  public static async storeAppSatSettingConfig(config: AppConfigSatSettingModel, isTLEUpdate: boolean = false) {
+    return await window.rstApi.storeAppConfigSatSetting(config, isTLEUpdate);
   }
 
   /**

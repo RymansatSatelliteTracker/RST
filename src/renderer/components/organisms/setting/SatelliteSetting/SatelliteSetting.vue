@@ -69,8 +69,6 @@ import emitter from "@/renderer/util/EventBus";
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
 import ApiActiveSat from "@/renderer/api/ApiActiveSat";
 import ApiConfig from "@/renderer/api/ApiAppConfig";
-import ApiDefaultSatellite from "@/renderer/api/ApiDefaultSatellite";
-import ApiFileTransaction from "@/renderer/api/ApiFileTransaction";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger";
 import { nextTick, onMounted, ref, toRaw } from "vue";
@@ -135,34 +133,8 @@ async function regist(): Promise<boolean> {
     isTLEUpdated = loadTLETabRef.value.isTLEUpdated();
   }
 
-  // トランザクション開始
-  // 途中でTLEの更新を挟むため、コミットは最後に行う
-  const transaction = new ApiFileTransaction("appConfigSatSet");
-  await transaction.begin();
-
   // 更新
-  await updateAppConfig(transaction);
-
-  // TLEが更新されていたらデフォルト衛星情報を作り直す
-  // 保存の後にやらないと設定ファイルのURLが変更されないのでTLEが更新されない
-  if (isTLEUpdated) {
-    const ret = await ApiDefaultSatellite.reCreateDefaultSatellite();
-    if (!ret) {
-      await transaction.rollback();
-      emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.ERR_FAIL_TO_UPDATE_TLE_URL));
-      return false;
-    }
-  }
-  // ここまできたら正常終了できる
-  await transaction.commit();
-
-  // 衛星設定を更新したことを通知
-  await ApiActiveSat.refreshAppConfig();
-
-  // 衛星パス抽出最小仰角を更新する
-  await ActiveSatServiceHub.getInstance().updateSatChoiceMinEl(
-    apiConfigData.value.satelliteSetting.satelliteChoiceMinEl
-  );
+  await updateAppConfig(isTLEUpdated);
 
   return true;
 }
@@ -190,7 +162,7 @@ async function getAppConfig() {
 /**
  * アプリケーション設定登録
  */
-async function updateAppConfig(transaction: ApiFileTransaction) {
+async function updateAppConfig(isTLEUpdated: boolean) {
   // 次のgetAppConfigすると値が変わってしまうのでdeepcopyする
   const outputData: AppConfigSatSettingModel = JSON.parse(JSON.stringify(toRaw(apiConfigData.value)));
   // satellites配下が変わることがあるので最新のアプリケーション設定を取得
@@ -202,9 +174,16 @@ async function updateAppConfig(transaction: ApiFileTransaction) {
   // その他設定用
   appConfig.satelliteSetting = outputData.satelliteSetting;
 
-  await transaction.update(appConfig);
+  ApiConfig.storeAppSatSettingConfig(appConfig, isTLEUpdated);
+
+  // 衛星設定を更新したことを通知
+  await ApiActiveSat.refreshAppConfig();
+
+  // 衛星パス抽出最小仰角を更新する
+  await ActiveSatServiceHub.getInstance().updateSatChoiceMinEl(
+    apiConfigData.value.satelliteSetting.satelliteChoiceMinEl
+  );
 }
-async function commitAppConfig() {}
 </script>
 <style lang="scss" scoped>
 @import "./SatelliteSetting.scss";

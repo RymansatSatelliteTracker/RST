@@ -3,7 +3,7 @@ import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
 import { AppConfigModel, AppConfigRotator, AppConfigTransceiver } from "@/common/model/AppConfigModel";
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
-import { ApiResponse, FileType, LangType } from "@/common/types/types";
+import { ApiResponse, LangType } from "@/common/types/types";
 import WebClient from "@/common/WebClient";
 import SerialComm from "@/main/common/SerialComm";
 import ActiveSatService from "@/main/service/ActiveSatService";
@@ -15,7 +15,6 @@ import SerialTrialService from "@/main/service/SerialTrialService";
 import TleService from "@/main/service/TleService";
 import TransceiverService from "@/main/service/TransceiverSerivice";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil";
-import { FileTransaction } from "@/main/util/FileTransaction";
 import { ipcMain } from "electron";
 
 // 初期化済みか
@@ -69,8 +68,8 @@ export function initializeIpcEvents() {
   /**
    * 衛星設定画面用のアプリケーション設定を保存する
    */
-  ipcMain.handle("storeAppConfigSatSetting", (event, config: AppConfigSatSettingModel) => {
-    return AppConfigUtil.storeConfigSatSetting(config);
+  ipcMain.handle("storeAppConfigSatSetting", (event, config: AppConfigSatSettingModel, isTLEUpdate: boolean) => {
+    return new AppConfigSatelliteService().store(config, isTLEUpdate);
   });
 
   /**
@@ -288,31 +287,6 @@ export function initializeIpcEvents() {
   ipcMain.handle("onNoticeMessage", async (event, args: any) => {
     return args;
   });
-  /**
-   * ファイルトランザクションを開始する
-   */
-  ipcMain.handle("beginTransaction", async (event, fileType: FileType) => {
-    return await FileTransaction.begin(fileType);
-  });
-
-  /**
-   * ファイルトランザクションを更新する
-   */
-  ipcMain.handle("updateTransaction", async (event, fileType: FileType, transactionId: string, content: any) => {
-    return await FileTransaction.update(fileType, transactionId, content);
-  });
-  /**
-   * ファイルトランザクションをコミットする
-   */
-  ipcMain.handle("commitTransaction", async (event, fileType: FileType, transactionId: string) => {
-    return await FileTransaction.commit(fileType, transactionId);
-  });
-  /**
-   * ファイルトランザクションをロールバックする
-   */
-  ipcMain.handle("rollbackTransaction", async (event, fileType: FileType, transactionId: string) => {
-    return await FileTransaction.rollback(fileType, transactionId);
-  });
 }
 
 /**
@@ -352,10 +326,6 @@ export function releaseIpcEvents() {
   ipcMain.removeAllListeners("onSaveTransceiverFrequency");
   ipcMain.removeAllListeners("canGetValidTle");
   ipcMain.removeAllListeners("onNoticeMessage");
-  ipcMain.removeAllListeners("beginTransaction");
-  ipcMain.removeAllListeners("updateTransaction");
-  ipcMain.removeAllListeners("commitTransaction");
-  ipcMain.removeAllListeners("rollbackTransaction");
 
   initialized = false;
 }
