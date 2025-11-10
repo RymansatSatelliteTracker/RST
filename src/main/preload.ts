@@ -11,10 +11,9 @@ import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSetti
 import { AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel";
 import { MessageModel } from "@/common/model/MessageModel";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
-import { ApiResponse, LangType } from "@/common/types/types";
+import { ApiResponse, FileType, LangType } from "@/common/types/types";
 import type { TleStrings } from "@/renderer/types/satellite-type";
 import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";
-
 /**
  * ここにレンダラに公開するAPIを定義する
  */
@@ -321,6 +320,34 @@ const apiHandler = {
     ipcRenderer.on("onNoticeMessage", (event: IpcRendererEvent, args: any) => {
       callback(args[0] as MessageModel);
     });
+  },
+  /**
+   * ファイルトランザクションを開始する
+   * 呼び出し例）const ret = await window.rstApi.beginTransaction(fileType);
+   */
+  beginTransaction: function (fileType: FileType): Promise<String> {
+    return ipcRenderer.invoke("beginTransaction", fileType);
+  },
+  /**
+   * ファイルトランザクションを更新する
+   * 呼び出し例）const ret = await window.rstApi.updateTransaction(fileType, transactionId, content);
+   */
+  updateTransaction: function (fileType: FileType, transactionId: string, content: any): Promise<void> {
+    return ipcRenderer.invoke("updateTransaction", fileType, transactionId, content);
+  },
+  /**
+   * ファイルトランザクションをコミットする
+   * 呼び出し例）const ret = await window.rstApi.commitTransaction(fileType, transactionId);
+   */
+  commitTransaction: function (fileType: FileType, transactionId: string): Promise<void> {
+    return ipcRenderer.invoke("commitTransaction", fileType, transactionId);
+  },
+  /**
+   * ファイルトランザクションをロールバックする
+   * 呼び出し例）const ret = await window.rstApi.rollbackTransaction(fileType, transactionId);
+   */
+  rollbackTransaction: function (fileType: FileType, transactionId: string): Promise<void> {
+    return ipcRenderer.invoke("rollbackTransaction", fileType, transactionId);
   },
 };
 

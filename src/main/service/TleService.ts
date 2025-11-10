@@ -74,7 +74,7 @@ export default class TleService {
     }
 
     const webClient = new WebClient();
-    const config = AppConfigUtil.getConfig();
+    const config = AppConfigUtil.getConfigTransaction();
     const tleTexts: string[] = [];
 
     // TLEのURLリストで回して、全てのTLEを取得する

@@ -27,6 +27,14 @@ export default class FileUtil {
   }
 
   /**
+   * ファイルを削除する
+   * @param filePath
+   */
+  public static deleteFile(filePath: string) {
+    fs.unlinkSync(filePath);
+  }
+
+  /**
    * ファイルをコピーする
    * destがすでに存在する場合は上書きする
    */

@@ -70,6 +70,7 @@ import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSetti
 import ApiActiveSat from "@/renderer/api/ApiActiveSat";
 import ApiConfig from "@/renderer/api/ApiAppConfig";
 import ApiDefaultSatellite from "@/renderer/api/ApiDefaultSatellite";
+import ApiFileTransaction from "@/renderer/api/ApiFileTransaction";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger";
 import { nextTick, onMounted, ref, toRaw } from "vue";
@@ -102,12 +103,17 @@ async function onOk() {
   loading.value = true;
 
   // 登録処理を実施
-  const ret = await regist();
-
-  loading.value = false;
-
-  // 処理が正常終了したら親へ通知て閉じる
-  if (ret) emits("onOk");
+  let ret = false;
+  try {
+    ret = await regist();
+    // 処理が正常終了したら親へ通知て閉じる
+    if (ret) emits("onOk");
+  } catch (error) {
+    emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.ERR_APPCONFIG_UPDATE));
+    AppRendererLogger.error("アプリケーション設定ファイルの更新に失敗しました", error);
+  } finally {
+    loading.value = false;
+  }
 }
 
 /**
@@ -129,23 +135,35 @@ async function regist(): Promise<boolean> {
     isTLEUpdated = loadTLETabRef.value.isTLEUpdated();
   }
 
-  // 保存
-  await saveAppConfig();
+  // トランザクション開始
+  // 途中でTLEの更新を挟むため、コミットは最後に行う
+  const transaction = new ApiFileTransaction("appConfigSatSet");
+  await transaction.begin();
 
-  // 衛星パス抽出最小仰角を更新する
-  await ActiveSatServiceHub.getInstance().updateSatChoiceMinEl(
-    apiConfigData.value.satelliteSetting.satelliteChoiceMinEl
-  );
+  // 更新
+  await updateAppConfig(transaction);
 
   // TLEが更新されていたらデフォルト衛星情報を作り直す
   // 保存の後にやらないと設定ファイルのURLが変更されないのでTLEが更新されない
   if (isTLEUpdated) {
     const ret = await ApiDefaultSatellite.reCreateDefaultSatellite();
     if (!ret) {
-      emitter.emit(Constant.GlobalEvent.NOTICE_INFO, I18nUtil.getMsg(I18nMsgs.ERR_FAIL_TO_UPDATE_TLE_URL));
+      await transaction.rollback();
+      emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.ERR_FAIL_TO_UPDATE_TLE_URL));
       return false;
     }
   }
+  // ここまできたら正常終了できる
+  await transaction.commit();
+
+  // 衛星設定を更新したことを通知
+  await ApiActiveSat.refreshAppConfig();
+
+  // 衛星パス抽出最小仰角を更新する
+  await ActiveSatServiceHub.getInstance().updateSatChoiceMinEl(
+    apiConfigData.value.satelliteSetting.satelliteChoiceMinEl
+  );
+
   return true;
 }
 
@@ -172,7 +190,7 @@ async function getAppConfig() {
 /**
  * アプリケーション設定登録
  */
-async function saveAppConfig() {
+async function updateAppConfig(transaction: ApiFileTransaction) {
   // 次のgetAppConfigすると値が変わってしまうのでdeepcopyする
   const outputData: AppConfigSatSettingModel = JSON.parse(JSON.stringify(toRaw(apiConfigData.value)));
   // satellites配下が変わることがあるので最新のアプリケーション設定を取得
@@ -184,11 +202,9 @@ async function saveAppConfig() {
   // その他設定用
   appConfig.satelliteSetting = outputData.satelliteSetting;
 
-  ApiConfig.storeAppSatSettingConfig(appConfig);
-
-  // 衛星設定を更新したことを通知
-  await ApiActiveSat.refreshAppConfig();
+  await transaction.update(appConfig);
 }
+async function commitAppConfig() {}
 </script>
 <style lang="scss" scoped>
 @import "./SatelliteSetting.scss";

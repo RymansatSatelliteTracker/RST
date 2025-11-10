@@ -124,6 +124,10 @@ export default class I18nMsgs {
     en: "The item value in the application configuration file is invalid",
     ja: "アプリケーション設定ファイルの項目値が不正です",
   };
+  public static readonly ERR_APPCONFIG_UPDATE: I18nMsgItem = {
+    en: "Failed to update the Application configuration file",
+    ja: "アプリケーション設定ファイルの更新に失敗しました",
+  };
   public static readonly ERR_SERIAL_CONNECT_ABORT: I18nMsgItem = {
     en: "Serial connection failed",
     ja: "シリアル接続に失敗しました",

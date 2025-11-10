@@ -40,3 +40,8 @@ export type I18nMsgItem = {
  * 言語種別
  */
 export type LangType = "ja" | "en";
+
+/**
+ * ファイルトランザクション用のファイルタイプ
+ */
+export type FileType = "appConfig" | "appConfigSatSet";
