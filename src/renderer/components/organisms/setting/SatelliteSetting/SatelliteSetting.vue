@@ -46,10 +46,8 @@
         </v-card-text>
 
         <v-card-actions>
-          <v-btn @click="onOk" variant="outlined" size="large" :disabled="loading">{{
-            I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_OK)
-          }}</v-btn>
-          <v-btn @click="onCancel" variant="outlined" size="large" class="ml-5" :disabled="loading">{{
+          <v-btn @click="onOk" variant="outlined" size="large">{{ I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_OK) }}</v-btn>
+          <v-btn @click="onCancel" variant="outlined" size="large" class="ml-5">{{
             I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_CANCEL)
           }}</v-btn>
         </v-card-actions>
@@ -79,8 +77,6 @@ const tab = ref(null);
 const apiConfigData = ref<AppConfigSatSettingModel>(new AppConfigSatSettingModel());
 // バリデーションチェック用のformのref
 const loadTLETabRef = ref();
-// 更新中を示すref
-const loading = ref(false);
 
 // ダイアログの表示可否
 const isShow = defineModel("isShow");
@@ -97,21 +93,12 @@ onMounted(() => {
 async function onOk() {
   await nextTick();
 
-  // 登録中に再度ボタンを押せないようにする
-  loading.value = true;
-
   // 登録処理を実施
-  let ret = false;
-  try {
-    ret = await regist();
-    // 処理が正常終了したら親へ通知て閉じる
+  await regist().then((ret) => {
+    // 親に通知(ダイアログクローズ)
     if (ret) emits("onOk");
-  } catch (error) {
-    emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.ERR_APPCONFIG_UPDATE));
-    AppRendererLogger.error("アプリケーション設定ファイルの更新に失敗しました", error);
-  } finally {
-    loading.value = false;
-  }
+  });
+  //    emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.ERR_APPCONFIG_UPDATE));
 }
 
 /**
@@ -134,7 +121,7 @@ async function regist(): Promise<boolean> {
   }
 
   // 更新
-  await updateAppConfig(isTLEUpdated);
+  updateAppConfig(isTLEUpdated);
 
   return true;
 }
@@ -174,15 +161,18 @@ async function updateAppConfig(isTLEUpdated: boolean) {
   // その他設定用
   appConfig.satelliteSetting = outputData.satelliteSetting;
 
-  ApiConfig.storeAppSatSettingConfig(appConfig, isTLEUpdated);
-
-  // 衛星設定を更新したことを通知
-  await ApiActiveSat.refreshAppConfig();
-
-  // 衛星パス抽出最小仰角を更新する
-  await ActiveSatServiceHub.getInstance().updateSatChoiceMinEl(
-    apiConfigData.value.satelliteSetting.satelliteChoiceMinEl
-  );
+  ApiConfig.storeAppSatSettingConfig(appConfig, isTLEUpdated)
+    .then(async () => {
+      // 衛星設定を更新したことを通知
+      await ApiActiveSat.refreshAppConfig();
+      // 衛星パス抽出最小仰角を更新する
+      await ActiveSatServiceHub.getInstance().updateSatChoiceMinEl(
+        apiConfigData.value.satelliteSetting.satelliteChoiceMinEl
+      );
+    })
+    .catch(() => {
+      emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.ERR_APPCONFIG_UPDATE));
+    });
 }
 </script>
 <style lang="scss" scoped>

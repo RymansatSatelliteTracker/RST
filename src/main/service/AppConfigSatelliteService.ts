@@ -42,23 +42,24 @@ export default class AppConfigSatelliteService {
    * @param config
    * @param isTLEUpdate TLE更新の場合はtrue
    */
-  public store(config: AppConfigSatSettingModel, isTLEUpdate: boolean = false) {
+  public async store(config: AppConfigSatSettingModel, isTLEUpdate: boolean = false): Promise<void> {
     if (!isTLEUpdate) {
       // TLE更新がなければ単純に保存
       AppConfigUtil.storeConfigSatSetting(config);
+      return Promise.resolve();
     }
     const transaction = new FileTransaction("appConfigSatSet");
-    try {
-      // default衛星更新中にエラーになると衛星設定だけが更新された状態になるため一時保存しておく
-      transaction.begin();
-      transaction.update(config);
-      const defSatService: DefaultSatelliteService = new DefaultSatelliteService();
-      defSatService.reCreateDefaultSatellite();
-      // default衛星が更新できたらコミット
-      transaction.commit();
-    } catch (error) {
+    // default衛星更新中にエラーになると衛星設定だけが更新された状態になるため一時保存しておく
+    transaction.update(config);
+
+    const ret = await new DefaultSatelliteService().reCreateDefaultSatellite();
+    if (!ret) {
       transaction.rollback();
-      throw error;
+      throw Promise.reject("衛星情報の再作成に失敗しました");
     }
+    // default衛星が更新できたらコミット
+    transaction.commit();
+
+    return Promise.resolve();
   }
 }
