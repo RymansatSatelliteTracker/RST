@@ -125,8 +125,8 @@ export default class I18nMsgs {
     ja: "アプリケーション設定ファイルの項目値が不正です",
   };
   public static readonly ERR_APPCONFIG_UPDATE: I18nMsgItem = {
-    en: "Failed to update the Application configuration file",
-    ja: "アプリケーション設定ファイルの更新に失敗しました",
+    en: "Failed to update the Application configuration file. Please try again later.",
+    ja: "アプリケーション設定ファイルの更新に失敗しました。時間をおいて再度実行してください。",
   };
   public static readonly ERR_SERIAL_CONNECT_ABORT: I18nMsgItem = {
     en: "Serial connection failed",
