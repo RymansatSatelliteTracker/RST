@@ -50,6 +50,11 @@ export default class I18nMsgs {
     en: "Either the beacon frequency or mode has not been entered.",
     ja: "ビーコン周波数の周波数かモードいずれかが未入力です",
   };
+  public static readonly CHK_ERR_SATELLITEMODE_REQUIRE_UPDOWN: I18nMsgItem = {
+    en: "When Satellite Mode is enabled, uplink and downlink settings are required.",
+    ja: "サテライトモードが有効の場合、アップリンクとダウンリンクの設定は必須です",
+  };
+
   public static readonly CHK_ERR_DUPLICATE_MOVE: I18nMsgItem = {
     en: "Duplicate data cannot be moved",
     ja: "重複したデータは移動できません",

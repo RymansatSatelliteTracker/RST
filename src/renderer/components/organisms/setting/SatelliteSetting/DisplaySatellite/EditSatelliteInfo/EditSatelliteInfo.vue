@@ -371,7 +371,7 @@ async function onOk() {
   const result = await validateForm(form.value);
   if (!result) {
     const messages = Object.values(errors.value).filter((item) => item);
-    if (messages.length > 0) emitter.emit(Constant.GlobalEvent.NOTICE_INFO, messages[0]);
+    if (messages.length > 0) emitter.emit(Constant.GlobalEvent.NOTICE_ERR, messages[0]);
     return;
   }
 
