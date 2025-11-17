@@ -42,8 +42,8 @@ const apiHandler = {
   /**
    * 衛星設定画面用のアプリケーション設定を保存する
    */
-  storeAppConfigSatSetting: function (config: AppConfigSatSettingModel, isTLEUpdate: boolean): Promise<void> {
-    return ipcRenderer.invoke("storeAppConfigSatSetting", config, isTLEUpdate);
+  storeAppConfigSatSetting: function (config: AppConfigSatSettingModel, isTleUpdate: boolean): Promise<void> {
+    return ipcRenderer.invoke("storeAppConfigSatSetting", config, isTleUpdate);
   },
 
   /**

@@ -1,3 +1,8 @@
+/**
+ * ファイルがトランザクション管理中かを保存するクラス
+ * このクラスはスレッドセーフではないので注意
+ * WEB化する場合などは本ファイルを修正するか呼び出し側で排他制御を行うこと
+ */
 export default class TransactionRegistry {
   private static map: Record<string, string> = {};
 

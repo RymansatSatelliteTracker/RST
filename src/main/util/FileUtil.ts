@@ -15,7 +15,7 @@ export default class FileUtil {
   /**
    * テキストを保存する
    */
-  public static wirteText(filePath: string, text: string) {
+  public static writeText(filePath: string, text: string) {
     fs.writeFileSync(filePath, text);
   }
 

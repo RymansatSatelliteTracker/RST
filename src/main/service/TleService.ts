@@ -53,7 +53,7 @@ export default class TleService {
 
     // TleItemMapをファイルに保存する
     const data: TleJsonModel = { tleItemMap: newTleItemMap };
-    FileUtil.wirteText(savePath, JSON.stringify(data, null, 2));
+    FileUtil.writeText(savePath, JSON.stringify(data, null, 2));
 
     // TLE最終取得日時を更新する
     AppConfigUtil.saveTleLastRetrievedDate(Date.now());

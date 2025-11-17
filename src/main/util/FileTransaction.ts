@@ -6,15 +6,23 @@ import AppMainLogger from "@/main/util/AppMainLogger";
 import FileUtil from "@/main/util/FileUtil";
 import TransactionRegistry from "@/main/util/TransactionRegistry";
 
+/**
+ * ファイルをトランザクション管理するクラス
+ */
 export class FileTransaction {
   transactionId: string;
   fileType: FileType;
+
   constructor(fileType: FileType) {
     this.transactionId = "";
     this.fileType = fileType;
     // begin忘れ防止のためコンストラクタの時点で実行
     this.begin();
   }
+
+  /**
+   * ファイルタイプごとにメソッドの処理を変更するハンドラ群
+   */
   private fileHandlers = {
     appConfig: {
       getPath: () => AppConfigUtil.getConfigPath(),
@@ -39,6 +47,7 @@ export class FileTransaction {
     // 一時ファイルを登録する
     TransactionRegistry.register(this.fileType, tempFilePath);
   }
+
   /**
    * ファイルトランザクションを更新する
    * 処理が失敗した場合は設定が反映されていない（ロールバック）ことを保証する
@@ -54,8 +63,9 @@ export class FileTransaction {
         `トランザクションファイルが存在しません: filetype=${this.fileType}, transactionId=${this.transactionId}`
       );
     }
-    FileUtil.wirteText(tempFilePath, text);
+    FileUtil.writeText(tempFilePath, text);
   }
+
   /**
    * ファイルトランザクションをコミットする
    * 処理が失敗した場合は設定が反映されていない（ロールバック）ことを保証する
@@ -74,6 +84,7 @@ export class FileTransaction {
     // 一時ファイル登録を解除する
     TransactionRegistry.unregister(this.fileType);
   }
+
   /**
    * ファイルトランザクションをロールバックする
    */
@@ -92,6 +103,7 @@ export class FileTransaction {
     }
     FileUtil.deleteFile(tempFilePath);
   }
+
   /**
    * 一時ファイルパスを取得する
    */

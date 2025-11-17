@@ -98,7 +98,6 @@ async function onOk() {
     // 親に通知(ダイアログクローズ)
     if (ret) emits("onOk");
   });
-  //    emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.ERR_APPCONFIG_UPDATE));
 }
 
 /**
@@ -108,7 +107,7 @@ async function onOk() {
 async function regist(): Promise<boolean> {
   // 画面を開かないとロードしないので判定する
   // 画面を開かない場合は編集もできないのでチェックしない
-  let isTLEUpdated = false;
+  let isTleUpdated = false;
   if (loadTLETabRef.value) {
     const result = await loadTLETabRef.value.onOk();
     if (result !== "OK") {
@@ -117,11 +116,11 @@ async function regist(): Promise<boolean> {
     }
     // TLEのURLが更新されているか確認
     // 保存の前にやらないとURLの情報が同期してしまう
-    isTLEUpdated = loadTLETabRef.value.isTLEUpdated();
+    isTleUpdated = loadTLETabRef.value.isTLEUpdated();
   }
 
   // 更新
-  updateAppConfig(isTLEUpdated);
+  await updateAppConfig(isTleUpdated);
 
   return true;
 }
@@ -149,7 +148,7 @@ async function getAppConfig() {
 /**
  * アプリケーション設定登録
  */
-async function updateAppConfig(isTLEUpdated: boolean) {
+async function updateAppConfig(isTleUpdated: boolean) {
   // 次のgetAppConfigすると値が変わってしまうのでdeepcopyする
   const outputData: AppConfigSatSettingModel = JSON.parse(JSON.stringify(toRaw(apiConfigData.value)));
   // satellites配下が変わることがあるので最新のアプリケーション設定を取得
@@ -161,7 +160,7 @@ async function updateAppConfig(isTLEUpdated: boolean) {
   // その他設定用
   appConfig.satelliteSetting = outputData.satelliteSetting;
 
-  ApiConfig.storeAppSatSettingConfig(appConfig, isTLEUpdated)
+  ApiConfig.storeAppSatSettingConfig(appConfig, isTleUpdated)
     .then(async () => {
       // 衛星設定を更新したことを通知
       await ApiActiveSat.refreshAppConfig();

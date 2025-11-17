@@ -15,7 +15,7 @@ describe("FileTransaction", () => {
     jest.spyOn(FileUtil, "exists").mockImplementation((tempFilePath) => {
       return true;
     });
-    wirteTextSpy = jest.spyOn(FileUtil, "wirteText").mockImplementation((tempFilePath, text) => {
+    wirteTextSpy = jest.spyOn(FileUtil, "writeText").mockImplementation((tempFilePath, text) => {
       return;
     });
     jest.spyOn(FileUtil, "deleteFile").mockImplementation((tempFilePath) => {
@@ -61,7 +61,7 @@ describe("FileTransaction", () => {
     const transaction = new FileTransaction(fileType);
     const beforeFilePath = TransactionRegistry.getActiveTempFilePath(fileType);
     // 実行
-    transaction.commit();
+    transaction.rollback();
     // 検証
     const filePath = TransactionRegistry.getActiveTempFilePath(fileType);
     expect(beforeFilePath).not.toBeNull();
