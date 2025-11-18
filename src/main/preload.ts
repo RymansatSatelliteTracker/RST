@@ -14,7 +14,6 @@ import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse, LangType } from "@/common/types/types";
 import type { TleStrings } from "@/renderer/types/satellite-type";
 import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";
-
 /**
  * ここにレンダラに公開するAPIを定義する
  */
@@ -43,8 +42,8 @@ const apiHandler = {
   /**
    * 衛星設定画面用のアプリケーション設定を保存する
    */
-  storeAppConfigSatSetting: function (config: AppConfigSatSettingModel) {
-    return ipcRenderer.invoke("storeAppConfigSatSetting", config);
+  storeAppConfigSatSetting: function (config: AppConfigSatSettingModel, isTleUpdate: boolean): Promise<void> {
+    return ipcRenderer.invoke("storeAppConfigSatSetting", config, isTleUpdate);
   },
 
   /**

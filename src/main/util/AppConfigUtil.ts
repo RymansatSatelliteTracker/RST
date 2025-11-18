@@ -11,6 +11,7 @@ import { AppConfigTransceiverDevice, AppConfigTransceiverModel } from "@/common/
 import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService";
 import AppMainLogger from "@/main/util/AppMainLogger";
 import FileUtil from "@/main/util/FileUtil";
+import TransactionRegistry from "@/main/util/TransactionRegistry";
 import Store from "electron-store";
 import * as path from "path";
 
@@ -129,6 +130,24 @@ export class AppConfigUtil {
     }
 
     return appConfig;
+  }
+  /**
+   * トランザクション中なら一時ファイルを優先して返す
+   */
+  public static getConfigTransaction(): AppConfigModel {
+    const tempPath = TransactionRegistry.getActiveTempFilePath("appConfig");
+    if (tempPath && FileUtil.exists(tempPath)) {
+      const text = FileUtil.readText(tempPath);
+      const parsed = JSON.parse(text);
+      const appConfig = (parsed as any)[CONFIG_ROOT_KEY] as AppConfigModel;
+      if (!appConfig) {
+        throw new Error("一時設定ファイルの内容が不正です。");
+      }
+      return appConfig;
+    }
+
+    // トランザクション中じゃなければ通常の設定パラメータを返す
+    return this.getConfig();
   }
 
   /**

@@ -68,8 +68,8 @@ export function initializeIpcEvents() {
   /**
    * 衛星設定画面用のアプリケーション設定を保存する
    */
-  ipcMain.handle("storeAppConfigSatSetting", (event, config: AppConfigSatSettingModel) => {
-    return AppConfigUtil.storeConfigSatSetting(config);
+  ipcMain.handle("storeAppConfigSatSetting", async (event, config: AppConfigSatSettingModel, isTleUpdate: boolean) => {
+    return await new AppConfigSatelliteService().store(config, isTleUpdate);
   });
 
   /**

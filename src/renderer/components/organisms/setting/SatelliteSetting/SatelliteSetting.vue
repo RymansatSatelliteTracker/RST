@@ -46,10 +46,8 @@
         </v-card-text>
 
         <v-card-actions>
-          <v-btn @click="onOk" variant="outlined" size="large" :disabled="loading">{{
-            I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_OK)
-          }}</v-btn>
-          <v-btn @click="onCancel" variant="outlined" size="large" class="ml-5" :disabled="loading">{{
+          <v-btn @click="onOk" variant="outlined" size="large">{{ I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_OK) }}</v-btn>
+          <v-btn @click="onCancel" variant="outlined" size="large" class="ml-5">{{
             I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_CANCEL)
           }}</v-btn>
         </v-card-actions>
@@ -69,7 +67,6 @@ import emitter from "@/renderer/util/EventBus";
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
 import ApiActiveSat from "@/renderer/api/ApiActiveSat";
 import ApiConfig from "@/renderer/api/ApiAppConfig";
-import ApiDefaultSatellite from "@/renderer/api/ApiDefaultSatellite";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger";
 import { nextTick, onMounted, ref, toRaw } from "vue";
@@ -80,8 +77,6 @@ const tab = ref(null);
 const apiConfigData = ref<AppConfigSatSettingModel>(new AppConfigSatSettingModel());
 // バリデーションチェック用のformのref
 const loadTLETabRef = ref();
-// 更新中を示すref
-const loading = ref(false);
 
 // ダイアログの表示可否
 const isShow = defineModel("isShow");
@@ -98,16 +93,11 @@ onMounted(() => {
 async function onOk() {
   await nextTick();
 
-  // 登録中に再度ボタンを押せないようにする
-  loading.value = true;
-
   // 登録処理を実施
-  const ret = await regist();
-
-  loading.value = false;
-
-  // 処理が正常終了したら親へ通知て閉じる
-  if (ret) emits("onOk");
+  await regist().then((ret) => {
+    // 親に通知(ダイアログクローズ)
+    if (ret) emits("onOk");
+  });
 }
 
 /**
@@ -117,7 +107,7 @@ async function onOk() {
 async function regist(): Promise<boolean> {
   // 画面を開かないとロードしないので判定する
   // 画面を開かない場合は編集もできないのでチェックしない
-  let isTLEUpdated = false;
+  let isTleUpdated = false;
   if (loadTLETabRef.value) {
     const result = await loadTLETabRef.value.onOk();
     if (result !== "OK") {
@@ -126,26 +116,12 @@ async function regist(): Promise<boolean> {
     }
     // TLEのURLが更新されているか確認
     // 保存の前にやらないとURLの情報が同期してしまう
-    isTLEUpdated = loadTLETabRef.value.isTLEUpdated();
+    isTleUpdated = loadTLETabRef.value.isTLEUpdated();
   }
 
-  // 保存
-  await saveAppConfig();
+  // 更新
+  await updateAppConfig(isTleUpdated);
 
-  // 衛星パス抽出最小仰角を更新する
-  await ActiveSatServiceHub.getInstance().updateSatChoiceMinEl(
-    apiConfigData.value.satelliteSetting.satelliteChoiceMinEl
-  );
-
-  // TLEが更新されていたらデフォルト衛星情報を作り直す
-  // 保存の後にやらないと設定ファイルのURLが変更されないのでTLEが更新されない
-  if (isTLEUpdated) {
-    const ret = await ApiDefaultSatellite.reCreateDefaultSatellite();
-    if (!ret) {
-      emitter.emit(Constant.GlobalEvent.NOTICE_INFO, I18nUtil.getMsg(I18nMsgs.ERR_FAIL_TO_UPDATE_TLE_URL));
-      return false;
-    }
-  }
   return true;
 }
 
@@ -172,7 +148,7 @@ async function getAppConfig() {
 /**
  * アプリケーション設定登録
  */
-async function saveAppConfig() {
+async function updateAppConfig(isTleUpdated: boolean) {
   // 次のgetAppConfigすると値が変わってしまうのでdeepcopyする
   const outputData: AppConfigSatSettingModel = JSON.parse(JSON.stringify(toRaw(apiConfigData.value)));
   // satellites配下が変わることがあるので最新のアプリケーション設定を取得
@@ -184,10 +160,18 @@ async function saveAppConfig() {
   // その他設定用
   appConfig.satelliteSetting = outputData.satelliteSetting;
 
-  ApiConfig.storeAppSatSettingConfig(appConfig);
-
-  // 衛星設定を更新したことを通知
-  await ApiActiveSat.refreshAppConfig();
+  ApiConfig.storeAppSatSettingConfig(appConfig, isTleUpdated)
+    .then(async () => {
+      // 衛星設定を更新したことを通知
+      await ApiActiveSat.refreshAppConfig();
+      // 衛星パス抽出最小仰角を更新する
+      await ActiveSatServiceHub.getInstance().updateSatChoiceMinEl(
+        apiConfigData.value.satelliteSetting.satelliteChoiceMinEl
+      );
+    })
+    .catch(() => {
+      emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.ERR_APPCONFIG_UPDATE));
+    });
 }
 </script>
 <style lang="scss" scoped>
