@@ -243,11 +243,16 @@ async function satTrackingModeBtnClick(isNormal: boolean) {
 async function beaconBtnClick() {
   isBeaconMode.value = !isBeaconMode.value;
 }
-
+/**
+ * Rxのラベルをアクティブにするかどうか
+ */
 const isRxActive = computed(() => {
   return execRxDopplerShiftCorrection.value && autoStore.tranceiverAuto;
 });
 
+/**
+ * Txのラベルをアクティブにするかどうか
+ */
 const isTxActive = computed(() => {
   return execTxDopplerShiftCorrection.value && autoStore.tranceiverAuto;
 });
