@@ -115,6 +115,22 @@ export default class I18nMsgs {
     en: "No overlapping pass found.",
     ja: "重複パスが見つかりません。",
   };
+  public static readonly CHK_ERR_NO_BEACON_FREQ: I18nMsgItem = {
+    en: "Beacon frequency is not set.",
+    ja: "ビーコン周波数が設定されていません。",
+  };
+  public static readonly CHK_ERR_NO_UPLINK_FREQ: I18nMsgItem = {
+    en: "Uplink frequency is not set.",
+    ja: "アップリンク周波数が設定されていません。",
+  };
+  public static readonly CHK_ERR_NO_DOWNLINK_FREQ: I18nMsgItem = {
+    en: "Downlink frequency is not set.",
+    ja: "ダウンリンク周波数が設定されていません。",
+  };
+  public static readonly CHK_ERR_NO_FREQ: I18nMsgItem = {
+    en: "Uplink and Downlink frequencies are not set.",
+    ja: "アップリンク周波数とダウンリンク周波数が設定されていません。",
+  };
 
   // AppConfig系エラーメッセージ
   public static readonly CHK_ERR_APPCONFIG_NOT_EXISTS_FILE: I18nMsgItem = {

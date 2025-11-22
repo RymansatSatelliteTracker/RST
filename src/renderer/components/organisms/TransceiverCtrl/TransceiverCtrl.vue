@@ -19,16 +19,18 @@
       <!-- 周波数 -->
       <div class="freq_area">
         <div>
-          Rx<FrequencySelect class="freq_box" v-model:frequency="rxFrequency" v-model:diffFrequency="diffRxFrequency"
-            ><span class="freq_unit">Hz</span></FrequencySelect
-          >
+          <span :class="isRxActive ? 'freq_label_active' : 'freq_label_inactive'">Rx</span>
+          <FrequencySelect class="freq_box" v-model:frequency="rxFrequency" v-model:diffFrequency="diffRxFrequency">
+            <span class="freq_unit">Hz</span>
+          </FrequencySelect>
         </div>
       </div>
       <div class="freq_area">
         <div>
-          Tx<FrequencySelect class="freq_box" v-model:frequency="txFrequency" v-model:diffFrequency="diffTxFrequency"
-            ><span class="freq_unit">Hz</span></FrequencySelect
-          >
+          <span :class="isTxActive ? 'freq_label_active' : 'freq_label_inactive'">Tx</span>
+          <FrequencySelect class="freq_box" v-model:frequency="txFrequency" v-model:diffFrequency="diffTxFrequency">
+            <span class="freq_unit">Hz</span>
+          </FrequencySelect>
         </div>
       </div>
       <!-- ビーコン -->
@@ -154,7 +156,7 @@ import DateTimePicker from "@/renderer/components/organisms/DateTimePicker/DateT
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
 import CanvasUtil from "@/renderer/util/CanvasUtil";
 import DateUtil from "@/renderer/util/DateUtil";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import useOrbitalPassList from "./useOrbitalPassList";
 import useOverlapPassList from "./useOverlapPassList";
 import useTransceiverCtrl from "./useTransceiverCtrl";
@@ -186,6 +188,8 @@ const {
   isBeaconMode,
   isBeaconModeAvailable,
   dopplerShiftMode,
+  execTxDopplerShiftCorrection,
+  execRxDopplerShiftCorrection,
 } = useTransceiverCtrl(currentDate);
 // AutoモードのOnOff管理
 const autoStore = useStoreAutoState();
@@ -239,6 +243,14 @@ async function satTrackingModeBtnClick(isNormal: boolean) {
 async function beaconBtnClick() {
   isBeaconMode.value = !isBeaconMode.value;
 }
+
+const isRxActive = computed(() => {
+  return execRxDopplerShiftCorrection.value && autoStore.tranceiverAuto;
+});
+
+const isTxActive = computed(() => {
+  return execTxDopplerShiftCorrection.value && autoStore.tranceiverAuto;
+});
 </script>
 
 <style lang="scss" scoped>
