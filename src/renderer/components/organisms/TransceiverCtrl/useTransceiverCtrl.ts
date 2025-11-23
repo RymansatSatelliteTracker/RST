@@ -151,6 +151,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     // 周波数の更新を停止（停止されていない場合があるので、複数のタイマが発動することをガード）
     stopUpdateFreq();
 
+    // ドップラーシフトのフラグを初期化
+    execRxDopplerShiftCorrection.value = false;
+    execTxDopplerShiftCorrection.value = false;
+
     // 更新インターバルごとに周波数の更新する
     timerId = setInterval(async () => {
       updateFreq();
