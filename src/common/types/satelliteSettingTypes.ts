@@ -97,3 +97,7 @@ export type BeaconType = {
   // ビーコンモード
   beaconMode: string;
 };
+/**
+ * 自動設定時に使用する周波数選択タイプ
+ */
+export type autoModeFreqType = 1 | 2 | 3;

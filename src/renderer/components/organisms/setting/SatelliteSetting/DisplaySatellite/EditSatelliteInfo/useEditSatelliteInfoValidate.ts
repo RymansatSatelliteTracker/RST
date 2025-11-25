@@ -64,9 +64,10 @@ export function useEditSatelliteInfoValidate() {
     // サテライトモード時に選択されている周波数が未入力の場合はエラー
     // 周波数だけが未入力でモードが入っている時はこの前でエラーとなるため、ここでは周波数が入っているかのみチェックする
     if (form.enableSatelliteMode) {
+      // autoModeFreqTypeが1|2|3となっている前提の処理
       const uplinks = [form.uplink1Hz, form.uplink2Hz, form.uplink3Hz];
       const downlinks = [form.downlink1Hz, form.downlink2Hz, form.downlink3Hz];
-      if (!uplinks[parseInt(form.autoModeDownlinkFreq) - 1] || !downlinks[parseInt(form.autoModeUplinkFreq) - 1]) {
+      if (!uplinks[form.autoModeUplinkFreq - 1] || !downlinks[form.autoModeDownlinkFreq - 1]) {
         result = false;
         errors.value["satelliteMode"] = I18nUtil.getMsg(I18nMsgs.CHK_ERR_SATELLITEMODE_REQUIRE_UPDOWN);
       }

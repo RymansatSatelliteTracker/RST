@@ -42,8 +42,8 @@ export default function useEditSatelliteInfo() {
   function transformAppConfigToForm(targetForm: EditSatelliteInfoForm, srcObj: AppConfigSatellite) {
     transformToForm(targetForm, srcObj);
     targetForm.editSatelliteName = srcObj.userRegisteredSatelliteName;
-    targetForm.autoModeUplinkFreq = (srcObj.autoModeUplinkFreq ?? 1).toString();
-    targetForm.autoModeDownlinkFreq = (srcObj.autoModeDownlinkFreq ?? 1).toString();
+    targetForm.autoModeUplinkFreq = srcObj.autoModeUplinkFreq ?? 1;
+    targetForm.autoModeDownlinkFreq = srcObj.autoModeDownlinkFreq ?? 1;
   }
   /**
    * 画面フォームの構造に変換する(デフォルト衛星定義用)
@@ -53,8 +53,8 @@ export default function useEditSatelliteInfo() {
   function transformDefSatToForm(targetForm: EditSatelliteInfoForm, srcObj: DefaultSatelliteType) {
     transformToForm(targetForm, srcObj);
     targetForm.editSatelliteName = srcObj.satelliteName;
-    targetForm.autoModeUplinkFreq = "1";
-    targetForm.autoModeDownlinkFreq = "1";
+    targetForm.autoModeUplinkFreq = 1;
+    targetForm.autoModeDownlinkFreq = 1;
   }
   /**
    * アプリケーション設定の構造に変換する
@@ -65,14 +65,14 @@ export default function useEditSatelliteInfo() {
     targetAppConfig.satelliteId = srcForm.satelliteId;
     targetAppConfig.userRegisteredSatelliteName = srcForm.editSatelliteName;
     targetAppConfig.noradId = srcForm.noradId;
-    targetAppConfig.autoModeUplinkFreq = parseInt(srcForm.autoModeUplinkFreq);
+    targetAppConfig.autoModeUplinkFreq = srcForm.autoModeUplinkFreq;
     targetAppConfig.uplink1.uplinkHz = srcForm.uplink1Hz ? srcForm.uplink1Hz : null;
     targetAppConfig.uplink1.uplinkMode = srcForm.uplink1Mode;
     targetAppConfig.uplink2.uplinkHz = srcForm.uplink2Hz ? srcForm.uplink2Hz : null;
     targetAppConfig.uplink2.uplinkMode = srcForm.uplink2Mode;
     targetAppConfig.uplink3.uplinkHz = srcForm.uplink3Hz ? srcForm.uplink3Hz : null;
     targetAppConfig.uplink3.uplinkMode = srcForm.uplink3Mode;
-    targetAppConfig.autoModeDownlinkFreq = parseInt(srcForm.autoModeDownlinkFreq);
+    targetAppConfig.autoModeDownlinkFreq = srcForm.autoModeDownlinkFreq;
     targetAppConfig.downlink1.downlinkHz = srcForm.downlink1Hz ? srcForm.downlink1Hz : null;
     targetAppConfig.downlink1.downlinkMode = srcForm.downlink1Mode;
     targetAppConfig.downlink2.downlinkHz = srcForm.downlink2Hz ? srcForm.downlink2Hz : null;
