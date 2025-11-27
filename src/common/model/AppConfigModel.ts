@@ -1,4 +1,5 @@
 import Constant from "@/common/Constant";
+import { autoModeFreqType } from "@/common/types/satelliteSettingTypes";
 
 /**
  * アプリケーション設定モデル
@@ -75,7 +76,7 @@ export class AppConfigSatellite {
   // 対象衛星NORAD ID
   public noradId: string = "";
   // 自動設定時に使用するアップリンク設定
-  public autoModeUplinkFreq: number = 1;
+  public autoModeUplinkFreq: autoModeFreqType = 1;
   // 対象衛星アップリンク設定1
   public uplink1 = new Uplink();
   // 対象衛星アップリンク設定2
@@ -83,7 +84,7 @@ export class AppConfigSatellite {
   // 対象衛星アップリンク設定3
   public uplink3 = new Uplink();
   // 自動設定時に使用するダウンリンク設定
-  public autoModeDownlinkFreq: number = 1;
+  public autoModeDownlinkFreq: autoModeFreqType = 1;
   // 対象衛星ダウンリンク設定1
   public downlink1 = new Downlink();
   // 対象衛星ダウンリンク設定2

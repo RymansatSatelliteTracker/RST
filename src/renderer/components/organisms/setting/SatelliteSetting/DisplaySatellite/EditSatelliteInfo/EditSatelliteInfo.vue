@@ -74,7 +74,7 @@
           <v-col cols="3"> <OpeModeSelect v-model="form.uplink1Mode" /></v-col>
           <v-col col="1">
             <v-radio-group v-model="form.autoModeUplinkFreq" hide-details density="compact">
-              <v-radio value="1"></v-radio></v-radio-group
+              <v-radio :value="1"></v-radio></v-radio-group
           ></v-col>
           <!-- アップリンク周波数2 -->
           <v-col cols="4"> </v-col>
@@ -95,7 +95,7 @@
           /></v-col>
           <v-col col="1">
             <v-radio-group v-model="form.autoModeUplinkFreq" hide-details density="compact">
-              <v-radio value="2" :disabled="!(form.uplink1Hz && form.uplink1Mode)"></v-radio></v-radio-group
+              <v-radio :value="2" :disabled="!(form.uplink1Hz && form.uplink1Mode)"></v-radio></v-radio-group
           ></v-col>
           <!-- アップリンク周波数3 -->
           <v-col cols="4"> </v-col>
@@ -116,7 +116,7 @@
           /></v-col>
           <v-col col="1">
             <v-radio-group v-model="form.autoModeUplinkFreq" hide-details density="compact">
-              <v-radio value="3" :disabled="!(form.uplink2Hz && form.uplink2Mode)"></v-radio></v-radio-group
+              <v-radio :value="3" :disabled="!(form.uplink2Hz && form.uplink2Mode)"></v-radio></v-radio-group
           ></v-col>
         </v-row>
         <v-row>
@@ -155,7 +155,7 @@
           <v-col cols="3"> <OpeModeSelect v-model="form.downlink1Mode" /></v-col>
           <v-col col="1">
             <v-radio-group v-model="form.autoModeDownlinkFreq" hide-details density="compact">
-              <v-radio value="1"></v-radio></v-radio-group
+              <v-radio :value="1"></v-radio></v-radio-group
           ></v-col>
           <!-- ダウンリンク周波数2 -->
           <v-col cols="4"> </v-col>
@@ -176,7 +176,7 @@
           /></v-col>
           <v-col col="1">
             <v-radio-group v-model="form.autoModeDownlinkFreq" hide-details density="compact">
-              <v-radio value="2" :disabled="!(form.downlink2Hz && form.downlink2Mode)"></v-radio></v-radio-group
+              <v-radio :value="2" :disabled="!(form.downlink2Hz && form.downlink2Mode)"></v-radio></v-radio-group
           ></v-col>
           <!-- ダウンリンク周波数3 -->
           <v-col cols="4"> </v-col>
@@ -197,7 +197,7 @@
           /></v-col>
           <v-col col="1">
             <v-radio-group v-model="form.autoModeDownlinkFreq" hide-details density="compact">
-              <v-radio value="3" :disabled="!(form.downlink3Hz && form.downlink3Mode)"></v-radio></v-radio-group
+              <v-radio :value="3" :disabled="!(form.downlink3Hz && form.downlink3Mode)"></v-radio></v-radio-group
           ></v-col>
         </v-row>
         <v-row>
@@ -371,7 +371,7 @@ async function onOk() {
   const result = await validateForm(form.value);
   if (!result) {
     const messages = Object.values(errors.value).filter((item) => item);
-    if (messages.length > 0) emitter.emit(Constant.GlobalEvent.NOTICE_INFO, messages[0]);
+    if (messages.length > 0) emitter.emit(Constant.GlobalEvent.NOTICE_ERR, messages[0]);
     return;
   }
 

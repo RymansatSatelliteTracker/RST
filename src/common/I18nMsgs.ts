@@ -50,6 +50,11 @@ export default class I18nMsgs {
     en: "Either the beacon frequency or mode has not been entered.",
     ja: "ビーコン周波数の周波数かモードいずれかが未入力です",
   };
+  public static readonly CHK_ERR_SATELLITEMODE_REQUIRE_UPDOWN: I18nMsgItem = {
+    en: "When Satellite Mode is enabled, uplink and downlink settings are required.",
+    ja: "サテライトモードが有効の場合、アップリンクとダウンリンクの設定は必須です",
+  };
+
   public static readonly CHK_ERR_DUPLICATE_MOVE: I18nMsgItem = {
     en: "Duplicate data cannot be moved",
     ja: "重複したデータは移動できません",
@@ -109,6 +114,22 @@ export default class I18nMsgs {
   public static readonly ERR_NO_OVERLAP_PASS: I18nMsgItem = {
     en: "No overlapping pass found.",
     ja: "重複パスが見つかりません。",
+  };
+  public static readonly CHK_ERR_NO_BEACON_FREQ: I18nMsgItem = {
+    en: "Beacon frequency is not set.",
+    ja: "ビーコン周波数が設定されていません。",
+  };
+  public static readonly CHK_ERR_NO_UPLINK_FREQ: I18nMsgItem = {
+    en: "Uplink frequency is not set.",
+    ja: "アップリンク周波数が設定されていません。",
+  };
+  public static readonly CHK_ERR_NO_DOWNLINK_FREQ: I18nMsgItem = {
+    en: "Downlink frequency is not set.",
+    ja: "ダウンリンク周波数が設定されていません。",
+  };
+  public static readonly CHK_ERR_NO_FREQ: I18nMsgItem = {
+    en: "Uplink and Downlink frequencies are not set.",
+    ja: "アップリンク周波数とダウンリンク周波数が設定されていません。",
   };
 
   // AppConfig系エラーメッセージ
