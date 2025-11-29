@@ -23,6 +23,22 @@ AppMainLogger.init();
 let mainWindow: BrowserWindow;
 
 (async () => {
+  // 既に起動中のインスタンスがある場合は終了する
+  const gotTheLock = app.requestSingleInstanceLock();
+  if (!gotTheLock) {
+    AppMainLogger.info("Another instance is already running.");
+    app.quit();
+    return;
+  }
+  // 起動中に他のインスタンスが起動した場合
+  app.on("second-instance", () => {
+    if (mainWindow) {
+      AppMainLogger.info("Second instance detected, focusing main window.");
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
+  });
+
   // active化を待つ
   await app.whenReady();
 
