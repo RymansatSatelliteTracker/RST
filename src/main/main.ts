@@ -30,14 +30,6 @@ let mainWindow: BrowserWindow;
     app.quit();
     return;
   }
-  // 起動中に他のインスタンスが起動した場合
-  app.on("second-instance", () => {
-    if (mainWindow) {
-      AppMainLogger.info("Second instance detected, focusing main window.");
-      if (mainWindow.isMinimized()) mainWindow.restore();
-      mainWindow.focus();
-    }
-  });
 
   // active化を待つ
   await app.whenReady();
@@ -95,6 +87,14 @@ app.on("window-all-closed", () => {
 
   if (process.platform !== "darwin") {
     app.quit();
+  }
+});
+// 多重起動は防止されているが他のインスタンス起動を検知したらメインウィンドウをフォーカスする
+app.on("second-instance", () => {
+  if (mainWindow) {
+    AppMainLogger.info("Second instance detected, focusing main window.");
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.focus();
   }
 });
 
