@@ -23,6 +23,14 @@ AppMainLogger.init();
 let mainWindow: BrowserWindow;
 
 (async () => {
+  // 既に起動中のインスタンスがある場合は終了する
+  const gotTheLock = app.requestSingleInstanceLock();
+  if (!gotTheLock) {
+    AppMainLogger.info("Another instance is already running.");
+    app.quit();
+    return;
+  }
+
   // active化を待つ
   await app.whenReady();
 
@@ -79,6 +87,14 @@ app.on("window-all-closed", () => {
 
   if (process.platform !== "darwin") {
     app.quit();
+  }
+});
+// 多重起動は防止されているが他のインスタンス起動を検知したらメインウィンドウをフォーカスする
+app.on("second-instance", () => {
+  if (mainWindow) {
+    AppMainLogger.info("Second instance detected, focusing main window.");
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.focus();
   }
 });
 
