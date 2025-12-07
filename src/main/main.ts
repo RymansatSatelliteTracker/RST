@@ -1,6 +1,3 @@
-// mainプロセスでのimportでaliasを適用するために以下の module-alias を使用
-import "module-alias/register";
-// このコメント行は、 module-alias を先頭のままとするためのものです。（import整形で順序を変更させない）
 import Constant from "@/common/Constant";
 import { MessageModel } from "@/common/model/MessageModel";
 import EnvUtil from "@/common/util/EnvUtil";

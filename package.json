@@ -112,7 +112,6 @@
     "leaflet": "^1.9.4",
     "leaflet-arrowheads": "^1.4.0",
     "mitt": "^3.0.1",
-    "module-alias": "^2.2.3",
     "pinia-plugin-persistedstate": "^4.1.1",
     "playwright": "^1.52.0",
     "satellite.js": "^6.0.0",
