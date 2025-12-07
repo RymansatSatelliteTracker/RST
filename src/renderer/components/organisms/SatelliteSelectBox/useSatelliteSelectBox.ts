@@ -145,7 +145,7 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
     await ApiAppConfig.storeAppConfig(appConfig);
 
     // 無線機のAutoをOffにする
-    // memo: AutoOnのママでの衛星変更を許容すると、AutoOnにできない衛星の場合の考慮が必要になること、
+    // memo: AutoOnのママで衛星変更を許容すると、AutoOnにできない衛星の場合の考慮が必要になること、
     //       衛星の変更タイミングによってはRSTと無線機の周波数の同期（特にバンド設定）が崩れるため、AutoをOffにする
     const autoStore = useStoreAutoState();
     autoStore.tranceiverAuto = false;
