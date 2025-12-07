@@ -185,12 +185,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       await this.sendFreq(txFreqHz);
 
       // サブバンド（Tx）のモードを設定する
-      if (txMode) {
-        const txModeValue = TransceiverIcomRecvParser.getValueFromOpeMode(txMode);
-        if (txModeValue) {
-          const cmdData = this.cmdMaker.setMode(txModeValue);
-          await this.sendAndWaitRecv(cmdData, "SET_MODE");
-        }
+      if (txModeValue) {
+        const cmdData = this.cmdMaker.setMode(txModeValue);
+        await this.sendAndWaitRecv(cmdData, "SET_MODE");
       }
     }
   }
