@@ -3,6 +3,7 @@ import ApiActiveSat from "@/renderer/api/ApiActiveSat";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import ActiveSatHelper from "@/renderer/common/util/ActiveSatHelper";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
+import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
 import { SelectOption } from "@/renderer/types/vue-types";
 import { onMounted, ref, Ref } from "vue";
 
@@ -142,6 +143,12 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
     const appConfig = await ApiAppConfig.getAppConfig();
     appConfig.mainDisplay.activeSatelliteId = parseInt(satId);
     await ApiAppConfig.storeAppConfig(appConfig);
+
+    // 無線機のAutoをOffにする
+    // memo: AutoOnのママでの衛星変更を許容すると、AutoOnにできない衛星の場合の考慮が必要になること、
+    //       衛星の変更タイミングによってはRSTと無線機の周波数の同期（特にバンド設定）が崩れるため、AutoをOffにする
+    const autoStore = useStoreAutoState();
+    autoStore.tranceiverAuto = false;
 
     // アクティブ衛星の更新を通知
     await ApiActiveSat.refreshAppConfig();
