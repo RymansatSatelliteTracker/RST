@@ -141,9 +141,55 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   /**
    * AutoOn時の初期処理
    */
-  public override async initAutoOn(txFreqHz: number, rxFreqHz: number): Promise<void> {
+  public override async initAutoOn(txFreqHz: number, rxFreqHz: number, txMode: string, rxMode: string): Promise<void> {
+    // RST側の周波数を保存する（バンド入れ替え判定で必要）
+    this.state.setReqRxFreqHz(rxFreqHz);
+    this.state.setReqTxFreqHz(txFreqHz);
+
+    // RST側のモードを保存する（バンド入れ替え判定で必要）
+    const txModeValue = TransceiverIcomRecvParser.getValueFromOpeMode(txMode);
+    if (txModeValue) {
+      this.state.setReqTxMode(txModeValue);
+    }
+    const rxModeValue = TransceiverIcomRecvParser.getValueFromOpeMode(rxMode);
+    if (rxModeValue) {
+      this.state.setReqRxMode(rxModeValue);
+    }
+
     // メインバンドの周波数を元に、必要であればメインとサブの周波数帯の入れ替えを行う
     await this.switchBandIfNeed();
+
+    // RST側の周波数とモードを無線機に送信する
+    // memo: バンド入れ替え後のこの段階では、まだRST側の設定を反映していないため、RST側の周波数とモードを初回設定値として反映する
+    // メインバンドに切り替える
+    this.state.isMain = true;
+    await this.sendAndWaitRecv(this.cmdMaker.switchToMainBand(), "SWITCH");
+
+    // メインバンド（Rx）の周波数を設定する
+    await this.sendFreq(rxFreqHz);
+
+    // メインバンド（Rx）のモードを設定する
+    if (rxModeValue) {
+      const cmdData = this.cmdMaker.setMode(rxModeValue);
+      await this.sendAndWaitRecv(cmdData, "SET_MODE");
+    }
+
+    // サブバンド
+    // サテライトモードの場合は、サブバンド（Tx）の周波数とモードも設定する
+    if (this.state.isSatelliteMode) {
+      // サブバンドに切り替える
+      this.state.isMain = false;
+      await this.sendAndWaitRecv(this.cmdMaker.switchToSubBand(), "SWITCH");
+
+      // サブバンド（Tx）の周波数を設定する
+      await this.sendFreq(txFreqHz);
+
+      // サブバンド（Tx）のモードを設定する
+      if (txModeValue) {
+        const cmdData = this.cmdMaker.setMode(txModeValue);
+        await this.sendAndWaitRecv(cmdData, "SET_MODE");
+      }
+    }
   }
 
   /**
@@ -440,8 +486,11 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // サテライトモードの設定を保持する
     this.state.isSatelliteMode = isSatelliteMode;
 
-    // メインバンドの周波数を元に、必要であればメインとサブの周波数帯の入れ替えを行う
-    await this.switchBandIfNeed();
+    // // メインバンドの周波数を元に、必要であればメインとサブの周波数帯の入れ替えを行う
+    // await this.switchBandIfNeed();
+
+    // サテライトモードの周波数を取得する
+    await this.getFreqFromIcom();
   }
 
   /**
