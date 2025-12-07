@@ -24,8 +24,11 @@ export default class ApiTransceiver {
   /**
    * AutoOn時の初期処理
    */
-  public static async initAutoOn(txFreqHz: number, rxFreqHz: number): Promise<void> {
-    await window.rstApi.initAutoOn(txFreqHz, rxFreqHz);
+  // public static async initAutoOn(txFreqHz: number, rxFreqHz: number): Promise<void> {
+  //   await window.rstApi.initAutoOn(txFreqHz, rxFreqHz);
+  // }
+  public static async initAutoOn(txFreqHz: number, rxFreqHz: number, txMode?: string, rxMode?: string): Promise<void> {
+    await window.rstApi.initAutoOn(txFreqHz, rxFreqHz, txMode, rxMode);
   }
 
   /**

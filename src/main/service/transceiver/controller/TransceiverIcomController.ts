@@ -141,9 +141,113 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   /**
    * AutoOn時の初期処理
    */
-  public override async initAutoOn(txFreqHz: number, rxFreqHz: number): Promise<void> {
+  // public override async initAutoOn(txFreqHz: number, rxFreqHz: number): Promise<void> {
+  public override async initAutoOn(
+    txFreqHz: number,
+    rxFreqHz: number,
+    txMode?: string,
+    rxMode?: string
+  ): Promise<void> {
+    // RST側で設定した周波数を状態に保存する（バンド入れ替え後の再設定用）
+    this.state.setReqRxFreqHz(rxFreqHz);
+    this.state.setReqTxFreqHz(txFreqHz);
+
+    // RST側で設定したモードを状態に保存する（バンド入れ替え後の再設定用）
+    if (txMode) {
+      const txModeValue = TransceiverIcomRecvParser.getValueFromOpeMode(txMode);
+      if (txModeValue) {
+        this.state.setReqTxMode(txModeValue);
+      }
+    }
+    if (rxMode) {
+      const rxModeValue = TransceiverIcomRecvParser.getValueFromOpeMode(rxMode);
+      if (rxModeValue) {
+        this.state.setReqRxMode(rxModeValue);
+      }
+    }
+
+    // // メインバンドの周波数を元に、必要であればメインとサブの周波数帯の入れ替えを行う
+    // await this.switchBandIfNeed();
     // メインバンドの周波数を元に、必要であればメインとサブの周波数帯の入れ替えを行う
-    await this.switchBandIfNeed();
+    const bandSwitched = await this.switchBandIfNeed();
+
+    // バンド入れ替えが発生した場合、RST側で設定した周波数とモードを再設定する
+    // memo: バンド入れ替え後、無線機から読み込んだ周波数がまだRST側の設定を反映していないため、
+    //       明示的にRST側で設定した周波数とモードを再設定する必要がある
+    if (bandSwitched) {
+      // メインバンドに切り替える
+      this.state.isMain = true;
+      await this.sendAndWaitRecv(this.cmdMaker.switchToMainBand(), "SWITCH");
+
+      // メインバンド（Rx）の周波数を設定する
+      await this.sendFreq(rxFreqHz);
+      this.state.isRxSendFreqUpdate = false;
+
+      // メインバンド（Rx）のモードを設定する
+      if (rxMode) {
+        const rxModeValue = TransceiverIcomRecvParser.getValueFromOpeMode(rxMode);
+        if (rxModeValue !== null) {
+          const cmdData = this.cmdMaker.setMode(rxModeValue);
+          await this.sendAndWaitRecv(cmdData, "SET_MODE");
+          this.state.isRxSendModeUpdate = false;
+        }
+      }
+
+      // サテライトモードの場合は、サブバンド（Tx）の周波数とモードも設定する
+      if (this.state.isSatelliteMode) {
+        // サブバンドに切り替える
+        this.state.isMain = false;
+        await this.sendAndWaitRecv(this.cmdMaker.switchToSubBand(), "SWITCH");
+
+        // サブバンド（Tx）の周波数を設定する
+        await this.sendFreq(txFreqHz);
+        this.state.isTxSendFreqUpdate = false;
+
+        // サブバンド（Tx）のモードを設定する
+        if (txMode) {
+          const txModeValue = TransceiverIcomRecvParser.getValueFromOpeMode(txMode);
+          if (txModeValue !== null) {
+            const cmdData = this.cmdMaker.setMode(txModeValue);
+            await this.sendAndWaitRecv(cmdData, "SET_MODE");
+            this.state.isTxSendModeUpdate = false;
+          }
+        }
+      }
+    } else {
+      // バンド入れ替えが発生しなかった場合でも、モードを設定する
+      // memo: バンド入れ替えがない場合、watchハンドラによる非同期のモード設定が
+      //       タイミング的に実行されない可能性があるため、明示的にモードを設定する
+      // メインバンドに切り替える
+      this.state.isMain = true;
+      await this.sendAndWaitRecv(this.cmdMaker.switchToMainBand(), "SWITCH");
+
+      // メインバンド（Rx）のモードを設定する
+      if (rxMode) {
+        const rxModeValue = TransceiverIcomRecvParser.getValueFromOpeMode(rxMode);
+        if (rxModeValue !== null) {
+          const cmdData = this.cmdMaker.setMode(rxModeValue);
+          await this.sendAndWaitRecv(cmdData, "SET_MODE");
+          this.state.isRxSendModeUpdate = false;
+        }
+      }
+
+      // サテライトモードの場合は、サブバンド（Tx）のモードも設定する
+      if (this.state.isSatelliteMode) {
+        // サブバンドに切り替える
+        this.state.isMain = false;
+        await this.sendAndWaitRecv(this.cmdMaker.switchToSubBand(), "SWITCH");
+
+        // サブバンド（Tx）のモードを設定する
+        if (txMode) {
+          const txModeValue = TransceiverIcomRecvParser.getValueFromOpeMode(txMode);
+          if (txModeValue !== null) {
+            const cmdData = this.cmdMaker.setMode(txModeValue);
+            await this.sendAndWaitRecv(cmdData, "SET_MODE");
+            this.state.isTxSendModeUpdate = false;
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -440,8 +544,11 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // サテライトモードの設定を保持する
     this.state.isSatelliteMode = isSatelliteMode;
 
-    // メインバンドの周波数を元に、必要であればメインとサブの周波数帯の入れ替えを行う
-    await this.switchBandIfNeed();
+    // // メインバンドの周波数を元に、必要であればメインとサブの周波数帯の入れ替えを行う
+    // await this.switchBandIfNeed();
+
+    // サテライトモードの周波数を取得する
+    await this.getFreqFromIcom();
   }
 
   /**

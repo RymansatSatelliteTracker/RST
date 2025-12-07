@@ -84,13 +84,21 @@ export default class TransceiverService {
   /**
    * 無線機関係・AutoOn時の初期処理
    */
-  public async initAutoOn(txFreqHz: number, rxFreqHz: number) {
+  // public async initAutoOn(txFreqHz: number, rxFreqHz: number) {
+  //   if (!this.controller) {
+  //     return;
+  //   }
+
+  //   // AutoOnの初期処理を実行する
+  //   await this.controller.initAutoOn(txFreqHz, rxFreqHz);
+  // }
+  public async initAutoOn(txFreqHz: number, rxFreqHz: number, txMode?: string, rxMode?: string) {
     if (!this.controller) {
       return;
     }
 
     // AutoOnの初期処理を実行する
-    await this.controller.initAutoOn(txFreqHz, rxFreqHz);
+    await this.controller.initAutoOn(txFreqHz, rxFreqHz, txMode, rxMode);
   }
 
   /**

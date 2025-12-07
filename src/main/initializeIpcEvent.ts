@@ -223,8 +223,11 @@ export function initializeIpcEvents() {
   /**
    * 無線機関係・無線機関係・AutoOn時の初期処理
    */
-  ipcMain.handle("initAutoOn", async (event, txFreqHz: number, rxFreqHz: number) => {
-    return await TransceiverService.getInstance().initAutoOn(txFreqHz, rxFreqHz);
+  // ipcMain.handle("initAutoOn", async (event, txFreqHz: number, rxFreqHz: number) => {
+  //   return await TransceiverService.getInstance().initAutoOn(txFreqHz, rxFreqHz);
+  // });
+  ipcMain.handle("initAutoOn", async (event, txFreqHz: number, rxFreqHz: number, txMode?: string, rxMode?: string) => {
+    return await TransceiverService.getInstance().initAutoOn(txFreqHz, rxFreqHz, txMode, rxMode);
   });
 
   /**
