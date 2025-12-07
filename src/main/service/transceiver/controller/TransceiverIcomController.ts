@@ -486,9 +486,6 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // サテライトモードの設定を保持する
     this.state.isSatelliteMode = isSatelliteMode;
 
-    // // メインバンドの周波数を元に、必要であればメインとサブの周波数帯の入れ替えを行う
-    // await this.switchBandIfNeed();
-
     // サテライトモードの周波数を取得する
     await this.getFreqFromIcom();
   }
