@@ -33,6 +33,9 @@ const CivCommand = class {
   // static readonly PADDING = 0x00;
 };
 
+// データモードOn
+const DATA_MODE_ON = "01";
+
 /**
  * ICOM無線機のコマンド生成クラス
  */
@@ -172,7 +175,8 @@ export default class TransceiverIcomCmdMaker {
   public makeDataMode(dataMode: string): Uint8Array {
     // データモードをOffにする場合はフィルターは00固定にする必要がある（ic-9700のマニュアルより）
     let fil = 0x00;
-    if (dataMode === "01") {
+    if (dataMode === DATA_MODE_ON) {
+      // フィルターは01～03まで設定可能だが、RSTの画面でフィルターを指定することは現状考慮していないため01固定としている。
       fil = 0x01;
     }
 
