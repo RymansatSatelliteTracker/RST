@@ -28,21 +28,27 @@ export default class TransceiverIcomRecvParser {
   }
 
   /**
-   * 運用モードの値を取得する
+   * 指定の運用モード文字列からCI-Vコマンド値を返す
    * @param {string} opeMode 運用モード
-   * @returns {(string | null)} 運用モードの値
+   * @returns {(string | null)} 運用モードのCI-Vコマンド値
    */
   public static getValueFromOpeMode(opeMode: string): string | null {
     switch (opeMode) {
       case "LSB":
         return "00";
+      case "LSB-D":
+        return "00";
       case "USB":
+        return "01";
+      case "USB-D":
         return "01";
       case "AM":
         return "02";
       case "CW":
         return "03";
       case "FM":
+        return "05";
+      case "FM-D":
         return "05";
       case "DV":
         return "17";
@@ -74,6 +80,24 @@ export default class TransceiverIcomRecvParser {
         return Constant.Transceiver.OpeMode.DV;
       default:
         return null;
+    }
+  }
+
+  /**
+   * 指定の運用モード文字列からデータモードのOn/Offを示す値を返す
+   * @param {string} mode 運用モード
+   * @returns {(string | null)} CI-VコマンドのOn/Offを示す値を返す
+   */
+  public static getValueFromDataMode(mode: string): string {
+    switch (mode) {
+      case "LSB-D":
+        return "01";
+      case "USB-D":
+        return "01";
+      case "FM-D":
+        return "01";
+      default:
+        return "00";
     }
   }
 

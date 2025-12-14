@@ -299,6 +299,11 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     if (this.state.isRxSendModeUpdate) {
       const cmdData = this.cmdMaker.setMode(this.state.getReqRxMode());
       await this.sendAndWaitRecv(cmdData, "SET_MODE");
+
+      // データモード
+      const cmdDataMode = this.cmdMaker.makeDataMode(this.state.getReqRxDataMode());
+      await this.sendAndWaitRecv(cmdDataMode, "SET_MODE");
+
       this.state.isRxSendModeUpdate = false;
     } else {
       // 運用モードを無線機から取得
@@ -337,6 +342,11 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     if (this.state.isTxSendModeUpdate) {
       const cmdData = this.cmdMaker.setMode(this.state.getReqTxMode());
       await this.sendAndWaitRecv(cmdData, "SET_MODE");
+
+      // データモード
+      const cmdDataMode = this.cmdMaker.makeDataMode(this.state.getReqTxDataMode());
+      await this.sendAndWaitRecv(cmdDataMode, "SET_MODE");
+
       this.state.isTxSendModeUpdate = false;
     } else {
       // 運用モードを無線機から取得
@@ -383,7 +393,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   }
 
   /**
-   * 無線機に運用モードを設定するコマンドを送信する
+   * 無線機の運用モードを設定する
+   * MEMO: 設定したい値の設定のみ行う。無線機への送信は一定時間間隔で別メソッドにて行われる。
    * @param {(UplinkType | DownlinkType)} modeModel 運用モード設定
    */
   public override async setMode(modeModel: UplinkType | DownlinkType): Promise<void> {
@@ -403,6 +414,10 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         return;
       }
       this.state.setReqTxMode(modeValue);
+
+      // データモードの設定
+      const dataMode = TransceiverIcomRecvParser.getValueFromDataMode(mode);
+      this.state.setReqTxDataMode(dataMode);
     } else if ("downlinkMode" in modeModel) {
       // ダウンリンクモードを取得する
       const mode = modeModel.downlinkMode;
@@ -413,6 +428,10 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         return;
       }
       this.state.setReqRxMode(modeValue);
+
+      // データモードの設定
+      const dataMode = TransceiverIcomRecvParser.getValueFromDataMode(mode);
+      this.state.setReqRxDataMode(dataMode);
     }
   }
 

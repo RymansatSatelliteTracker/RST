@@ -10,8 +10,10 @@ export default class TransceiverIcomState {
   // 無線機に設定したい周波数、モード
   private reqRxFreqHz = 0;
   private reqTxFreqHz = 0;
-  private reqRxMode = "";
-  private reqTxMode = "";
+  private reqRxMode = ""; // Rx運用モード
+  private reqTxMode = ""; // Tx運用モード
+  private reqRxDataMode = ""; // Rxデータモード
+  private reqTxDataMode = ""; // Txデータモード
 
   // 無線機から取得した周波数
   private recvTxFreqHz = 0;
@@ -84,6 +86,30 @@ export default class TransceiverIcomState {
       return;
     }
     this.reqTxMode = mode;
+    this.isTxSendModeUpdate = true;
+  }
+
+  /**
+   * RSTから無線機に設定したいRxモードをセットする
+   */
+  public setReqRxDataMode(mode: string): void {
+    // 現在保持している値と同一の場合は何もしない（不要なバンド切り替えを抑止する）
+    if (this.reqRxDataMode === mode) {
+      return;
+    }
+    this.reqRxDataMode = mode;
+    this.isRxSendModeUpdate = true;
+  }
+
+  /**
+   * RSTから無線機に設定したいTxモードをセットする
+   */
+  public setReqTxDataMode(mode: string): void {
+    // 現在保持している値と同一の場合は何もしない（不要なバンド切り替えを抑止する）
+    if (this.reqTxDataMode === mode) {
+      return;
+    }
+    this.reqTxDataMode = mode;
     this.isTxSendModeUpdate = true;
   }
 
@@ -162,5 +188,11 @@ export default class TransceiverIcomState {
   }
   public getReqTxMode(): string {
     return this.reqTxMode;
+  }
+  public getReqRxDataMode(): string {
+    return this.reqRxDataMode;
+  }
+  public getReqTxDataMode(): string {
+    return this.reqTxDataMode;
   }
 }

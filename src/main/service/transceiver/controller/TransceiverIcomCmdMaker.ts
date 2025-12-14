@@ -133,7 +133,7 @@ export default class TransceiverIcomCmdMaker {
   }
 
   /**
-   * 無線機に周波数を設定するコマンドを送信する
+   * 無線機に周波数を設定するコマンドを返す
    */
   public setFreq(freq: number): Uint8Array {
     // 周波数を10桁の文字列に変換
@@ -154,7 +154,7 @@ export default class TransceiverIcomCmdMaker {
   }
 
   /**
-   * 無線機に運用モードを設定するコマンドを送信する
+   * 無線機に運用モードを設定するコマンドを返す
    */
   public setMode(mode: string): Uint8Array {
     return new Uint8Array([
@@ -162,6 +162,24 @@ export default class TransceiverIcomCmdMaker {
       // コマンド部
       CivCommand.SET_MODE,
       parseInt(mode, 16),
+      ...this.makeSuffix(),
+    ]);
+  }
+
+  /**
+   * 無線機にデータモードを設定するコマンドを返す
+   */
+  public makeDataMode(dataMode: string): Uint8Array {
+    // データモードをOffにする場合はフィルターは00固定にする必要がある（ic-9700のマニュアルより）
+    let fil = 0x00;
+    if (dataMode === "01") {
+      fil = 0x01;
+    }
+
+    return new Uint8Array([
+      ...this.makePrefix(),
+      // コマンド部（1A06）
+      ...new Uint8Array([0x1a, 0x06, parseInt(dataMode, 16), fil]),
       ...this.makeSuffix(),
     ]);
   }
