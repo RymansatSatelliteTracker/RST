@@ -86,7 +86,7 @@ export default class TransceiverIcomRecvParser {
   /**
    * 指定の運用モード文字列からデータモードのOn/Offを示す値を返す
    * @param {string} mode 運用モード
-   * @returns {(string | null)} CI-VコマンドのOn/Offを示す値を返す
+   * @returns {string} CI-VコマンドのOn/Offを示す値
    */
   public static getValueFromDataMode(mode: string): string {
     switch (mode) {

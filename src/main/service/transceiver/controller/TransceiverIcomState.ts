@@ -90,7 +90,7 @@ export default class TransceiverIcomState {
   }
 
   /**
-   * RSTから無線機に設定したいRxモードをセットする
+   * RSTから無線機に設定したいRxデータモードをセットする
    */
   public setReqRxDataMode(mode: string): void {
     // 現在保持している値と同一の場合は何もしない（不要なバンド切り替えを抑止する）
@@ -102,7 +102,7 @@ export default class TransceiverIcomState {
   }
 
   /**
-   * RSTから無線機に設定したいTxモードをセットする
+   * RSTから無線機に設定したいTxデータモードをセットする
    */
   public setReqTxDataMode(mode: string): void {
     // 現在保持している値と同一の場合は何もしない（不要なバンド切り替えを抑止する）
