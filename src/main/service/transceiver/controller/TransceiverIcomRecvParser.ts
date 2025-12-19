@@ -34,23 +34,23 @@ export default class TransceiverIcomRecvParser {
    */
   public static getValueFromOpeMode(opeMode: string): string | null {
     switch (opeMode) {
-      case "LSB":
+      case Constant.Transceiver.OpeMode.LSB:
         return "00";
-      case "LSB-D":
+      case Constant.Transceiver.OpeMode.LSB_D:
         return "00";
-      case "USB":
+      case Constant.Transceiver.OpeMode.USB:
         return "01";
-      case "USB-D":
+      case Constant.Transceiver.OpeMode.USB_D:
         return "01";
-      case "AM":
+      case Constant.Transceiver.OpeMode.AM:
         return "02";
-      case "CW":
+      case Constant.Transceiver.OpeMode.CW:
         return "03";
-      case "FM":
+      case Constant.Transceiver.OpeMode.FM:
         return "05";
-      case "FM-D":
+      case Constant.Transceiver.OpeMode.FM_D:
         return "05";
-      case "DV":
+      case Constant.Transceiver.OpeMode.DV:
         return "17";
       default:
         return null;
@@ -90,11 +90,11 @@ export default class TransceiverIcomRecvParser {
    */
   public static getValueFromDataMode(mode: string): string {
     switch (mode) {
-      case "LSB-D":
+      case Constant.Transceiver.OpeMode.LSB_D:
         return "01";
-      case "USB-D":
+      case Constant.Transceiver.OpeMode.USB_D:
         return "01";
-      case "FM-D":
+      case Constant.Transceiver.OpeMode.FM_D:
         return "01";
       default:
         return "00";
