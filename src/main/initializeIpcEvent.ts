@@ -258,8 +258,8 @@ export function initializeIpcEvents() {
   /**
    * 無線機関係・サテライトモードを変更する
    */
-  ipcMain.handle("setSatelliteMode", (event, isSatelliteMode: boolean) => {
-    return TransceiverService.getInstance().setSatelliteMode(isSatelliteMode);
+  ipcMain.handle("setSatelliteMode", async (event, isSatelliteMode: boolean) => {
+    return await TransceiverService.getInstance().setSatelliteMode(isSatelliteMode);
   });
 
   /**

@@ -33,13 +33,6 @@ const CivCommand = class {
   // static readonly PADDING = 0x00;
 };
 
-// データモードOn
-const DATA_MODE_ON = "01";
-// フィルター０
-const FILTER0 = 0x00;
-// フィルター１
-const FILTER1 = 0x01;
-
 /**
  * ICOM無線機のコマンド生成クラス
  */
@@ -74,7 +67,7 @@ export default class TransceiverIcomCmdMaker {
    * トランシーブモードの設定コマンドを返す
    * @param onOff 0x00: Off, 0x01: On
    */
-  public setTranceive(onOff: number): Uint8Array {
+  public makeSetTranceive(onOff: number): Uint8Array {
     return new Uint8Array([
       ...this.makePrefix(),
       // コマンド部
@@ -90,7 +83,7 @@ export default class TransceiverIcomCmdMaker {
   /**
    * VFO Aに切り替えコマンドを返す
    */
-  public switchVfoA(): Uint8Array {
+  public makeSwitchVfoA(): Uint8Array {
     return new Uint8Array([
       ...this.makePrefix(),
       // コマンド部
@@ -103,7 +96,7 @@ export default class TransceiverIcomCmdMaker {
   /**
    * 無線機をメインバンドに切り替えるコマンドを返す
    */
-  public switchToMainBand(): Uint8Array {
+  public makeSwitchToMainBand(): Uint8Array {
     return new Uint8Array([
       ...this.makePrefix(),
       // コマンド部
@@ -116,7 +109,7 @@ export default class TransceiverIcomCmdMaker {
   /**
    * 無線機をサブバンドに切り替えるコマンドを返す
    */
-  public switchToSubBand(): Uint8Array {
+  public makeSwitchToSubBand(): Uint8Array {
     return new Uint8Array([
       ...this.makePrefix(),
       // コマンド部
@@ -129,7 +122,7 @@ export default class TransceiverIcomCmdMaker {
   /**
    * メインバンドとサブバンドを入れ替えるコマンドを返す
    */
-  public setInvertBand(): Uint8Array {
+  public makeSetInvertBand(): Uint8Array {
     return new Uint8Array([
       ...this.makePrefix(),
       // コマンド部
@@ -163,7 +156,7 @@ export default class TransceiverIcomCmdMaker {
   /**
    * 無線機に運用モードを設定するコマンドを返す
    */
-  public makeSetMode(mode: string): Uint8Array {
+  public makeSetOpeMode(mode: string): Uint8Array {
     return new Uint8Array([
       ...this.makePrefix(),
       // コマンド部
@@ -178,16 +171,28 @@ export default class TransceiverIcomCmdMaker {
    */
   public makeSetDataMode(dataMode: string): Uint8Array {
     // データモードをOffにする場合はフィルターは00固定にする必要がある（ic-9700のマニュアルより）
-    let fil = FILTER0;
-    if (dataMode === DATA_MODE_ON) {
+    let fil = Constant.Transceiver.Filter.FIL0;
+    if (dataMode === Constant.Transceiver.DataMode.ON) {
       // フィルターは01～03まで設定可能だが、RSTの画面でフィルターを指定することは現状考慮していないため01固定としている。
-      fil = FILTER1;
+      fil = Constant.Transceiver.Filter.FIL1;
     }
 
     return new Uint8Array([
       ...this.makePrefix(),
       // コマンド部（1A06）
       ...new Uint8Array([0x1a, 0x06, parseInt(dataMode, 16), fil]),
+      ...this.makeSuffix(),
+    ]);
+  }
+
+  /**
+   * 無線機から現在のデータモードを取得するコマンドを返す
+   */
+  public makeGetDataMode(): Uint8Array {
+    return new Uint8Array([
+      ...this.makePrefix(),
+      // コマンド部（1A06）
+      ...new Uint8Array([0x1a, 0x06]),
       ...this.makeSuffix(),
     ]);
   }

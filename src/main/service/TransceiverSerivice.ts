@@ -199,12 +199,12 @@ export default class TransceiverService {
    * サテライトモードを変更する
    * @param {boolean} isSatelliteMode サテライトモード設定
    */
-  public setSatelliteMode(isSatelliteMode: boolean) {
+  public async setSatelliteMode(isSatelliteMode: boolean) {
     if (!this.isReady()) {
       return;
     }
 
-    this.controller?.setSatelliteMode(isSatelliteMode);
+    await this.controller?.setSatelliteMode(isSatelliteMode);
   }
 
   /**

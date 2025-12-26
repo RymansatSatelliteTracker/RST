@@ -235,6 +235,25 @@ export default class Constant {
     };
 
     /**
+     * 無線機データモード
+     */
+    public static readonly DataMode = class {
+      // Off
+      static readonly OFF = "00";
+      // On
+      static readonly ON = "01";
+    };
+
+    /**
+     * 無線機フィルタ
+     */
+    public static readonly Filter = class {
+      // フィルタ０～１
+      static readonly FIL0 = 0x00;
+      static readonly FIL1 = 0x01;
+    };
+
+    /**
      * 無線機運用モード
      */
     public static readonly DopplerShiftMode = class {

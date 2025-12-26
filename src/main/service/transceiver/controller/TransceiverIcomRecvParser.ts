@@ -28,39 +28,9 @@ export default class TransceiverIcomRecvParser {
   }
 
   /**
-   * 指定の運用モード文字列からCI-Vコマンド値を返す
-   * @param {string} opeMode 運用モード
-   * @returns {(string | null)} 運用モードのCI-Vコマンド値
-   */
-  public static getValueFromOpeMode(opeMode: string): string | null {
-    switch (opeMode) {
-      case Constant.Transceiver.OpeMode.LSB:
-        return "00";
-      case Constant.Transceiver.OpeMode.LSB_D:
-        return "00";
-      case Constant.Transceiver.OpeMode.USB:
-        return "01";
-      case Constant.Transceiver.OpeMode.USB_D:
-        return "01";
-      case Constant.Transceiver.OpeMode.AM:
-        return "02";
-      case Constant.Transceiver.OpeMode.CW:
-        return "03";
-      case Constant.Transceiver.OpeMode.FM:
-        return "05";
-      case Constant.Transceiver.OpeMode.FM_D:
-        return "05";
-      case Constant.Transceiver.OpeMode.DV:
-        return "17";
-      default:
-        return null;
-    }
-  }
-
-  /**
-   * 無線機から受信したデータから運用モードを取得する
+   * 無線機から受信したデータから運用モード文字列を取得する
    * @param {string} recvData 受信データ
-   * @returns {string | null} 運用モード
+   * @returns {string | null} 運用モード文字列
    */
   public static parseMode(recvData: string): string | null {
     // 受信データから運用モードを取得する
@@ -98,6 +68,24 @@ export default class TransceiverIcomRecvParser {
         return "01";
       default:
         return "00";
+    }
+  }
+
+  /**
+   * 無線機から受信したデータからデータモードを取得する
+   * @param {string} recvData 受信データ
+   * @returns {string | null} データモード
+   */
+  public static parseDataMode(recvData: string): string | null {
+    // 受信データからデータモードを取得する
+    const recvDataMode = recvData.substring(12, 14);
+    switch (recvDataMode) {
+      case "00":
+        return "00";
+      case "01":
+        return "01";
+      default:
+        return null;
     }
   }
 
