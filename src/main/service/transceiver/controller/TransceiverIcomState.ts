@@ -30,7 +30,7 @@ export default class TransceiverIcomState {
   // 現在の運用モード
   public currentTxOpeMode = "";
   public currentRxOpeMode = "";
-  // 現在のデータモード
+  // 現在のデータモード（運用モードとセットで画面側へ送るために状態を保持する必要がある）
   public currentTxDataMode = "";
   public currentRxDataMode = "";
 

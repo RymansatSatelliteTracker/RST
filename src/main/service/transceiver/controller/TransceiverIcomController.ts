@@ -937,6 +937,10 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     }
     const [recvMode] = this.getValFromModeText(recvModeText);
 
+    // 現在のデータモードを無線機から取得する
+    // memo: 運用モードとデータモードは別コマンドで取得する必要があるため
+    await this.fetchCurrentDataMode();
+
     // サテライトモードがONの場合
     if (this.state.isSatelliteMode) {
       if (this.state.isMain) {
@@ -1042,6 +1046,29 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     const res = await this.sendAndWaitRecv(cmdData, "GET_BAND");
 
     return TransceiverIcomRecvParser.parseCurrentBand(res) === "00";
+  }
+
+  /**
+   * 現在のデータモードを無線機から取得する
+   */
+  private async fetchCurrentDataMode() {
+    // 現在のバンドを再取得
+    this.state.isMain = await this.isCurrentMainBand();
+
+    // データモードの取得
+    const recvData = await this.sendAndWaitRecv(this.cmdMaker.makeGetDataMode(), "GET_DATA_MODE");
+    const recvDataMode = TransceiverIcomRecvParser.parseDataMode(recvData);
+    if (!recvDataMode) {
+      // 運用モードが取得できない場合は処理を終了する
+      return;
+    }
+
+    // 現在のバンドに応じてデータモードを保持する
+    if (this.state.isMain) {
+      this.state.currentRxDataMode = recvDataMode;
+    } else {
+      this.state.currentTxDataMode = recvDataMode;
+    }
   }
 
   /**
