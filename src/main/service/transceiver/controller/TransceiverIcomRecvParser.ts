@@ -90,6 +90,15 @@ export default class TransceiverIcomRecvParser {
   }
 
   /**
+   * 無線機から受信した現在のバンド取得（07D2）の応答をパースする
+   * @param {string} recvData 受信データ
+   * @returns {string} 現在のバンド（"00": メインバンド、"01": サブバンド）
+   */
+  public static parseCurrentBand(recvData: string): string {
+    return recvData.substring(12, 14);
+  }
+
+  /**
    * 無線機から受信したサテライトモードの応答をパースする
    * @param {string} recvData 受信データ
    * @returns true: サテライトモードOn

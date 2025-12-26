@@ -94,6 +94,19 @@ export default class TransceiverIcomCmdMaker {
   }
 
   /**
+   * 無線機のバンドを取得するコマンドを返す
+   */
+  public makeGetBand(): Uint8Array {
+    return new Uint8Array([
+      ...this.makePrefix(),
+      // コマンド部
+      CivCommand.SWITCH_BAND,
+      0xd2,
+      ...this.makeSuffix(),
+    ]);
+  }
+
+  /**
    * 無線機をメインバンドに切り替えるコマンドを返す
    */
   public makeSwitchToMainBand(): Uint8Array {
