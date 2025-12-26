@@ -6,7 +6,7 @@ import { AppConfigTransceiver } from "@/common/model/AppConfigModel";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse } from "@/common/types/types";
 import TransceiverUtil from "@/common/util/TransceiverUtil";
-import TransceiverIcomCmdMaker from "@/main/service/transceiver/controller/TransceiverIcomCmdMaker";
+import TransceiverIcomCmdMaker, { CivCommand } from "@/main/service/transceiver/controller/TransceiverIcomCmdMaker";
 import TransceiverIcomRecvParser from "@/main/service/transceiver/controller/TransceiverIcomRecvParser";
 import TransceiverIcomState from "@/main/service/transceiver/controller/TransceiverIcomState";
 import TransceiverSerialControllerBase from "@/main/service/transceiver/controller/TransceiverSerialControllerBase";
@@ -809,6 +809,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       // 運用モードの設定（01:トランシーブ）
       case "01":
         this.state.isMain = await this.isCurrentMainBand();
+        AppMainLogger.info(`Main/Subを無線機と同期しました。 isMain=${this.state.isMain}`);
     }
 
     // 受信データ処理
@@ -904,15 +905,18 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         // メインバンドの受信データをRx周波数とする
         res.data = { downlinkHz: freqHz, downlinkMode: "" } as DownlinkType;
         this.state.setRecvRxFreqHz(freqHz);
+        AppMainLogger.info(`Rx周波数 （RST←無線機）`);
       } else {
         // サブバンドは受信データをTx周波数とする
         res.data = { uplinkHz: freqHz, uplinkMode: "" } as UplinkType;
         this.state.setRecvTxFreqHz(freqHz);
+        AppMainLogger.info(`Tx周波数 （RST←無線機）`);
       }
     } else {
       // サテライトモードがOFFの場合は、受信データをアップリンク周波数とする
       res.data = { uplinkHz: freqHz, uplinkMode: "" } as UplinkType;
       this.state.setRecvTxFreqHz(freqHz);
+      AppMainLogger.info(`Tx周波数 （RST←無線機） サテライトOff`);
     }
 
     // 周波数のコールバック呼び出し
@@ -1045,7 +1049,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     const cmdData = this.cmdMaker.makeGetBand();
     const res = await this.sendAndWaitRecv(cmdData, "GET_BAND");
 
-    return TransceiverIcomRecvParser.parseCurrentBand(res) === "00";
+    return TransceiverIcomRecvParser.parseCurrentBand(res) === CivCommand.Band.MAIN;
   }
 
   /**
@@ -1150,32 +1154,32 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // 運用モードがnullの場合はLSBをデフォ値として返す
     if (!opeMode) {
       AppMainLogger.warn(`運用モードがnullのため、デフォルト値としてLSBを返します。`);
-      return ["00", Constant.Transceiver.DataMode.OFF];
+      return ["00", CivCommand.DataMode.OFF];
     }
 
     switch (opeMode) {
       case Constant.Transceiver.OpeMode.LSB:
-        return ["00", Constant.Transceiver.DataMode.OFF];
+        return ["00", CivCommand.DataMode.OFF];
       case Constant.Transceiver.OpeMode.LSB_D:
-        return ["00", Constant.Transceiver.DataMode.ON];
+        return ["00", CivCommand.DataMode.ON];
       case Constant.Transceiver.OpeMode.USB:
-        return ["01", Constant.Transceiver.DataMode.OFF];
+        return ["01", CivCommand.DataMode.OFF];
       case Constant.Transceiver.OpeMode.USB_D:
-        return ["01", Constant.Transceiver.DataMode.ON];
+        return ["01", CivCommand.DataMode.ON];
       case Constant.Transceiver.OpeMode.AM:
-        return ["02", Constant.Transceiver.DataMode.OFF];
+        return ["02", CivCommand.DataMode.OFF];
       case Constant.Transceiver.OpeMode.CW:
-        return ["03", Constant.Transceiver.DataMode.OFF];
+        return ["03", CivCommand.DataMode.OFF];
       case Constant.Transceiver.OpeMode.FM:
-        return ["05", Constant.Transceiver.DataMode.OFF];
+        return ["05", CivCommand.DataMode.OFF];
       case Constant.Transceiver.OpeMode.FM_D:
-        return ["05", Constant.Transceiver.DataMode.ON];
+        return ["05", CivCommand.DataMode.ON];
       case Constant.Transceiver.OpeMode.DV:
-        return ["17", Constant.Transceiver.DataMode.OFF];
+        return ["17", CivCommand.DataMode.OFF];
       default:
         // 該当なしの場合はLSBをデフォ値として返す
         AppMainLogger.warn(`運用モードが不定のため、デフォルト値としてLSBを返します。`);
-        return ["00", Constant.Transceiver.DataMode.OFF];
+        return ["00", CivCommand.DataMode.OFF];
     }
   }
 }

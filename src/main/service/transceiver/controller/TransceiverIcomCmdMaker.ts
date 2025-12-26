@@ -3,7 +3,7 @@ import Constant from "@/common/Constant";
 /**
  * CI-Vコマンド
  */
-const CivCommand = class {
+export const CivCommand = class {
   // プリアンプル
   static readonly PREAMBLE = 0xfe;
   // ポストアンプル
@@ -31,6 +31,33 @@ const CivCommand = class {
 
   // // 連続するコマンドの結合を回避するためのパディング
   // static readonly PADDING = 0x00;
+
+  /**
+   * バンド
+   */
+  public static readonly Band = class {
+    static readonly MAIN = "00";
+    static readonly SUB = "01";
+  };
+
+  /**
+   * 無線機データモード
+   */
+  public static readonly DataMode = class {
+    // Off
+    static readonly OFF = "00";
+    // On
+    static readonly ON = "01";
+  };
+
+  /**
+   * 無線機フィルタ
+   */
+  public static readonly Filter = class {
+    // フィルタ０～１
+    static readonly FIL0 = 0x00;
+    static readonly FIL1 = 0x01;
+  };
 };
 
 /**
@@ -184,10 +211,10 @@ export default class TransceiverIcomCmdMaker {
    */
   public makeSetDataMode(dataMode: string): Uint8Array {
     // データモードをOffにする場合はフィルターは00固定にする必要がある（ic-9700のマニュアルより）
-    let fil = Constant.Transceiver.Filter.FIL0;
-    if (dataMode === Constant.Transceiver.DataMode.ON) {
+    let fil = CivCommand.Filter.FIL0;
+    if (dataMode === CivCommand.DataMode.ON) {
       // フィルターは01～03まで設定可能だが、RSTの画面でフィルターを指定することは現状考慮していないため01固定としている。
-      fil = Constant.Transceiver.Filter.FIL1;
+      fil = CivCommand.Filter.FIL1;
     }
 
     return new Uint8Array([
