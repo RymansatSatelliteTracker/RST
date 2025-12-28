@@ -3,7 +3,7 @@ import Constant from "@/common/Constant";
 /**
  * CI-Vコマンド
  */
-const CivCommand = class {
+export const CivCommand = class {
   // プリアンプル
   static readonly PREAMBLE = 0xfe;
   // ポストアンプル
@@ -31,6 +31,33 @@ const CivCommand = class {
 
   // // 連続するコマンドの結合を回避するためのパディング
   // static readonly PADDING = 0x00;
+
+  /**
+   * バンド
+   */
+  public static readonly Band = class {
+    static readonly MAIN = "00";
+    static readonly SUB = "01";
+  };
+
+  /**
+   * 無線機データモード
+   */
+  public static readonly DataMode = class {
+    // Off
+    static readonly OFF = "00";
+    // On
+    static readonly ON = "01";
+  };
+
+  /**
+   * 無線機フィルタ
+   */
+  public static readonly Filter = class {
+    // フィルタ０～１
+    static readonly FIL0 = 0x00;
+    static readonly FIL1 = 0x01;
+  };
 };
 
 /**
@@ -64,10 +91,10 @@ export default class TransceiverIcomCmdMaker {
   }
 
   /**
-   * トランシーブモードの設定コマンド
+   * トランシーブモードの設定コマンドを返す
    * @param onOff 0x00: Off, 0x01: On
    */
-  public setTranceive(onOff: number): Uint8Array {
+  public makeSetTranceive(onOff: number): Uint8Array {
     return new Uint8Array([
       ...this.makePrefix(),
       // コマンド部
@@ -81,9 +108,9 @@ export default class TransceiverIcomCmdMaker {
   }
 
   /**
-   * VFO Aに切り替える
+   * VFO Aに切り替えコマンドを返す
    */
-  public switchVfoA(): Uint8Array {
+  public makeSwitchVfoA(): Uint8Array {
     return new Uint8Array([
       ...this.makePrefix(),
       // コマンド部
@@ -94,9 +121,22 @@ export default class TransceiverIcomCmdMaker {
   }
 
   /**
-   * 無線機をメインバンドに切り替える
+   * 無線機のバンドを取得するコマンドを返す
    */
-  public switchToMainBand(): Uint8Array {
+  public makeGetBand(): Uint8Array {
+    return new Uint8Array([
+      ...this.makePrefix(),
+      // コマンド部
+      CivCommand.SWITCH_BAND,
+      0xd2,
+      ...this.makeSuffix(),
+    ]);
+  }
+
+  /**
+   * 無線機をメインバンドに切り替えるコマンドを返す
+   */
+  public makeSwitchToMainBand(): Uint8Array {
     return new Uint8Array([
       ...this.makePrefix(),
       // コマンド部
@@ -107,9 +147,9 @@ export default class TransceiverIcomCmdMaker {
   }
 
   /**
-   * 無線機をサブバンドに切り替える
+   * 無線機をサブバンドに切り替えるコマンドを返す
    */
-  public switchToSubBand(): Uint8Array {
+  public makeSwitchToSubBand(): Uint8Array {
     return new Uint8Array([
       ...this.makePrefix(),
       // コマンド部
@@ -120,9 +160,9 @@ export default class TransceiverIcomCmdMaker {
   }
 
   /**
-   * メインバンドとサブバンドを入れ替える
+   * メインバンドとサブバンドを入れ替えるコマンドを返す
    */
-  public setInvertBand(): Uint8Array {
+  public makeSetInvertBand(): Uint8Array {
     return new Uint8Array([
       ...this.makePrefix(),
       // コマンド部
@@ -133,9 +173,9 @@ export default class TransceiverIcomCmdMaker {
   }
 
   /**
-   * 無線機に周波数を設定するコマンドを送信する
+   * 無線機に周波数を設定するコマンドを返す
    */
-  public setFreq(freq: number): Uint8Array {
+  public makeSetFreq(freq: number): Uint8Array {
     // 周波数を10桁の文字列に変換
     const freqStr = Math.floor(freq).toString();
     const freqs = freqStr.padStart(10, "0").split("");
@@ -154,9 +194,9 @@ export default class TransceiverIcomCmdMaker {
   }
 
   /**
-   * 無線機に運用モードを設定するコマンドを送信する
+   * 無線機に運用モードを設定するコマンドを返す
    */
-  public setMode(mode: string): Uint8Array {
+  public makeSetOpeMode(mode: string): Uint8Array {
     return new Uint8Array([
       ...this.makePrefix(),
       // コマンド部
@@ -167,10 +207,41 @@ export default class TransceiverIcomCmdMaker {
   }
 
   /**
-   * サテライトモードの設定コマンド
+   * 無線機にデータモードを設定するコマンドを返す
+   */
+  public makeSetDataMode(dataMode: string): Uint8Array {
+    // データモードをOffにする場合はフィルターは00固定にする必要がある（ic-9700のマニュアルより）
+    let fil = CivCommand.Filter.FIL0;
+    if (dataMode === CivCommand.DataMode.ON) {
+      // フィルターは01～03まで設定可能だが、RSTの画面でフィルターを指定することは現状考慮していないため01固定としている。
+      fil = CivCommand.Filter.FIL1;
+    }
+
+    return new Uint8Array([
+      ...this.makePrefix(),
+      // コマンド部（1A06）
+      ...new Uint8Array([0x1a, 0x06, parseInt(dataMode, 16), fil]),
+      ...this.makeSuffix(),
+    ]);
+  }
+
+  /**
+   * 無線機から現在のデータモードを取得するコマンドを返す
+   */
+  public makeGetDataMode(): Uint8Array {
+    return new Uint8Array([
+      ...this.makePrefix(),
+      // コマンド部（1A06）
+      ...new Uint8Array([0x1a, 0x06]),
+      ...this.makeSuffix(),
+    ]);
+  }
+
+  /**
+   * サテライトモードの設定コマンドを返す
    * @param {boolean} isSatelliteMode サテライトモード設定
    */
-  public setSatelliteMode(isSatelliteMode: boolean): Uint8Array {
+  public makeSetSatelliteMode(isSatelliteMode: boolean): Uint8Array {
     // IC910の場合は、コマンドが異なる
     let cmd = [0x16, 0x5a]; // IC910以外の機種
     if (this.transceiverId === Constant.Transceiver.TransceiverId.ICOM_IC910) {
@@ -187,9 +258,9 @@ export default class TransceiverIcomCmdMaker {
   }
 
   /**
-   * サテライトモードの取得コマンド
+   * サテライトモードの取得コマンドを返す
    */
-  public getSatelliteMode(): Uint8Array {
+  public makeGetSatelliteMode(): Uint8Array {
     // IC910の場合は、コマンドが異なる
     let cmd = [0x16, 0x5a]; // IC910以外の機種
     if (this.transceiverId === Constant.Transceiver.TransceiverId.ICOM_IC910) {
@@ -205,9 +276,9 @@ export default class TransceiverIcomCmdMaker {
   }
 
   /**
-   * 無線機から現在の周波数を読み取るコマンドを送信する
+   * 無線機から現在の周波数を読み取るコマンドを返す
    */
-  public getFreq(): Uint8Array {
+  public makeGetFreq(): Uint8Array {
     return new Uint8Array([
       ...this.makePrefix(),
       // コマンド部
@@ -217,9 +288,9 @@ export default class TransceiverIcomCmdMaker {
   }
 
   /**
-   * 無線機から現在のモードを読み取るコマンドを送信する
+   * 無線機から現在のモードを読み取るコマンドを返す
    */
-  public getMode(): Uint8Array {
+  public makeGetMode(): Uint8Array {
     return new Uint8Array([
       ...this.makePrefix(),
       // コマンド部

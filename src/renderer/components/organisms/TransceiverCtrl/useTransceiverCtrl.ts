@@ -120,6 +120,13 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       ? Constant.Transceiver.SatelliteMode.SATELLITE
       : Constant.Transceiver.SatelliteMode.UNSET;
 
+    // 無線機にサテライトモードを設定する
+    // memo: satelliteMode.valueの更新時にwatchで isSatelliteMode.value が更新されるが、非同期でPI呼び出しが行われる。
+    //       サテライトモードの変更時に無線機のモード取得が行われるが、
+    //       AutoOn時の無線機へのモード設定と同期が取れず、AutoOn時のモード設定が反映されない場合がある為、
+    //       ここで明示的、同期的にサテライトモードを設定する。
+    await ApiTransceiver.setSatelliteMode(satelliteMode.value === Constant.Transceiver.SatelliteMode.SATELLITE);
+
     // 周波数と運用モードを設定、保存する
     setFrequencyAndOpeModeInModeStart();
     saveFrequencyAndOpeModeInModeStart();

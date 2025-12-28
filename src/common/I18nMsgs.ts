@@ -256,7 +256,7 @@ export default class I18nMsgs {
   public static readonly GCOM_MENU_EDIT: I18nMsgItem = { en: "Edit", ja: "編集" };
   public static readonly GCOM_MENU_SETTING: I18nMsgItem = { en: "Setting", ja: "設定" };
   public static readonly GCOM_MENU_LANG: I18nMsgItem = { en: "Lang", ja: "言語設定" };
-  public static readonly GCOM_MENU_LANG_JA: I18nMsgItem = { en: "Japanise", ja: "日本語" };
+  public static readonly GCOM_MENU_LANG_JA: I18nMsgItem = { en: "Japanese", ja: "日本語" };
   public static readonly GCOM_MENU_LANG_EN: I18nMsgItem = { en: "English", ja: "English" };
   public static readonly GCOM_MENU_HELP: I18nMsgItem = { en: "Help", ja: "ヘルプ" };
   public static readonly GCOM_MENU_VERSION: I18nMsgItem = { en: "Version", ja: "バージョン" };

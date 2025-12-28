@@ -28,33 +28,9 @@ export default class TransceiverIcomRecvParser {
   }
 
   /**
-   * 運用モードの値を取得する
-   * @param {string} opeMode 運用モード
-   * @returns {(string | null)} 運用モードの値
-   */
-  public static getValueFromOpeMode(opeMode: string): string | null {
-    switch (opeMode) {
-      case "LSB":
-        return "00";
-      case "USB":
-        return "01";
-      case "AM":
-        return "02";
-      case "CW":
-        return "03";
-      case "FM":
-        return "05";
-      case "DV":
-        return "17";
-      default:
-        return null;
-    }
-  }
-
-  /**
-   * 無線機から受信したデータから運用モードを取得する
+   * 無線機から受信したデータから運用モード文字列を取得する
    * @param {string} recvData 受信データ
-   * @returns {string | null} 運用モード
+   * @returns {string | null} 運用モード文字列
    */
   public static parseMode(recvData: string): string | null {
     // 受信データから運用モードを取得する
@@ -68,6 +44,8 @@ export default class TransceiverIcomRecvParser {
         return Constant.Transceiver.OpeMode.AM;
       case "03":
         return Constant.Transceiver.OpeMode.CW;
+      case "04":
+        return Constant.Transceiver.OpeMode.RTTY;
       case "05":
         return Constant.Transceiver.OpeMode.FM;
       case "17":
@@ -75,6 +53,51 @@ export default class TransceiverIcomRecvParser {
       default:
         return null;
     }
+  }
+
+  /**
+   * 指定の運用モード文字列からデータモードのOn/Offを示す値を返す
+   * @param {string} mode 運用モード
+   * @returns {string} CI-VコマンドのOn/Offを示す値
+   */
+  public static getValueFromDataMode(mode: string): string {
+    switch (mode) {
+      case Constant.Transceiver.OpeMode.LSB_D:
+        return "01";
+      case Constant.Transceiver.OpeMode.USB_D:
+        return "01";
+      case Constant.Transceiver.OpeMode.FM_D:
+        return "01";
+      default:
+        return "00";
+    }
+  }
+
+  /**
+   * 無線機から受信したデータからデータモードを取得する
+   * @param {string} recvData 受信データ
+   * @returns {string | null} データモード
+   */
+  public static parseDataMode(recvData: string): string | null {
+    // 受信データからデータモードを取得する
+    const recvDataMode = recvData.substring(12, 14);
+    switch (recvDataMode) {
+      case "00":
+        return "00";
+      case "01":
+        return "01";
+      default:
+        return null;
+    }
+  }
+
+  /**
+   * 無線機から受信した現在のバンド取得（07D2）の応答をパースする
+   * @param {string} recvData 受信データ
+   * @returns {string} 現在のバンド（"00": メインバンド、"01": サブバンド）
+   */
+  public static parseCurrentBand(recvData: string): string {
+    return recvData.substring(12, 14);
   }
 
   /**
