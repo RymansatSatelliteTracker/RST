@@ -63,6 +63,8 @@ export default class ActiveSatServiceHub {
   private satelliteMode: boolean = false;
   // アクティブ衛星のトラッキングモード
   private satTrackMode: string | null = null;
+  // アクティブ衛星のTone周波数
+  private toneHz: number | null = null;
 
   /**
    * シングルトンのため、コンストラクタは隠蔽
@@ -214,82 +216,85 @@ export default class ActiveSatServiceHub {
   /**
    * アクティブ衛星の無線設定を取得する
    */
-  private async getTransceiverSetting() {
+  private async getTransceiverSetting(): Promise<void> {
     // 衛星グループを取得
     const satGrp = await ApiActiveSat.getActiveSatelliteGroup();
     if (!satGrp || !satGrp.mainSattelliteTle) {
-      return 0;
+      return;
     }
 
     const appConfigSatellite = await ApiAppConfigSatellite.getUserRegisteredAppConfigSatellite(
       satGrp.mainSatelliteId,
       satGrp.activeSatelliteGroupId
     );
-    if (appConfigSatellite) {
-      // アクティブ衛星のアップリンク設定
-      switch (appConfigSatellite.autoModeUplinkFreq) {
-        case 2:
-          // アップリンク設定が2の場合は、設定2を使用する
-          this.uplinkFreq = {
-            uplinkHz: appConfigSatellite.uplink2.uplinkHz ?? null,
-            uplinkMode: appConfigSatellite.uplink2.uplinkMode,
-          };
-          break;
-        case 3:
-          // アップリンク設定が3の場合は、設定3を使用する
-          this.uplinkFreq = {
-            uplinkHz: appConfigSatellite.uplink3.uplinkHz ?? null,
-            uplinkMode: appConfigSatellite.uplink3.uplinkMode,
-          };
-          break;
-        default:
-          // それ以外の場合は、設定1を使用する
-          this.uplinkFreq = {
-            uplinkHz: appConfigSatellite.uplink1.uplinkHz ?? null,
-            uplinkMode: appConfigSatellite.uplink1.uplinkMode,
-          };
-          break;
-      }
-
-      // アクティブ衛星のダウンリンク設定
-      switch (appConfigSatellite.autoModeDownlinkFreq) {
-        case 2:
-          // ダウンリンク設定が2の場合は、設定2を使用する
-          this.downlinkFreq = {
-            downlinkHz: appConfigSatellite.downlink2.downlinkHz ?? null,
-            downlinkMode: appConfigSatellite.downlink2.downlinkMode,
-          };
-          break;
-        case 3:
-          // ダウンリンク設定が3の場合は、設定3を使用する
-          this.downlinkFreq = {
-            downlinkHz: appConfigSatellite.downlink3.downlinkHz ?? null,
-            downlinkMode: appConfigSatellite.downlink3.downlinkMode,
-          };
-          break;
-        default:
-          // それ以外は設定1を使用する
-          this.downlinkFreq = {
-            downlinkHz: appConfigSatellite.downlink1.downlinkHz ?? null,
-            downlinkMode: appConfigSatellite.downlink1.downlinkMode,
-          };
-          break;
-      }
-
-      // アクティブ衛星のビーコン設定
-      this.beaconFreq = {
-        beaconHz: appConfigSatellite.beacon.beaconHz ?? null,
-        beaconMode: appConfigSatellite.beacon.beaconMode,
-      };
-
-      // アクティブ衛星の衛星モード
-      this.satelliteMode = appConfigSatellite.enableSatelliteMode;
-
-      // アクティブ衛星のトラッキングモード
-      this.satTrackMode = appConfigSatellite.enableSatelliteMode ? appConfigSatellite.satelliteMode : null;
+    if (!appConfigSatellite) {
+      return;
     }
 
-    return 0;
+    // アクティブ衛星のアップリンク設定
+    switch (appConfigSatellite.autoModeUplinkFreq) {
+      case 2:
+        // アップリンク設定が2の場合は、設定2を使用する
+        this.uplinkFreq = {
+          uplinkHz: appConfigSatellite.uplink2.uplinkHz ?? null,
+          uplinkMode: appConfigSatellite.uplink2.uplinkMode,
+        };
+        break;
+      case 3:
+        // アップリンク設定が3の場合は、設定3を使用する
+        this.uplinkFreq = {
+          uplinkHz: appConfigSatellite.uplink3.uplinkHz ?? null,
+          uplinkMode: appConfigSatellite.uplink3.uplinkMode,
+        };
+        break;
+      default:
+        // それ以外の場合は、設定1を使用する
+        this.uplinkFreq = {
+          uplinkHz: appConfigSatellite.uplink1.uplinkHz ?? null,
+          uplinkMode: appConfigSatellite.uplink1.uplinkMode,
+        };
+        break;
+    }
+
+    // アクティブ衛星のダウンリンク設定
+    switch (appConfigSatellite.autoModeDownlinkFreq) {
+      case 2:
+        // ダウンリンク設定が2の場合は、設定2を使用する
+        this.downlinkFreq = {
+          downlinkHz: appConfigSatellite.downlink2.downlinkHz ?? null,
+          downlinkMode: appConfigSatellite.downlink2.downlinkMode,
+        };
+        break;
+      case 3:
+        // ダウンリンク設定が3の場合は、設定3を使用する
+        this.downlinkFreq = {
+          downlinkHz: appConfigSatellite.downlink3.downlinkHz ?? null,
+          downlinkMode: appConfigSatellite.downlink3.downlinkMode,
+        };
+        break;
+      default:
+        // それ以外は設定1を使用する
+        this.downlinkFreq = {
+          downlinkHz: appConfigSatellite.downlink1.downlinkHz ?? null,
+          downlinkMode: appConfigSatellite.downlink1.downlinkMode,
+        };
+        break;
+    }
+
+    // アクティブ衛星のビーコン設定
+    this.beaconFreq = {
+      beaconHz: appConfigSatellite.beacon.beaconHz ?? null,
+      beaconMode: appConfigSatellite.beacon.beaconMode,
+    };
+
+    // アクティブ衛星の衛星モード
+    this.satelliteMode = appConfigSatellite.enableSatelliteMode;
+
+    // アクティブ衛星のトラッキングモード
+    this.satTrackMode = appConfigSatellite.enableSatelliteMode ? appConfigSatellite.satelliteMode : null;
+
+    // アクティブ衛星のTone周波数
+    this.toneHz = appConfigSatellite.toneHz;
   }
 
   /**
@@ -390,6 +395,7 @@ export default class ActiveSatServiceHub {
     beacon: BeaconType | null;
     satelliteMode: boolean;
     satTrackMode: string | null;
+    toneHz: number | null;
   } {
     return {
       downlink: this.downlinkFreq,
@@ -397,6 +403,7 @@ export default class ActiveSatServiceHub {
       beacon: this.beaconFreq,
       satelliteMode: this.satelliteMode,
       satTrackMode: this.satTrackMode,
+      toneHz: this.toneHz,
     };
   }
 

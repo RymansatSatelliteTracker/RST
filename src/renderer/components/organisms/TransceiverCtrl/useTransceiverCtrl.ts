@@ -144,7 +144,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       TransceiverUtil.parseNumber(txFrequency.value),
       TransceiverUtil.parseNumber(rxFrequency.value),
       txOpeMode.value,
-      rxOpeMode.value
+      rxOpeMode.value,
+      transceiverSetting.toneHz
     );
 
     // ドップラーシフトの基準周波数を設定する

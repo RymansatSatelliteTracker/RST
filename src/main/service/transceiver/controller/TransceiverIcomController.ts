@@ -26,7 +26,8 @@ type CommandType =
   | "SET_FREQ"
   | "SET_MODE"
   | "SET_DATA_MODE"
-  | "SWITCH";
+  | "SWITCH"
+  | "SET_TONE";
 // 送受信制御用・無線機から応答があるコマンド種別
 const responsiveCmds = ["GET_FREQ", "GET_MODE", "GET_DATA_MODE", "GET_BAND", "SET_MODE", "SET_DATA_MODE", "SWITCH"];
 
@@ -152,7 +153,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     txFreqHz: number,
     rxFreqHz: number,
     txModeText: string,
-    rxModeText: string
+    rxModeText: string,
+    toneHz: number | null
   ): Promise<void> {
     AppMainLogger.info(`無線機Auto On処理を開始します。`);
 
@@ -191,6 +193,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     await this.sendAndWaitRecv(cmdData, "SET_DATA_MODE");
     AppMainLogger.info(`Rxデータモード（RST→無線機） ${this.state.currentRxDataMode}`);
 
+    // メインバンド（Rx）のトーン設定
+    this.setupTone(toneHz);
+
     // サブバンド
     // サテライトモードの場合は、サブバンド（Tx）の周波数とモードも設定する
     if (this.state.isSatelliteMode) {
@@ -212,6 +217,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       const cmdData = this.cmdMaker.makeSetDataMode(this.state.currentTxDataMode);
       await this.sendAndWaitRecv(cmdData, "SET_DATA_MODE");
       AppMainLogger.info(`Txデータモード（RST→無線機） ${this.state.currentTxDataMode}`);
+
+      // サブバンド（Tx）のトーン設定
+      this.setupTone(toneHz);
     }
 
     AppMainLogger.info(`無線機AutoをOnにしました。`);
@@ -1189,5 +1197,25 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         AppMainLogger.warn(`運用モードが不定のため、デフォルト値としてLSBを返します。`);
         return ["00", CivCommand.DataMode.OFF];
     }
+  }
+
+  /**
+   * TONE設定を無線機に送信する
+   */
+  private async setupTone(toneHz: number | null): Promise<void> {
+    // TONE周波数の設定/未設定に従い、TONE On/Offを無線機に設定する
+    const toneOnOffCmd = this.cmdMaker.makeSetToneCmd(toneHz ? true : false);
+    await this.sendAndWaitRecv(toneOnOffCmd, "SET_TONE");
+    AppMainLogger.debug(`TONE On/Off設定（RST→無線機） ${toneHz ? "On" : "Off"}`);
+
+    // TONEが未設定の場合は処理終了
+    if (!toneHz) {
+      return;
+    }
+
+    // TONEが設定されている場合は、TONE周波数を無線機に設定する
+    const toneFreqCmd = this.cmdMaker.makeSetToneFreqCmd(toneHz);
+    await this.sendAndWaitRecv(toneFreqCmd, "SET_TONE");
+    AppMainLogger.debug(`TONE周波数設定（RST→無線機） ${toneHz}`);
   }
 }

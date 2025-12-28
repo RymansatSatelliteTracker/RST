@@ -208,9 +208,10 @@ const apiHandler = {
     txFreqHz: number,
     rxFreqHz: number,
     txMode: string,
-    rxMode: string
+    rxMode: string,
+    toneHz: number | null
   ): Promise<ApiResponse<void>> {
-    return ipcRenderer.invoke("initAutoOn", txFreqHz, rxFreqHz, txMode, rxMode);
+    return ipcRenderer.invoke("initAutoOn", txFreqHz, rxFreqHz, txMode, rxMode, toneHz);
   },
 
   /**

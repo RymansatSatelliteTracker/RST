@@ -22,7 +22,13 @@ export default abstract class TransceiverControllerBase {
   /**
    * 無線機関係・AutoOn時の初期処理
    */
-  public abstract initAutoOn(txFreqHz: number, rxFreqHz: number, txMode: string, rxMode: string): Promise<void>;
+  public abstract initAutoOn(
+    txFreqHz: number,
+    rxFreqHz: number,
+    txMode: string,
+    rxMode: string,
+    toneHz: number | null
+  ): Promise<void>;
 
   /**
    * 無線機に送信する周波数を設定する
