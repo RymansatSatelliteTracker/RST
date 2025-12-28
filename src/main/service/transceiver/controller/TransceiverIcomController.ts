@@ -819,7 +819,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         // 表示周波数の取得
         if (trimedData.length === 22) {
           // 無線機から受信した周波数データを処理する
-          this.procRecvFreqData(trimedData);
+          await this.procRecvFreqData(trimedData);
         }
 
         // 無線機への周波数の送信を一時停止する
@@ -845,7 +845,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       case "03":
         if (trimedData.length === 22) {
           // 無線機から受信した周波数データを処理する
-          this.procRecvFreqData(trimedData);
+          await this.procRecvFreqData(trimedData);
         }
         res.data = false;
         this.isDopplerShiftWaitingCallback(res);
@@ -890,7 +890,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    * 無線機から受信した周波数データを処理する
    * @param {string} recvData 受信データ
    */
-  private procRecvFreqData(recvData: string) {
+  private async procRecvFreqData(recvData: string) {
     if (!this.freqCallback) {
       return;
     }
@@ -898,6 +898,10 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // 受信データをパースして周波数部を読み取る
     const freqHz = TransceiverIcomRecvParser.parseFreq(recvData);
     const res = new ApiResponse(true);
+
+    // 現在のバンドを再取得
+    // memo: 無線機側でメイン／サブの切り替えが行われている可能性があるため、更新ターゲットを再取得する
+    this.state.isMain = await this.isCurrentMainBand();
 
     // サテライトモードがONの場合
     if (this.state.isSatelliteMode) {
@@ -1133,6 +1137,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         return Constant.Transceiver.OpeMode.AM;
       case "03":
         return Constant.Transceiver.OpeMode.CW;
+      case "04":
+        return Constant.Transceiver.OpeMode.RTTY;
       case "05":
         if (dataMode === "01") {
           return Constant.Transceiver.OpeMode.FM_D;
@@ -1170,6 +1176,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         return ["02", CivCommand.DataMode.OFF];
       case Constant.Transceiver.OpeMode.CW:
         return ["03", CivCommand.DataMode.OFF];
+      case Constant.Transceiver.OpeMode.RTTY:
+        return ["04", CivCommand.DataMode.OFF];
       case Constant.Transceiver.OpeMode.FM:
         return ["05", CivCommand.DataMode.OFF];
       case Constant.Transceiver.OpeMode.FM_D:

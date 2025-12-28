@@ -44,6 +44,8 @@ export default class TransceiverIcomRecvParser {
         return Constant.Transceiver.OpeMode.AM;
       case "03":
         return Constant.Transceiver.OpeMode.CW;
+      case "04":
+        return Constant.Transceiver.OpeMode.RTTY;
       case "05":
         return Constant.Transceiver.OpeMode.FM;
       case "17":
