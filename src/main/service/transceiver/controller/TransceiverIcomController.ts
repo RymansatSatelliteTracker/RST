@@ -240,7 +240,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    * 無線機側の周波数データを取得する
    */
   private async getFreqFromIcom() {
-    // サテライトモードでない場合は、サブ側のデータ取得は不要
+    // サテライトモードの場合は、サブ側のデータ取得も取得する
     if (this.state.isSatelliteMode) {
       // サブ側のデータ取得
       this.state.isMain = false;
@@ -264,8 +264,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   private async getModeFromIcom() {
     AppMainLogger.info(`無線機側の運用モード、データモードの取得要求を行います。`);
 
-    // サテライトモードでない場合は、サブ側のデータ取得は不要
-    if (!this.state.isSatelliteMode) {
+    // サテライトモードの場合は、サブ側のデータ取得も取得する
+    if (this.state.isSatelliteMode) {
       // サブ側のデータ取得
       this.state.isMain = false;
       await this.sendAndWaitRecv(this.cmdMaker.makeSwitchToSubBand(), "SWITCH");
@@ -1002,7 +1002,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // 無線機から受信したデータからデータモードを取得する
     const recvDataMode = TransceiverIcomRecvParser.parseDataMode(recvData);
     if (!recvDataMode) {
-      // 運用モードが取得できない場合は処理を終了する
+      // データモードが取得できない場合は処理を終了する
       return;
     }
 
@@ -1067,7 +1067,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     const recvData = await this.sendAndWaitRecv(this.cmdMaker.makeGetDataMode(), "GET_DATA_MODE");
     const recvDataMode = TransceiverIcomRecvParser.parseDataMode(recvData);
     if (!recvDataMode) {
-      // 運用モードが取得できない場合は処理を終了する
+      // データモードが取得できない場合は処理を終了する
       return;
     }
 

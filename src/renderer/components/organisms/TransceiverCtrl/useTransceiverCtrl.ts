@@ -605,16 +605,16 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
     // 以下は、コメントアウトしても良い。2025年11月時点ではデバッグログとして出力しておく。
     // デバッグログ
-    // const nowRxFreq = TransceiverUtil.parseNumber(rxFrequency.value);
-    // const nowTxFreq = TransceiverUtil.parseNumber(txFrequency.value);
-    // const shiftRx = dopplerRxBaseFreq.value - nowRxFreq;
-    // const shiftTx = dopplerTxBaseFreq.value - nowTxFreq;
-    // const baseSum = dopplerRxBaseFreq.value + dopplerTxBaseFreq.value;
-    // AppRendererLogger.debug(
-    //   `ドップラーシフト補正後: ${nowRxFreq} ${nowTxFreq}` +
-    //     ` シフト補正値： ${shiftRx} ${shiftTx}` +
-    //     ` 基準周波数: ${dopplerRxBaseFreq.value} ${dopplerTxBaseFreq.value} = ${baseSum}`
-    // );
+    const nowRxFreq = TransceiverUtil.parseNumber(rxFrequency.value);
+    const nowTxFreq = TransceiverUtil.parseNumber(txFrequency.value);
+    const shiftRx = dopplerRxBaseFreq.value - nowRxFreq;
+    const shiftTx = dopplerTxBaseFreq.value - nowTxFreq;
+    const baseSum = dopplerRxBaseFreq.value + dopplerTxBaseFreq.value;
+    AppRendererLogger.debug(
+      `ドップラーシフト補正後: ${nowRxFreq} ${nowTxFreq}` +
+        ` シフト補正値： ${shiftRx} ${shiftTx}` +
+        ` 基準周波数: ${dopplerRxBaseFreq.value} ${dopplerTxBaseFreq.value} = ${baseSum}`
+    );
   }
 
   onMounted(async () => {

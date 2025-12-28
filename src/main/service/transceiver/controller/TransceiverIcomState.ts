@@ -155,7 +155,6 @@ export default class TransceiverIcomState {
     this.isReqRxFreqUpdate = false;
     this.isReqRxModeUpdate = false;
     this.isRecvRxFreqUpdate = false;
-    this.isRecvTxFreqUpdate = false;
   }
 
   /**
@@ -166,7 +165,6 @@ export default class TransceiverIcomState {
     this.isReqTxFreqUpdate = false;
     this.isReqTxModeUpdate = false;
     this.isRecvTxFreqUpdate = false;
-    this.isRecvRxFreqUpdate = false;
   }
 
   /**
