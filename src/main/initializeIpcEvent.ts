@@ -221,10 +221,20 @@ export function initializeIpcEvents() {
   });
 
   /**
-   * 無線機関係・無線機関係・AutoOn時の初期処理
+   * 無線機関係・AutoOn時の初期処理
    */
-  ipcMain.handle("initAutoOn", async (event, txFreqHz: number, rxFreqHz: number, txMode: string, rxMode: string) => {
-    return await TransceiverService.getInstance().initAutoOn(txFreqHz, rxFreqHz, txMode, rxMode);
+  ipcMain.handle(
+    "transceiverInitAutoOn",
+    async (event, txFreqHz: number, rxFreqHz: number, txMode: string, rxMode: string, toneHz: number | null) => {
+      return await TransceiverService.getInstance().initAutoOn(txFreqHz, rxFreqHz, txMode, rxMode, toneHz);
+    }
+  );
+
+  /**
+   * 無線機関係・AutoOff
+   */
+  ipcMain.handle("transceiverAutoOff", async (event) => {
+    return await TransceiverService.getInstance().autoOff();
   });
 
   /**
@@ -312,9 +322,19 @@ export function releaseIpcEvents() {
   ipcMain.removeAllListeners("addDefaultSatellite");
   ipcMain.removeAllListeners("reCreateDefaultSatellite");
   ipcMain.removeAllListeners("getUserRegisteredAppConfigSatellite");
+  ipcMain.removeAllListeners("startAntennaCtrl");
+  ipcMain.removeAllListeners("stopAntennaCtrl");
   ipcMain.removeAllListeners("setAntennaPosition");
   ipcMain.removeAllListeners("onChangeAntennaPosition");
   ipcMain.removeAllListeners("onRoratorDisconnect");
+  ipcMain.removeAllListeners("getActiveSerialPorts");
+  ipcMain.removeAllListeners("openSerialPortTry");
+  ipcMain.removeAllListeners("closeSerialPort");
+  ipcMain.removeAllListeners("onDispLangChange");
+  ipcMain.removeAllListeners("startTransceiverCtrl");
+  ipcMain.removeAllListeners("stopTransceiverCtrl");
+  ipcMain.removeAllListeners("transceiverInitAutoOn");
+  ipcMain.removeAllListeners("transceiverAutoOff");
   ipcMain.removeAllListeners("getActiveSatelliteGroup");
   ipcMain.removeAllListeners("refreshAppConfig");
   ipcMain.removeAllListeners("setTransceiverFrequency");

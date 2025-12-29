@@ -298,4 +298,68 @@ export default class TransceiverIcomCmdMaker {
       ...this.makeSuffix(),
     ]);
   }
+
+  /**
+   * TONEの設定（On/Off）コマンドを返す
+   */
+  public makeSetToneCmd(isOn: boolean): Uint8Array {
+    const toneCmd = new Uint8Array([
+      ...this.makePrefix(),
+      // コマンド部
+      ...[0x16, 0x42],
+      isOn ? 0x01 : 0x00, // 00: Off, 01: On
+      ...this.makeSuffix(),
+    ]);
+    return toneCmd;
+  }
+
+  /**
+   * TONE（レピータ用トーン）周波数の設定コマンドを返す
+   * @param toneHz
+   * @returns
+   */
+  public makeSetToneFreqCmd(toneHz: number): Uint8Array {
+    // 周波数を"00XXXX"形式の文字列に変換
+    const toneStr = this.geneToneHzStr(toneHz);
+
+    const toneCmd = new Uint8Array([
+      ...this.makePrefix(),
+      // コマンド部
+      ...[0x1b, 0x00],
+      parseInt(toneStr[0] + toneStr[1], 16),
+      parseInt(toneStr[2] + toneStr[3], 16),
+      parseInt(toneStr[4] + toneStr[5], 16),
+      ...this.makeSuffix(),
+    ]);
+
+    return toneCmd;
+  }
+
+  /**
+   * TONE周波数設定コマンドのデータ部を返す
+   * @param toneHz
+   * @returns 以下形式の文字列を返す
+   *     1桁目:0（固定）
+   *     2桁目:0（固定）
+   *     3桁目:100Hz桁
+   *     4桁目:10Hz桁
+   *     5桁目:1Hz桁
+   *     6桁目:0.1Hz桁
+   */
+  private geneToneHzStr(toneHz: number): string {
+    if (toneHz > 999.9) {
+      throw new Error("toneHzは999.9以下の値を指定してください。");
+    }
+
+    // 小数点付きの周波数の場合
+    if (toneHz % 1 !== 0) {
+      // 10倍して文字列化（四捨五入は浮動小数点誤差対策）
+      const toneStr = Math.round(toneHz * 10).toString();
+      return toneStr.padStart(6, "0");
+    }
+
+    // 小数点なしの場合（末尾に0.1Hz桁の0を付与）
+    const toneStr = toneHz.toString() + "0";
+    return toneStr.padStart(6, "0");
+  }
 }
