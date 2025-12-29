@@ -1244,7 +1244,6 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    * TONE Offを無線機に送信する
    */
   private async sendToneOff(): Promise<void> {
-    // TONE周波数の設定/未設定に従い、TONE On/Offを無線機に設定する
     const toneOnOffCmd = this.cmdMaker.makeSetToneCmd(false);
     await this.sendAndWaitRecv(toneOnOffCmd, "SET_TONE");
     AppMainLogger.debug(`TONE On/Off設定（RST→無線機） Off`);

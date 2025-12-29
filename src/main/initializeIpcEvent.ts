@@ -221,7 +221,7 @@ export function initializeIpcEvents() {
   });
 
   /**
-   * 無線機関係・無線機関係・AutoOn時の初期処理
+   * 無線機関係・AutoOn時の初期処理
    */
   ipcMain.handle(
     "transceiverInitAutoOn",
@@ -231,7 +231,7 @@ export function initializeIpcEvents() {
   );
 
   /**
-   * 無線機関係・無線機関係・AutoOff
+   * 無線機関係・AutoOff
    */
   ipcMain.handle("transceiverAutoOff", async (event) => {
     return await TransceiverService.getInstance().autoOff();

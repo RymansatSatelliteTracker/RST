@@ -101,7 +101,6 @@ export default class TransceiverService {
       return;
     }
 
-    // AutoOnの初期処理を実行する
     await this.controller.autoOff();
   }
 
