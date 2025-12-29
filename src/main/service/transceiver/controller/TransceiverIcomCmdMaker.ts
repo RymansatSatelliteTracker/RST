@@ -326,12 +326,9 @@ export default class TransceiverIcomCmdMaker {
       ...this.makePrefix(),
       // コマンド部
       ...[0x1b, 0x00],
-      parseInt(toneStr[0]),
-      parseInt(toneStr[1]),
-      parseInt(toneStr[2]),
-      parseInt(toneStr[3]),
-      parseInt(toneStr[4]),
-      parseInt(toneStr[5]),
+      parseInt(toneStr[0] + toneStr[1], 16),
+      parseInt(toneStr[2] + toneStr[3], 16),
+      parseInt(toneStr[4] + toneStr[5], 16),
       ...this.makeSuffix(),
     ]);
 
@@ -356,8 +353,8 @@ export default class TransceiverIcomCmdMaker {
 
     // 小数点付きの周波数の場合
     if (toneHz % 1 !== 0) {
-      // 10倍して文字列化
-      const toneStr = (toneHz * 10).toString();
+      // 10倍して文字列化（四捨五入は浮動小数点誤差対策）
+      const toneStr = Math.round(toneHz * 10).toString();
       return toneStr.padStart(6, "0");
     }
 

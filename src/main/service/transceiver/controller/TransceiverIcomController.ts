@@ -194,7 +194,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     AppMainLogger.info(`Rxデータモード（RST→無線機） ${this.state.currentRxDataMode}`);
 
     // メインバンド（Rx）のトーン設定
-    this.setupTone(toneHz);
+    await this.setupTone(toneHz);
 
     // サブバンド
     // サテライトモードの場合は、サブバンド（Tx）の周波数とモードも設定する
@@ -219,7 +219,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       AppMainLogger.info(`Txデータモード（RST→無線機） ${this.state.currentTxDataMode}`);
 
       // サブバンド（Tx）のトーン設定
-      this.setupTone(toneHz);
+      await this.setupTone(toneHz);
     }
 
     AppMainLogger.info(`無線機AutoをOnにしました。`);
@@ -1217,5 +1217,15 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     const toneFreqCmd = this.cmdMaker.makeSetToneFreqCmd(toneHz);
     await this.sendAndWaitRecv(toneFreqCmd, "SET_TONE");
     AppMainLogger.debug(`TONE周波数設定（RST→無線機） ${toneHz}`);
+  }
+
+  /**
+   * TONE Offを無線機に送信する
+   */
+  private async sendToneOff(): Promise<void> {
+    // TONE周波数の設定/未設定に従い、TONE On/Offを無線機に設定する
+    const toneOnOffCmd = this.cmdMaker.makeSetToneCmd(false);
+    await this.sendAndWaitRecv(toneOnOffCmd, "SET_TONE");
+    AppMainLogger.debug(`TONE On/Off設定（RST→無線機） Off`);
   }
 }

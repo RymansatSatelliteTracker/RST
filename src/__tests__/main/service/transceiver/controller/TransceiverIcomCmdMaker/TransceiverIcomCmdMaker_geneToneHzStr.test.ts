@@ -1,8 +1,6 @@
 import TransceiverIcomCmdMaker from "@/main/service/transceiver/controller/TransceiverIcomCmdMaker";
 
 describe("TransceiverIcomCmdMaker.geneToneHzStrのテスト", () => {
-  beforeAll(() => {});
-
   it("小数点なしの周波数の場合は３桁＋'0'の文字列を返す", () => {
     const maker = new TransceiverIcomCmdMaker(0x99, "DMY-IC-9700");
     expect(maker["geneToneHzStr"](1)).toBe("000010");
