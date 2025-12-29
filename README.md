@@ -146,7 +146,7 @@ rst.ico がWindowsのアイコンファイルとなる。
 #### メインプロセスのimportエイリアスについて
 
 以下のようにエイリアスで記載するが、exe化後の実行時に "cannot find module" が発生する。
-これに対処するため、tscpathsにて強制的に相対パスへ置換を行っている。
+これに対処するため、tsc-aliasにて強制的に相対パスへ置換を行っている。
 
 ```ts
 import AppMainLogger from "@/main/util/AppMainLogger";
@@ -157,14 +157,14 @@ package.json
 ```json
 "scripts": {
   "app:build": "npm run vite:build && tsc && npm run app:import-replace && electron-builder",
-  "app:import-replace": "tscpaths -p tsconfig.json -s ./src -o ./dist/electron",
+  "app:import-replace": "tsc-alias -p tsconfig.json -s ./src",
 }
 ```
 
 以下箇所で相対パスへ置換を行っている。
 
 ```json
-"tscpaths -p tsconfig.json -s ./src -o ./dist"
+"tsc-alias -p tsconfig.json -s ./src"
 ```
 
 #### ログファイル
