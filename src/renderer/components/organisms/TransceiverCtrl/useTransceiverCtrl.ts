@@ -140,7 +140,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     }
 
     // Auto開始をメイン側に連携する
-    await ApiTransceiver.initAutoOn(
+    await ApiTransceiver.transceiverInitAutoOn(
       TransceiverUtil.parseNumber(txFrequency.value),
       TransceiverUtil.parseNumber(rxFrequency.value),
       txOpeMode.value,
@@ -177,6 +177,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * Autoモードを停止する
    */
   async function stopAutoMode() {
+    // Auto終了をメイン側に連携する
+    await ApiTransceiver.transceiverAutoOff();
+
+    // Autoモードの周波数更新を停止する
     if (!stopUpdateFreq()) {
       return;
     }

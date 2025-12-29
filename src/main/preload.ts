@@ -204,16 +204,22 @@ const apiHandler = {
   /**
    * 無線機関係・AutoOn時の初期処理
    */
-  initAutoOn: function (
+  transceiverInitAutoOn: function (
     txFreqHz: number,
     rxFreqHz: number,
     txMode: string,
     rxMode: string,
     toneHz: number | null
   ): Promise<ApiResponse<void>> {
-    return ipcRenderer.invoke("initAutoOn", txFreqHz, rxFreqHz, txMode, rxMode, toneHz);
+    return ipcRenderer.invoke("transceiverInitAutoOn", txFreqHz, rxFreqHz, txMode, rxMode, toneHz);
   },
 
+  /**
+   * 無線機関係・AutoOff
+   */
+  transceiverAutoOff: function (): Promise<ApiResponse<void>> {
+    return ipcRenderer.invoke("transceiverAutoOff");
+  },
   /**
    * 無線機関係・周波数設定コマンドを送信する
    */

@@ -226,6 +226,27 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   }
 
   /**
+   * AutoOff
+   */
+  public override async autoOff(): Promise<void> {
+    AppMainLogger.info(`無線機Auto Off処理を開始します。`);
+
+    // サブ・トーンOff
+    if (this.state.isSatelliteMode) {
+      this.state.isMain = false;
+      await this.sendAndWaitRecv(this.cmdMaker.makeSwitchToSubBand(), "SWITCH");
+      await this.sendToneOff();
+    }
+
+    // メイン・トーンOff
+    this.state.isMain = true;
+    await this.sendAndWaitRecv(this.cmdMaker.makeSwitchToMainBand(), "SWITCH");
+    await this.sendToneOff();
+
+    AppMainLogger.info(`無線機AutoをOffにしました。`);
+  }
+
+  /**
    * 無線機の初期化を行う
    */
   private async initTranceiver() {

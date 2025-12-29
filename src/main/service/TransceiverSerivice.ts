@@ -94,6 +94,18 @@ export default class TransceiverService {
   }
 
   /**
+   * 無線機関係・AutoOff
+   */
+  public async autoOff() {
+    if (!this.controller) {
+      return;
+    }
+
+    // AutoOnの初期処理を実行する
+    await this.controller.autoOff();
+  }
+
+  /**
    * 無線機を変更する
    * @param transceiverConfig 無線機設定
    */

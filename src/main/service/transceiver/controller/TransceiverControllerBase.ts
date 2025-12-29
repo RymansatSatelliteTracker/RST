@@ -31,6 +31,11 @@ export default abstract class TransceiverControllerBase {
   ): Promise<void>;
 
   /**
+   * 無線機関係・AutoOff
+   */
+  public abstract autoOff(): Promise<void>;
+
+  /**
    * 無線機に送信する周波数を設定する
    * @param {(UplinkType | DownlinkType)} frequencyModel 周波数設定
    */
