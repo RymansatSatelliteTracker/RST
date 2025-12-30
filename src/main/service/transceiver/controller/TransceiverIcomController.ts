@@ -936,18 +936,18 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         // メインバンドの受信データをRx周波数とする
         res.data = { downlinkHz: freqHz, downlinkMode: "" } as DownlinkType;
         this.state.setRecvRxFreqHz(freqHz);
-        AppMainLogger.debug(`Rx周波数 （RST←無線機）`);
+        AppMainLogger.debug(`Rx周波数 （無線機→RST）`);
       } else {
         // サブバンドは受信データをTx周波数とする
         res.data = { uplinkHz: freqHz, uplinkMode: "" } as UplinkType;
         this.state.setRecvTxFreqHz(freqHz);
-        AppMainLogger.debug(`Tx周波数 （RST←無線機）`);
+        AppMainLogger.debug(`Tx周波数 （無線機→RST）`);
       }
     } else {
       // サテライトモードがOFFの場合は、受信データをアップリンク周波数とする
       res.data = { uplinkHz: freqHz, uplinkMode: "" } as UplinkType;
       this.state.setRecvTxFreqHz(freqHz);
-      AppMainLogger.debug(`Tx周波数 （RST←無線機） サテライトOff`);
+      AppMainLogger.debug(`Tx周波数 （無線機→RST） サテライトOff`);
     }
 
     // 周波数のコールバック呼び出し
@@ -987,7 +987,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
           downlinkMode: modeText,
         } as DownlinkType;
 
-        AppMainLogger.debug(`Rx運用モード（RST←無線機） ${modeText}`);
+        AppMainLogger.debug(`Rx運用モード（無線機→RST） ${modeText}`);
       } else {
         this.state.currentTxOpeMode = recvMode;
         const modeText = this.makeModeText(this.state.currentTxOpeMode, this.state.currentTxDataMode);
@@ -997,7 +997,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
           uplinkMode: modeText,
         } as UplinkType;
 
-        AppMainLogger.debug(`Tx運用モード（RST←無線機） ${modeText}`);
+        AppMainLogger.debug(`Tx運用モード（無線機→RST） ${modeText}`);
       }
 
       // サテライトモードがOFFの場合は受信データをアップリンクの運用モードとする
@@ -1009,7 +1009,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         uplinkMode: modeText,
       } as UplinkType;
 
-      AppMainLogger.debug(`Tx運用モード（RST←無線機） ${modeText}`);
+      AppMainLogger.debug(`Tx運用モード（無線機→RST） ${modeText}`);
     }
 
     // 運用モードのコールバック呼び出し
@@ -1044,7 +1044,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
           downlinkMode: modeText,
         } as DownlinkType;
 
-        AppMainLogger.debug(`Rxデータモード（RST←無線機） ${modeText}`);
+        AppMainLogger.debug(`Rxデータモード（無線機→RST） ${modeText}`);
       } else {
         this.state.currentTxDataMode = recvDataMode;
         const modeText = this.makeModeText(this.state.currentTxOpeMode, this.state.currentTxDataMode);
@@ -1054,7 +1054,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
           uplinkMode: modeText,
         } as UplinkType;
 
-        AppMainLogger.debug(`Txデータモード（RST←無線機） ${modeText}`);
+        AppMainLogger.debug(`Txデータモード（無線機→RST） ${modeText}`);
       }
 
       // サテライトモードがOFFの場合は受信データをアップリンクの運用モードとする
@@ -1066,7 +1066,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         uplinkMode: modeText,
       } as UplinkType;
 
-      AppMainLogger.debug(`Txデータモード（RST←無線機） ${modeText}`);
+      AppMainLogger.debug(`Txデータモード（無線機→RST） ${modeText}`);
     }
 
     // 運用モードのコールバック呼び出し
