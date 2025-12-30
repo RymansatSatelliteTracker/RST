@@ -677,10 +677,11 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
         const recvTxFreq = freqData.uplinkHz;
         AppRendererLogger.info(`トランシーブ Tx周波数 Tx:${recvTxFreq}`);
 
-        // AutoOff時は画面のアップリンク周波数を更新して終了
-        // memo: AutoOn時は、ドップラーシフト値で画面の周波数を更新するため、ここでは更新しない
+        // 画面のアップリンク周波数を更新
+        txFrequency.value = TransceiverUtil.formatWithDot(recvTxFreq);
+
+        // AutoOff時は処理終了
         if (!autoStore.tranceiverAuto) {
-          txFrequency.value = TransceiverUtil.formatWithDot(recvTxFreq);
           return;
         }
         // 以降、AutoOn時の基準周波数更新処理
@@ -699,10 +700,11 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
         const recvRxFreq = freqData.downlinkHz;
         AppRendererLogger.info(`トランシーブ Rx周波数 Rx:${recvRxFreq}`);
 
-        // AutoOff時は画面のダウンリンク周波数を更新して終了
-        // memo: AutoOn時は、ドップラーシフト値で画面の周波数を更新するため、ここでは更新しない
+        // 画面のダウンリンク周波数を更新
+        rxFrequency.value = TransceiverUtil.formatWithDot(recvRxFreq);
+
+        // AutoOff時は処理終了
         if (!autoStore.tranceiverAuto) {
-          rxFrequency.value = TransceiverUtil.formatWithDot(recvRxFreq);
           return;
         }
         // 以降、AutoOn時の基準周波数更新処理

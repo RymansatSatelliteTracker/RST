@@ -116,7 +116,7 @@ export default class TransceiverIcomRecvParser {
   /**
    * 受信データについて、プリアンブル以降を読む（先頭に"00"がついている場合があるので、そこは読み捨てる）
    */
-  public static trimRecData(recvData: string) {
+  public static trimRecvData(recvData: string) {
     const startIdx = recvData.indexOf("fefe");
     if (startIdx === -1) {
       return "";
