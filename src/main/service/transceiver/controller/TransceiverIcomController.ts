@@ -303,9 +303,11 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       this.state.setRecvTxFreqHz(TransceiverIcomRecvParser.parseFreq(recvDataSubFreq));
       // サブ・運用モードの取得
       const recvSubMode = await this.sendAndWaitRecv(this.cmdMaker.makeGetMode(), "GET_MODE");
+      AppMainLogger.debug(`Tx運用モード 取得要求（RST→無線機）`);
       await this.handleRecvData(recvSubMode);
       // サブ・データモードの取得
       const recvSubDataMode = await this.sendAndWaitRecv(this.cmdMaker.makeGetDataMode(), "GET_DATA_MODE");
+      AppMainLogger.debug(`Txデータモード 取得要求（RST→無線機）`);
       await this.handleRecvData(recvSubDataMode);
     }
 
@@ -642,7 +644,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
           return;
         }
 
-        // GET系だが、他のデータが飛んできた場合は無視
+        // 待ち受けがGET系だが、他のデータが飛んできた場合は無視
         if (targetCmdType.startsWith("GET") && recvCmdType !== targetCmdType) {
           return;
         }
