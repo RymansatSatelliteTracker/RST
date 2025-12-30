@@ -706,39 +706,40 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // 受信済みとする
     this.isReceived = true;
 
-    // 受信データを16進数文字列に変換する
+    // 受信データを１バイトごとに処理する
     for (let i = 0; i < data.length; i++) {
+      // 受信データを16進数文字列に変換して、受信バッファに蓄積
       this.recvBuffer += data[i].toString(16).padStart(2, "0").toLowerCase();
+
+      // 受信データの終端が"fd"でない場合は、次のバイトを処理する
       if (!this.recvBuffer.endsWith("fd")) {
         continue;
       }
 
-      // AppMainLogger.debug(`onRecv: ${this.recvBuffer}`);
+      // プリアンブル以降を読む（先頭に"00"がついている場合があるので、そこは読み捨てる）
+      // memo: この時点で受信バッファからデータを抽出、確保しないと、次の受信データが非同期で受信バッファに追加されるので注意
+      const trimedData = TransceiverIcomRecvParser.trimRecvData(this.recvBuffer);
+      // 受信バッファをクリア
+      this.recvBuffer = "";
 
       // コールバックが設定されている場合は、ディスパッチにてコールバックを呼び出し
       if (this.recvCallbackType) {
-        this.dispatchRecvData(this.recvBuffer);
+        this.dispatchRecvData(trimedData);
       } else {
         // 無線機起点で受信したデータの場合
-        await this.handleRecvData(this.recvBuffer);
+        await this.handleRecvData(trimedData);
       }
-
-      // 受信バッファをクリア
-      this.recvBuffer = "";
     }
   };
 
   /**
    * 無線機から受信したデータを処理する
-   * @param {string} recvData 受信データ
+   * @param {string} trimedData 受信データ
    */
-  private dispatchRecvData(recvData: string) {
+  private dispatchRecvData(trimedData: string) {
     if (!this.recvCallback) {
       return;
     }
-
-    // プリアンブル以降を読む（先頭に"00"がついている場合があるので、そこは読み捨てる）
-    const trimedData = TransceiverIcomRecvParser.trimRecData(recvData);
 
     // 対象の無線機からの応答でない場合は無視（ターゲットのCI-Vアドレスで判定）
     const target = trimedData.substring(6, 8);
@@ -806,16 +807,13 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
   /**
    * 無線機から受信したデータを処理する
-   * @param {string} recvData 受信データ
+   * @param {string} trimedData 受信データ
    */
-  private async handleRecvData(recvData: string) {
+  private async handleRecvData(trimedData: string) {
     // コールバックが未設定の場合は処理終了
     if (!this.isDopplerShiftWaitingCallback) {
       return;
     }
-
-    // プリアンブル以降を読む（先頭に"00"がついている場合があるので、そこは読み捨てる）
-    const trimedData = TransceiverIcomRecvParser.trimRecData(recvData);
 
     // 対象の無線機からの応答でない場合は無視（ターゲットのCI-Vアドレスで判定）
     const target = trimedData.substring(6, 8);
