@@ -76,6 +76,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   // 周波数の更新インターバル（ミリ秒）
   let autoTrackingIntervalMsec = 1000;
 
+  // 無線機からの受信処理をスキップするか
+  let isRecvProcSkip = false;
+
   /**
    * 表示中の衛星グループが変更された場合のイベントハンドラ
    */
@@ -108,6 +111,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       return false;
     }
 
+    // AutoOn時は受信処理をスキップする（AutoOn処理中のモード変更などにおける無線機からの不要なデータ受信を無視する）
+    isRecvProcSkip = true;
+
     // Autoモード移行前の周波数を保持する
     savedTxFrequency.value = txFrequency.value;
     savedRxFrequency.value = rxFrequency.value;
@@ -121,7 +127,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       : Constant.Transceiver.SatelliteMode.UNSET;
 
     // 無線機にサテライトモードを設定する
-    // memo: satelliteMode.valueの更新時にwatchで isSatelliteMode.value が更新されるが、非同期でPI呼び出しが行われる。
+    // memo: satelliteMode.valueの更新時にwatchで isSatelliteMode.value が更新されるが、非同期でAPI呼び出しが行われる。
     //       サテライトモードの変更時に無線機のモード取得が行われるが、
     //       AutoOn時の無線機へのモード設定と同期が取れず、AutoOn時のモード設定が反映されない場合がある為、
     //       ここで明示的、同期的にサテライトモードを設定する。
@@ -169,6 +175,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     timerId = setInterval(async () => {
       updateFreq();
     }, autoTrackingIntervalMsec);
+
+    // AutoOn時は受信処理をスキップを解除
+    isRecvProcSkip = false;
 
     return true;
   }
@@ -720,8 +729,14 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       }
     });
 
-    // 無線機の運用モードを取得し、txOpeMode,rxOpeModeを更新する
+    // 無線機の運用モードのイベントハンドラ
+    // 受信した無線機の運用モードでtxOpeMode,rxOpeModeを更新する
     ApiTransceiver.onChangeTransceiverMode(async (res: ApiResponse<UplinkType | DownlinkType>) => {
+      // 受信処理スキップ状態の場合は処理を終了する（AutoOn処理中のモード変更などにおける無線機からの不要なデータ受信を無視する）
+      if (isRecvProcSkip) {
+        return;
+      }
+
       if (!res.status) {
         emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(res.message));
         // 運用モードが取得できない場合はUNSETにする

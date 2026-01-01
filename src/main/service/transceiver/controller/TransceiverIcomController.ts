@@ -183,15 +183,15 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
     // メインバンド（Rx）のモードを設定する
     if (rxModeValue) {
+      AppMainLogger.debug(`Rx運用モード（RST→無線機） ${rxModeText}`);
       const cmdData = this.cmdMaker.makeSetOpeMode(rxModeValue);
       await this.sendAndWaitRecv(cmdData, "SET_MODE");
-      AppMainLogger.debug(`Rx運用モード（RST→無線機） ${rxModeText}`);
     }
 
     // メインバンド（Rx）のデータモードを設定する
+    AppMainLogger.debug(`Rxデータモード（RST→無線機） ${this.state.currentRxDataMode}`);
     const cmdData = this.cmdMaker.makeSetDataMode(this.state.currentRxDataMode);
     await this.sendAndWaitRecv(cmdData, "SET_DATA_MODE");
-    AppMainLogger.debug(`Rxデータモード（RST→無線機） ${this.state.currentRxDataMode}`);
 
     // メインバンド（Rx）のトーン設定
     await this.setupTone(rxModeText, toneHz);
@@ -303,9 +303,11 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       this.state.setRecvTxFreqHz(TransceiverIcomRecvParser.parseFreq(recvDataSubFreq));
       // サブ・運用モードの取得
       const recvSubMode = await this.sendAndWaitRecv(this.cmdMaker.makeGetMode(), "GET_MODE");
+      AppMainLogger.debug(`Tx運用モード 取得要求（RST→無線機）`);
       await this.handleRecvData(recvSubMode);
       // サブ・データモードの取得
       const recvSubDataMode = await this.sendAndWaitRecv(this.cmdMaker.makeGetDataMode(), "GET_DATA_MODE");
+      AppMainLogger.debug(`Txデータモード 取得要求（RST→無線機）`);
       await this.handleRecvData(recvSubDataMode);
     }
 
@@ -642,7 +644,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
           return;
         }
 
-        // GET系だが、他のデータが飛んできた場合は無視
+        // AppMainLogger.debug(`onData: recv=${recvCmdType}, data=${recvData}`);
+
+        // 待ち受けがGET系だが、他のデータが飛んできた場合は無視
         if (targetCmdType.startsWith("GET") && recvCmdType !== targetCmdType) {
           return;
         }
@@ -659,6 +663,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       if (this.recvCallbackType.isResponsive) {
         this.recvCallback = onData;
       }
+
+      // AppMainLogger.debug(`データ送信（RST→無線機） ${targetCmdType} ${Buffer.from(cmdData).toString("hex")}`);
 
       // データ送信
       await super.sendSerial(cmdData);
@@ -936,18 +942,18 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         // メインバンドの受信データをRx周波数とする
         res.data = { downlinkHz: freqHz, downlinkMode: "" } as DownlinkType;
         this.state.setRecvRxFreqHz(freqHz);
-        AppMainLogger.debug(`Rx周波数 （RST←無線機）`);
+        AppMainLogger.debug(`Rx周波数 （無線機→RST）`);
       } else {
         // サブバンドは受信データをTx周波数とする
         res.data = { uplinkHz: freqHz, uplinkMode: "" } as UplinkType;
         this.state.setRecvTxFreqHz(freqHz);
-        AppMainLogger.debug(`Tx周波数 （RST←無線機）`);
+        AppMainLogger.debug(`Tx周波数 （無線機→RST）`);
       }
     } else {
       // サテライトモードがOFFの場合は、受信データをアップリンク周波数とする
       res.data = { uplinkHz: freqHz, uplinkMode: "" } as UplinkType;
       this.state.setRecvTxFreqHz(freqHz);
-      AppMainLogger.debug(`Tx周波数 （RST←無線機） サテライトOff`);
+      AppMainLogger.debug(`Tx周波数 （無線機→RST） サテライトOff`);
     }
 
     // 周波数のコールバック呼び出し
@@ -987,7 +993,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
           downlinkMode: modeText,
         } as DownlinkType;
 
-        AppMainLogger.debug(`Rx運用モード（RST←無線機） ${modeText}`);
+        AppMainLogger.debug(`Rx運用モード（無線機→RST） ${modeText}`);
       } else {
         this.state.currentTxOpeMode = recvMode;
         const modeText = this.makeModeText(this.state.currentTxOpeMode, this.state.currentTxDataMode);
@@ -997,7 +1003,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
           uplinkMode: modeText,
         } as UplinkType;
 
-        AppMainLogger.debug(`Tx運用モード（RST←無線機） ${modeText}`);
+        AppMainLogger.debug(`Tx運用モード（無線機→RST） ${modeText}`);
       }
 
       // サテライトモードがOFFの場合は受信データをアップリンクの運用モードとする
@@ -1009,7 +1015,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         uplinkMode: modeText,
       } as UplinkType;
 
-      AppMainLogger.debug(`Tx運用モード（RST←無線機） ${modeText}`);
+      AppMainLogger.debug(`Tx運用モード（無線機→RST） ${modeText}`);
     }
 
     // 運用モードのコールバック呼び出し
@@ -1044,7 +1050,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
           downlinkMode: modeText,
         } as DownlinkType;
 
-        AppMainLogger.debug(`Rxデータモード（RST←無線機） ${modeText}`);
+        AppMainLogger.debug(`Rxデータモード（無線機→RST） ${modeText}`);
       } else {
         this.state.currentTxDataMode = recvDataMode;
         const modeText = this.makeModeText(this.state.currentTxOpeMode, this.state.currentTxDataMode);
@@ -1054,7 +1060,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
           uplinkMode: modeText,
         } as UplinkType;
 
-        AppMainLogger.debug(`Txデータモード（RST←無線機） ${modeText}`);
+        AppMainLogger.debug(`Txデータモード（無線機→RST） ${modeText}`);
       }
 
       // サテライトモードがOFFの場合は受信データをアップリンクの運用モードとする
@@ -1066,7 +1072,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         uplinkMode: modeText,
       } as UplinkType;
 
-      AppMainLogger.debug(`Txデータモード（RST←無線機） ${modeText}`);
+      AppMainLogger.debug(`Txデータモード（無線機→RST） ${modeText}`);
     }
 
     // 運用モードのコールバック呼び出し
@@ -1230,9 +1236,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     }
 
     // TONE周波数の設定/未設定に従い、TONE On/Offを無線機に設定する
+    AppMainLogger.debug(`TONE On/Off設定（RST→無線機） ${toneHz ? "On" : "Off"}`);
     const toneOnOffCmd = this.cmdMaker.makeSetToneCmd(toneHz ? true : false);
     await this.sendAndWaitRecv(toneOnOffCmd, "SET_TONE");
-    AppMainLogger.debug(`TONE On/Off設定（RST→無線機） ${toneHz ? "On" : "Off"}`);
 
     // TONEが未設定の場合は処理終了
     if (!toneHz) {
@@ -1240,17 +1246,17 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     }
 
     // TONEが設定されている場合は、TONE周波数を無線機に設定する
+    AppMainLogger.debug(`TONE周波数設定（RST→無線機） ${toneHz}`);
     const toneFreqCmd = this.cmdMaker.makeSetToneFreqCmd(toneHz);
     await this.sendAndWaitRecv(toneFreqCmd, "SET_TONE");
-    AppMainLogger.debug(`TONE周波数設定（RST→無線機） ${toneHz}`);
   }
 
   /**
    * TONE Offを無線機に送信する
    */
   private async sendToneOff(): Promise<void> {
+    AppMainLogger.debug(`TONE On/Off設定（RST→無線機） Off`);
     const toneOnOffCmd = this.cmdMaker.makeSetToneCmd(false);
     await this.sendAndWaitRecv(toneOnOffCmd, "SET_TONE");
-    AppMainLogger.debug(`TONE On/Off設定（RST→無線機） Off`);
   }
 }
