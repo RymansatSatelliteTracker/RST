@@ -183,15 +183,15 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
     // メインバンド（Rx）のモードを設定する
     if (rxModeValue) {
+      AppMainLogger.debug(`Rx運用モード（RST→無線機） ${rxModeText}`);
       const cmdData = this.cmdMaker.makeSetOpeMode(rxModeValue);
       await this.sendAndWaitRecv(cmdData, "SET_MODE");
-      AppMainLogger.debug(`Rx運用モード（RST→無線機） ${rxModeText}`);
     }
 
     // メインバンド（Rx）のデータモードを設定する
+    AppMainLogger.debug(`Rxデータモード（RST→無線機） ${this.state.currentRxDataMode}`);
     const cmdData = this.cmdMaker.makeSetDataMode(this.state.currentRxDataMode);
     await this.sendAndWaitRecv(cmdData, "SET_DATA_MODE");
-    AppMainLogger.debug(`Rxデータモード（RST→無線機） ${this.state.currentRxDataMode}`);
 
     // メインバンド（Rx）のトーン設定
     await this.setupTone(rxModeText, toneHz);
@@ -644,6 +644,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
           return;
         }
 
+        // AppMainLogger.debug(`onData: recv=${recvCmdType}, data=${recvData}`);
+
         // 待ち受けがGET系だが、他のデータが飛んできた場合は無視
         if (targetCmdType.startsWith("GET") && recvCmdType !== targetCmdType) {
           return;
@@ -661,6 +663,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       if (this.recvCallbackType.isResponsive) {
         this.recvCallback = onData;
       }
+
+      // AppMainLogger.debug(`データ送信（RST→無線機） ${targetCmdType} ${Buffer.from(cmdData).toString("hex")}`);
 
       // データ送信
       await super.sendSerial(cmdData);
@@ -1232,9 +1236,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     }
 
     // TONE周波数の設定/未設定に従い、TONE On/Offを無線機に設定する
+    AppMainLogger.debug(`TONE On/Off設定（RST→無線機） ${toneHz ? "On" : "Off"}`);
     const toneOnOffCmd = this.cmdMaker.makeSetToneCmd(toneHz ? true : false);
     await this.sendAndWaitRecv(toneOnOffCmd, "SET_TONE");
-    AppMainLogger.debug(`TONE On/Off設定（RST→無線機） ${toneHz ? "On" : "Off"}`);
 
     // TONEが未設定の場合は処理終了
     if (!toneHz) {
@@ -1242,17 +1246,17 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     }
 
     // TONEが設定されている場合は、TONE周波数を無線機に設定する
+    AppMainLogger.debug(`TONE周波数設定（RST→無線機） ${toneHz}`);
     const toneFreqCmd = this.cmdMaker.makeSetToneFreqCmd(toneHz);
     await this.sendAndWaitRecv(toneFreqCmd, "SET_TONE");
-    AppMainLogger.debug(`TONE周波数設定（RST→無線機） ${toneHz}`);
   }
 
   /**
    * TONE Offを無線機に送信する
    */
   private async sendToneOff(): Promise<void> {
+    AppMainLogger.debug(`TONE On/Off設定（RST→無線機） Off`);
     const toneOnOffCmd = this.cmdMaker.makeSetToneCmd(false);
     await this.sendAndWaitRecv(toneOnOffCmd, "SET_TONE");
-    AppMainLogger.debug(`TONE On/Off設定（RST→無線機） Off`);
   }
 }
