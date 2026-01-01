@@ -520,6 +520,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       }
 
       // 無線機に設定したいモードをセット
+      AppMainLogger.debug(`Tx運用モード設定要求：${mode} → ${modeValue} / ${dataMode}`);
       this.state.setReqTxMode(modeValue, dataMode);
     } else if ("downlinkMode" in modeModel) {
       // ダウンリンクモードを取得する
@@ -532,6 +533,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       }
 
       // 無線機に設定したいモードをセット
+      AppMainLogger.debug(`Rx運用モード設定要求：${mode} → ${modeValue} / ${dataMode}`);
       this.state.setReqRxMode(modeValue, dataMode);
     }
   }
@@ -970,6 +972,17 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    */
   private async procRecvOpeMode(recvData: string) {
     if (!this.modeCallback) {
+      return;
+    }
+
+    // メイン側の状態でRx運用モード更新要求がある場合は処理終了
+    if (this.state.isMain && this.state.isReqRxModeUpdate) {
+      AppMainLogger.debug(`メイン側の状態でRx運用モード更新要求があるため処理を終了します。`);
+      return;
+    }
+    // サブ側の状態でTx運用モード更新要求がある場合は処理終了
+    if (!this.state.isMain && this.state.isReqTxModeUpdate) {
+      AppMainLogger.debug(`サブ側の状態でTx運用モード更新要求があるため処理を終了します。`);
       return;
     }
 
