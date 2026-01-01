@@ -156,7 +156,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     rxModeText: string,
     toneHz: number | null
   ): Promise<void> {
-    AppMainLogger.info(`無線機Auto On処理を開始します。`);
+    AppMainLogger.info(`無線機Auto On処理を開始します。 Rx：${rxModeText} Tx：${txModeText}`);
 
     // RST側の周波数を保存する（バンド入れ替え判定で必要）
     this.state.setReqRxFreqHz(rxFreqHz);
@@ -520,6 +520,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       }
 
       // 無線機に設定したいモードをセット
+      AppMainLogger.debug(`Tx運用モード設定要求：${mode} → ${modeValue} / ${dataMode}`);
       this.state.setReqTxMode(modeValue, dataMode);
     } else if ("downlinkMode" in modeModel) {
       // ダウンリンクモードを取得する
@@ -532,6 +533,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       }
 
       // 無線機に設定したいモードをセット
+      AppMainLogger.debug(`Rx運用モード設定要求：${mode} → ${modeValue} / ${dataMode}`);
       this.state.setReqRxMode(modeValue, dataMode);
     }
   }
@@ -600,13 +602,17 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       return;
     }
 
+    // 同じ値が既に設定されている場合はスキップ
+    if (this.state.isSatelliteMode === isSatelliteMode) {
+      return;
+    }
+    // サテライトモードの設定を保持する
+    this.state.isSatelliteMode = isSatelliteMode;
+
     // データ送信
     const cmdData = this.cmdMaker.makeSetSatelliteMode(isSatelliteMode);
     await this.sendAndWaitRecv(cmdData, "SET_MODE");
     AppMainLogger.debug(`サテライトモード（RST→無線機） ${isSatelliteMode}`);
-
-    // サテライトモードの設定を保持する
-    this.state.isSatelliteMode = isSatelliteMode;
 
     // サテライトモードの周波数、モードを取得する
     await this.getFreqFromIcom();
@@ -966,6 +972,17 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    */
   private async procRecvOpeMode(recvData: string) {
     if (!this.modeCallback) {
+      return;
+    }
+
+    // メイン側の状態でRx運用モード更新要求がある場合は処理終了
+    if (this.state.isMain && this.state.isReqRxModeUpdate) {
+      AppMainLogger.debug(`メイン側の状態でRx運用モード更新要求があるため処理を終了します。`);
+      return;
+    }
+    // サブ側の状態でTx運用モード更新要求がある場合は処理終了
+    if (!this.state.isMain && this.state.isReqTxModeUpdate) {
+      AppMainLogger.debug(`サブ側の状態でTx運用モード更新要求があるため処理を終了します。`);
       return;
     }
 

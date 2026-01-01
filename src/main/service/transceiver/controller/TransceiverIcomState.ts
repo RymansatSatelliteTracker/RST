@@ -81,7 +81,7 @@ export default class TransceiverIcomState {
     }
 
     // 現在保持している値と同一の場合は何もしない（不要なバンド切り替えを抑止する）
-    if (!isForce && this.reqRxMode === mode) {
+    if (!isForce && this.reqRxMode === mode && this.reqRxDataMode === dataMode) {
       return;
     }
 
@@ -105,7 +105,7 @@ export default class TransceiverIcomState {
     }
 
     // 現在保持している値と同一の場合は何もしない（不要なバンド切り替えを抑止する）
-    if (!isForce && this.reqTxMode === mode) {
+    if (!isForce && this.reqTxMode === mode && this.reqTxDataMode === dataMode) {
       return;
     }
 
