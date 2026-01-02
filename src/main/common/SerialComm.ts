@@ -12,6 +12,7 @@ export default class SerialComm {
   private recvCallback: Function | null = null;
   private closeCallback: Function | null = null;
 
+  // シリアルポート接続がアクティブかどうか
   private active = false;
 
   /**
