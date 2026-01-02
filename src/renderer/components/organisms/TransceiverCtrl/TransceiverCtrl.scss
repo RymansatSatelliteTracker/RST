@@ -202,6 +202,9 @@
   @extend .item_label;
   background-color: $green;
   color: $black100;
+  display: inline-block;
+  width: 1.5em;
+  text-align: center;
 }
 
 .freq_label_inactive {
