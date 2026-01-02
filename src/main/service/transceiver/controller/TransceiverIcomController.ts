@@ -886,23 +886,13 @@ export default class TransceiverIcomController extends TransceiverSerialControll
           await this.procRecvFreqData(trimedData);
         }
 
+        res.data = true;
+        this.isDopplerShiftWaitingCallback(res);
+
         // 無線機への周波数の送信を一時停止する
         // MEMO: 無線機のダイアルなどでの周波数変更時、
         //       RSTから周波数の変更を行うと無線機での操作と混線状態になることを防止するため、一時停止が必要
-        res.data = true;
-        this.isDopplerShiftWaitingCallback(res);
-        this.isWaitSendFreq = true;
-
-        // 既存のタイマーがあればクリア
-        if (this.transceiveWaitTimer) {
-          clearTimeout(this.transceiveWaitTimer);
-        }
-
-        // 指定秒後、無線機への周波数の送信一時停止を解除する
-        this.transceiveWaitTimer = setTimeout(() => {
-          this.isWaitSendFreq = false;
-          this.transceiveWaitTimer = null;
-        }, Constant.Transceiver.TRANSCEIVE_WAIT_MS);
+        this.startTransceiveWaitTimer(Constant.Transceiver.TRANSCEIVE_WAIT_MS);
         return;
 
       // 表示周波数の取得
@@ -916,8 +906,21 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         this.isWaitSendFreq = false;
         return;
 
-      // 運用モードの設定（01:トランシーブ、04:要求に対する応答）
+      // 運用モードの設定（01:トランシーブ）
       case "01":
+        if (trimedData.length === 16) {
+          // 無線機から受信した運用モードデータを処理する
+          await this.procRecvOpeMode(trimedData);
+        }
+        res.data = false;
+        this.isDopplerShiftWaitingCallback(res);
+
+        // 無線機への周波数の送信一時停止状態にする
+        // MEMO: 無線機のモード変更時、RSTからバンド切り替えが発生すると、
+        //       意図したバンドのモード設定操作が困難となることを防止するため、一時停止が必要
+        this.startTransceiveWaitTimer(Constant.Transceiver.TRANSCEIVE_MODE_WAIT_MS);
+        return;
+      // 運用モードの設定（04:要求に対する応答）
       case "04":
         if (trimedData.length === 16) {
           // 無線機から受信した運用モードデータを処理する
@@ -1309,5 +1312,23 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   private fireSerialNotConnectedMsg() {
     const msg = I18nUtil4Main.getMsg(I18nMsgs.SERIAL_NOT_CONNECTED_TRANSCEIVER);
     fireIpcEvent("onNoticeMessage", new MessageModel(Constant.GlobalEvent.NOTICE_ERR, msg));
+  }
+
+  /**
+   * 無線機への周波数の送信一時停止状態にする
+   */
+  private startTransceiveWaitTimer(waitMs: number) {
+    this.isWaitSendFreq = true;
+
+    // 既存のタイマーがあればクリア
+    if (this.transceiveWaitTimer) {
+      clearTimeout(this.transceiveWaitTimer);
+    }
+
+    // 指定秒後、無線機への周波数の送信一時停止を解除する
+    this.transceiveWaitTimer = setTimeout(() => {
+      this.isWaitSendFreq = false;
+      this.transceiveWaitTimer = null;
+    }, waitMs);
   }
 }
