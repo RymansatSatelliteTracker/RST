@@ -202,6 +202,14 @@ const apiHandler = {
   },
 
   /**
+   * 無線機関係・無線機との接続が準備完了かどうかを返す
+   * @returns
+   */
+  isTransceiverReady: function (): Promise<ApiResponse<boolean>> {
+    return ipcRenderer.invoke("isTransceiverReady");
+  },
+
+  /**
    * 無線機関係・AutoOn時の初期処理
    */
   transceiverInitAutoOn: function (
@@ -220,6 +228,7 @@ const apiHandler = {
   transceiverAutoOff: function (): Promise<ApiResponse<void>> {
     return ipcRenderer.invoke("transceiverAutoOff");
   },
+
   /**
    * 無線機関係・周波数設定コマンドを送信する
    */
@@ -263,7 +272,7 @@ const apiHandler = {
    * 無線機関係・サテライトモードを変更する
    * @param {boolean} isSatelliteMode サテライトモード設定
    */
-  setSatelliteMode: function (isSatelliteMode: boolean): Promise<void> {
+  setSatelliteMode: function (isSatelliteMode: boolean): Promise<boolean> {
     return ipcRenderer.invoke("setSatelliteMode", isSatelliteMode);
   },
 

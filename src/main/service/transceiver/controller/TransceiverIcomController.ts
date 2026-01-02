@@ -3,14 +3,17 @@ import Constant from "@/common/Constant";
 import { synchronized } from "@/common/decorator/synchronized";
 import I18nMsgs from "@/common/I18nMsgs";
 import { AppConfigTransceiver } from "@/common/model/AppConfigModel";
+import { MessageModel } from "@/common/model/MessageModel";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse } from "@/common/types/types";
 import TransceiverUtil from "@/common/util/TransceiverUtil";
+import { fireIpcEvent } from "@/main/main";
 import TransceiverIcomCmdMaker, { CivCommand } from "@/main/service/transceiver/controller/TransceiverIcomCmdMaker";
 import TransceiverIcomRecvParser from "@/main/service/transceiver/controller/TransceiverIcomRecvParser";
 import TransceiverIcomState from "@/main/service/transceiver/controller/TransceiverIcomState";
 import TransceiverSerialControllerBase from "@/main/service/transceiver/controller/TransceiverSerialControllerBase";
 import AppMainLogger from "@/main/util/AppMainLogger";
+import I18nUtil4Main from "@/main/util/I18nUtil4Main";
 
 // 受信タイムアウト（秒）（起動時）
 const RECV_TIEOUT_SEC_FOR_BOOT = 2;
@@ -101,6 +104,12 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // 無線機側の周波数変更操作への影響を最小限にするため、サブバンドへの切り替えはメインの処理前に一瞬だけ行う
     const interval = parseFloat(this.transceiverConfig.autoTrackingIntervalSec) * 1000;
     this.sendAndRecvTimer = setInterval(async () => {
+      // 無線機との接続が準備完了でない場合は処理終了
+      if (!this.isReady()) {
+        this.fireSerialNotConnectedMsg();
+        return;
+      }
+
       // 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機する
       if (this.isWaitSendFreq) {
         return;
@@ -132,18 +141,29 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    * デバイスの切断などを行う
    */
   public override async stop(): Promise<void> {
+    AppMainLogger.info(`無線機の接続を停止します。`);
     this.unsetCallback();
-
-    await super.stop();
 
     // 定期コマンド送信を停止
     this.cancelTimer();
+    await super.stop();
 
     // 周波数データ(トランシーブ)受信時のタイマーを停止
     if (this.transceiveWaitTimer) {
       clearTimeout(this.transceiveWaitTimer);
       this.transceiveWaitTimer = null;
     }
+  }
+
+  /**
+   * 無線機との接続が準備完了かどうかを返す
+   */
+  public override isReady(): boolean {
+    if (!this.serial) {
+      return false;
+    }
+
+    return this.serial.isOpen();
   }
 
   /**
@@ -483,7 +503,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    */
   public override async setFreq(freqModel: UplinkType | DownlinkType): Promise<void> {
     // シリアル未接続の場合は処理終了
-    if (!this.serial?.isOpen) {
+    if (!this.serial?.isOpen()) {
       AppMainLogger.warn("シリアル未接続のため、処理を終了します。");
       return;
     }
@@ -504,7 +524,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    */
   public override async setMode(modeModel: UplinkType | DownlinkType): Promise<void> {
     // シリアル未接続の場合は処理終了
-    if (!this.serial?.isOpen) {
+    if (!this.serial?.isOpen()) {
       AppMainLogger.warn("シリアル未接続のため、処理を終了します。");
       return;
     }
@@ -595,16 +615,19 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    * サテライトモードを設定するコマンドを送信する
    * @param {boolean} isSatelliteMode サテライトモード設定
    */
-  public override async setSatelliteMode(isSatelliteMode: boolean): Promise<void> {
+  public override async setSatelliteMode(isSatelliteMode: boolean): Promise<boolean> {
     // シリアル未接続の場合は処理終了
-    if (!this.serial?.isOpen) {
+    if (!this.serial?.isOpen()) {
       AppMainLogger.warn("シリアル未接続のため、処理を終了します。");
-      return;
+
+      // レンダラ側へシリアルが未接続であることを通知（トースト表示される）
+      this.fireSerialNotConnectedMsg();
+      return false;
     }
 
     // 同じ値が既に設定されている場合はスキップ
     if (this.state.isSatelliteMode === isSatelliteMode) {
-      return;
+      return true;
     }
     // サテライトモードの設定を保持する
     this.state.isSatelliteMode = isSatelliteMode;
@@ -617,6 +640,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // サテライトモードの周波数、モードを取得する
     await this.getFreqFromIcom();
     await this.getModeFromIcom();
+
+    return true;
   }
 
   /**
@@ -631,7 +656,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   @synchronized()
   private async sendAndWaitRecv(cmdData: Uint8Array, targetCmdType: CommandType): Promise<string> {
     return new Promise(async (resolve, reject) => {
-      if (!this.checkRecvTimeout()) {
+      if (!(await this.checkRecvTimeout())) {
         return;
       }
 
@@ -1134,7 +1159,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    * memo: 少なくともIC-9700においては、無線機が電源Offでも、電源が接続されている場合は、送信コマンドをそのまま返してくるので、
    *       本処理でのタイムアウトチェックは、無線機が電源に接続されていない場合にのみ有効となる。
    */
-  private checkRecvTimeout(): boolean {
+  private async checkRecvTimeout(): Promise<boolean> {
     // 既にデータ受信済みであればOK
     if (this.isReceived) {
       return true;
@@ -1153,6 +1178,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
     // タイマーを停止
     this.cancelTimer();
+    await super.stop();
 
     // コールバック呼び出し
     if (this.freqCallback) {
@@ -1275,5 +1301,13 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     AppMainLogger.debug(`TONE On/Off設定（RST→無線機） Off`);
     const toneOnOffCmd = this.cmdMaker.makeSetToneCmd(false);
     await this.sendAndWaitRecv(toneOnOffCmd, "SET_TONE");
+  }
+
+  /**
+   * シリアル未接続メッセージをレンダラ側へ通知する
+   */
+  private fireSerialNotConnectedMsg() {
+    const msg = I18nUtil4Main.getMsg(I18nMsgs.SERIAL_NOT_CONNECTED_TRANSCEIVER);
+    fireIpcEvent("onNoticeMessage", new MessageModel(Constant.GlobalEvent.NOTICE_ERR, msg));
   }
 }

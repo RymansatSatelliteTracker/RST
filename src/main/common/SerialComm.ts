@@ -12,6 +12,8 @@ export default class SerialComm {
   private recvCallback: Function | null = null;
   private closeCallback: Function | null = null;
 
+  private active = false;
+
   /**
    * コンストラクタ
    * @param useReadlineParsar 受信単位が改行の場合、trueを指定する
@@ -82,6 +84,8 @@ export default class SerialComm {
    * @returns
    */
   public async open(): Promise<boolean> {
+    this.active = false;
+
     // シリアルの操作はsynchronizedで行う
     return await this.doProcess(async () => {
       try {
@@ -92,7 +96,13 @@ export default class SerialComm {
           }
 
           this.port.open((err) => {
-            err ? resolve(false) : resolve(true);
+            if (err) {
+              this.active = false;
+              resolve(false);
+            } else {
+              this.active = true;
+              resolve(true);
+            }
           });
         });
       } catch (error) {
@@ -110,6 +120,10 @@ export default class SerialComm {
       return false;
     }
 
+    if (!this.active) {
+      return false;
+    }
+
     return this.port.isOpen;
   }
 
@@ -119,6 +133,10 @@ export default class SerialComm {
    */
   public async close(): Promise<boolean> {
     if (!this.port) {
+      return false;
+    }
+
+    if (!this.active) {
       return false;
     }
 
@@ -148,6 +166,7 @@ export default class SerialComm {
             return;
           }
 
+          this.active = false;
           AppMainLogger.info(`シリアル切断しました。${this.port?.path}`);
           resolve(true);
         });
@@ -237,6 +256,9 @@ export default class SerialComm {
    */
   private onClose() {
     AppMainLogger.debug(`シリアル切断イベントを受信。 ${this.port?.path}`);
+    this.port = null;
+    this.active = false;
+
     if (!this.closeCallback) {
       return;
     }

@@ -1,6 +1,7 @@
 import CommonUtil from "@/common/CommonUtil";
 import Constant from "@/common/Constant";
 import I18nMsgs from "@/common/I18nMsgs";
+import { AppConfigModel } from "@/common/model/AppConfigModel";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse } from "@/common/types/types";
 import TransceiverUtil from "@/common/util/TransceiverUtil";
@@ -104,10 +105,17 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * Autoモード中はアクティブ衛星で周波数/運用モードを更新する
    */
   async function startAutoMode(): Promise<boolean> {
-    // 無線機が未設定の場合はトーストを表示して処理終了
+    // AutoOnにできない状態の場合（無線機設定に未設定項目がある場合など）はトーストを表示して処理終了
     const appConfig = await ApiAppConfig.getAppConfig();
-    if (CommonUtil.isEmpty(appConfig.transceiver.transceiverId)) {
+    if (!isValidTransceiverSetting(appConfig)) {
       emitter.emit(Constant.GlobalEvent.NOTICE_INFO, I18nUtil.getMsg(I18nMsgs.SYSTEM_YET_TRANSCEIVER_CONFIG));
+      return false;
+    }
+
+    // 無線機接続が準備完了か確認する
+    const isReady = await ApiTransceiver.isReady();
+    if (!isReady.status) {
+      emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.SERIAL_NOT_CONNECTED_TRANSCEIVER));
       return false;
     }
 
@@ -131,7 +139,12 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     //       サテライトモードの変更時に無線機のモード取得が行われるが、
     //       AutoOn時の無線機へのモード設定と同期が取れず、AutoOn時のモード設定が反映されない場合がある為、
     //       ここで明示的、同期的にサテライトモードを設定する。
-    await ApiTransceiver.setSatelliteMode(satelliteMode.value === Constant.Transceiver.SatelliteMode.SATELLITE);
+    const result = await ApiTransceiver.setSatelliteMode(
+      satelliteMode.value === Constant.Transceiver.SatelliteMode.SATELLITE
+    );
+    if (!result) {
+      return false;
+    }
 
     // 周波数と運用モードを設定、保存する
     setFrequencyAndOpeModeInModeStart();
@@ -901,6 +914,18 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     }
 
     return setting.downlink.downlinkHz! + setting.uplink.uplinkHz!;
+  }
+
+  function isValidTransceiverSetting(appConfig: AppConfigModel): boolean {
+    const invalid =
+      // シリアルポートが未設定の場合
+      CommonUtil.isEmpty(appConfig.transceiver.port) ||
+      // 機種が未設定の場合
+      CommonUtil.isEmpty(appConfig.transceiver.transceiverId) ||
+      // ボーレートが未設定の場合
+      CommonUtil.isEmpty(appConfig.transceiver.baudrateBps);
+
+    return !invalid;
   }
 
   return {

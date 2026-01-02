@@ -20,6 +20,11 @@ export default abstract class TransceiverControllerBase {
   public abstract stop(): Promise<void>;
 
   /**
+   * 無線機との接続が準備完了かどうかを返す
+   */
+  public abstract isReady(): boolean;
+
+  /**
    * 無線機関係・AutoOn時の初期処理
    */
   public abstract initAutoOn(
@@ -51,7 +56,7 @@ export default abstract class TransceiverControllerBase {
    * 無線機に送信するサテライトモードを設定する
    * @param {boolean} isSatelliteMode サテライトモード設定
    */
-  public abstract setSatelliteMode(isSatelliteMode: boolean): Promise<void>;
+  public abstract setSatelliteMode(isSatelliteMode: boolean): Promise<boolean>;
 
   /**
    * 無線機の周波数を呼び出し側に伝播させるためのコールバックを設定する
