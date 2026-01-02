@@ -1325,7 +1325,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       clearTimeout(this.transceiveWaitTimer);
     }
 
-    // 指定秒後、無線機への周波数の送信一時停止を解除する
+    // 指定ミリ秒後、無線機への周波数の送信一時停止を解除する
     this.transceiveWaitTimer = setTimeout(() => {
       this.isWaitSendFreq = false;
       this.transceiveWaitTimer = null;
