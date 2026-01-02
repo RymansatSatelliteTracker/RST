@@ -224,7 +224,7 @@ export function initializeIpcEvents() {
    * 無線機との接続が準備完了かどうかを返す
    */
   ipcMain.handle("isTransceiverReady", async (event) => {
-    return await TransceiverService.getInstance().isReady();
+    return await TransceiverService.getInstance().isTransceiverReady();
   });
 
   /**
