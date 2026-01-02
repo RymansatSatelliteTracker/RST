@@ -215,11 +215,7 @@ export default class TransceiverService {
       return false;
     }
 
-    if (!this.controller) {
-      return false;
-    }
-
-    return await this.controller.setSatelliteMode(isSatelliteMode);
+    return await this.controller!.setSatelliteMode(isSatelliteMode);
   }
 
   /**

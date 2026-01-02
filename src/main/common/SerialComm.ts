@@ -96,7 +96,6 @@ export default class SerialComm {
           }
 
           this.port.open((err) => {
-            err ? resolve(false) : resolve(true);
             if (err) {
               this.active = false;
               resolve(false);
