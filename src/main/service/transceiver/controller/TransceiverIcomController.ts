@@ -107,7 +107,6 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       // 無線機との接続が準備完了でない場合は処理終了
       if (!this.isReady()) {
         this.fireSerialNotConnectedMsg();
-        await this.stop();
         return;
       }
 
