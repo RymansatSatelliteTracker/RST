@@ -210,19 +210,28 @@ export default class TransceiverService {
    * サテライトモードを変更する
    * @param {boolean} isSatelliteMode サテライトモード設定
    */
-  public async setSatelliteMode(isSatelliteMode: boolean) {
+  public async setSatelliteMode(isSatelliteMode: boolean): Promise<boolean> {
     if (!this.isReady()) {
-      return;
+      return false;
     }
 
-    await this.controller?.setSatelliteMode(isSatelliteMode);
+    if (!this.controller) {
+      return false;
+    }
+
+    return await this.controller.setSatelliteMode(isSatelliteMode);
   }
 
   /**
    * 無線機制御が可能な状態か判定する
    */
-  private isReady() {
-    // TransceiverControllerが設定されているか？のみで判定
-    return this.controller;
+  public async isReady(): Promise<ApiResponse<boolean>> {
+    // TransceiverControllerが設定されているか？
+    if (!this.controller) {
+      return new ApiResponse(false);
+    }
+
+    // 無線機コントローラが準備完了か？
+    return new ApiResponse(this.controller.isReady());
   }
 }

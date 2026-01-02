@@ -221,6 +221,13 @@ export function initializeIpcEvents() {
   });
 
   /**
+   * 無線機との接続が準備完了かどうかを返す
+   */
+  ipcMain.handle("isTransceiverReady", async (event) => {
+    return await TransceiverService.getInstance().isReady();
+  });
+
+  /**
    * 無線機関係・AutoOn時の初期処理
    */
   ipcMain.handle(
@@ -333,6 +340,7 @@ export function releaseIpcEvents() {
   ipcMain.removeHandler("onDispLangChange");
   ipcMain.removeHandler("startTransceiverCtrl");
   ipcMain.removeHandler("stopTransceiverCtrl");
+  ipcMain.removeHandler("isTransceiverReady");
   ipcMain.removeHandler("transceiverInitAutoOn");
   ipcMain.removeHandler("transceiverAutoOff");
   ipcMain.removeHandler("getActiveSatelliteGroup");
