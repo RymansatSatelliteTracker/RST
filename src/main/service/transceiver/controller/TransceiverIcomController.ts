@@ -145,10 +145,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     AppMainLogger.info(`無線機の接続を停止します。`);
     this.unsetCallback();
 
-    await super.stop();
-
     // 定期コマンド送信を停止
     this.cancelTimer();
+    await super.stop();
 
     // 周波数データ(トランシーブ)受信時のタイマーを停止
     if (this.transceiveWaitTimer) {
@@ -358,7 +357,6 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       clearInterval(this.sendAndRecvTimer);
 
       AppMainLogger.info(`無線機の監視とデータの送信を停止しました。`);
-      super.stop();
     }
   }
 
@@ -659,7 +657,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   @synchronized()
   private async sendAndWaitRecv(cmdData: Uint8Array, targetCmdType: CommandType): Promise<string> {
     return new Promise(async (resolve, reject) => {
-      if (!this.checkRecvTimeout()) {
+      if (!(await this.checkRecvTimeout())) {
         return;
       }
 
@@ -1162,7 +1160,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    * memo: 少なくともIC-9700においては、無線機が電源Offでも、電源が接続されている場合は、送信コマンドをそのまま返してくるので、
    *       本処理でのタイムアウトチェックは、無線機が電源に接続されていない場合にのみ有効となる。
    */
-  private checkRecvTimeout(): boolean {
+  private async checkRecvTimeout(): Promise<boolean> {
     // 既にデータ受信済みであればOK
     if (this.isReceived) {
       return true;
@@ -1181,6 +1179,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
     // タイマーを停止
     this.cancelTimer();
+    await super.stop();
 
     // コールバック呼び出し
     if (this.freqCallback) {

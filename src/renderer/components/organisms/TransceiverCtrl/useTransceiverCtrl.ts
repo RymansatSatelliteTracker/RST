@@ -918,8 +918,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
   function isValidTransceiverSetting(appConfig: AppConfigModel): boolean {
     const invalid =
-      // 無線機設定が未設定の場合
-      CommonUtil.isEmpty(appConfig.transceiver.transceiverId) ||
       // シリアルポートが未設定の場合
       CommonUtil.isEmpty(appConfig.transceiver.port) ||
       // 機種が未設定の場合

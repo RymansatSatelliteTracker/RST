@@ -133,8 +133,8 @@ export default class TransceiverService {
   /**
    * 無線機の周波数の変動コールバックを設定する
    */
-  public setFrequencyCallback(callback: Function) {
-    if (!this.isReady()) {
+  public async setFrequencyCallback(callback: Function) {
+    if (!(await this.isReady())) {
       return;
     }
 
@@ -144,8 +144,8 @@ export default class TransceiverService {
   /**
    * 無線機の運用モードの変動コールバックを設定する
    */
-  public setModeCallback(callback: Function) {
-    if (!this.isReady()) {
+  public async setModeCallback(callback: Function) {
+    if (!(await this.isReady())) {
       return;
     }
 
@@ -162,8 +162,8 @@ export default class TransceiverService {
   /**
    * 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機するコールバックを設定する
    */
-  public setIsDopplerShiftWaitingCallback(callback: Function) {
-    if (!this.isReady()) {
+  public async setIsDopplerShiftWaitingCallback(callback: Function) {
+    if (!(await this.isReady())) {
       return;
     }
 
@@ -174,7 +174,7 @@ export default class TransceiverService {
    * 無線機機器の制御を解除する
    */
   public async resetDevice() {
-    if (!this.isReady()) {
+    if (!(await this.isReady())) {
       return;
     }
 
@@ -187,7 +187,7 @@ export default class TransceiverService {
    * @param {(UplinkType | DownlinkType)} frequencyModel 周波数設定
    */
   public async setTransceiverFrequency(frequencyModel: UplinkType | DownlinkType) {
-    if (!this.isReady()) {
+    if (!(await this.isReady())) {
       return;
     }
 
@@ -198,12 +198,12 @@ export default class TransceiverService {
    * 無線機モードを変更する
    * @param {(UplinkType | DownlinkType)} modeModel 運用モード設定
    */
-  public setTransceiverMode(modeModel: UplinkType | DownlinkType) {
-    if (!this.isReady()) {
+  public async setTransceiverMode(modeModel: UplinkType | DownlinkType) {
+    if (!(await this.isReady())) {
       return;
     }
 
-    this.controller?.setMode(modeModel);
+    await this.controller?.setMode(modeModel);
   }
 
   /**
@@ -211,7 +211,7 @@ export default class TransceiverService {
    * @param {boolean} isSatelliteMode サテライトモード設定
    */
   public async setSatelliteMode(isSatelliteMode: boolean): Promise<boolean> {
-    if (!this.isReady()) {
+    if (!(await this.isReady())) {
       return false;
     }
 

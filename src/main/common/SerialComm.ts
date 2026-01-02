@@ -97,9 +97,14 @@ export default class SerialComm {
 
           this.port.open((err) => {
             err ? resolve(false) : resolve(true);
+            if (err) {
+              this.active = false;
+              resolve(false);
+            } else {
+              this.active = true;
+              resolve(true);
+            }
           });
-
-          this.active = true;
         });
       } catch (error) {
         // オープンに失敗した場合に例外が発生する場合もあるのでキャッチして処理を続行
