@@ -15,7 +15,7 @@ export default class FileUtil {
   /**
    * テキストを保存する
    */
-  public static wirteText(filePath: string, text: string) {
+  public static writeText(filePath: string, text: string) {
     fs.writeFileSync(filePath, text);
   }
 
@@ -24,6 +24,14 @@ export default class FileUtil {
    */
   public static readText(filePath: string) {
     return fs.readFileSync(filePath, { encoding: "utf-8", flag: "r" });
+  }
+
+  /**
+   * ファイルを削除する
+   * @param filePath
+   */
+  public static deleteFile(filePath: string) {
+    fs.unlinkSync(filePath);
   }
 
   /**

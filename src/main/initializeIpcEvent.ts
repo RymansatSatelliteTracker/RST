@@ -68,8 +68,8 @@ export function initializeIpcEvents() {
   /**
    * 衛星設定画面用のアプリケーション設定を保存する
    */
-  ipcMain.handle("storeAppConfigSatSetting", (event, config: AppConfigSatSettingModel) => {
-    return AppConfigUtil.storeConfigSatSetting(config);
+  ipcMain.handle("storeAppConfigSatSetting", async (event, config: AppConfigSatSettingModel, isTleUpdate: boolean) => {
+    return await new AppConfigSatelliteService().store(config, isTleUpdate);
   });
 
   /**
@@ -221,10 +221,27 @@ export function initializeIpcEvents() {
   });
 
   /**
-   * 無線機関係・無線機関係・AutoOn時の初期処理
+   * 無線機との接続が準備完了かどうかを返す
    */
-  ipcMain.handle("initAutoOn", async (event, txFreqHz: number, rxFreqHz: number) => {
-    return await TransceiverService.getInstance().initAutoOn(txFreqHz, rxFreqHz);
+  ipcMain.handle("isTransceiverReady", async (event) => {
+    return await TransceiverService.getInstance().isTransceiverReady();
+  });
+
+  /**
+   * 無線機関係・AutoOn時の初期処理
+   */
+  ipcMain.handle(
+    "transceiverInitAutoOn",
+    async (event, txFreqHz: number, rxFreqHz: number, txMode: string, rxMode: string, toneHz: number | null) => {
+      return await TransceiverService.getInstance().initAutoOn(txFreqHz, rxFreqHz, txMode, rxMode, toneHz);
+    }
+  );
+
+  /**
+   * 無線機関係・AutoOff
+   */
+  ipcMain.handle("transceiverAutoOff", async (event) => {
+    return await TransceiverService.getInstance().autoOff();
   });
 
   /**
@@ -258,8 +275,8 @@ export function initializeIpcEvents() {
   /**
    * 無線機関係・サテライトモードを変更する
    */
-  ipcMain.handle("setSatelliteMode", (event, isSatelliteMode: boolean) => {
-    return TransceiverService.getInstance().setSatelliteMode(isSatelliteMode);
+  ipcMain.handle("setSatelliteMode", async (event, isSatelliteMode: boolean) => {
+    return await TransceiverService.getInstance().setSatelliteMode(isSatelliteMode);
   });
 
   /**
@@ -299,33 +316,44 @@ export function releaseIpcEvents() {
   }
 
   // イベントハンドラを削除
-  ipcMain.removeAllListeners("getAppConfig");
-  ipcMain.removeAllListeners("storeAppConfig");
-  ipcMain.removeAllListeners("getAppConfigSatSetting");
-  ipcMain.removeAllListeners("storeAppConfigSatSetting");
-  ipcMain.removeAllListeners("getRotatorConfig");
-  ipcMain.removeAllListeners("getTransceiverConfig");
-  ipcMain.removeAllListeners("getTlesByNoradIds");
-  ipcMain.removeAllListeners("getGeoLocation");
-  ipcMain.removeAllListeners("getSavedSatelliteIdentifer");
-  ipcMain.removeAllListeners("getDefaultSatelliteBySatelliteId");
-  ipcMain.removeAllListeners("addDefaultSatellite");
-  ipcMain.removeAllListeners("reCreateDefaultSatellite");
-  ipcMain.removeAllListeners("getUserRegisteredAppConfigSatellite");
-  ipcMain.removeAllListeners("setAntennaPosition");
-  ipcMain.removeAllListeners("onChangeAntennaPosition");
-  ipcMain.removeAllListeners("onRoratorDisconnect");
-  ipcMain.removeAllListeners("getActiveSatelliteGroup");
-  ipcMain.removeAllListeners("refreshAppConfig");
-  ipcMain.removeAllListeners("setTransceiverFrequency");
-  ipcMain.removeAllListeners("onChangeTransceiverFrequency");
-  ipcMain.removeAllListeners("setTransceiverMode");
-  ipcMain.removeAllListeners("onChangeTransceiverMode");
-  ipcMain.removeAllListeners("setSatelliteMode");
-  ipcMain.removeAllListeners("dopplerShiftWaitingCallback");
-  ipcMain.removeAllListeners("onSaveTransceiverFrequency");
-  ipcMain.removeAllListeners("canGetValidTle");
-  ipcMain.removeAllListeners("onNoticeMessage");
+  ipcMain.removeHandler("getAppConfig");
+  ipcMain.removeHandler("storeAppConfig");
+  ipcMain.removeHandler("getAppConfigSatSetting");
+  ipcMain.removeHandler("storeAppConfigSatSetting");
+  ipcMain.removeHandler("getRotatorConfig");
+  ipcMain.removeHandler("getTransceiverConfig");
+  ipcMain.removeHandler("getTlesByNoradIds");
+  ipcMain.removeHandler("getGeoLocation");
+  ipcMain.removeHandler("getSavedSatelliteIdentifer");
+  ipcMain.removeHandler("getDefaultSatelliteBySatelliteId");
+  ipcMain.removeHandler("addDefaultSatellite");
+  ipcMain.removeHandler("reCreateDefaultSatellite");
+  ipcMain.removeHandler("getUserRegisteredAppConfigSatellite");
+  ipcMain.removeHandler("startAntennaCtrl");
+  ipcMain.removeHandler("stopAntennaCtrl");
+  ipcMain.removeHandler("setAntennaPosition");
+  ipcMain.removeHandler("onChangeAntennaPosition");
+  ipcMain.removeHandler("onRoratorDisconnect");
+  ipcMain.removeHandler("getActiveSerialPorts");
+  ipcMain.removeHandler("openSerialPortTry");
+  ipcMain.removeHandler("closeSerialPort");
+  ipcMain.removeHandler("onDispLangChange");
+  ipcMain.removeHandler("startTransceiverCtrl");
+  ipcMain.removeHandler("stopTransceiverCtrl");
+  ipcMain.removeHandler("isTransceiverReady");
+  ipcMain.removeHandler("transceiverInitAutoOn");
+  ipcMain.removeHandler("transceiverAutoOff");
+  ipcMain.removeHandler("getActiveSatelliteGroup");
+  ipcMain.removeHandler("refreshAppConfig");
+  ipcMain.removeHandler("setTransceiverFrequency");
+  ipcMain.removeHandler("onChangeTransceiverFrequency");
+  ipcMain.removeHandler("setTransceiverMode");
+  ipcMain.removeHandler("onChangeTransceiverMode");
+  ipcMain.removeHandler("setSatelliteMode");
+  ipcMain.removeHandler("dopplerShiftWaitingCallback");
+  ipcMain.removeHandler("onSaveTransceiverFrequency");
+  ipcMain.removeHandler("canGetValidTle");
+  ipcMain.removeHandler("onNoticeMessage");
 
   initialized = false;
 }

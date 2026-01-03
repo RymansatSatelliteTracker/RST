@@ -192,3 +192,23 @@
 .br_no_select {
   user-select: none;
 }
+
+.item_label {
+  border-radius: 2px;
+  padding: 1px 1px;
+}
+
+.freq_label_active {
+  @extend .item_label;
+  background-color: $green;
+  color: $black100;
+  display: inline-block;
+  width: 1.5em;
+  text-align: center;
+}
+
+.freq_label_inactive {
+  @extend .item_label;
+  background-color: $black100;
+  color: $white;
+}

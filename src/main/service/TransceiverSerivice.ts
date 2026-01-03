@@ -84,13 +84,24 @@ export default class TransceiverService {
   /**
    * 無線機関係・AutoOn時の初期処理
    */
-  public async initAutoOn(txFreqHz: number, rxFreqHz: number) {
+  public async initAutoOn(txFreqHz: number, rxFreqHz: number, txMode: string, rxMode: string, toneHz: number | null) {
     if (!this.controller) {
       return;
     }
 
     // AutoOnの初期処理を実行する
-    await this.controller.initAutoOn(txFreqHz, rxFreqHz);
+    await this.controller.initAutoOn(txFreqHz, rxFreqHz, txMode, rxMode, toneHz);
+  }
+
+  /**
+   * 無線機関係・AutoOff
+   */
+  public async autoOff() {
+    if (!this.controller) {
+      return;
+    }
+
+    await this.controller.autoOff();
   }
 
   /**
@@ -122,7 +133,7 @@ export default class TransceiverService {
   /**
    * 無線機の周波数の変動コールバックを設定する
    */
-  public setFrequencyCallback(callback: Function) {
+  public async setFrequencyCallback(callback: Function) {
     if (!this.isReady()) {
       return;
     }
@@ -133,7 +144,7 @@ export default class TransceiverService {
   /**
    * 無線機の運用モードの変動コールバックを設定する
    */
-  public setModeCallback(callback: Function) {
+  public async setModeCallback(callback: Function) {
     if (!this.isReady()) {
       return;
     }
@@ -151,7 +162,7 @@ export default class TransceiverService {
   /**
    * 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機するコールバックを設定する
    */
-  public setIsDopplerShiftWaitingCallback(callback: Function) {
+  public async setIsDopplerShiftWaitingCallback(callback: Function) {
     if (!this.isReady()) {
       return;
     }
@@ -187,31 +198,43 @@ export default class TransceiverService {
    * 無線機モードを変更する
    * @param {(UplinkType | DownlinkType)} modeModel 運用モード設定
    */
-  public setTransceiverMode(modeModel: UplinkType | DownlinkType) {
+  public async setTransceiverMode(modeModel: UplinkType | DownlinkType) {
     if (!this.isReady()) {
       return;
     }
 
-    this.controller?.setMode(modeModel);
+    await this.controller?.setMode(modeModel);
   }
 
   /**
    * サテライトモードを変更する
    * @param {boolean} isSatelliteMode サテライトモード設定
    */
-  public setSatelliteMode(isSatelliteMode: boolean) {
+  public async setSatelliteMode(isSatelliteMode: boolean): Promise<boolean> {
     if (!this.isReady()) {
-      return;
+      return false;
     }
 
-    this.controller?.setSatelliteMode(isSatelliteMode);
+    return await this.controller!.setSatelliteMode(isSatelliteMode);
   }
 
   /**
    * 無線機制御が可能な状態か判定する
    */
-  private isReady() {
-    // TransceiverControllerが設定されているか？のみで判定
-    return this.controller;
+  private isReady(): boolean {
+    // TransceiverControllerが設定されているか？
+    if (!this.controller) {
+      return false;
+    }
+
+    // 無線機コントローラが準備完了か？
+    return this.controller.isReady();
+  }
+
+  /**
+   * 無線機制御が可能な状態か判定する
+   */
+  public async isTransceiverReady(): Promise<ApiResponse<boolean>> {
+    return new ApiResponse(this.isReady());
   }
 }

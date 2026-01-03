@@ -2,7 +2,7 @@
  * 定数
  */
 export default class Constant {
-  public static readonly appVersion = "v0.1.3";
+  public static readonly appVersion = "v0.1.4";
 
   /**
    * ロガー関係
@@ -272,6 +272,8 @@ export default class Constant {
     static readonly DOPPLER_SHIFT_RANGE_SEC = 60;
     // 周波数データ(トランシーブ)受信時の待機時間[単位:ミリ秒]
     static readonly TRANSCEIVE_WAIT_MS = 2000;
+    // 運用モード(トランシーブ)受信時の待機時間[単位:ミリ秒]
+    static readonly TRANSCEIVE_MODE_WAIT_MS = 5000;
   };
 
   /**

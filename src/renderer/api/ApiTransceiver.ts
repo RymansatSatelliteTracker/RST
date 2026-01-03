@@ -22,10 +22,30 @@ export default class ApiTransceiver {
   }
 
   /**
+   * 無線機との接続が準備完了かどうかを返す
+   */
+  public static async isReady(): Promise<ApiResponse<boolean>> {
+    return await window.rstApi.isTransceiverReady();
+  }
+
+  /**
    * AutoOn時の初期処理
    */
-  public static async initAutoOn(txFreqHz: number, rxFreqHz: number): Promise<void> {
-    await window.rstApi.initAutoOn(txFreqHz, rxFreqHz);
+  public static async transceiverInitAutoOn(
+    txFreqHz: number,
+    rxFreqHz: number,
+    txMode: string,
+    rxMode: string,
+    toneHz: number | null
+  ): Promise<void> {
+    await window.rstApi.transceiverInitAutoOn(txFreqHz, rxFreqHz, txMode, rxMode, toneHz);
+  }
+
+  /**
+   * AutoOff時の初期処理
+   */
+  public static async transceiverAutoOff(): Promise<void> {
+    await window.rstApi.transceiverAutoOff();
   }
 
   /**
@@ -59,8 +79,8 @@ export default class ApiTransceiver {
   /**
    * サテライトモードを変更する
    */
-  public static async setSatelliteMode(isSatelliteMode: boolean) {
-    await window.rstApi.setSatelliteMode(isSatelliteMode);
+  public static async setSatelliteMode(isSatelliteMode: boolean): Promise<boolean> {
+    return await window.rstApi.setSatelliteMode(isSatelliteMode);
   }
 
   /**

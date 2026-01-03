@@ -14,7 +14,6 @@ import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse, LangType } from "@/common/types/types";
 import type { TleStrings } from "@/renderer/types/satellite-type";
 import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";
-
 /**
  * ここにレンダラに公開するAPIを定義する
  */
@@ -43,8 +42,8 @@ const apiHandler = {
   /**
    * 衛星設定画面用のアプリケーション設定を保存する
    */
-  storeAppConfigSatSetting: function (config: AppConfigSatSettingModel) {
-    return ipcRenderer.invoke("storeAppConfigSatSetting", config);
+  storeAppConfigSatSetting: function (config: AppConfigSatSettingModel, isTleUpdate: boolean): Promise<void> {
+    return ipcRenderer.invoke("storeAppConfigSatSetting", config, isTleUpdate);
   },
 
   /**
@@ -203,10 +202,31 @@ const apiHandler = {
   },
 
   /**
+   * 無線機関係・無線機との接続が準備完了かどうかを返す
+   * @returns
+   */
+  isTransceiverReady: function (): Promise<ApiResponse<boolean>> {
+    return ipcRenderer.invoke("isTransceiverReady");
+  },
+
+  /**
    * 無線機関係・AutoOn時の初期処理
    */
-  initAutoOn: function (txFreqHz: number, rxFreqHz: number): Promise<ApiResponse<void>> {
-    return ipcRenderer.invoke("initAutoOn", txFreqHz, rxFreqHz);
+  transceiverInitAutoOn: function (
+    txFreqHz: number,
+    rxFreqHz: number,
+    txMode: string,
+    rxMode: string,
+    toneHz: number | null
+  ): Promise<ApiResponse<void>> {
+    return ipcRenderer.invoke("transceiverInitAutoOn", txFreqHz, rxFreqHz, txMode, rxMode, toneHz);
+  },
+
+  /**
+   * 無線機関係・AutoOff
+   */
+  transceiverAutoOff: function (): Promise<ApiResponse<void>> {
+    return ipcRenderer.invoke("transceiverAutoOff");
   },
 
   /**
@@ -252,7 +272,7 @@ const apiHandler = {
    * 無線機関係・サテライトモードを変更する
    * @param {boolean} isSatelliteMode サテライトモード設定
    */
-  setSatelliteMode: function (isSatelliteMode: boolean): Promise<void> {
+  setSatelliteMode: function (isSatelliteMode: boolean): Promise<boolean> {
     return ipcRenderer.invoke("setSatelliteMode", isSatelliteMode);
   },
 

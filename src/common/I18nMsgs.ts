@@ -50,6 +50,11 @@ export default class I18nMsgs {
     en: "Either the beacon frequency or mode has not been entered.",
     ja: "ビーコン周波数の周波数かモードいずれかが未入力です",
   };
+  public static readonly CHK_ERR_SATELLITEMODE_REQUIRE_UPDOWN: I18nMsgItem = {
+    en: "When Satellite Mode is enabled, uplink and downlink settings are required.",
+    ja: "サテライトモードが有効の場合、アップリンクとダウンリンクの設定は必須です",
+  };
+
   public static readonly CHK_ERR_DUPLICATE_MOVE: I18nMsgItem = {
     en: "Duplicate data cannot be moved",
     ja: "重複したデータは移動できません",
@@ -110,6 +115,22 @@ export default class I18nMsgs {
     en: "No overlapping pass found.",
     ja: "重複パスが見つかりません。",
   };
+  public static readonly CHK_ERR_NO_BEACON_FREQ: I18nMsgItem = {
+    en: "Beacon frequency is not set.",
+    ja: "ビーコン周波数が設定されていません。",
+  };
+  public static readonly CHK_ERR_NO_UPLINK_FREQ: I18nMsgItem = {
+    en: "Uplink frequency is not set.",
+    ja: "アップリンク周波数が設定されていません。",
+  };
+  public static readonly CHK_ERR_NO_DOWNLINK_FREQ: I18nMsgItem = {
+    en: "Downlink frequency is not set.",
+    ja: "ダウンリンク周波数が設定されていません。",
+  };
+  public static readonly CHK_ERR_NO_FREQ: I18nMsgItem = {
+    en: "Uplink and Downlink frequencies are not set.",
+    ja: "アップリンク周波数とダウンリンク周波数が設定されていません。",
+  };
 
   // AppConfig系エラーメッセージ
   public static readonly CHK_ERR_APPCONFIG_NOT_EXISTS_FILE: I18nMsgItem = {
@@ -123,6 +144,10 @@ export default class I18nMsgs {
   public static readonly CHK_ERR_APPCONFIG_INVALID_ITEM: I18nMsgItem = {
     en: "The item value in the application configuration file is invalid",
     ja: "アプリケーション設定ファイルの項目値が不正です",
+  };
+  public static readonly ERR_APPCONFIG_UPDATE: I18nMsgItem = {
+    en: "Failed to update the Application configuration file. Please try again later.",
+    ja: "衛星設定の更新に失敗しました。時間をおいて再度更新してください。",
   };
   public static readonly ERR_SERIAL_CONNECT_ABORT: I18nMsgItem = {
     en: "Serial connection failed",
@@ -156,8 +181,8 @@ export default class I18nMsgs {
     ja: "予期しないエラーが発生しました",
   };
   public static readonly SYSTEM_YET_TRANSCEIVER_CONFIG: I18nMsgItem = {
-    en: "Transceiver is not set. Please set it in the Radio menu.",
-    ja: "無線機が未設定です。無線機メニューで設定を行ってください。",
+    en: "There are some items not set in the radio settings. Please set them in the radio menu.",
+    ja: "無線機設定に未設定項目があります。無線機メニューで設定を行ってください。",
   };
   public static readonly SYSTEM_YET_ROTATOR_CONFIG: I18nMsgItem = {
     en: "Rotator is not set. Please set it in the rotator menu.",
@@ -231,7 +256,7 @@ export default class I18nMsgs {
   public static readonly GCOM_MENU_EDIT: I18nMsgItem = { en: "Edit", ja: "編集" };
   public static readonly GCOM_MENU_SETTING: I18nMsgItem = { en: "Setting", ja: "設定" };
   public static readonly GCOM_MENU_LANG: I18nMsgItem = { en: "Lang", ja: "言語設定" };
-  public static readonly GCOM_MENU_LANG_JA: I18nMsgItem = { en: "Japanise", ja: "日本語" };
+  public static readonly GCOM_MENU_LANG_JA: I18nMsgItem = { en: "Japanese", ja: "日本語" };
   public static readonly GCOM_MENU_LANG_EN: I18nMsgItem = { en: "English", ja: "English" };
   public static readonly GCOM_MENU_HELP: I18nMsgItem = { en: "Help", ja: "ヘルプ" };
   public static readonly GCOM_MENU_VERSION: I18nMsgItem = { en: "Version", ja: "バージョン" };
@@ -251,6 +276,10 @@ export default class I18nMsgs {
   public static readonly G41_IPADDRESS: I18nMsgItem = { en: "IP Address", ja: "IPアドレス" };
   public static readonly G41_IPADDRESS_PORT: I18nMsgItem = { en: "Port", ja: "Port" };
   public static readonly G41_AUTO_INTERVAL: I18nMsgItem = { en: "Freq Control Interval", ja: "周波数設定インターバル" };
+  public static readonly G41_AUTOTRACK_TIME: I18nMsgItem = {
+    en: "Auto-Tracking Start/End Time",
+    ja: "自動追尾準備・終了時間",
+  };
   // 画面項目系／ローテータ設定画面
   public static readonly G51_TAB_CONNECTION: I18nMsgItem = { en: "Device", ja: "機種設定" };
   public static readonly G51_TAB_BEHIVIOR: I18nMsgItem = { en: "Behivior", ja: "動作設定" };

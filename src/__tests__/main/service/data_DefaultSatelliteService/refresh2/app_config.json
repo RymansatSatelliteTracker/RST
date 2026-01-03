@@ -54,7 +54,8 @@
       "makerId": "2",
       "ipAddress": "",
       "ipPort": "",
-      "autoTrackingIntervalSec": "1"
+      "autoTrackingIntervalSec": "1",
+      "autoTrackingStartEndTime": "1"
     },
     "rotator": {
       "port": "",

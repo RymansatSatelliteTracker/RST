@@ -1,3 +1,5 @@
+import { autoModeFreqType } from "@/common/types/satelliteSettingTypes";
+
 /**
  * 衛星情報編集フォーム
  */
@@ -8,14 +10,14 @@ export default class EditSatelliteInfoForm {
   // 編集用衛星名
   public editSatelliteName: string = "";
   public noradId: string = "";
-  public autoModeUplinkFreq: string = "1";
+  public autoModeUplinkFreq: autoModeFreqType = 1;
   public uplink1Hz: number | null = null;
   public uplink1Mode: string = "";
   public uplink2Hz: number | null = null;
   public uplink2Mode: string = "";
   public uplink3Hz: number | null = null;
   public uplink3Mode: string = "";
-  public autoModeDownlinkFreq: string = "1";
+  public autoModeDownlinkFreq: autoModeFreqType = 1;
   public downlink1Hz: number | null = null;
   public downlink1Mode: string = "";
   public downlink2Hz: number | null = null;
@@ -29,4 +31,3 @@ export default class EditSatelliteInfoForm {
   public satelliteMode: string = "1";
   public outline: string = "";
 }
-
