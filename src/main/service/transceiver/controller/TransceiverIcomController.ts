@@ -297,6 +297,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       // サブ・周波数の取得
       const recvDataSubFreq = await this.sendAndWaitRecv(this.cmdMaker.makeGetFreq(), "GET_FREQ");
       this.state.setRecvTxFreqHz(TransceiverIcomRecvParser.parseFreq(recvDataSubFreq));
+      AppMainLogger.debug(`Tx周波数 （無線機→RST）`);
     }
 
     // メイン側のデータ取得
@@ -305,6 +306,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // メイン・周波数の取得
     const recvDataMainFreq = await this.sendAndWaitRecv(this.cmdMaker.makeGetFreq(), "GET_FREQ");
     this.state.setRecvRxFreqHz(TransceiverIcomRecvParser.parseFreq(recvDataMainFreq));
+    AppMainLogger.debug(`Rx周波数 （無線機→RST）`);
   }
 
   /**
@@ -321,6 +323,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       // サブ・周波数の取得
       const recvDataSubFreq = await this.sendAndWaitRecv(this.cmdMaker.makeGetFreq(), "GET_FREQ");
       this.state.setRecvTxFreqHz(TransceiverIcomRecvParser.parseFreq(recvDataSubFreq));
+      AppMainLogger.debug(`Tx周波数 取得要求（RST→無線機）`);
       // サブ・運用モードの取得
       const recvSubMode = await this.sendAndWaitRecv(this.cmdMaker.makeGetMode(), "GET_MODE");
       AppMainLogger.debug(`Tx運用モード 取得要求（RST→無線機）`);
@@ -337,6 +340,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // メイン・周波数の取得
     const recvDataMainFreq = await this.sendAndWaitRecv(this.cmdMaker.makeGetFreq(), "GET_FREQ");
     this.state.setRecvRxFreqHz(TransceiverIcomRecvParser.parseFreq(recvDataMainFreq));
+    AppMainLogger.debug(`Rx周波数 取得要求（RST→無線機）`);
     // メイン・運用モードの取得
     const recvMainMode = await this.sendAndWaitRecv(this.cmdMaker.makeGetMode(), "GET_MODE");
     AppMainLogger.debug(`Rx運用モード 取得要求（RST→無線機）`);
@@ -1128,6 +1132,12 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    * 現在のバンドがメインバンドかを判定する
    */
   private async isCurrentMainBand() {
+    // IC-910の場合は、現在のバンドの取得コマンドが存在しないので、RST側で保持している値を返す
+    // memo: この場合、無線機側で選択バンドを変更した場合、RST側のバンド選択状態がズレる。何とかしたいがどうしようもないと思われる。
+    if (this.transceiverConfig.transceiverId === Constant.Transceiver.TransceiverId.ICOM_IC910) {
+      return this.state.isMain;
+    }
+
     const cmdData = this.cmdMaker.makeGetBand();
     const res = await this.sendAndWaitRecv(cmdData, "GET_BAND");
 
