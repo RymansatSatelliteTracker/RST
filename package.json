@@ -1,7 +1,8 @@
 {
   "name": "rst",
+  "productName": "RST",
   "private": true,
-  "version": "v0.1.3b",
+  "version": "v0.1.4",
   "author": {
     "name": "rsp.",
     "email": "xxx@rymansat.com"
