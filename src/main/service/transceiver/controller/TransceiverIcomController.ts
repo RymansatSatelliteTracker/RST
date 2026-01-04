@@ -213,9 +213,6 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     const cmdData = this.cmdMaker.makeSetDataMode(this.state.currentRxDataMode);
     await this.sendAndWaitRecv(cmdData, "SET_DATA_MODE");
 
-    // メインバンド（Rx）のトーン設定
-    await this.setupTone(rxModeText, toneHz);
-
     // サブバンド
     // サテライトモードの場合は、サブバンド（Tx）の周波数とモードも設定する
     if (this.state.isSatelliteMode) {
