@@ -352,14 +352,15 @@ export default class TransceiverIcomCmdMaker {
     }
 
     // 小数点付きの周波数の場合
-    if (toneHz % 1 !== 0) {
+    const toneStr = toneHz.toString();
+    if (toneStr.indexOf(".") >= 0) {
       // 10倍して文字列化（四捨五入は浮動小数点誤差対策）
       const toneStr = Math.round(toneHz * 10).toString();
+      // 前方6桁0埋めで返す
       return toneStr.padStart(6, "0");
     }
 
-    // 小数点なしの場合（末尾に0.1Hz桁の0を付与）
-    const toneStr = toneHz.toString() + "0";
-    return toneStr.padStart(6, "0");
+    // 小数点なしの場合（末尾に0.1Hz桁の0を付与し、前方6桁0埋め）
+    return (toneStr + "0").padStart(6, "0");
   }
 }

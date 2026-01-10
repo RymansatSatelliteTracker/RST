@@ -15,6 +15,12 @@ describe("TransceiverIcomCmdMaker.geneToneHzStrのテスト", () => {
     expect(maker["geneToneHzStr"](12.3)).toBe("000123");
     expect(maker["geneToneHzStr"](123.4)).toBe("001234");
     expect(maker["geneToneHzStr"](999.9)).toBe("009999");
+    expect(maker["geneToneHzStr"](67.0)).toBe("000670");
+
+    // Issue対応
+    // memo: 引数の型はnumberだが、app_config.jsonではStringで保持されるため、動的にはString型が渡されるため
+    //       geneToneHzStr()での小数点付きか？の判定で不具合が発生していた。
+    expect(maker["geneToneHzStr"]("67.0" as unknown as number)).toBe("000670");
   });
 
   it("桁あふれの場合は例外が送出される", () => {
