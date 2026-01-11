@@ -113,42 +113,4 @@ export const valiSchemaEditSatelliteInfo = zod.object({
   downlink3Hz: frequencyHzSchema,
 
   beaconHz: frequencyHzSchema,
-
-  toneHz: zod.lazy(() => {
-    const message1 = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_MIN_MAX, String(MIN_FREQ), String(MAX_FREQ));
-    const message2 = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_DECIMAL, "1");
-    return (
-      zod
-        // 小数点第1位までの正の実数か空白
-        .union([
-          zod.coerce
-            .string()
-            .refine(
-              (value) => {
-                // 小数点第1位までかを確認（小数第2位以降はNG）
-                const decimalPart = value.split(".")[1];
-                if (decimalPart && decimalPart.length > 1) return false;
-
-                return true;
-              },
-              {
-                message: message2,
-              }
-            )
-            .refine(
-              (val) => {
-                // 正の数値かを確認
-                const numVal = parseFloat(val);
-                return !isNaN(numVal) && numVal >= MIN_FREQ && numVal <= MAX_FREQ;
-              },
-              {
-                message: message1,
-              }
-            ),
-          zod.null(),
-          // 入力をクリアすると空文字となるためこれを許容する
-          zod.literal(""),
-        ])
-    );
-  }),
 });
