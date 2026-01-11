@@ -156,7 +156,7 @@ import DateTimePicker from "@/renderer/components/organisms/DateTimePicker/DateT
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
 import CanvasUtil from "@/renderer/util/CanvasUtil";
 import DateUtil from "@/renderer/util/DateUtil";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import useOrbitalPassList from "./useOrbitalPassList";
 import useOverlapPassList from "./useOverlapPassList";
 import useTransceiverCtrl from "./useTransceiverCtrl";
@@ -255,6 +255,16 @@ const isRxActive = computed(() => {
  */
 const isTxActive = computed(() => {
   return execTxDopplerShiftCorrection.value && autoStore.tranceiverAuto;
+});
+
+/**
+ * 無線機のAutoモードの状態を監視
+ */
+watch(autoStore, async () => {
+  // AutoOffになった場合は、Autoモードの停止処理を実行する
+  if (!autoStore.tranceiverAuto) {
+    await stopAutoMode();
+  }
 });
 </script>
 
