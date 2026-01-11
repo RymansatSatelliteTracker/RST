@@ -263,8 +263,11 @@ const isTxActive = computed(() => {
 watch(
   () => autoStore.tranceiverAuto,
   async (newVal, oldVal) => {
-    // AutoOn(true) から AutoOff(false) になった場合のみ、Autoモードの停止処理を実行する
+    // AutoOn(true) から AutoOff(false) になった場合
     if (oldVal && !newVal) {
+      // ビーコンモードをOFFにする
+      isBeaconMode.value = false;
+      // Autoモードを停止
       await stopAutoMode();
     }
   }
