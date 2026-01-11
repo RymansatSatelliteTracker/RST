@@ -74,6 +74,7 @@ export default class TransceiverIcomState {
 
   /**
    * RSTから無線機に設定したいRx運用モード、データモードをセットする
+   * @param isForce 強制設定（同一モードでも強制的に設定する場合はtrueを指定する）
    */
   public setReqRxMode(mode: string | null, dataMode: string, isForce: boolean = false): void {
     if (!mode) {
@@ -98,6 +99,7 @@ export default class TransceiverIcomState {
 
   /**
    * RSTから無線機に設定したいTx運用モード、データモードをセットする
+   * @param isForce 強制設定（同一モードでも強制的に設定する場合はtrueを指定する）
    */
   public setReqTxMode(mode: string | null, dataMode: string, isForce: boolean = false): void {
     if (!mode) {
