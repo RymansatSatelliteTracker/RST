@@ -18,7 +18,15 @@
 import Constant from "@/common/Constant";
 
 // 指定なしを選択可能にする
-const ToneFrequencyRange = [null, ...Constant.Transceiver.ToneFrequency];
+// 単純にToneFrequencyを表示すると60.0のような場合に小数点以下が表示されない
+// タイトルも生成してあげる
+const ToneFrequencyRange = [
+  { title: "", value: null },
+  ...Constant.Transceiver.ToneFrequency.map((freq) => ({
+    title: freq.toFixed(1),
+    value: freq,
+  })),
+];
 const toneFrequency = defineModel<number>("toneFrequency");
 </script>
 
