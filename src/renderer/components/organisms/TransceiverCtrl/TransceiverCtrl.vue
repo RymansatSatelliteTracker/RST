@@ -260,12 +260,15 @@ const isTxActive = computed(() => {
 /**
  * 無線機のAutoモードの状態を監視
  */
-watch(autoStore, async () => {
-  // AutoOffになった場合は、Autoモードの停止処理を実行する
-  if (!autoStore.tranceiverAuto) {
-    await stopAutoMode();
+watch(
+  () => autoStore.tranceiverAuto,
+  async (newVal, oldVal) => {
+    // AutoOn(true) から AutoOff(false) になった場合のみ、Autoモードの停止処理を実行する
+    if (oldVal && !newVal) {
+      await stopAutoMode();
+    }
   }
-});
+);
 </script>
 
 <style lang="scss" scoped>
