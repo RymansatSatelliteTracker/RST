@@ -178,7 +178,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   ): Promise<void> {
     // isProcessingで制御される処理が完了するのを待つ。（100msを30回（最大約3秒）待つ）
     // memo: AutoOnの処理は排他的に行う必要がある
-    //       一定間隔での無線機制御（メインループ）にてコマンド送受信が行われているため、その影響を制御にてバンド入れ替えが行われると、
+    //       一定間隔での無線機制御（メインループ）にてコマンド送受信が行われている。その最中にバンド入れ替えが行われると、
     //       本処理でのバンド入れ替えと競合して意図しないバンドへの送信が発生する。
     //       それを回避するためメインループの処理完了を待つ
     await this.waitComplete(100, 30);
@@ -1376,6 +1376,13 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         break;
       }
       await CommonUtil.sleep(waitIntervalMs);
+    }
+
+    // 待機完了後、isProcessing が解除されない場合はタイムアウトとして警告ログを出力する
+    if (this.isProcessing) {
+      AppMainLogger.warn(
+        `waitComplete タイムアウト: isProcessing が true のままです。メイン、サブバンドに対する操作が意図しないバンドへの操作となる可能性があります。`
+      );
     }
   }
 }
