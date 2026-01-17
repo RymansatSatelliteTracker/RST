@@ -735,7 +735,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
         const recvRxFreq = freqData.downlinkHz;
         AppRendererLogger.info(`トランシーブ Rx周波数 Rx:${recvRxFreq}`);
 
-        // 画面のアップリンク周波数と無線機からトランシーブした周波数が同じ場合は処理終了
+        // 画面のダウンリンク周波数と無線機からトランシーブした周波数が同じ場合は処理終了
         // MEMO: 無線機にて操作対象のバンドの変更などを行うと、周波数を変更せずとも周波数のトランシーブが発生する。
         //       その場合に基準周波数の更新を行うと意図しない基準周波数の変更が発生するため、同じ場合は処理を終了する。
         const formattedRecvRxFreq = TransceiverUtil.formatWithDot(recvRxFreq);
