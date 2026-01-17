@@ -184,7 +184,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     await this.waitComplete(100, 30);
     this.isProcessing = true;
 
-    AppMainLogger.info(`無線機Auto On処理を開始します。 Rx：${rxFreqHz}/${rxModeText} Tx：${txFreqHz}/${txModeText}`);
+    AppMainLogger.debug(`無線機Auto On処理を開始します。 Rx：${rxFreqHz}/${rxModeText} Tx：${txFreqHz}/${txModeText}`);
 
     // RST側の周波数を保存する（バンド入れ替え判定で必要）
     this.state.setReqRxFreqHz(rxFreqHz);
@@ -247,7 +247,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       await this.setupTone(txModeText, toneHz);
     }
 
-    AppMainLogger.info(`無線機AutoをOnにしました。`);
+    AppMainLogger.debug(`無線機AutoをOnにしました。`);
     this.isProcessing = false;
   }
 
@@ -255,7 +255,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    * AutoOff
    */
   public override async autoOff(): Promise<void> {
-    AppMainLogger.info(`無線機Auto Off処理を開始します。`);
+    AppMainLogger.debug(`無線機Auto Off処理を開始します。`);
 
     // サブ・トーンOff
     // memo: サテライトモードOffの状態でもサブバンド側のTONEがOnのママになる場合があるため、サブ側のTONEもOffにする
@@ -266,7 +266,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     await this.switchMainBand();
     await this.sendToneOff();
 
-    AppMainLogger.info(`無線機AutoをOffにしました。`);
+    AppMainLogger.debug(`無線機AutoをOffにしました。`);
   }
 
   /**
@@ -314,7 +314,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    * 無線機側の運用モード、データモードを取得する
    */
   private async getModeFromIcom() {
-    AppMainLogger.info(`無線機側の運用モード、データモードの取得要求を行います。`);
+    AppMainLogger.debug(`無線機側の運用モード、データモードの取得要求を行います。`);
 
     // サテライトモードの場合は、サブ側のデータ取得も取得する
     if (this.state.isSatelliteMode) {
@@ -874,7 +874,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       // 運用モードの設定（01:トランシーブ）
       case "01":
         this.state.isMain = await this.isCurrentMainBand();
-        AppMainLogger.info(`Main/Subを無線機と同期しました。 isMain=${this.state.isMain}`);
+        AppMainLogger.debug(`選択バンド（Main/Sub）を無線機と同期しました。 isMain=${this.state.isMain}`);
     }
 
     // 受信データ処理
@@ -1370,7 +1370,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   private async switchMainBand() {
     if (this.state.isMain) return;
 
-    AppMainLogger.info(`制御切り替え メインバンドへ`);
+    AppMainLogger.debug(`制御切り替え メインバンドへ`);
     this.state.isMain = true;
     await this.sendAndSyncRecv(this.cmdMaker.makeSwitchToMainBand(), "SWITCH");
   }
@@ -1381,7 +1381,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   private async switchSubBand() {
     if (!this.state.isMain) return;
 
-    AppMainLogger.info(`制御切り替え サブバンドへ`);
+    AppMainLogger.debug(`制御切り替え サブバンドへ`);
     this.state.isMain = false;
     await this.sendAndSyncRecv(this.cmdMaker.makeSwitchToSubBand(), "SWITCH");
   }
