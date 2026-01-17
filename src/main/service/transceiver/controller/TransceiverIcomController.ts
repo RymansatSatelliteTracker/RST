@@ -541,7 +541,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       }
 
       // 無線機に設定したいモードをセット
-      AppMainLogger.debug(`Tx運用モード設定要求：${mode} → ${modeValue} / ${dataMode}`);
+      AppMainLogger.debug(`Tx運用モード設定要求：${mode}(${modeValue}/${dataMode})`);
       this.state.setReqTxMode(modeValue, dataMode);
     } else if ("downlinkMode" in modeModel) {
       // ダウンリンクモードを取得する
@@ -554,7 +554,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       }
 
       // 無線機に設定したいモードをセット
-      AppMainLogger.debug(`Rx運用モード設定要求：${mode} → ${modeValue} / ${dataMode}`);
+      AppMainLogger.debug(`Rx運用モード設定要求：${mode}(${modeValue}/${dataMode})`);
       this.state.setReqRxMode(modeValue, dataMode);
     }
   }
@@ -910,6 +910,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       // 運用モードの設定（01:トランシーブ）
       case "01":
         if (trimedData.length === 16) {
+          AppMainLogger.debug(`トランシーブ 運用モード（01）`);
           // 無線機から受信した運用モードデータを処理する
           await this.procRecvOpeMode(trimedData);
         }
@@ -924,6 +925,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       // 運用モードの設定（04:要求に対する応答）
       case "04":
         if (trimedData.length === 16) {
+          AppMainLogger.debug(`トランシーブ 運用モード（04）`);
           // 無線機から受信した運用モードデータを処理する
           await this.procRecvOpeMode(trimedData);
         }
@@ -1004,19 +1006,6 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       return;
     }
 
-    // メイン側の状態でRx運用モード更新要求がある場合は処理終了
-    // memo: RST側から運用モード設定要求がある場合は、RST側を優先し、無線機からの受信データは無視する。
-    if (this.state.isMain && this.state.isReqRxModeUpdate) {
-      AppMainLogger.debug(`メイン側の状態でRx運用モード更新要求があるため処理を終了します。`);
-      return;
-    }
-    // サブ側の状態でTx運用モード更新要求がある場合は処理終了
-    // memo: RST側から運用モード設定要求がある場合は、RST側を優先し、無線機からの受信データは無視する。
-    if (!this.state.isMain && this.state.isReqTxModeUpdate) {
-      AppMainLogger.debug(`サブ側の状態でTx運用モード更新要求があるため処理を終了します。`);
-      return;
-    }
-
     const res = new ApiResponse(true);
     // 無線機から受信したデータから運用モードを取得する
     const recvModeText = TransceiverIcomRecvParser.parseMode(recvData);
@@ -1025,6 +1014,23 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       return;
     }
     const [recvMode] = this.getValFromModeText(recvModeText);
+
+    // メイン側の状態でRx運用モード更新要求がある場合は処理終了
+    // memo: RST側から運用モード設定要求がある場合は、RST側を優先し、無線機からの受信データは無視する。
+    if (this.state.isMain && this.state.isReqRxModeUpdate) {
+      AppMainLogger.debug(
+        `メイン側の状態でRx運用モード更新要求があるため処理を終了します。受信：${recvModeText} 送信待ち:${this.state.getReqRxMode()}/${this.state.getReqRxDataMode()}`
+      );
+      return;
+    }
+    // サブ側の状態でTx運用モード更新要求がある場合は処理終了
+    // memo: RST側から運用モード設定要求がある場合は、RST側を優先し、無線機からの受信データは無視する。
+    if (!this.state.isMain && this.state.isReqTxModeUpdate) {
+      AppMainLogger.debug(
+        `サブ側の状態でTx運用モード更新要求があるため処理を終了します。受信：${recvModeText} 送信待ち:${this.state.getReqTxMode()}/${this.state.getReqTxDataMode()}`
+      );
+      return;
+    }
 
     // 現在のデータモードを無線機から取得する
     // memo: 運用モードとデータモードは別コマンドで取得する必要があるため
@@ -1084,6 +1090,23 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     const recvDataMode = TransceiverIcomRecvParser.parseDataMode(recvData);
     if (!recvDataMode) {
       // データモードが取得できない場合は処理を終了する
+      return;
+    }
+
+    // メイン側の状態でRx運用モード更新要求がある場合は処理終了
+    // memo: RST側から運用モード設定要求がある場合は、RST側を優先し、無線機からの受信データは無視する。
+    if (this.state.isMain && this.state.isReqRxModeUpdate) {
+      AppMainLogger.debug(
+        `メイン側の状態でRx運用モード更新要求があるため処理を終了します。 受信データモード：${recvDataMode} 送信待ち:${this.state.getReqRxMode()}/${this.state.getReqRxDataMode()}`
+      );
+      return;
+    }
+    // サブ側の状態でTx運用モード更新要求がある場合は処理終了
+    // memo: RST側から運用モード設定要求がある場合は、RST側を優先し、無線機からの受信データは無視する。
+    if (!this.state.isMain && this.state.isReqTxModeUpdate) {
+      AppMainLogger.debug(
+        `サブ側の状態でTx運用モード更新要求があるため処理を終了します。 受信データモード：${recvDataMode} 送信待ち:${this.state.getReqTxMode()}/${this.state.getReqTxDataMode()}`
+      );
       return;
     }
 
