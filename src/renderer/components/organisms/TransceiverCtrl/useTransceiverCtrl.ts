@@ -702,7 +702,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
         // 画面のアップリンク周波数と無線機からトランシーブした周波数が同じ場合は処理終了
         // MEMO: 無線機にて操作対象のバンドの変更などを行うと、周波数を変更せずとも周波数のトランシーブが発生する。
         //       その場合に基準周波数の更新を行うと意図しない基準周波数の変更が発生するため、同じ場合は処理を終了する。
-        AppRendererLogger.info(`RST Tx周波数 Tx:${txFrequency.value}`);
         const formattedRecvTxFreq = TransceiverUtil.formatWithDot(recvTxFreq);
         if (txFrequency.value === formattedRecvTxFreq) {
           AppRendererLogger.info(`RSTのTx周波数と同一のため基準周波数の更新をスキップします。`);
@@ -739,7 +738,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
         // MEMO: 無線機にて操作対象のバンドの変更などを行うと、周波数を変更せずとも周波数のトランシーブが発生する。
         //       その場合に基準周波数の更新を行うと意図しない基準周波数の変更が発生するため、同じ場合は処理を終了する。
         const formattedRecvRxFreq = TransceiverUtil.formatWithDot(recvRxFreq);
-        AppRendererLogger.info(`RST Rx周波数 Rx:${rxFrequency.value} 受信：${formattedRecvRxFreq}`);
         if (rxFrequency.value === formattedRecvRxFreq) {
           AppRendererLogger.info(`RSTのRx周波数と同一のため基準周波数の更新をスキップします。`);
           AppRendererLogger.info(
