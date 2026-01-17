@@ -699,6 +699,19 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
         const recvTxFreq = freqData.uplinkHz;
         AppRendererLogger.info(`トランシーブ Tx周波数 Tx:${recvTxFreq}`);
 
+        // 画面のアップリンク周波数と無線機からトランシーブした周波数が同じ場合は処理終了
+        // MEMO: 無線機にて操作対象のバンドの変更などを行うと、周波数を変更せずとも周波数のトランシーブが発生する。
+        //       その場合に基準周波数の更新を行うと意図しない基準周波数の変更が発生するため、同じ場合は処理を終了する。
+        AppRendererLogger.info(`RST Tx周波数 Tx:${txFrequency.value}`);
+        const formattedRecvTxFreq = TransceiverUtil.formatWithDot(recvTxFreq);
+        if (txFrequency.value === formattedRecvTxFreq) {
+          AppRendererLogger.info(`RSTのTx周波数と同一のため基準周波数の更新をスキップします。`);
+          AppRendererLogger.info(
+            `基準周波数 Rx:${dopplerRxBaseFreq.value} Tx:${dopplerTxBaseFreq.value} Sum:${baseFreqSum.value}`
+          );
+          return;
+        }
+
         // 画面のアップリンク周波数を更新
         txFrequency.value = TransceiverUtil.formatWithDot(recvTxFreq);
 
@@ -722,6 +735,19 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
         const recvRxFreq = freqData.downlinkHz;
         AppRendererLogger.info(`トランシーブ Rx周波数 Rx:${recvRxFreq}`);
 
+        // 画面のアップリンク周波数と無線機からトランシーブした周波数が同じ場合は処理終了
+        // MEMO: 無線機にて操作対象のバンドの変更などを行うと、周波数を変更せずとも周波数のトランシーブが発生する。
+        //       その場合に基準周波数の更新を行うと意図しない基準周波数の変更が発生するため、同じ場合は処理を終了する。
+        const formattedRecvRxFreq = TransceiverUtil.formatWithDot(recvRxFreq);
+        AppRendererLogger.info(`RST Rx周波数 Rx:${rxFrequency.value} 受信：${formattedRecvRxFreq}`);
+        if (rxFrequency.value === formattedRecvRxFreq) {
+          AppRendererLogger.info(`RSTのRx周波数と同一のため基準周波数の更新をスキップします。`);
+          AppRendererLogger.info(
+            `基準周波数 Rx:${dopplerRxBaseFreq.value} Tx:${dopplerTxBaseFreq.value} Sum:${baseFreqSum.value}`
+          );
+          return;
+        }
+
         // 画面のダウンリンク周波数を更新
         rxFrequency.value = TransceiverUtil.formatWithDot(recvRxFreq);
 
@@ -737,7 +763,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
         dopplerTxBaseFreq.value = txBaseFreq;
 
         AppRendererLogger.info(
-          `基準周波数を更新しました。 Rx:${dopplerRxBaseFreq.value} Tx:${dopplerTxBaseFreq.value} Sum:${baseFreqSum.value}`
+          `基準周波数（更新） Rx:${dopplerRxBaseFreq.value} Tx:${dopplerTxBaseFreq.value} Sum:${baseFreqSum.value}`
         );
       }
     });
