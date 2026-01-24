@@ -1,4 +1,5 @@
 import Constant from "@/common/Constant";
+import ApiActiveSat from "@/renderer/api/ApiActiveSat";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
 import GroundStationHelper from "@/renderer/common/util/GroundStationHelper";
@@ -30,6 +31,13 @@ export default function useDrawSatPass(
 ) {
   // 現在描画中のAOS日時
   let currentAosDate = new Date(0);
+  // 現在描画中の衛星グループ
+  let currentSatGrpIndex = -1;
+  // 現在描画中の衛星
+  let currentActiveSatId = -1;
+
+  // 最終更新日時（レーダー更新頻度の間引き用）
+  let lastUpdateDate = new Date(0);
 
   onMounted(async () => {
     // 初期表示時のアクティブ衛星でパスを更新
@@ -41,6 +49,15 @@ export default function useDrawSatPass(
 
   // currentDateが変更された場合は軌道を更新
   watch(currentDate, async () => {
+    // 前回実行から１秒経過している場合に処理を実行する
+    // MEMO: currentDateは0.1秒間隔で更新されるため、本コンポーネントでは間引き処理を行う
+    const now = currentDate.value;
+    if (now.getTime() - lastUpdateDate.getTime() < 1000) {
+      return;
+    }
+    lastUpdateDate = now;
+
+    // レーダ内の軌道予測の線を更新
     await updatePass();
   });
 
@@ -94,7 +111,7 @@ export default function useDrawSatPass(
     }
 
     // 現在表示中のAOSと同じ場合は再描画しない
-    if (!needRefresh(currentAosDate, pass.aos.date)) {
+    if (!(await needRefresh(currentAosDate, pass.aos.date))) {
       return;
     }
 
@@ -147,13 +164,35 @@ export default function useDrawSatPass(
   }
 
   /**
-   * 表示中のAOS日時と引数のAOS日時が異なるか
+   * レーダーの更新が必要か判定する
+   * @returns: 以下条件に合致する場合にtrueを返す
+   *  ・表示中のAOS日時と引数のAOS日時が異なる場合
+   *  ・衛星グループが変更されている場合
+   *  ・アクティブ衛星が変更されている場合
    */
-  function needRefresh(currentAosDate: Date, aosDate: Date) {
+  async function needRefresh(currentAosDate: Date, aosDate: Date): Promise<boolean> {
+    // 表示中のAOS日時と引数のAOS日時が異なる場合は更新要
     const tmpCurTime = Math.trunc(currentAosDate.getTime() / 1000);
     const tmpAosTime = Math.trunc(aosDate.getTime() / 1000);
+    if (tmpCurTime !== tmpAosTime) {
+      return true;
+    }
 
-    return tmpCurTime !== tmpAosTime;
+    // 衛星グループが変更されている場合は更新要
+    const satGrp = await ApiActiveSat.getActiveSatelliteGroup();
+    if (currentSatGrpIndex !== satGrp.activeSatelliteGroupId) {
+      currentSatGrpIndex = satGrp.activeSatelliteGroupId;
+      return true;
+    }
+
+    // アクティブ衛星が変更されている場合は更新要
+    const activeSatIndex = ActiveSatServiceHub.getInstance().getActiveSatIndex();
+    if (currentActiveSatId !== activeSatIndex) {
+      currentActiveSatId = activeSatIndex;
+      return true;
+    }
+
+    return false;
   }
 
   /**
