@@ -697,8 +697,6 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         clearTimeout(timeout);
       };
 
-      AppMainLogger.debug(`sendAndSyncRecv ${targetCmdType}`);
-
       // データ受信
       const onData = (recvData: string, recvCmdType: string) => {
         if (!this.recvCallbackType) {
