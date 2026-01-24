@@ -176,14 +176,28 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     rxModeText: string,
     toneHz: number | null
   ): Promise<void> {
-    // isProcessingで制御される処理が完了するのを待つ。（100msを30回（最大約3秒）待つ）
-    // memo: AutoOnの処理は排他的に行う必要がある
-    //       一定間隔での無線機制御（メインループ）にてコマンド送受信が行われている。その最中にバンド入れ替えが行われると、
-    //       本処理でのバンド入れ替えと競合して意図しないバンドへの送信が発生する。
-    //       それを回避するためメインループの処理完了を待つ
-    await this.waitComplete(100, 30);
-    this.isProcessing = true;
+    try {
+      // isProcessingの排他開放を待つ
+      await this.waitComplete();
+      this.isProcessing = true;
 
+      // AutoOn時の初期処理を実行する
+      await this.initAutoOnExec(txFreqHz, rxFreqHz, txModeText, rxModeText, toneHz);
+    } finally {
+      this.isProcessing = false;
+    }
+  }
+
+  /**
+   * AutoOn時の初期処理（実行部）
+   */
+  private async initAutoOnExec(
+    txFreqHz: number,
+    rxFreqHz: number,
+    txModeText: string,
+    rxModeText: string,
+    toneHz: number | null
+  ): Promise<void> {
     AppMainLogger.debug(`無線機Auto On処理を開始します。 Rx：${rxFreqHz}/${rxModeText} Tx：${txFreqHz}/${txModeText}`);
 
     // RST側の周波数を保存する（バンド入れ替え判定で必要）
@@ -248,13 +262,28 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     }
 
     AppMainLogger.debug(`無線機AutoをOnにしました。`);
-    this.isProcessing = false;
   }
 
   /**
    * AutoOff
    */
   public override async autoOff(): Promise<void> {
+    try {
+      // isProcessingの排他開放を待つ
+      await this.waitComplete();
+      this.isProcessing = true;
+
+      // AutoOff処理を実行する
+      await this.autoOffExec();
+    } finally {
+      this.isProcessing = false;
+    }
+  }
+
+  /**
+   * AutoOff（実行部）
+   */
+  private async autoOffExec(): Promise<void> {
     AppMainLogger.debug(`無線機Auto Off処理を開始します。`);
 
     // サブ・トーンOff
@@ -1393,12 +1422,16 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    * @param waitIntervalMs １回あたりの待機間隔（ms）
    * @param retryCount 最大待機回数
    */
-  private async waitComplete(waitIntervalMs: number, retryCount: number) {
-    for (let ii = 0; ii < retryCount; ii++) {
+  private async waitComplete() {
+    // 10ms待ちでリトライ300回。最大3秒待機する。
+    const WAIT_INTERVAL_MS = 10;
+    const RETRY_COUNT = 300;
+
+    for (let ii = 0; ii < RETRY_COUNT; ii++) {
       if (!this.isProcessing) {
         break;
       }
-      await CommonUtil.sleep(waitIntervalMs);
+      await CommonUtil.sleep(WAIT_INTERVAL_MS);
     }
 
     // 待機完了後、isProcessing が解除されない場合はタイムアウトとして警告ログを出力する
