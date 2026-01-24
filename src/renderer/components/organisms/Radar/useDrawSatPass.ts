@@ -52,7 +52,7 @@ export default function useDrawSatPass(
   watch(currentDate, async () => {
     // 前回実行から１秒経過している場合に処理を実行する
     // MEMO: currentDateは0.1秒間隔で更新されるため、本コンポーネントでは間引き処理を行う
-    const now = currentDate.value;
+    const now = new Date();
     if (now.getTime() - lastUpdateDate.getTime() < 1000) {
       return;
     }
