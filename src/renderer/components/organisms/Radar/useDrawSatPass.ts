@@ -33,7 +33,7 @@ export default function useDrawSatPass(
   // 現在描画中のAOS日時
   let currentAosDate = new Date(0);
   // 現在描画中の衛星グループ
-  let currentSatGrpIndex = -1;
+  let currentSatGrpId = -1;
   // 現在描画中の衛星
   let currentActiveSatIndex = -1;
 
@@ -165,7 +165,7 @@ export default function useDrawSatPass(
 
     // 描画した際のAOS日時、衛星グループなどを保持
     currentAosDate = pass.aos.date;
-    currentSatGrpIndex = satGrp.activeSatelliteGroupId;
+    currentSatGrpId = satGrp.activeSatelliteGroupId;
     currentActiveSatIndex = activeSatIndex;
   }
 
@@ -190,7 +190,7 @@ export default function useDrawSatPass(
     }
 
     // 衛星グループが変更されている場合は更新要
-    if (currentSatGrpIndex !== satGrp.activeSatelliteGroupId) {
+    if (currentSatGrpId !== satGrp.activeSatelliteGroupId) {
       return true;
     }
 
