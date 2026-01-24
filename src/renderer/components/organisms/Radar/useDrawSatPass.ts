@@ -1,4 +1,5 @@
 import Constant from "@/common/Constant";
+import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel";
 import ApiActiveSat from "@/renderer/api/ApiActiveSat";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
@@ -110,8 +111,11 @@ export default function useDrawSatPass(
       return;
     }
 
-    // 現在表示中のAOSと同じ場合は再描画しない
-    if (!(await needRefresh(currentAosDate, pass.aos.date))) {
+    // レーダーの更新が必要か判定する
+    // 現在の衛星グループとアクティブ衛星
+    const satGrp = await ApiActiveSat.getActiveSatelliteGroup();
+    const activeSatIndex = ActiveSatServiceHub.getInstance().getActiveSatIndex();
+    if (!(await needRefresh(currentAosDate, pass.aos.date, satGrp, activeSatIndex))) {
       return;
     }
 
@@ -159,8 +163,10 @@ export default function useDrawSatPass(
       });
     }
 
-    // 描画した際のAOS日時を保持
+    // 描画した際のAOS日時、衛星グループなどを保持
     currentAosDate = pass.aos.date;
+    currentSatGrpIndex = satGrp.activeSatelliteGroupId;
+    currentActiveSatId = activeSatIndex;
   }
 
   /**
@@ -170,7 +176,12 @@ export default function useDrawSatPass(
    *  ・衛星グループが変更されている場合
    *  ・アクティブ衛星が変更されている場合
    */
-  async function needRefresh(currentAosDate: Date, aosDate: Date): Promise<boolean> {
+  async function needRefresh(
+    currentAosDate: Date,
+    aosDate: Date,
+    satGrp: ActiveSatelliteGroupModel,
+    activeSatIndex: number
+  ): Promise<boolean> {
     // 表示中のAOS日時と引数のAOS日時が異なる場合は更新要
     const tmpCurTime = Math.trunc(currentAosDate.getTime() / 1000);
     const tmpAosTime = Math.trunc(aosDate.getTime() / 1000);
@@ -179,16 +190,12 @@ export default function useDrawSatPass(
     }
 
     // 衛星グループが変更されている場合は更新要
-    const satGrp = await ApiActiveSat.getActiveSatelliteGroup();
     if (currentSatGrpIndex !== satGrp.activeSatelliteGroupId) {
-      currentSatGrpIndex = satGrp.activeSatelliteGroupId;
       return true;
     }
 
     // アクティブ衛星が変更されている場合は更新要
-    const activeSatIndex = ActiveSatServiceHub.getInstance().getActiveSatIndex();
     if (currentActiveSatId !== activeSatIndex) {
-      currentActiveSatId = activeSatIndex;
       return true;
     }
 
