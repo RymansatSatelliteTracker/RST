@@ -106,7 +106,10 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     this.sendAndRecvTimer = setInterval(async () => {
       // 無線機との接続が準備完了でない場合は処理終了
       if (!this.isReady()) {
+        // シリアル未接続メッセージをレンダラ側へ通知
         this.fireSerialNotConnectedMsg();
+        // 定期コマンド送信を停止
+        this.cancelTimer();
         return;
       }
 
