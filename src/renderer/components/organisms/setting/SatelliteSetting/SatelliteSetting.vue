@@ -80,7 +80,7 @@ const apiConfigData = ref<AppConfigSatSettingModel>(new AppConfigSatSettingModel
 const loadTLETabRef = ref();
 
 // ダイアログの表示可否
-const isShow = defineModel("isShow");
+const isShow = defineModel<boolean>("isShow");
 const emits = defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
 
 onMounted(() => {
