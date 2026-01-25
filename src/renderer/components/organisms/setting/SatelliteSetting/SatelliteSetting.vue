@@ -65,6 +65,7 @@ import OtherSettingTab from "@/renderer/components/organisms/setting/SatelliteSe
 import emitter from "@/renderer/util/EventBus";
 
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
+import { ApiResponse } from "@/common/types/types";
 import ApiActiveSat from "@/renderer/api/ApiActiveSat";
 import ApiConfig from "@/renderer/api/ApiAppConfig";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
@@ -161,7 +162,11 @@ async function updateAppConfig(isTleUpdated: boolean) {
   appConfig.satelliteSetting = outputData.satelliteSetting;
 
   ApiConfig.storeAppSatSettingConfig(appConfig, isTleUpdated)
-    .then(async () => {
+    .then(async (res: ApiResponse<void>) => {
+      if (!res.status) {
+        emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(res.message));
+        return;
+      }
       // 衛星設定を更新したことを通知
       await ApiActiveSat.refreshAppConfig();
       // 衛星パス抽出最小仰角を更新する
@@ -169,8 +174,9 @@ async function updateAppConfig(isTleUpdated: boolean) {
         apiConfigData.value.satelliteSetting.satelliteChoiceMinEl
       );
     })
-    .catch(() => {
-      emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.ERR_APPCONFIG_UPDATE));
+    .catch((e) => {
+      // 想定外エラーの場合
+      emitter.emit(Constant.GlobalEvent.NOTICE_ERR, e.message);
     });
 }
 </script>

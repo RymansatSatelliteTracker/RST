@@ -68,9 +68,12 @@ export function initializeIpcEvents() {
   /**
    * 衛星設定画面用のアプリケーション設定を保存する
    */
-  ipcMain.handle("storeAppConfigSatSetting", async (event, config: AppConfigSatSettingModel, isTleUpdate: boolean) => {
-    return await new AppConfigSatelliteService().store(config, isTleUpdate);
-  });
+  ipcMain.handle(
+    "storeAppConfigSatSetting",
+    async (event, config: AppConfigSatSettingModel, isTleUpdate: boolean): Promise<ApiResponse<void>> => {
+      return await new AppConfigSatelliteService().store(config, isTleUpdate);
+    }
+  );
 
   /**
    * ローテーター定義を返す
