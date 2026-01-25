@@ -389,6 +389,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // 定期コマンド送信を停止
     if (this.sendAndRecvTimer) {
       clearInterval(this.sendAndRecvTimer);
+      this.sendAndRecvTimer = null;
 
       AppMainLogger.info(`無線機の監視とデータの送信を停止しました。`);
     }
