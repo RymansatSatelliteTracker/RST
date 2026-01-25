@@ -125,13 +125,6 @@ export function initializeIpcEvents() {
   });
 
   /**
-   * デフォルト衛星情報をリフレッシュして再作成する
-   */
-  ipcMain.handle("reCreateDefaultSatellite", (event) => {
-    return new DefaultSatelliteService().reCreateDefaultSatellite();
-  });
-
-  /**
    * 衛星IDに一致するアプリケーション設定かデフォルト衛星情報を取得を返す
    */
   ipcMain.handle("getUserRegisteredAppConfigSatellite", (event, satelliteId: number, groupdId: number) => {
@@ -330,7 +323,6 @@ export function releaseIpcEvents() {
   ipcMain.removeHandler("getSavedSatelliteIdentifer");
   ipcMain.removeHandler("getDefaultSatelliteBySatelliteId");
   ipcMain.removeHandler("addDefaultSatellite");
-  ipcMain.removeHandler("reCreateDefaultSatellite");
   ipcMain.removeHandler("getUserRegisteredAppConfigSatellite");
   ipcMain.removeHandler("startAntennaCtrl");
   ipcMain.removeHandler("stopAntennaCtrl");

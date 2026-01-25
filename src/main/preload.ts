@@ -117,14 +117,6 @@ const apiHandler = {
   },
 
   /**
-   * デフォルト衛星情報をリフレッシュして再作成する
-   * 呼び出し例）const ret = await window.rstApi.reCreateDefaultSatellite();
-   */
-  reCreateDefaultSatellite: function (): Promise<boolean> {
-    return ipcRenderer.invoke("reCreateDefaultSatellite");
-  },
-
-  /**
    * 衛星IDに一致するアプリケーション設定かデフォルト衛星情報を取得を返す
    * 呼び出し例）const ret = await window.rstApi.getUserRegisteredAppConfigSatellite(satelliteId);
    */
