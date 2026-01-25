@@ -1,8 +1,11 @@
+import I18nMsgs from "@/common/I18nMsgs";
 import { AppConfigSatellite } from "@/common/model/AppConfigModel";
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
+import { ApiResponse } from "@/common/types/types";
 import DefaultSatelliteService from "@/main/service/DefaultSatelliteService";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil";
 import { FileTransaction } from "@/main/util/FileTransaction";
+import FileUtil from "@/main/util/FileUtil";
 
 /**
  * アプリケーション設定衛星サービス
@@ -42,24 +45,28 @@ export default class AppConfigSatelliteService {
    * @param config
    * @param isTLEUpdate TLE更新の場合はtrue
    */
-  public async store(config: AppConfigSatSettingModel, isTleUpdate: boolean = false): Promise<void> {
+  public async store(config: AppConfigSatSettingModel, isTleUpdate: boolean = false): Promise<ApiResponse<void>> {
+    // アプリケーション設定ファイルはユーザが直接編集する可能性があるため、ロックされている場合は更新しない
+    if (FileUtil.isFileLocked(AppConfigUtil.getConfigPath())) {
+      return new ApiResponse(false, I18nMsgs.ERR_APPCONFIG_UPDATE_FOR_LOCKED);
+    }
     if (!isTleUpdate) {
       // TLE更新がなければ単純に保存
       AppConfigUtil.storeConfigSatSetting(config);
-      return Promise.resolve();
+      return new ApiResponse(true);
     }
+
     const transaction = new FileTransaction("appConfigSatSet");
     // default衛星更新中にエラーになると衛星設定だけが更新された状態になるため一時保存しておく
     transaction.update(config);
 
-    const ret = await new DefaultSatelliteService().reCreateDefaultSatellite();
-    if (!ret) {
+    const res = await new DefaultSatelliteService().reCreateDefaultSatellite();
+    if (!res.status) {
       transaction.rollback();
-      throw new Error("衛星情報の再作成に失敗しました");
+      return res;
     }
     // default衛星が更新できたらコミット
     transaction.commit();
-
-    return Promise.resolve();
+    return new ApiResponse(true);
   }
 }

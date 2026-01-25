@@ -74,7 +74,7 @@ describe("DefaultSatelliteService", () => {
     const beforeDefSat = await defSatService.getDefaultSatelliteBySatelliteId(100);
 
     // 実行
-    const isSuccess = await defSatService.reCreateDefaultSatellite();
+    const isSuccess = (await defSatService.reCreateDefaultSatellite()).status;
 
     // 検証
     // 試験条件の妥当性検証
@@ -108,7 +108,7 @@ describe("DefaultSatelliteService", () => {
     const beforeDefSat = await defSatService.getDefaultSatelliteBySatelliteId(100);
 
     // 実行
-    const isSuccess = await defSatService.reCreateDefaultSatellite();
+    const isSuccess = (await defSatService.reCreateDefaultSatellite()).status;
 
     // 検証
     // 試験条件の妥当性検証
@@ -146,7 +146,7 @@ describe("DefaultSatelliteService", () => {
     const beforeDefSat = await defSatService.getDefaultSatelliteBySatelliteId(100);
 
     // 実行
-    const isSuccess = await defSatService.reCreateDefaultSatellite();
+    const isSuccess = (await defSatService.reCreateDefaultSatellite()).status;
 
     // 検証
     // 試験条件の妥当性検証
@@ -182,7 +182,7 @@ describe("DefaultSatelliteService", () => {
     const beforeDefSat = await defSatService.getDefaultSatelliteBySatelliteId(100);
 
     // 実行
-    const isSuccess = await defSatService.reCreateDefaultSatellite();
+    const isSuccess = (await defSatService.reCreateDefaultSatellite()).status;
 
     // 検証
     // 試験条件の妥当性検証

@@ -65,4 +65,20 @@ export default class FileUtil {
     const stats = fs.statSync(filepath);
     return stats.mtime;
   }
+
+  /**
+   * ファイルがロックされているか判定する
+   */
+  public static isFileLocked(filePath: string): boolean {
+    try {
+      const fileDescriptor = fs.openSync(filePath, "r+");
+      fs.closeSync(fileDescriptor);
+      return false; // ファイルはロックされていない
+    } catch (err: any) {
+      if (err?.code === "EBUSY" || err?.code === "EPERM" || err?.code === "EACCES") {
+        return true; // ファイルはロックされている
+      }
+      throw err; // その他のエラーは再スロー
+    }
+  }
 }

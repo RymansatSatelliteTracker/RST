@@ -1,8 +1,10 @@
 import Constant from "@/common/Constant";
+import I18nMsgs from "@/common/I18nMsgs";
 import { DefaultSatelliteModel } from "@/common/model/DefaultSatelliteModel";
 import { FrequencyModel } from "@/common/model/FrequencyModel";
 import { TleItemMap } from "@/common/model/TleModel";
 import { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes";
+import { ApiResponse } from "@/common/types/types";
 import TleService from "@/main/service/TleService";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil";
 import AppMainLogger from "@/main/util/AppMainLogger";
@@ -164,27 +166,37 @@ export default class DefaultSatelliteService {
    * デフォルト衛星定義を一度リフレッシュして作り直す
    * @returns
    */
-  public async reCreateDefaultSatellite(): Promise<boolean> {
+  public async reCreateDefaultSatellite(): Promise<ApiResponse<void>> {
     // デフォルト衛星定義のリフレッシュ
+    AppMainLogger.info("デフォルト衛星定義のリフレッシュ 開始");
     const ret1 = await this.refreshDefaultSatellite();
-    if (!ret1) return false;
-    AppMainLogger.info("デフォルト衛星定義のリフレッシュ");
+    if (!ret1) {
+      return new ApiResponse(false, I18nMsgs.ERR_REFRESH_DEFAULT_SATELLITE);
+    }
+    AppMainLogger.info("デフォルト衛星定義のリフレッシュ 完了");
+
     // TLE最終取得日時を更新する
     AppConfigUtil.saveTleLastRetrievedDate(Date.now() - Constant.Time.MILLISECONDS_IN_DAY);
+
     // TLEの取得
+    AppMainLogger.info("TLEの取得 開始");
     try {
       await new TleService().getTleAndSave();
     } catch (e) {
       AppMainLogger.error(e);
-      return false;
+      return new ApiResponse(false, I18nMsgs.ERR_FAIL_TO_UPDATE_TLE_URL);
     }
-    AppMainLogger.info("TLEの取得");
-    // デフォルト衛星定義の更新
-    const ret3 = await this.updateDefaultSatelliteService();
-    if (!ret3) return false;
-    AppMainLogger.info("デフォルト衛星定義の更新");
+    AppMainLogger.info("TLEの取得 完了");
 
-    return true;
+    // デフォルト衛星定義の更新
+    AppMainLogger.info("デフォルト衛星定義の更新 開始");
+    const ret3 = await this.updateDefaultSatelliteService();
+    if (!ret3) {
+      return new ApiResponse(false, I18nMsgs.ERR_UPDATE_DEFAULT_SATELLITE);
+    }
+    AppMainLogger.info("デフォルト衛星定義の更新 完了");
+
+    return new ApiResponse(true);
   }
   /**
    * デフォルト衛星定義をリフレッシュする

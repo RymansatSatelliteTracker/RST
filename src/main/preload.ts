@@ -42,7 +42,10 @@ const apiHandler = {
   /**
    * 衛星設定画面用のアプリケーション設定を保存する
    */
-  storeAppConfigSatSetting: function (config: AppConfigSatSettingModel, isTleUpdate: boolean): Promise<void> {
+  storeAppConfigSatSetting: function (
+    config: AppConfigSatSettingModel,
+    isTleUpdate: boolean
+  ): Promise<ApiResponse<void>> {
     return ipcRenderer.invoke("storeAppConfigSatSetting", config, isTleUpdate);
   },
 
@@ -111,14 +114,6 @@ const apiHandler = {
    */
   addDefaultSatellite: function (satelliteName: string): Promise<number> {
     return ipcRenderer.invoke("addDefaultSatellite", satelliteName);
-  },
-
-  /**
-   * デフォルト衛星情報をリフレッシュして再作成する
-   * 呼び出し例）const ret = await window.rstApi.reCreateDefaultSatellite();
-   */
-  reCreateDefaultSatellite: function (): Promise<boolean> {
-    return ipcRenderer.invoke("reCreateDefaultSatellite");
   },
 
   /**
