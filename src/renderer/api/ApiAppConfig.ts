@@ -2,6 +2,7 @@ import { AppConfigMainDisplay, AppConfigModel } from "@/common/model/AppConfigMo
 import { AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel";
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
 import { AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel";
+import { ApiResponse } from "@/common/types/types";
 
 /**
  * アプリケーション設定関係のレンダラ側API
@@ -45,7 +46,10 @@ export default class ApiAppConfig {
   /**
    * 衛星設定画面用のアプリケーション設定を保存する
    */
-  public static async storeAppSatSettingConfig(config: AppConfigSatSettingModel, isTleUpdate: boolean = false) {
+  public static async storeAppSatSettingConfig(
+    config: AppConfigSatSettingModel,
+    isTleUpdate: boolean = false
+  ): Promise<ApiResponse<void>> {
     return await window.rstApi.storeAppConfigSatSetting(config, isTleUpdate);
   }
 

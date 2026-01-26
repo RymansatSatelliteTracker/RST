@@ -145,9 +145,9 @@ export default class I18nMsgs {
     en: "The item value in the application configuration file is invalid",
     ja: "アプリケーション設定ファイルの項目値が不正です",
   };
-  public static readonly ERR_APPCONFIG_UPDATE: I18nMsgItem = {
-    en: "Failed to update the Application configuration file. Please try again later.",
-    ja: "衛星設定の更新に失敗しました。時間をおいて再度更新してください。",
+  public static readonly ERR_APPCONFIG_UPDATE_FOR_LOCKED: I18nMsgItem = {
+    en: "Failed to update the application configuration file. The file is locked.",
+    ja: "アプリケーション設定ファイルの更新に失敗しました。ファイルがロックされています。",
   };
   public static readonly ERR_SERIAL_CONNECT_ABORT: I18nMsgItem = {
     en: "Serial connection failed",
@@ -168,6 +168,14 @@ export default class I18nMsgs {
   public static readonly ERR_FAIL_TO_UPDATE_TLE_URL: I18nMsgItem = {
     en: "Failed to update data based on the specified TLE URL",
     ja: "指定したTLEのURLに基づいたデータ更新に失敗しました",
+  };
+  public static readonly ERR_REFRESH_DEFAULT_SATELLITE: I18nMsgItem = {
+    en: "Failed to refresh the Application configuration file",
+    ja: "衛星設定のリフレッシュに失敗しました",
+  };
+  public static readonly ERR_UPDATE_DEFAULT_SATELLITE: I18nMsgItem = {
+    en: "Failed to update the Application configuration file",
+    ja: "衛星設定の更新に失敗しました",
   };
   // Frequency.json系エラーメッセージ
   public static readonly CHK_ERR_FREQUENCY_INVALID_ITEM: I18nMsgItem = {

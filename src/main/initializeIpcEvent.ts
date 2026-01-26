@@ -68,9 +68,12 @@ export function initializeIpcEvents() {
   /**
    * 衛星設定画面用のアプリケーション設定を保存する
    */
-  ipcMain.handle("storeAppConfigSatSetting", async (event, config: AppConfigSatSettingModel, isTleUpdate: boolean) => {
-    return await new AppConfigSatelliteService().store(config, isTleUpdate);
-  });
+  ipcMain.handle(
+    "storeAppConfigSatSetting",
+    async (event, config: AppConfigSatSettingModel, isTleUpdate: boolean): Promise<ApiResponse<void>> => {
+      return await new AppConfigSatelliteService().store(config, isTleUpdate);
+    }
+  );
 
   /**
    * ローテーター定義を返す
@@ -119,13 +122,6 @@ export function initializeIpcEvents() {
    */
   ipcMain.handle("addDefaultSatellite", (event, satelliteName: string) => {
     return new DefaultSatelliteService().addDefaultSatellite(satelliteName);
-  });
-
-  /**
-   * デフォルト衛星情報をリフレッシュして再作成する
-   */
-  ipcMain.handle("reCreateDefaultSatellite", (event) => {
-    return new DefaultSatelliteService().reCreateDefaultSatellite();
   });
 
   /**
@@ -327,7 +323,6 @@ export function releaseIpcEvents() {
   ipcMain.removeHandler("getSavedSatelliteIdentifer");
   ipcMain.removeHandler("getDefaultSatelliteBySatelliteId");
   ipcMain.removeHandler("addDefaultSatellite");
-  ipcMain.removeHandler("reCreateDefaultSatellite");
   ipcMain.removeHandler("getUserRegisteredAppConfigSatellite");
   ipcMain.removeHandler("startAntennaCtrl");
   ipcMain.removeHandler("stopAntennaCtrl");

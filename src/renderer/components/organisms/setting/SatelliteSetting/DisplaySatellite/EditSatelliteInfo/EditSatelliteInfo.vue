@@ -125,14 +125,7 @@
             <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_TONE) }}</label>
           </v-col>
           <v-col cols="4">
-            <TextField
-              v-model="form.toneHz"
-              suffix="Hz"
-              :valiSchema="valiSchemaEditSatelliteInfo"
-              valiSchemaFieldPath="toneHz"
-              v-model:error-text="errors.toneHz"
-              maxlength="12"
-            />
+            <ToneFrequencySelect v-model="form.toneHz" />
           </v-col>
         </v-row>
         <v-row>
@@ -290,6 +283,7 @@ import I18nUtil from "@/renderer/common/util/I18nUtil";
 import DigitTextField from "@/renderer/components/atoms/DigitTextField/DigitTextField.vue";
 import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
 import OpeModeSelect from "@/renderer/components/molecules/OpeModeSelect/OpeModeSelect.vue";
+import ToneFrequencySelect from "@/renderer/components/molecules/ToneFrequencySelect/ToneFrequencySelect.vue";
 import emitter from "@/renderer/util/EventBus";
 import { onMounted, ref, watch } from "vue";
 import EditSatelliteInfoForm from "./EditSatelliteInfoForm";

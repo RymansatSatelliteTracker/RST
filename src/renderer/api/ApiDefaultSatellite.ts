@@ -32,12 +32,4 @@ export default class ApiDefaultSatellite {
   public static async addDefaultSatellite(satelliteName: string): Promise<number> {
     return await window.rstApi.addDefaultSatellite(satelliteName);
   }
-
-  /**
-   * デフォルト衛星情報をリフレッシュする
-   * @returns true:正常/false:失敗
-   */
-  public static async reCreateDefaultSatellite(): Promise<boolean> {
-    return await window.rstApi.reCreateDefaultSatellite();
-  }
 }
