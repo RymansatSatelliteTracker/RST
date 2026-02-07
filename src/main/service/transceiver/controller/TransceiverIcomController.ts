@@ -690,25 +690,25 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
   /**
    * 無線機へデータの送信、応答受信を行う（リトライ付き）
+   * @returns 受信データ、または"FAILED"
    */
   private async sendAndSyncRecvWithRetry(
     cmdData: Uint8Array,
     targetCmdType: CommandType,
     maxRetry: number
   ): Promise<string> {
-    let retryCount = 1;
-    while (retryCount <= maxRetry) {
+    for (let attempt = 1; attempt <= maxRetry; attempt++) {
       const res = await this.sendAndSyncRecv(cmdData, targetCmdType);
       if (res !== "TIMEOUT") {
         return res;
       }
 
-      retryCount++;
-      AppMainLogger.info(`コマンド${targetCmdType}の送信がタイムアウトしました。リトライします。${retryCount}回目`);
+      AppMainLogger.info(`コマンド${targetCmdType}の送信がタイムアウトしました。リトライします。${attempt + 1}回目`);
     }
 
-    AppMainLogger.warn(`${targetCmdType}の送信に失敗しました。リトライ${retryCount}回`);
-    return "";
+    // すべての試行がタイムアウトとなった
+    AppMainLogger.warn(`${targetCmdType}の送信に失敗しました。リトライ${maxRetry}回`);
+    return "FAILED";
   }
 
   /**
@@ -718,7 +718,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    * - 排他処理のため、コールバック（this.recvCallbackType と this.recvCallback）はクラス内で１つのみ保持。
    * @param cmdData コマンド
    * @param targetCmdType 送信コマンド種別
-   * @returns 受信データ
+   * @returns 受信データ、または"TIMEOUT"
    */
   @synchronized()
   private async sendAndSyncRecv(cmdData: Uint8Array, targetCmdType: CommandType): Promise<string> {
@@ -1520,7 +1520,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       AppMainLogger.warn(`${comId}: ロック取得タイムアウト`);
     }
 
-    // タイムアウトの有無に関わらず排他を解除する
+    // タイムアウトの有無に関わらずロックを取得する
     this.isProcessing = true;
   }
 

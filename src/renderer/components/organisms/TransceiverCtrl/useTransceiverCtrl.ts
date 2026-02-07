@@ -637,11 +637,11 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     const shiftRx = dopplerRxBaseFreq.value - nowRxFreq;
     const shiftTx = dopplerTxBaseFreq.value - nowTxFreq;
     const baseSum = dopplerRxBaseFreq.value + dopplerTxBaseFreq.value;
-    // AppRendererLogger.debug(
-    //   `ドップラーシフト補正後: ${nowRxFreq} ${nowTxFreq}` +
-    //     ` シフト補正値： ${shiftRx} ${shiftTx}` +
-    //     ` 基準周波数: ${dopplerRxBaseFreq.value} ${dopplerTxBaseFreq.value} = ${baseSum}`
-    // );
+    AppRendererLogger.debug(
+      `ドップラーシフト補正後: ${nowRxFreq} ${nowTxFreq}` +
+        ` シフト補正値： ${shiftRx} ${shiftTx}` +
+        ` 基準周波数: ${dopplerRxBaseFreq.value} ${dopplerTxBaseFreq.value} = ${baseSum}`
+    );
   }
 
   onMounted(async () => {
