@@ -24,7 +24,7 @@ export default function useCanvasPosToAntennaPos(canvasRef: Ref<HTMLCanvasElemen
     }
 
     // Auto状態の場合はレーダ部クリックは無効
-    if (autoStore.isAutoMode()) {
+    if (autoStore.isRotatorAutoMode()) {
       return;
     }
 
