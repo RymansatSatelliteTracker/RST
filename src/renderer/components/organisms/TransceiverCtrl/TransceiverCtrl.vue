@@ -156,6 +156,7 @@ import DateTimePicker from "@/renderer/components/organisms/DateTimePicker/DateT
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
 import CanvasUtil from "@/renderer/util/CanvasUtil";
 import DateUtil from "@/renderer/util/DateUtil";
+import emitter from "@/renderer/util/EventBus";
 import { computed, ref, watch } from "vue";
 import useOrbitalPassList from "./useOrbitalPassList";
 import useOverlapPassList from "./useOverlapPassList";
@@ -242,6 +243,10 @@ async function satTrackingModeBtnClick(isNormal: boolean) {
  */
 async function beaconBtnClick() {
   isBeaconMode.value = !isBeaconMode.value;
+  // TODO: ビーコンモードを実装したら削除する
+  if (isBeaconMode.value) {
+    emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.NOTICE_UNDER_DEVELOPMENT));
+  }
 }
 /**
  * Rxのラベルをアクティブにするかどうか

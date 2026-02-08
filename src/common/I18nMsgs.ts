@@ -131,6 +131,10 @@ export default class I18nMsgs {
     en: "Uplink and Downlink frequencies are not set.",
     ja: "アップリンク周波数とダウンリンク周波数が設定されていません。",
   };
+  public static readonly NOTICE_UNDER_DEVELOPMENT: I18nMsgItem = {
+    en: "This feature is under development and cannot be used.",
+    ja: "この機能は実装中のため使用できません。",
+  };
 
   // AppConfig系エラーメッセージ
   public static readonly CHK_ERR_APPCONFIG_NOT_EXISTS_FILE: I18nMsgItem = {
