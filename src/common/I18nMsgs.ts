@@ -278,7 +278,7 @@ export default class I18nMsgs {
   public static readonly G41_MAKER: I18nMsgItem = { en: "Maker", ja: "メーカー" };
   public static readonly G41_DEVICE: I18nMsgItem = { en: "Device", ja: "機種" };
   public static readonly G41_SERIAL_PORT: I18nMsgItem = { en: "Serial Port", ja: "シリアルポート" };
-  public static readonly G41_BORATE: I18nMsgItem = { en: "Borate", ja: "ボーレート" };
+  public static readonly G41_BORATE: I18nMsgItem = { en: "Baud Rate", ja: "ボーレート" };
   public static readonly G41_CIVADDRESS: I18nMsgItem = { en: "CI-V Address", ja: "CI-Vアドレス" };
   public static readonly G41_TEST_CONNECT: I18nMsgItem = { en: "Test Connect", ja: "接続テスト" };
   public static readonly G41_IPADDRESS: I18nMsgItem = { en: "IP Address", ja: "IPアドレス" };
@@ -294,7 +294,7 @@ export default class I18nMsgs {
   public static readonly G51_MAKER: I18nMsgItem = { en: "Maker", ja: "メーカー" };
   public static readonly G51_DEVICE: I18nMsgItem = { en: "Device", ja: "機種" };
   public static readonly G51_SERIAL_PORT: I18nMsgItem = { en: "Serial Port", ja: "シリアルポート" };
-  public static readonly G51_BORATE: I18nMsgItem = { en: "Borate", ja: "ボーレート" };
+  public static readonly G51_BORATE: I18nMsgItem = { en: "Baud Rate", ja: "ボーレート" };
   public static readonly G51_TEST_CONNECT: I18nMsgItem = { en: "Test Connect", ja: "接続テスト" };
   public static readonly G51_TEST_MODE: I18nMsgItem = { en: "Test Mode", ja: "テストモード" };
   public static readonly G51_IPADDRESS: I18nMsgItem = { en: "IP Address", ja: "IPアドレス" };
@@ -319,7 +319,7 @@ export default class I18nMsgs {
   };
   public static readonly G51_PARK_POS: I18nMsgItem = { en: "Park position", ja: "パークポジション" };
   // 画面項目系／衛星設定画面
-  public static readonly G31_DISPLAY_SATELLITE: I18nMsgItem = { en: "Display Sattelite", ja: "表示衛星" };
+  public static readonly G31_DISPLAY_SATELLITE: I18nMsgItem = { en: "Display Satellite", ja: "表示衛星" };
   public static readonly G32_TLE_LOAD: I18nMsgItem = { en: "TLE Load", ja: "TLE読み込み" };
   public static readonly G33_OTHER_SETTING: I18nMsgItem = { en: "Others", ja: "その他設定" };
   // 画面項目系／衛星設定画面 表示衛星
@@ -334,7 +334,7 @@ export default class I18nMsgs {
   public static readonly G31_TONE: I18nMsgItem = { en: "Tone Freq.", ja: "トーン周波数" };
   public static readonly G31_OUTLINE: I18nMsgItem = { en: "Outline", ja: "概要" };
   public static readonly G31_MANUAL_SET: I18nMsgItem = { en: "Manual", ja: "マニュアル設定" };
-  public static readonly G31_BEACON: I18nMsgItem = { en: "Tone Freq.", ja: "ビーコン周波数" };
+  public static readonly G31_BEACON: I18nMsgItem = { en: "Beacon Freq.", ja: "ビーコン周波数" };
   public static readonly G31_NORMAL: I18nMsgItem = { en: "Normal", ja: "ノーマル" };
   public static readonly G31_REVERSE: I18nMsgItem = { en: "Reverse", ja: "リバース" };
 
