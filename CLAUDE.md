@@ -1,136 +1,137 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+このファイルは、このリポジトリでコードを扱う際のClaude Code (claude.ai/code)へのガイダンスを提供します。
 
-## Project Overview
+## プロジェクト概要
 
-RST (Rymansat Satellite Tracker) is an Electron-based desktop application for satellite tracking and antenna control. It's built with Vue 3 + TypeScript + Vuetify for the frontend (renderer process) and Node.js + TypeScript for the backend (main process).
+RST (Rymansat Satellite Tracker) は、衛星追跡およびアンテナ制御のためのElectronベースのデスクトップアプリケーションです。
+フロントエンド（レンダラープロセス）にはVue 3 + TypeScript + Vuetify、バックエンド（メインプロセス）にはNode.js + TypeScriptを使用して構築されています。
 
-## Development Commands
+## 開発コマンド
 
-### Development
+### 開発
 ```bash
-# Start development mode (builds TypeScript + runs Vite dev server + starts Electron)
+# 開発モード起動（TypeScriptビルド + Vite開発サーバー実行 + Electron起動）
 npm run app:dev
 
-# Run Vite development server only
+# Vite開発サーバーのみ実行
 npm run vite:dev
 
-# Watch TypeScript compilation only
+# TypeScriptコンパイルのみ監視
 npm run watch
 ```
 
-### Testing
+### テスト
 ```bash
-# Run all Jest unit tests with coverage
+# 全てのJestユニットテストをカバレッジ付きで実行
 npm run test
 
-# Run specific test file
+# 特定のテストファイルを実行
 npm run test -- FileName_part
 
-# Run specific test within file
+# ファイル内の特定のテストを実行
 npm run test -- FileName_part -t "test name"
 
-# Run E2E tests with Playwright
+# PlaywrightでE2Eテスト実行
 npm run test:e2e
 ```
 
-### Building
+### ビルド
 ```bash
-# Build for preview (builds Vite + compiles TypeScript + runs Electron)
+# プレビュー用ビルド（Viteビルド + TypeScriptコンパイル + Electron実行）
 npm run app:preview
 
-# Build production app for all platforms
+# 全プラットフォーム向けプロダクションアプリビルド
 npm run app:build
 
-# Platform-specific builds
+# プラットフォーム固有ビルド
 npm run app:build-win
 npm run app:build-mac
 npm run app:build-linux
 
-# Build frontend only
+# フロントエンドのみビルド
 npm run vite:build
 
-# Compile TypeScript only
+# TypeScriptのみコンパイル
 npm run ts
 ```
 
-### Code Formatting
+### コードフォーマット
 ```bash
-# Format all code with Prettier
+# Prettierで全コードをフォーマット
 npm run format
 ```
 
-## Architecture
+## アーキテクチャ
 
-### Process Structure
-- **Main Process** (`src/main/`): Electron main process handling system interactions, file I/O, hardware communication
-- **Renderer Process** (`src/renderer/`): Vue.js frontend for the UI
-- **Common** (`src/common/`): Shared code between main and renderer processes
+### プロセス構造
+- **メインプロセス** (`src/main/`): システム相互作用、ファイルI/O、ハードウェア通信を処理するElectronメインプロセス
+- **レンダラープロセス** (`src/renderer/`): UIのためのVue.jsフロントエンド
+- **共通** (`src/common/`): メインプロセスとレンダラープロセス間で共有されるコード
 
-### Key Directories
-- `src/main/service/`: Core business logic services (satellite calculations, hardware control, data management)
-- `src/renderer/service/`: Frontend services for UI logic and data presentation
-- `src/renderer/components/`: Vue components organized as atoms/molecules/organisms
-- `src/common/model/`: TypeScript models shared between processes
-- `src/__tests__/`: Jest unit tests mirroring source structure
+### 主要ディレクトリ
+- `src/main/service/`: コアビジネスロジックサービス（衛星計算、ハードウェア制御、データ管理）
+- `src/renderer/service/`: UIロジックとデータ表示のためのフロントエンドサービス
+- `src/renderer/components/`: atoms/molecules/organismsとして組織化されたVueコンポーネント
+- `src/common/model/`: プロセス間で共有されるTypeScriptモデル
+- `src/__tests__/`: ソース構造をミラーリングしたJestユニットテスト
 
-### Main Process Services
-- `StartupService.ts`: Application initialization and TLE data loading
-- `ActiveSatService.ts`: Active satellite tracking and calculations
-- `RotatorService.ts` / `TransceiverService.ts`: Hardware control for antenna rotators and transceivers
-- `DefaultSatelliteService.ts`: Satellite data management and TLE updates
+### メインプロセスサービス
+- `StartupService.ts`: アプリケーション初期化とTLEデータローディング
+- `ActiveSatService.ts`: アクティブな衛星追跡と計算
+- `RotatorService.ts` / `TransceiverService.ts`: アンテナローテーターと無線機のハードウェア制御
+- `DefaultSatelliteService.ts`: 衛星データ管理とTLE更新
 
-### Renderer Process Services
-- `ActiveSatServiceHub.ts`: Coordinates satellite tracking in the UI
-- `FrequencyTrackService.ts`: Manages Doppler frequency compensation
-- `AntennaAutoTrackingService.ts`: Handles automatic antenna tracking
+### レンダラープロセスサービス
+- `ActiveSatServiceHub.ts`: UI内での衛星追跡を調整
+- `FrequencyTrackService.ts`: ドップラー周波数補償を管理
+- `AntennaAutoTrackingService.ts`: 自動アンテナ追跡を処理
 
-### Hardware Integration
-The application controls:
-- **Antenna Rotators**: Serial communication for antenna positioning
-- **Transceivers**: Frequency control and satellite mode management
-- **Location Services**: GPS/geolocation for ground station positioning
+### ハードウェア統合
+アプリケーションが制御するもの：
+- **アンテナローテーター**: アンテナ位置決めのためのシリアル通信
+- **無線機**: 周波数制御と衛星モード管理
+- **位置サービス**: 地上局位置決めのためのGPS/ジオロケーション
 
-### TypeScript Configuration
-- Uses path aliases: `@/*` maps to `./src/*`
-- Import alias replacement: `tscpaths` converts aliases to relative paths for production builds
-- Configured for both CommonJS (main process) and ES modules (renderer process)
+### TypeScript設定
+- パスエイリアスを使用: `@/*` は `./src/*` にマップ
+- インポートエイリアス置換: `tscpaths`が本番ビルド用にエイリアスを相対パスに変換
+- CommonJS（メインプロセス）とESモジュール（レンダラープロセス）の両方に対応
 
-## Testing
+## テスト
 
-### Unit Tests (Jest)
-- Located in `src/__tests__/` with structure mirroring source
-- Uses ts-jest for TypeScript support
-- Coverage reports generated automatically
-- Path aliases configured via `moduleNameMapper`
+### ユニットテスト（Jest）
+- `src/__tests__/`にソースをミラーリングした構造で配置
+- TypeScriptサポートのためにts-jestを使用
+- カバレッジレポートを自動生成
+- `moduleNameMapper`でパスエイリアスを設定
 
-### E2E Tests (Playwright)
-- Located in `src/__tests__/playwright/`
-- Tests full application workflows
+### E2Eテスト（Playwright）
+- `src/__tests__/playwright/`に配置
+- アプリケーション全体のワークフローをテスト
 
-## Development Tools
+## 開発ツール
 
-### Node Version Management
-- Uses Volta for Node.js version management (configured in package.json)
-- Target Node.js version: 22.18.0
+### Nodeバージョン管理
+- Node.jsバージョン管理にVoltaを使用（package.jsonで設定）
+- 対象Node.jsバージョン: 22.18.0
 
-### VSCode Debugging
-- **Main Process**: Use "Electron: Main" configuration after building
-- **Renderer Process**: Use "Electron: Renderer" configuration with app:dev running
-- **Jest Tests**: Install Jest Runner extension for individual test debugging
+### VSCodeデバッグ
+- **メインプロセス**: ビルド後に"Electron: Main"設定を使用
+- **レンダラープロセス**: app:dev実行中に"Electron: Renderer"設定を使用
+- **Jestテスト**: 個別テストデバッグのためのJest Runner拡張機能をインストール
 
-## Build Process
+## ビルドプロセス
 
-1. `vite:build` - Builds the Vue frontend
-2. `tsc` - Compiles TypeScript for main process
-3. `app:import-replace` - Converts path aliases to relative imports using tscpaths
-4. `electron-builder` - Packages the application
+1. `vite:build` - Vueフロントエンドをビルド
+2. `tsc` - メインプロセス用TypeScriptをコンパイル
+3. `app:import-replace` - tscpathsを使用してパスエイリアスを相対インポートに変換
+4. `electron-builder` - アプリケーションをパッケージ
 
-## Important Notes
+## 重要な注意事項
 
-- Log files are stored in user directory (e.g., `%APPDATA%/rst/logs/rst.log` on Windows)
-- TLE (Two-Line Element) data is fetched from external sources for satellite tracking
-- The application handles serial port communication for hardware control
-- Uses Vuetify for UI components and Material Design icons
-- Supports multiple languages through I18n service
+- ログファイルはユーザーディレクトリに保存（例: Windows の `%APPDATA%/rst/logs/rst.log`）
+- TLE（Two-Line Element）データは衛星追跡のために外部ソースから取得
+- アプリケーションはハードウェア制御のためのシリアルポート通信を処理
+- UIコンポーネントにVuetify、Material Designアイコンを使用
+- I18nサービスを通じた多言語サポート
