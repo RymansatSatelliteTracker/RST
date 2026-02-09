@@ -119,14 +119,14 @@ VsCodeでのデバッグ実行の方法です。
 #### アイコン編集
 
 Inkscapeで編集を行う。
-小さいアイコン向け
-　public\assets\アイコン\_24.svg
-大きいアイコン向け
-　public\assets\アイコン\_512.svg
+- 小さいアイコン向け
+    - public\assets\アイコン\_24.svg
+- 大きいアイコン向け
+    - public\assets\アイコン\_512.svg
 
 #### Windows向けのicoの作成
 
-複数pngをicoファイルに格納するため、以下からImageMagicをダウンロード、インストールする。
+複数pngをicoファイルに格納するため、以下からImageMagicをダウンロード、インストールする。    
 https://www.imagemagick.org/script/download.php
 
 以下をコマンドプロンプトで実行する。
