@@ -1,6 +1,6 @@
 {
   "frequency": {
-    "lastUpdateTime": 1745146861765,
+    "lastUpdateTime": 1771022269467,
     "satellites": [
       {
         "noradId": "43017",
@@ -71,7 +71,7 @@
         },
         "enableSatelliteMode": false,
         "satelliteMode": "1",
-        "toneHz": null,
+        "toneHz": 67.0,
         "outline": ""
       },
       {
@@ -215,7 +215,7 @@
         },
         "enableSatelliteMode": false,
         "satelliteMode": "1",
-        "toneHz": null,
+        "toneHz": 67.0,
         "outline": "ISS Crossband Repeater"
       },
       {
@@ -312,6 +312,186 @@
         "downlink2": {
           "downlinkHz": 145985000,
           "downlinkMode": "FM"
+        },
+        "downlink3": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "beacon": {
+          "beaconHz": null,
+          "beaconMode": ""
+        },
+        "enableSatelliteMode": false,
+        "satelliteMode": "1",
+        "toneHz": null,
+        "outline": ""
+      },
+      {
+        "noradId": "63492",
+        "satelliteName": "HADEM-ICM(SO125)",
+        "uplink1": {
+          "uplinkHz": 145875000,
+          "uplinkMode": "FM"
+        },
+        "uplink2": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "uplink3": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "downlink1": {
+          "downlinkHz": 436665000,
+          "downlinkMode": "FM"
+        },
+        "downlink2": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "downlink3": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "beacon": {
+          "beaconHz": null,
+          "beaconMode": ""
+        },
+        "enableSatelliteMode": false,
+        "satelliteMode": "1",
+        "toneHz": null,
+        "outline": ""
+      },
+      {
+        "noradId": "44909",
+        "satelliteName": "RS-44",
+        "uplink1": {
+          "uplinkHz": 145970000,
+          "uplinkMode": "LSB"
+        },
+        "uplink2": {
+          "uplinkHz": 145970000,
+          "uplinkMode": "CW"
+        },
+        "uplink3": {
+          "uplinkHz": 145990600,
+          "uplinkMode": "LSB-D"
+        },
+        "downlink1": {
+          "downlinkHz": 435633000,
+          "downlinkMode": "USB"
+        },
+        "downlink2": {
+          "downlinkHz": 435628100,
+          "downlinkMode": "CW"
+        },
+        "downlink3": {
+          "downlinkHz": 435612000,
+          "downlinkMode": "USB-D"
+        },
+        "beacon": {
+          "beaconHz": null,
+          "beaconMode": ""
+        },
+        "enableSatelliteMode": false,
+        "satelliteMode": "1",
+        "toneHz": null,
+        "outline": ""
+      },
+      {
+        "noradId": "43803",
+        "satelliteName": "JO-97",
+        "uplink1": {
+          "uplinkHz": 435110000,
+          "uplinkMode": "LSB"
+        },
+        "uplink2": {
+          "uplinkHz": 435110000,
+          "uplinkMode": "CW"
+        },
+        "uplink3": {
+          "uplinkHz": 435116100,
+          "uplinkMode": "LSB-D"
+        },
+        "downlink1": {
+          "downlinkHz": 145863400,
+          "downlinkMode": "USB"
+        },
+        "downlink2": {
+          "downlinkHz": 145863400,
+          "downlinkMode": "CW"
+        },
+        "downlink3": {
+          "downlinkHz": 145857000,
+          "downlinkMode": "USB-D"
+        },
+        "beacon": {
+          "beaconHz": null,
+          "beaconMode": ""
+        },
+        "enableSatelliteMode": false,
+        "satelliteMode": "1",
+        "toneHz": null,
+        "outline": ""
+      },
+      {
+        "noradId": "24278",
+        "satelliteName": "JAS-2(FO-29)",
+        "uplink1": {
+          "uplinkHz": 145950000,
+          "uplinkMode": "LSB"
+        },
+        "uplink2": {
+          "uplinkHz": 145950000,
+          "uplinkMode": "CW"
+        },
+        "uplink3": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "downlink1": {
+          "downlinkHz": 435852000,
+          "downlinkMode": "USB"
+        },
+        "downlink2": {
+          "downlinkHz": 435852000,
+          "downlinkMode": "CW"
+        },
+        "downlink3": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "beacon": {
+          "beaconHz": null,
+          "beaconMode": ""
+        },
+        "enableSatelliteMode": false,
+        "satelliteMode": "1",
+        "toneHz": null,
+        "outline": ""
+      },
+      {
+        "noradId": "39444",
+        "satelliteName": "FUNCUBE1(AO-73)",
+        "uplink1": {
+          "uplinkHz": 435147000,
+          "uplinkMode": "LSB"
+        },
+        "uplink2": {
+          "uplinkHz": 435147000,
+          "uplinkMode": "CW"
+        },
+        "uplink3": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "downlink1": {
+          "downlinkHz": 145956700,
+          "downlinkMode": "USB"
+        },
+        "downlink2": {
+          "downlinkHz": 145956240,
+          "downlinkMode": "CW"
         },
         "downlink3": {
           "downlinkHz": null,
