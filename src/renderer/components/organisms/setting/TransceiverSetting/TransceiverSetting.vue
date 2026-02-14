@@ -65,7 +65,7 @@ const form = ref<TransceiverSettingForm>(new TransceiverSettingForm());
 
 // 制御系データ
 // ダイアログの表示可否
-const isShow = defineModel("isShow");
+const isShow = defineModel<boolean>("isShow");
 const loadingTestBtn = ref(false);
 const isSerialOpen = ref(false);
 const refTravsceiverConn = ref();
