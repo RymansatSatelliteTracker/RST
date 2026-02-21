@@ -3,7 +3,6 @@ import { AppConfigSatellite } from "@/common/model/AppConfigModel";
 import TleUtil from "@/main/util/TleUtil";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite";
-import ApiDefaultSatellite from "@/renderer/api/ApiDefaultSatellite";
 import ApiTle from "@/renderer/api/ApiTle";
 
 /**
@@ -45,7 +44,7 @@ export default class ActiveSatHelper {
       }
 
       // ユーザ設定衛星でない場合
-      sats.push(await this.getSatByDefault(satId));
+      sats.push(await this.getSatByAppConfig(sat));
     }
 
     return sats;
@@ -70,19 +69,18 @@ export default class ActiveSatHelper {
   }
 
   /**
-   * デフォルト衛星から衛星情報を取得する
+   * ユーザ設定衛星情報を取得する
    */
-  private static async getSatByDefault(satId: number): Promise<ActiveSatelliteModel> {
+  private static async getSatByAppConfig(sat: AppConfigSatellite): Promise<ActiveSatelliteModel> {
     const satModel = new ActiveSatelliteModel();
-    satModel.satelliteId = satId;
-
-    const defalutSat = await ApiDefaultSatellite.getDefaultSatelliteBySatelliteId(satId);
+    satModel.satelliteId = sat.satelliteId;
 
     // 衛星名
-    satModel.satelliteName = defalutSat.satelliteName;
+    // ユーザ設定がない場合はdefaultSatの衛星名がここに入っている
+    satModel.satelliteName = sat.userRegisteredSatelliteName;
 
     // TLEはNorad IDから取得
-    const tles = await ApiTle.getTlesByNoradIds([defalutSat.noradId]);
+    const tles = await ApiTle.getTlesByNoradIds([sat.noradId]);
     satModel.tle = tles[0];
 
     return satModel;
