@@ -39,7 +39,7 @@ export default class ActiveSatHelper {
 
       // ユーザ設定衛星の場合
       if (sat.userRegistered) {
-        sats.push(this.getSatByUserReg(satId, sat));
+        sats.push(this.getSatByUserReg(sat));
         continue;
       }
 
@@ -53,9 +53,9 @@ export default class ActiveSatHelper {
   /**
    * ユーザ設定衛星情報を取得する
    */
-  private static getSatByUserReg(satId: number, sat: AppConfigSatellite): ActiveSatelliteModel {
+  private static getSatByUserReg(sat: AppConfigSatellite): ActiveSatelliteModel {
     const satModel = new ActiveSatelliteModel();
-    satModel.satelliteId = satId;
+    satModel.satelliteId = sat.satelliteId;
 
     // 衛星名
     satModel.satelliteName = sat.userRegisteredSatelliteName;
