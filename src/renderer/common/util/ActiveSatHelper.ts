@@ -70,6 +70,7 @@ export default class ActiveSatHelper {
 
   /**
    * ユーザ設定衛星情報を取得する
+   * ユーザ設定がない場合は自動的にデフォルト衛星の情報が入る
    */
   private static async getSatByAppConfig(sat: AppConfigSatellite): Promise<ActiveSatelliteModel> {
     const satModel = new ActiveSatelliteModel();
