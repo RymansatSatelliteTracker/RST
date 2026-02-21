@@ -292,6 +292,10 @@ export default class I18nMsgs {
     en: "Auto-Tracking Start/End Time",
     ja: "自動追尾準備・終了時間",
   };
+  public static readonly G41_DOPPLER_RESUME_DELAY: I18nMsgItem = {
+    en: "Doppler Resume Delay",
+    ja: "無線機操作後ドップラーシフト再開時間",
+  };
   // 画面項目系／ローテータ設定画面
   public static readonly G51_TAB_CONNECTION: I18nMsgItem = { en: "Device", ja: "機種設定" };
   public static readonly G51_TAB_BEHIVIOR: I18nMsgItem = { en: "Behivior", ja: "動作設定" };
