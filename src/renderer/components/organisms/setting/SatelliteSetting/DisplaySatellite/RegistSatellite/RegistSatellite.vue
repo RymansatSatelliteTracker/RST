@@ -254,6 +254,7 @@ async function onOk() {
         satelliteId: apiSat.satelliteId,
         satelliteName: apiSat.userRegisteredSatelliteName,
         userRegistered: true,
+        noradId: apiSat.noradId,
       });
     }
   } else {

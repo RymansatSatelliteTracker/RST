@@ -333,6 +333,7 @@ export default class I18nMsgs {
   // 画面項目系／衛星設定画面 表示衛星
   public static readonly G31_SATELLITE_GROUP: I18nMsgItem = { en: "Satellite Group", ja: "衛星グループ" };
   public static readonly G31_GROUP: I18nMsgItem = { en: "Group", ja: "グループ" };
+  public static readonly G31_SEARCH: I18nMsgItem = { en: "Satellite Name/ NORAD ID", ja: "衛星名/NORAD ID" };
   // 画面項目系／衛星設定画面　衛星情報編集
   public static readonly G31_INTERNATIONAL_NAME: I18nMsgItem = { en: "International Name", ja: "国際呼称" };
   public static readonly G31_NORADID: I18nMsgItem = { en: "NORAD ID", ja: "NORAD ID" };
