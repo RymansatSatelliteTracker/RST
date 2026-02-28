@@ -119,6 +119,14 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       return false;
     }
 
+    // 周波数の更新インターバルを取得
+    autoTrackingIntervalMsec = await getAutoTrackingIntervalMsec();
+
+    // 周波数の更新を停止
+    // MEMO: 停止されていない場合があるので、複数のタイマが発動することをガード
+    // MEMO: AutoOn時の周波数の初期設定中に、ドップラーシフトの周波数更新が競合するため、停止後に以降の処理を行う必要がある
+    await stopUpdateFreq();
+
     // AutoOn時は受信処理をスキップする（AutoOn処理中のモード変更などにおける無線機からの不要なデータ受信を無視する）
     isRecvProcSkip = true;
 
@@ -135,7 +143,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       : Constant.Transceiver.SatelliteMode.UNSET;
 
     // 無線機にサテライトモードを設定する
-    // memo: satelliteMode.valueの更新時にwatchで isSatelliteMode.value が更新されるが、非同期でAPI呼び出しが行われる。
+    // MEMO: satelliteMode.valueの更新時にwatchで isSatelliteMode.value が更新されるが、非同期でAPI呼び出しが行われる。
     //       サテライトモードの変更時に無線機のモード取得が行われるが、
     //       AutoOn時の無線機へのモード設定と同期が取れず、AutoOn時のモード設定が反映されない場合がある為、
     //       ここで明示的、同期的にサテライトモードを設定する。
@@ -174,12 +182,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     // 基準周波数の和を更新する（逆ヘテロダインの計算用）
     baseFreqSum.value = getBaseFreqSum();
 
-    // 周波数の更新インターバルを取得
-    autoTrackingIntervalMsec = parseFloat(appConfig.transceiver.autoTrackingIntervalSec) * 1000;
-
-    // 周波数の更新を停止（停止されていない場合があるので、複数のタイマが発動することをガード）
-    stopUpdateFreq();
-
     // ドップラーシフトのフラグを初期化
     execRxDopplerShiftCorrection.value = false;
     execTxDopplerShiftCorrection.value = false;
@@ -199,13 +201,16 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * Autoモードを停止する
    */
   async function stopAutoMode() {
+    // AutoOnでない場合は何もしない
+    if (!autoStore.tranceiverAuto) {
+      return;
+    }
+
     // Auto終了をメイン側に連携する
     await ApiTransceiver.transceiverAutoOff();
 
     // Autoモードの周波数更新を停止する
-    if (!stopUpdateFreq()) {
-      return;
-    }
+    await stopUpdateFreq();
 
     // Autoモード移行前の周波数を復元する
     txFrequency.value = savedTxFrequency.value;
@@ -215,13 +220,16 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   /**
    * Autoモードの周波数更新を停止する
    */
-  function stopUpdateFreq() {
+  async function stopUpdateFreq() {
     if (!timerId) {
       return false;
     }
 
     clearInterval(timerId);
     timerId = null;
+
+    // 本メソッド呼び出し後に周波数更新が動かいことを保証するため、周波数更新のインターバルと同じ時間だけ待機する
+    await CommonUtil.sleep(autoTrackingIntervalMsec);
 
     return true;
   }
@@ -662,7 +670,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       }
 
       // Autoモード中でない場合は何もしない
-      // memo: 無線機で周波数を変更した直後にAutoOnとした場合に、その周波数を元に一定時間待機後の基準周波数の更新が走ってしまうため、
+      // MEMO: 無線機で周波数を変更した直後にAutoOnとした場合に、その周波数を元に一定時間待機後の基準周波数の更新が走ってしまうため、
       //       AutoOnでない場合は処理を終了する
       if (!autoStore.tranceiverAuto) {
         return;
@@ -950,6 +958,14 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       CommonUtil.isEmpty(appConfig.transceiver.baudrateBps);
 
     return !invalid;
+  }
+
+  /**
+   * ドップラーシフトの自動追尾の更新間隔を取得する
+   */
+  async function getAutoTrackingIntervalMsec() {
+    const appConfig = await ApiAppConfig.getAppConfig();
+    return parseFloat(appConfig.transceiver.autoTrackingIntervalSec) * 1000;
   }
 
   return {
