@@ -23,6 +23,7 @@
           <FrequencySelect class="freq_box" v-model:frequency="rxFrequency" v-model:diffFrequency="diffRxFrequency">
             <span class="freq_unit">Hz</span>
           </FrequencySelect>
+          <FreqAdjustmentSelect v-model:frequency="rxFrequencyAdjustment"></FreqAdjustmentSelect>
         </div>
       </div>
       <div class="freq_area">
@@ -31,6 +32,7 @@
           <FrequencySelect class="freq_box" v-model:frequency="txFrequency" v-model:diffFrequency="diffTxFrequency">
             <span class="freq_unit">Hz</span>
           </FrequencySelect>
+          <FreqAdjustmentSelect v-model:frequency="txFrequencyAdjustment"></FreqAdjustmentSelect>
         </div>
       </div>
       <!-- ビーコン -->
@@ -150,6 +152,7 @@ import I18nUtil from "@/renderer/common/util/I18nUtil";
 import Button from "@/renderer/components/atoms/Button/Button.vue";
 import CycleButton from "@/renderer/components/molecules/CycleButton/CycleButton.vue";
 import DopplerShiftModeSelect from "@/renderer/components/molecules/DopplerShiftModeSelect/DopplerShiftModeSelect.vue";
+import FreqAdjustmentSelect from "@/renderer/components/molecules/FreqAdjustmentSelect/FreqAdjustmentSelect.vue";
 import FrequencySelect from "@/renderer/components/molecules/FrequencySelect/FrequencySelect.vue";
 import OpeModeSelect from "@/renderer/components/molecules/OpeModeSelect/OpeModeSelect.vue";
 import DateTimePicker from "@/renderer/components/organisms/DateTimePicker/DateTimePicker.vue";
@@ -182,6 +185,8 @@ const {
   rxFrequency,
   diffTxFrequency,
   diffRxFrequency,
+  txFrequencyAdjustment,
+  rxFrequencyAdjustment,
   txOpeMode,
   rxOpeMode,
   satelliteMode,
