@@ -8,120 +8,127 @@ describe("useFrequencySelect", () => {
     return { frequencyRef, controller };
   }
 
-  it.each([
-    ["プラス", "+800.000", [8, 0, 0], [0, 0, 0]],
-    ["マイナス", "-700.000", [7, 0, 0], [0, 0, 0]],
-  ])("(%s)符号付き周波数文字列をkHz/Hzの桁配列へ分割できる", (name, frequency, expectedkHz, expectedHz) => {
-    // Arrange
-    const { controller } = createSut(frequency);
+  describe("digit split", () => {
+    it.each([
+      { frequency: "+800.000", expectedKHz: [8, 0, 0], expectedHz: [0, 0, 0] },
+      { frequency: "-700.000", expectedKHz: [7, 0, 0], expectedHz: [0, 0, 0] },
+    ])("符号付き周波数文字列をkHz/Hzの桁配列へ分割できる: $frequency", ({ frequency, expectedKHz, expectedHz }) => {
+      // Arrange
+      const { controller } = createSut(frequency);
 
-    // Act
+      // Act
 
-    // Assert
-    expect(controller.kHzDigits.value).toEqual(expectedkHz);
-    expect(controller.hzDigits.value).toEqual(expectedHz);
+      // Assert
+      expect(controller.kHzDigits.value).toEqual(expectedKHz);
+      expect(controller.hzDigits.value).toEqual(expectedHz);
+    });
   });
 
-  it.each([
-    ["プラス", "+899.000", 2, "+900.000"],
-    ["マイナス", "-899.000", 2, "-900.000"],
-  ])("(%s)符号付き周波数文字列の指定桁を+1し、必要なら繰り上がる", (name, frequency, digit, expected) => {
-    // Arrange
-    const { controller } = createSut(frequency);
+  describe("onClick", () => {
+    it.each([
+      { frequency: "+899.000", digit: 2, expected: "+900.000" },
+      { frequency: "-899.000", digit: 2, expected: "-900.000" },
+    ])("指定桁を+1し、必要なら繰り上がる: $frequency / digit=$digit", ({ frequency, digit, expected }) => {
+      // Arrange
+      const { controller } = createSut(frequency);
 
-    // Act
-    const newFrequency = controller.onClick(digit);
+      // Act
+      const newFrequency = controller.onClick(digit);
 
-    // Assert
-    expect(newFrequency).toBe(expected);
+      // Assert
+      expect(newFrequency).toBe(expected);
+    });
   });
 
-  it.each([
-    ["プラス", "+800.000", 3, "+800.100"],
-    ["マイナス", "-800.000", 3, "-799.900"],
-  ])("(%s)onWheelの上回転で指定桁を+1できる", (name, frequency, digit, expected) => {
-    // Arrange
-    const { controller } = createSut(frequency);
+  describe("onWheel", () => {
+    it.each([
+      { frequency: "+800.000", digit: 3, expected: "+800.100" },
+      { frequency: "-800.000", digit: 3, expected: "-799.900" },
+    ])("上回転(deltaY<0)で値をプラス方向へ変化させる: $frequency / digit=$digit", ({ frequency, digit, expected }) => {
+      // Arrange
+      const { controller } = createSut(frequency);
 
-    // Act
-    const newFrequency = controller.onWheel({ deltaY: -1 } as WheelEvent, digit);
+      // Act
+      const newFrequency = controller.onWheel({ deltaY: -1 } as WheelEvent, digit);
 
-    // Assert
-    expect(newFrequency).toBe(expected);
+      // Assert
+      expect(newFrequency).toBe(expected);
+    });
+
+    it.each([
+      { frequency: "+800.000", digit: 2, expected: "+799.000" },
+      { frequency: "-800.000", digit: 2, expected: "-801.000" },
+    ])(
+      "下回転(deltaY>0)で値をマイナス方向へ変化させる: $frequency / digit=$digit",
+      ({ frequency, digit, expected }) => {
+        // Arrange
+        const { controller } = createSut(frequency);
+
+        // Act
+        const newFrequency = controller.onWheel({ deltaY: 1 } as WheelEvent, digit);
+
+        // Assert
+        expect(newFrequency).toBe(expected);
+      }
+    );
+
+    it("0跨ぎ時は正規化された+000.000を返す", () => {
+      // Arrange
+      const { controller } = createSut("-000.001");
+
+      // Act
+      const newFrequency = controller.onWheel({ deltaY: -1 } as WheelEvent, 5);
+
+      // Assert
+      expect(newFrequency).toBe("+000.000");
+    });
+
+    it("ゼロから下回転すると負方向へ進む", () => {
+      // Arrange
+      const { controller } = createSut("+000.000");
+
+      // Act
+      const newFrequency = controller.onWheel({ deltaY: 1 } as WheelEvent, 5);
+
+      // Assert
+      expect(newFrequency).toBe("-000.001");
+    });
   });
 
-  it.each([
-    ["プラス", "+800.000", 2, "+799.000"],
-    ["マイナス", "-800.000", 2, "-801.000"],
-  ])("(%s)onWheelの下回転で指定桁を-1し、必要なら繰り下がる", (name, frequency, digit, expected) => {
-    // Arrange
-    const { controller } = createSut(frequency);
+  describe("onRightClick", () => {
+    it.each([
+      { frequency: "+876.543", digit: 1, expected: "+800.000" },
+      { frequency: "+876.543", digit: 0, expected: "+000.000" },
+      { frequency: "+006.543", digit: 1, expected: "+000.000" },
+      { frequency: "-876.543", digit: 1, expected: "-800.000" },
+      { frequency: "-876.543", digit: 0, expected: "+000.000" },
+      { frequency: "-006.543", digit: 1, expected: "+000.000" },
+    ])("任意桁の右クリックで指定桁以降を0化する: $frequency / digit=$digit", ({ frequency, digit, expected }) => {
+      // Arrange
+      const { controller } = createSut(frequency);
 
-    // Act
-    const newFrequency = controller.onWheel({ deltaY: 1 } as WheelEvent, digit);
+      // Act
+      const newFrequency = controller.onRightClick(digit);
 
-    // Assert
-    expect(newFrequency).toBe(expected);
+      // Assert
+      expect(newFrequency).toBe(expected);
+    });
   });
 
-  it.each([
-    ["プラス", "+000.100", 2],
-    ["マイナス", "-000.100", 2],
-  ])("(%s)onWheelの下回転で先頭ゼロ領域を変更しようとするとnullを返す", (name, frequency, digit) => {
-    // Arrange
-    const { controller } = createSut(frequency);
+  describe("isGrayed", () => {
+    it.each(["+000.120", "-000.120"])("先頭の非0桁より左側だけtrueを返す: %s", (frequency) => {
+      // Arrange
+      const { controller } = createSut(frequency);
 
-    // Act
-    const newFrequency = controller.onWheel({ deltaY: 1 } as WheelEvent, digit);
+      // Act
+      const isGrayedAt0 = controller.isGrayed(0);
+      const isGrayedAt2 = controller.isGrayed(2);
+      const isGrayedAt3 = controller.isGrayed(3);
 
-    // Assert
-    expect(newFrequency).toBeNull();
-  });
-
-  it.each([
-    ["プラス", "+000.001", 1, 8],
-    ["マイナス", "-000.001", -1, 8],
-  ])("(%s)onWheelで全桁0になる場合は0を返す", (name, frequency, wheelDirection, digit) => {
-    // Arrange
-    const { controller } = createSut(frequency);
-
-    // Act
-    const newFrequency = controller.onWheel({ deltaY: wheelDirection } as WheelEvent, digit);
-
-    // Assert
-    expect(newFrequency).toBe("+000.000");
-  });
-
-  it.each([
-    ["+876.543", 1, "+800.000"],
-    ["+876.543", 0, "+000.000"],
-    ["+006.543", 1, "+000.000"],
-    ["-876.543", 1, "-800.000"],
-    ["-876.543", 0, "+000.000"],
-    ["-006.543", 1, "+000.000"],
-  ])("onRightClickで指定桁以降を0にできる", (frequency, digit, expected) => {
-    // Arrange
-    const { controller } = createSut(frequency);
-
-    // Act
-    const newFrequency = controller.onRightClick(digit);
-
-    // Assert
-    expect(newFrequency).toBe(expected);
-  });
-
-  it("isGrayedは先頭の非0桁より左側だけtrueを返す", () => {
-    // Arrange
-    const { controller } = createSut("000.120");
-
-    // Act
-    const isGrayedAt0 = controller.isGrayed(0);
-    const isGrayedAt2 = controller.isGrayed(2);
-    const isGrayedAt3 = controller.isGrayed(3);
-
-    // Assert
-    expect(isGrayedAt0).toBe(true);
-    expect(isGrayedAt2).toBe(true);
-    expect(isGrayedAt3).toBe(false);
+      // Assert
+      expect(isGrayedAt0).toBe(true);
+      expect(isGrayedAt2).toBe(true);
+      expect(isGrayedAt3).toBe(false);
+    });
   });
 });
