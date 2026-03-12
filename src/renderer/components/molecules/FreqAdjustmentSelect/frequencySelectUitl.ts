@@ -7,7 +7,7 @@ type Sign = -1 | 1;
 /**
  * 符号付き周波数文字列を、符号とMHz/kHz/Hzのdigit配列へ分割する
  */
-export function parseSingedFrequency(freq: string): [Sign, number[][]] {
+export function parseSignedFrequency(freq: string): [Sign, number[][]] {
   const sign: Sign = freq.startsWith("-") ? -1 : 1;
   const unsignedFreq = freq.replace(/^[+-]/, "");
 
