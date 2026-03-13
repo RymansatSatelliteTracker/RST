@@ -23,7 +23,11 @@
           <FrequencySelect class="freq_box" v-model:frequency="rxFrequency" v-model:diffFrequency="diffRxFrequency">
             <span class="freq_unit">Hz</span>
           </FrequencySelect>
-          <FreqAdjustmentSelect v-model:frequency="rxFrequencyAdjustment"></FreqAdjustmentSelect>
+        </div>
+      </div>
+      <div class="freq_area_sub">
+        <div>
+          <FreqAdjustmentSelect class="freq_box_sub" v-model:frequency="rxFrequencyAdjustment"></FreqAdjustmentSelect>
         </div>
       </div>
       <div class="freq_area">
@@ -32,9 +36,14 @@
           <FrequencySelect class="freq_box" v-model:frequency="txFrequency" v-model:diffFrequency="diffTxFrequency">
             <span class="freq_unit">Hz</span>
           </FrequencySelect>
-          <FreqAdjustmentSelect v-model:frequency="txFrequencyAdjustment"></FreqAdjustmentSelect>
         </div>
       </div>
+      <div class="freq_area_sub">
+        <div>
+          <FreqAdjustmentSelect class="freq_box_sub" v-model:frequency="txFrequencyAdjustment"></FreqAdjustmentSelect>
+        </div>
+      </div>
+
       <!-- ビーコン -->
       <div class="beacon_btn_right">
         <Button
