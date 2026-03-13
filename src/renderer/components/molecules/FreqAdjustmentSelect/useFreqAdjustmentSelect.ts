@@ -25,9 +25,14 @@ const useFrequencySelect = (frequency: Ref<string>) => {
   function onWheel(event: WheelEvent, index: number) {
     const newDigits = [...kHzDigits.value, ...hzDigits.value];
     let newSign = sign.value;
-    // ゼロマタギ(0から始まる)の場合は、ホイールを回した方向に応じて符号を変更する
-    if (newDigits.every((digit) => digit === 0)) {
-      (newDigits as number[])[index] = 1;
+
+    // ゼロマタギ(指定の桁以上が0)の場合は、ホイールを回した方向に応じて符号を変更する
+    const idx = newDigits.findIndex((digit) => digit !== 0);
+    // 0の場合は全てグレーアウト
+    const firstNonZeroIndex = idx !== -1 ? idx : newDigits.length;
+
+    if (index < firstNonZeroIndex) {
+      newDigits[index] = 1;
       // ホイールを上に回したらプラス、下に回したらマイナス
       newSign = event.deltaY < 0 ? 1 : -1;
       // 数値の配列をカンマ区切りの文字列にする
@@ -47,11 +52,11 @@ const useFrequencySelect = (frequency: Ref<string>) => {
       }
     } else {
       // digit部分が減るケース
-      const firstNonZeroIndex = newDigits.findIndex((digit) => digit !== 0);
-      if (index < firstNonZeroIndex) {
-        // 先頭の0の桁は変更不可とする
-        return null;
-      }
+      //const firstNonZeroIndex = newDigits.findIndex((digit) => digit !== 0);
+      //      if (index < firstNonZeroIndex) {
+      // 先頭の0の桁は変更不可とする
+      //        return null;
+      //      }
       newDigits[index] = (newDigits[index] + 9) % 10;
       for (let i = index; i > 0; i--) {
         if (newDigits[i] === 9) {

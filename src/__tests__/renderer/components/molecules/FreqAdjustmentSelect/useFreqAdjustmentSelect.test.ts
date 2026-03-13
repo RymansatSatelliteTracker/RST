@@ -93,6 +93,33 @@ describe("useFrequencySelect", () => {
       // Assert
       expect(newFrequency).toBe("-000.001");
     });
+
+    it.each([
+      {
+        frequency: "+001.000",
+        digit: 1,
+        event: { deltaY: 1 } as WheelEvent,
+        expected: "-011.000",
+      },
+      {
+        frequency: "-001.000",
+        digit: 1,
+        event: { deltaY: -1 } as WheelEvent,
+        expected: "+011.000",
+      },
+    ])(
+      "ゼロ跨ぎ時は桁編集を優先し、操作桁を1に立てて符号を反転する: $frequency / digit=$digit",
+      ({ frequency, digit, event, expected }) => {
+        // Arrange
+        const { controller } = createSut(frequency);
+
+        // Act
+        const newFrequency = controller.onWheel(event, digit);
+
+        // Assert
+        expect(newFrequency).toBe(expected);
+      }
+    );
   });
 
   describe("onRightClick", () => {
