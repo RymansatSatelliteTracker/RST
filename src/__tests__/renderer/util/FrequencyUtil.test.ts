@@ -1,11 +1,6 @@
-import {
-  formatFrequency,
-  formatSignedFrequency,
-  parseFrequency,
-  parseSignedFrequency,
-} from "@/renderer/components/molecules/FreqAdjustmentSelect/frequencySelectUtil";
+import { FrequencyUtil } from "@/renderer/util/FrequencyUtil";
 
-describe("frequencySelectUitl", () => {
+describe("FrequencyUtil", () => {
   describe("parseSignedFrequency", () => {
     it.each([
       [
@@ -42,7 +37,7 @@ describe("frequencySelectUitl", () => {
       // Arrange
 
       // Act
-      const [sign, digits] = parseSignedFrequency(input);
+      const [sign, digits] = FrequencyUtil.parseSignedFrequency(input);
 
       // Assert
       expect(sign).toBe(expectedSign);
@@ -56,7 +51,7 @@ describe("frequencySelectUitl", () => {
       const input = "243.001.090";
 
       // Act
-      const digits = parseFrequency(input);
+      const digits = FrequencyUtil.parseFrequency(input);
 
       // Assert
       expect(digits).toEqual([
@@ -71,7 +66,7 @@ describe("frequencySelectUitl", () => {
       const input = "24a.0b1.0-0";
 
       // Act
-      const digits = parseFrequency(input);
+      const digits = FrequencyUtil.parseFrequency(input);
 
       // Assert
       expect(digits).toEqual([
@@ -90,7 +85,7 @@ describe("frequencySelectUitl", () => {
       // Arrange
 
       // Act
-      const formatted = formatSignedFrequency(digits, sign);
+      const formatted = FrequencyUtil.formatSignedFrequency(digits, sign);
 
       // Assert
       expect(formatted).toBe(expected);
@@ -106,7 +101,7 @@ describe("frequencySelectUitl", () => {
       // Arrange
 
       // Act
-      const formatted = formatFrequency(digits);
+      const formatted = FrequencyUtil.formatFrequency(digits);
 
       // Assert
       expect(formatted).toBe(expected);
@@ -117,7 +112,7 @@ describe("frequencySelectUitl", () => {
       const digits = [1, 2, 3, 4];
 
       // Act / Assert
-      expect(() => formatFrequency(digits)).toThrow("digits length must be a multiple of 3");
+      expect(() => FrequencyUtil.formatFrequency(digits)).toThrow("digits length must be a multiple of 3");
     });
   });
 });

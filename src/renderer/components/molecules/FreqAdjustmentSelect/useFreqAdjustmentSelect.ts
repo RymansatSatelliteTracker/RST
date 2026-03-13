@@ -1,7 +1,4 @@
-import {
-  formatSignedFrequency,
-  parseSignedFrequency,
-} from "@/renderer/components/molecules/FreqAdjustmentSelect/frequencySelectUtil";
+import { FrequencyUtil } from "@/renderer/util/FrequencyUtil";
 import { computed, ref, type Ref } from "vue";
 /**
  * 周波数コントローラー
@@ -10,7 +7,7 @@ import { computed, ref, type Ref } from "vue";
  */
 const useFrequencySelect = (frequency: Ref<string>) => {
   const parsedDigits = computed(() => {
-    const digits = parseSignedFrequency(frequency.value);
+    const digits = FrequencyUtil.parseSignedFrequency(frequency.value);
     return digits;
   });
 
@@ -34,7 +31,7 @@ const useFrequencySelect = (frequency: Ref<string>) => {
       // ホイールを上に回したらプラス、下に回したらマイナス
       newSign = event.deltaY < 0 ? 1 : -1;
       // 数値の配列をカンマ区切りの文字列にする
-      return formatSignedFrequency(newDigits, newSign);
+      return FrequencyUtil.formatSignedFrequency(newDigits, newSign);
     }
 
     if ((event.deltaY < 0 && sign.value === 1) || (event.deltaY > 0 && sign.value === -1)) {
@@ -64,7 +61,7 @@ const useFrequencySelect = (frequency: Ref<string>) => {
     // 全ての桁が0となる場合は+0で返すため符号をプラスにする
     newSign = newDigits.every((digit) => digit === 0) ? 1 : sign.value;
     // 数値の配列をカンマ区切りの文字列にする
-    return formatSignedFrequency(newDigits, newSign);
+    return FrequencyUtil.formatSignedFrequency(newDigits, newSign);
   }
 
   // 右クリックイベントの処理
@@ -80,7 +77,7 @@ const useFrequencySelect = (frequency: Ref<string>) => {
     const newSign = newDigits.every((digit) => digit === 0) ? 1 : sign.value;
 
     // 数値の配列をカンマ区切りの文字列にする
-    return formatSignedFrequency(newDigits, newSign);
+    return FrequencyUtil.formatSignedFrequency(newDigits, newSign);
   }
 
   // 左クリックイベントの処理
@@ -96,7 +93,7 @@ const useFrequencySelect = (frequency: Ref<string>) => {
       }
     }
     // 数値の配列をカンマ区切りの文字列にする
-    return formatSignedFrequency(newDigits, sign.value);
+    return FrequencyUtil.formatSignedFrequency(newDigits, sign.value);
   }
 
   // 先頭の0の桁をグレーアウトする
