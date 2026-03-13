@@ -1,7 +1,7 @@
 import {
   formatSignedFrequency,
   parseSignedFrequency,
-} from "@/renderer/components/molecules/FreqAdjustmentSelect/frequencySelectUitl";
+} from "@/renderer/components/molecules/FreqAdjustmentSelect/frequencySelectUtil";
 import { computed, ref, type Ref } from "vue";
 /**
  * 周波数コントローラー
@@ -28,9 +28,7 @@ const useFrequencySelect = (frequency: Ref<string>) => {
 
     // ゼロマタギ(指定の桁以上が0)の場合は、ホイールを回した方向に応じて符号を変更する
     const idx = newDigits.findIndex((digit) => digit !== 0);
-    // 0の場合は全てグレーアウト
     const firstNonZeroIndex = idx !== -1 ? idx : newDigits.length;
-
     if (index < firstNonZeroIndex) {
       newDigits[index] = 1;
       // ホイールを上に回したらプラス、下に回したらマイナス
@@ -52,11 +50,6 @@ const useFrequencySelect = (frequency: Ref<string>) => {
       }
     } else {
       // digit部分が減るケース
-      //const firstNonZeroIndex = newDigits.findIndex((digit) => digit !== 0);
-      //      if (index < firstNonZeroIndex) {
-      // 先頭の0の桁は変更不可とする
-      //        return null;
-      //      }
       newDigits[index] = (newDigits[index] + 9) % 10;
       for (let i = index; i > 0; i--) {
         if (newDigits[i] === 9) {

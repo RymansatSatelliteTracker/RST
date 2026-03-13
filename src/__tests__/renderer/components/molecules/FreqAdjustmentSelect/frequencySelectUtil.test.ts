@@ -3,7 +3,7 @@ import {
   formatSignedFrequency,
   parseFrequency,
   parseSignedFrequency,
-} from "@/renderer/components/molecules/FreqAdjustmentSelect/frequencySelectUitl";
+} from "@/renderer/components/molecules/FreqAdjustmentSelect/frequencySelectUtil";
 
 describe("frequencySelectUitl", () => {
   describe("parseSignedFrequency", () => {
