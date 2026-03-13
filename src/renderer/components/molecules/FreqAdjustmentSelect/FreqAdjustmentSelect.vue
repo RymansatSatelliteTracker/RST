@@ -1,6 +1,6 @@
 <template>
   <div class="freq_box">
-    <span class="sign">{{ sign === 1 ? "+" : "-" }}</span>
+    <span class="freq_sign">{{ sign === 1 ? "+" : "-" }}</span>
     <span
       v-for="(digit, index) in kHzDigits"
       :key="index"

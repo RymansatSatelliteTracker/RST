@@ -3,6 +3,13 @@
 .freq_box {
   display: inline-block;
   user-select: none;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.freq_sign {
+  display: inline-block;
+  width: 1ch;
+  text-align: center;
 }
 .freq_unit {
   margin-left: 5px;
