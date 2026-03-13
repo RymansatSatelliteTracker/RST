@@ -104,7 +104,9 @@ const useFrequencySelect = (frequency: Ref<string>) => {
   // 先頭の0の桁をグレーアウトする
   function isGrayed(index: number) {
     const newDigits = [...kHzDigits.value, ...hzDigits.value];
-    const firstNonZeroIndex = newDigits.findIndex((digit) => digit !== 0);
+    const idx = newDigits.findIndex((digit) => digit !== 0);
+    // 0の場合は全てグレーアウト
+    const firstNonZeroIndex = idx !== -1 ? idx : newDigits.length;
     return index < firstNonZeroIndex;
   }
 
