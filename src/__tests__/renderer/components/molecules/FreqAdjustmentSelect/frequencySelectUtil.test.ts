@@ -2,11 +2,11 @@ import {
   formatFrequency,
   formatSignedFrequency,
   parseFrequency,
-  parseSingedFrequency,
+  parseSignedFrequency,
 } from "@/renderer/components/molecules/FreqAdjustmentSelect/frequencySelectUitl";
 
 describe("frequencySelectUitl", () => {
-  describe("parseSingedFrequency", () => {
+  describe("parseSignedFrequency", () => {
     it.each([
       [
         "正符号",
@@ -42,7 +42,7 @@ describe("frequencySelectUitl", () => {
       // Arrange
 
       // Act
-      const [sign, digits] = parseSingedFrequency(input);
+      const [sign, digits] = parseSignedFrequency(input);
 
       // Assert
       expect(sign).toBe(expectedSign);

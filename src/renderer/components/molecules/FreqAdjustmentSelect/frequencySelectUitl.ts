@@ -1,4 +1,3 @@
-import assert from "assert";
 type Sign = -1 | 1;
 /**
  * 周波数コントローラーのユーティリティ関数
@@ -46,7 +45,9 @@ export function formatSignedFrequency(digits: number[], sign: Sign): string {
  * 例: [2, 4, 3, 0, 0, 0] -> "243.000"
  */
 export function formatFrequency(digits: number[]): string {
-  assert(digits.length % 3 === 0, "digits length must be a multiple of 3");
+  if (digits.length % 3 !== 0) {
+    throw new Error("digits length must be a multiple of 3");
+  }
   const parts: string[] = [];
   let part: string;
   for (let i = 0; i < digits.length; i += 3) {

@@ -1,52 +1,41 @@
+import {
+  formatSignedFrequency,
+  parseSignedFrequency,
+} from "@/renderer/components/molecules/FreqAdjustmentSelect/frequencySelectUitl";
 import { computed, ref, type Ref } from "vue";
-
 /**
  * 周波数コントローラー
  * @param {Ref<string>} frequency 周波数
  * @returns {*} 周波数コントローラー
  */
 const useFrequencySelect = (frequency: Ref<string>) => {
-  // MHzの桁を計算する
-  const mHzDigits = computed(() =>
-    frequency.value
-      .split(".")[0]
-      .split("")
-      .map((char) => {
-        const digit = Number(char);
-        return isNaN(digit) ? 0 : digit;
-      })
-  );
+  const parsedDigits = computed(() => {
+    const digits = parseSignedFrequency(frequency.value);
+    return digits;
+  });
 
-  // kHzの桁を計算する
-  const kHzDigits = computed(() =>
-    frequency.value
-      .split(".")[1]
-      .split("")
-      .map((char) => {
-        const digit = Number(char);
-        return isNaN(digit) ? 0 : digit;
-      })
-  );
-
-  // Hzの桁を計算する
-  const hzDigits = computed(() =>
-    frequency.value
-      .split(".")[2]
-      .split("")
-      .map((char) => {
-        const digit = Number(char);
-        return isNaN(digit) ? 0 : digit;
-      })
-  );
+  const sign = computed(() => parsedDigits.value[0]);
+  const kHzDigits = computed(() => parsedDigits.value[1][0]);
+  const hzDigits = computed(() => parsedDigits.value[1][1]);
 
   // マウスホバー中のインデックス
   const hoverIndex = ref<number | null>(null);
 
   // ホイールイベントの処理
   function onWheel(event: WheelEvent, index: number) {
-    const newDigits = [...mHzDigits.value, ...kHzDigits.value, ...hzDigits.value];
-    if (event.deltaY < 0) {
-      // ホイールを上に回した場合
+    const newDigits = [...kHzDigits.value, ...hzDigits.value];
+    let newSign = sign.value;
+    // ゼロマタギ(0から始まる)の場合は、ホイールを回した方向に応じて符号を変更する
+    if (newDigits.every((digit) => digit === 0)) {
+      (newDigits as number[])[index] = 1;
+      // ホイールを上に回したらプラス、下に回したらマイナス
+      newSign = event.deltaY < 0 ? 1 : -1;
+      // 数値の配列をカンマ区切りの文字列にする
+      return formatSignedFrequency(newDigits, newSign);
+    }
+
+    if ((event.deltaY < 0 && sign.value === 1) || (event.deltaY > 0 && sign.value === -1)) {
+      // digit部分が増えるケース：符号がプラスでホイールを上に回した場合 or 符号がマイナスでホイールを下に回した場合
       newDigits[index] = (newDigits[index] + 1) % 10;
       for (let i = index; i > 0; i--) {
         if (newDigits[i] === 0) {
@@ -57,7 +46,7 @@ const useFrequencySelect = (frequency: Ref<string>) => {
         }
       }
     } else {
-      // ホイールを下に回した場合
+      // digit部分が減るケース
       const firstNonZeroIndex = newDigits.findIndex((digit) => digit !== 0);
       if (index < firstNonZeroIndex) {
         // 先頭の0の桁は変更不可とする
@@ -73,53 +62,32 @@ const useFrequencySelect = (frequency: Ref<string>) => {
         }
       }
     }
-    if (newDigits.every((digit) => digit === 0)) {
-      // 全ての桁が0となる場合は終了する
-      return null;
-    }
+
+    // 全ての桁が0となる場合は+0で返すため符号をプラスにする
+    newSign = newDigits.every((digit) => digit === 0) ? 1 : sign.value;
     // 数値の配列をカンマ区切りの文字列にする
-    const mHzIndex = mHzDigits.value.length;
-    const kHzIndex = mHzIndex + kHzDigits.value.length;
-    const hzIndex = kHzIndex + hzDigits.value.length;
-    return (
-      newDigits.slice(0, mHzIndex).join("") +
-      "." +
-      newDigits.slice(mHzIndex, kHzIndex).join("") +
-      "." +
-      newDigits.slice(kHzIndex, hzIndex).join("")
-    );
+    return formatSignedFrequency(newDigits, newSign);
   }
 
   // 右クリックイベントの処理
   function onRightClick(index: number) {
-    // 最大桁の場合は終了する
-    if (index === 0) return null;
-    const newDigits = [...mHzDigits.value, ...kHzDigits.value, ...hzDigits.value];
-    if (newDigits.slice(0, index).every((digit) => digit === 0)) {
-      // 全て0となる場合は終了する
-      return null;
-    }
+    const newDigits = [...kHzDigits.value, ...hzDigits.value];
 
     // 右クリックされた桁を含めて以降を0にする
     for (let i = index; i < newDigits.length; i++) {
       newDigits[i] = 0;
     }
+
+    // 全ての桁が0となる場合は+0で返すため符号をプラスにする
+    const newSign = newDigits.every((digit) => digit === 0) ? 1 : sign.value;
+
     // 数値の配列をカンマ区切りの文字列にする
-    const mHzIndex = mHzDigits.value.length;
-    const kHzIndex = mHzIndex + kHzDigits.value.length;
-    const hzIndex = kHzIndex + hzDigits.value.length;
-    return (
-      newDigits.slice(0, mHzIndex).join("") +
-      "." +
-      newDigits.slice(mHzIndex, kHzIndex).join("") +
-      "." +
-      newDigits.slice(kHzIndex, hzIndex).join("")
-    );
+    return formatSignedFrequency(newDigits, newSign);
   }
 
   // 左クリックイベントの処理
   function onClick(index: number) {
-    const newDigits = [...mHzDigits.value, ...kHzDigits.value, ...hzDigits.value];
+    const newDigits = [...kHzDigits.value, ...hzDigits.value];
     // 左クリックされた桁を+1する
     newDigits[index] = (newDigits[index] + 1) % 10;
     for (let i = index; i > 0; i--) {
@@ -130,27 +98,18 @@ const useFrequencySelect = (frequency: Ref<string>) => {
       }
     }
     // 数値の配列をカンマ区切りの文字列にする
-    const mHzIndex = mHzDigits.value.length;
-    const kHzIndex = mHzIndex + kHzDigits.value.length;
-    const hzIndex = kHzIndex + hzDigits.value.length;
-    return (
-      newDigits.slice(0, mHzIndex).join("") +
-      "." +
-      newDigits.slice(mHzIndex, kHzIndex).join("") +
-      "." +
-      newDigits.slice(kHzIndex, hzIndex).join("")
-    );
+    return formatSignedFrequency(newDigits, sign.value);
   }
 
   // 先頭の0の桁をグレーアウトする
   function isGrayed(index: number) {
-    const newDigits = [...mHzDigits.value, ...kHzDigits.value, ...hzDigits.value];
+    const newDigits = [...kHzDigits.value, ...hzDigits.value];
     const firstNonZeroIndex = newDigits.findIndex((digit) => digit !== 0);
     return index < firstNonZeroIndex;
   }
 
   return {
-    mHzDigits,
+    sign,
     kHzDigits,
     hzDigits,
     hoverIndex,
