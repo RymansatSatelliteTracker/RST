@@ -169,6 +169,23 @@
   background-color: $black90-alpha;
 }
 
+.freq_area_sub {
+  user-select: none;
+  display: flex;
+  margin-right: 35px;
+  margin-bottom: 7px;
+  justify-content: flex-end;
+}
+.freq_box_sub {
+  margin-top: 5px;
+  margin-left: auto;
+  font-size: 1.2rem;
+  text-align: right;
+  width: 85px;
+  height: 28px;
+  background-color: $black90-alpha;
+}
+
 .freq_unit {
   font-size: 0.8rem;
 }

@@ -25,6 +25,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   const txFrequency = ref<string>("2430.000.000");
   // ダウンリンク周波数
   const rxFrequency = ref<string>("0480.000.000");
+  // 調整用アップリンク周波数
+  const txFrequencyAdjustment = ref<string>("+000.000");
+  // 調整用ダウンリンク周波数
+  const rxFrequencyAdjustment = ref<string>("+000.000");
   // 基準送受信周波数の和
   const baseFreqSum = ref<number>(0.0);
   // アップリンク周波数の変化量
@@ -975,6 +979,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     rxFrequency,
     diffTxFrequency,
     diffRxFrequency,
+    txFrequencyAdjustment,
+    rxFrequencyAdjustment,
     txOpeMode,
     rxOpeMode,
     satelliteMode,
