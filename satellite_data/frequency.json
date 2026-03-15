@@ -382,7 +382,7 @@
           "downlinkMode": "USB"
         },
         "downlink2": {
-          "downlinkHz": 435628100,
+          "downlinkHz": 435633000,
           "downlinkMode": "CW"
         },
         "downlink3": {
