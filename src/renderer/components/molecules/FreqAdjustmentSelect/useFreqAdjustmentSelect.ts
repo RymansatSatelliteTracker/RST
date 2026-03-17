@@ -105,6 +105,12 @@ const useFrequencySelect = (frequency: Ref<string>) => {
   function isGrayed(index: number) {
     const newDigits = [...kHzDigits.value, ...hzDigits.value];
     const idx = newDigits.findIndex((digit) => digit !== 0);
+
+    // 全ての桁が0の場合は最後の桁以外をグレーアウト
+    const everyDigitIsZero = newDigits.every((digit) => digit === 0);
+    const isIndexLast = index === newDigits.length - 1;
+    if (everyDigitIsZero) return !isIndexLast;
+
     // 0の場合は全てグレーアウト
     const firstNonZeroIndex = idx !== -1 ? idx : newDigits.length;
     return index < firstNonZeroIndex;
