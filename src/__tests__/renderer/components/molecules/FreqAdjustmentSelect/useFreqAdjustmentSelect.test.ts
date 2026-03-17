@@ -158,4 +158,17 @@ describe("useFrequencySelect", () => {
       expect(isGrayedAt3).toBe(false);
     });
   });
+
+  it("全ての桁が0の時は最下位桁はグレーにしない", () => {
+    // Arrange
+    const { controller } = createSut("+000.000");
+
+    // Act
+    const isGrayedAt0 = controller.isGrayed(0);
+    const isGrayedAt5 = controller.isGrayed(5);
+
+    // Assert
+    expect(isGrayedAt0).toBe(true);
+    expect(isGrayedAt5).toBe(false);
+  });
 });

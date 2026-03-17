@@ -57,4 +57,28 @@ export class FrequencyUtil {
     }
     return parts.join(".");
   }
+
+  /**
+   * 指定したインデックスで繰り上がりが可能かどうかを判定する
+   * @param {number[]} digits - 周波数の各桁を表す数値の配列
+   * @param {number} index - 繰り上がりを判定するインデックス
+   * @returns {boolean} 繰り上がりが可能かどうか
+   * 例: digits = [2, 4, 3, 0, 0, 0], index = 2 -> true (3の次は4になるので繰り上がり可能)
+   */
+  public static isCarryable(digits: number[], index: number): boolean {
+    if (!Number.isFinite(index) || !Number.isInteger(index)) {
+      throw new Error("Index must be a finite integer");
+    }
+    if (index < 0) {
+      throw new Error("Index must be non-negative");
+    }
+    if (index >= digits.length) {
+      throw new Error("Index must be within digits range");
+    }
+    // 指定したインデックスから上位桁に向かって、9未満の桁があるかどうかを確認する
+    for (let i = index; i >= 0; i--) {
+      if (digits[i] < 9) return true;
+    }
+    return false;
+  }
 }

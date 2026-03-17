@@ -36,6 +36,11 @@ const useFrequencySelect = (frequency: Ref<string>) => {
 
     if ((event.deltaY < 0 && sign.value === 1) || (event.deltaY > 0 && sign.value === -1)) {
       // digit部分が増えるケース：符号がプラスでホイールを上に回した場合 or 符号がマイナスでホイールを下に回した場合
+
+      // 繰り上がりできない場合は変更しない
+      if (!FrequencyUtil.isCarryable(newDigits, index)) return frequency.value;
+
+      // 繰り上がりが可能の場合はホイールイベントの変更値を加算する
       newDigits[index] = (newDigits[index] + 1) % 10;
       for (let i = index; i > 0; i--) {
         if (newDigits[i] === 0) {
@@ -100,6 +105,12 @@ const useFrequencySelect = (frequency: Ref<string>) => {
   function isGrayed(index: number) {
     const newDigits = [...kHzDigits.value, ...hzDigits.value];
     const idx = newDigits.findIndex((digit) => digit !== 0);
+
+    // 全ての桁が0の場合は最後の桁以外をグレーアウト
+    const everyDigitIsZero = newDigits.every((digit) => digit === 0);
+    const isIndexLast = index === newDigits.length - 1;
+    if (everyDigitIsZero) return !isIndexLast;
+
     // 0の場合は全てグレーアウト
     const firstNonZeroIndex = idx !== -1 ? idx : newDigits.length;
     return index < firstNonZeroIndex;

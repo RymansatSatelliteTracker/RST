@@ -111,8 +111,76 @@ describe("FrequencyUtil", () => {
       // Arrange
       const digits = [1, 2, 3, 4];
 
-      // Act / Assert
-      expect(() => FrequencyUtil.formatFrequency(digits)).toThrow("digits length must be a multiple of 3");
+      // Act
+      const action = () => FrequencyUtil.formatFrequency(digits);
+
+      // Assert
+      expect(action).toThrow("digits length must be a multiple of 3");
+    });
+  });
+
+  describe("isCarryable", () => {
+    it.each([
+      { caseName: "指定桁が9未満", digits: [2, 4, 3, 0, 0, 0], index: 2, expected: true },
+      { caseName: "9が連続しても上位桁で繰り上がれる", digits: [2, 9, 9], index: 2, expected: true },
+      { caseName: "全桁9で最上位まで繰り上がる", digits: [9, 9, 9], index: 2, expected: false },
+      { caseName: "最上位桁が9", digits: [9, 0, 0], index: 0, expected: false },
+    ])("$caseName のとき繰り上がり可否を判定できる", ({ digits, index, expected }) => {
+      // Arrange
+
+      // Act
+      const carryable = FrequencyUtil.isCarryable(digits, index);
+
+      // Assert
+      expect(carryable).toBe(expected);
+    });
+
+    it("indexが負数の場合は例外を投げる", () => {
+      // Arrange
+      const digits = [2, 4, 3];
+
+      // Act
+      const action = () => FrequencyUtil.isCarryable(digits, -1);
+
+      // Assert
+      expect(action).toThrow("Index must be non-negative");
+    });
+
+    it.each([
+      { caseName: "NaN", index: Number.NaN },
+      { caseName: "Infinity", index: Number.POSITIVE_INFINITY },
+      { caseName: "小数", index: 1.5 },
+    ])("indexが$caseNameの場合は例外を投げる", ({ index }) => {
+      // Arrange
+      const digits = [2, 4, 3];
+
+      // Act
+      const action = () => FrequencyUtil.isCarryable(digits, index);
+
+      // Assert
+      expect(action).toThrow("Index must be a finite integer");
+    });
+
+    it("indexが配列範囲外の場合は例外を投げる", () => {
+      // Arrange
+      const digits = [2, 4, 3];
+
+      // Act
+      const action = () => FrequencyUtil.isCarryable(digits, 3);
+
+      // Assert
+      expect(action).toThrow("Index must be within digits range");
+    });
+
+    it("digitsが空配列の場合は例外を投げる", () => {
+      // Arrange
+      const digits: number[] = [];
+
+      // Act
+      const action = () => FrequencyUtil.isCarryable(digits, 0);
+
+      // Assert
+      expect(action).toThrow("Index must be within digits range");
     });
   });
 });
