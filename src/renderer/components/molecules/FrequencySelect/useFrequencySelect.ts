@@ -1,3 +1,4 @@
+import { FrequencyUtil } from "@/renderer/util/FrequencyUtil";
 import { computed, ref, type Ref } from "vue";
 
 /**
@@ -47,6 +48,10 @@ const useFrequencySelect = (frequency: Ref<string>) => {
     const newDigits = [...mHzDigits.value, ...kHzDigits.value, ...hzDigits.value];
     if (event.deltaY < 0) {
       // ホイールを上に回した場合
+      // 繰り上がりできない場合は変更しない
+      if (!FrequencyUtil.isCarryable(newDigits, index)) return frequency.value;
+
+      // 繰り上がりが可能の場合はホイールイベントの変更値を加算する
       newDigits[index] = (newDigits[index] + 1) % 10;
       for (let i = index; i > 0; i--) {
         if (newDigits[i] === 0) {
