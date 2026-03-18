@@ -262,6 +262,7 @@ async function beaconBtnClick() {
     emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.NOTICE_UNDER_DEVELOPMENT));
   }
 }
+
 /**
  * Rxのラベルをアクティブにするかどうか
  */
