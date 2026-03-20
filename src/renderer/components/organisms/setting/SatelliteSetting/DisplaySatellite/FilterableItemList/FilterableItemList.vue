@@ -90,7 +90,9 @@ const filteredItems = computed(function () {
   if (!filterText.value) {
     ret = items.value;
   } else {
-    ret = items.value.filter((item) => item.displayText.toLowerCase().includes(filterText.value.toLowerCase()));
+    ret = items.value.filter((item) =>
+      (item.satelliteName + item.noradId).toLowerCase().includes(filterText.value.toLowerCase())
+    );
   }
 
   return ret;
