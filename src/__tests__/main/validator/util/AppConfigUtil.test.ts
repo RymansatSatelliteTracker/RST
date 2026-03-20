@@ -33,7 +33,11 @@ test("success_transformSatelliteGroupsForSatSetting", () => {
 test("success_transformSatelliteGroups", () => {
   const appConfigSatSet = new AppConfigSatSettingModel();
   appConfigSatSet.satelliteGroupsForSatSetting = [
-    { groupId: 1, groupName: "group", satellites: [{ satelliteId: 1, satelliteName: "hoge", userRegistered: false }] },
+    {
+      groupId: 1,
+      groupName: "group",
+      satellites: [{ satelliteId: 1, satelliteName: "hoge", userRegistered: false, noradId: "12345" }],
+    },
   ];
   const appConfig = AppConfigUtil.transformSatelliteGroups(appConfigSatSet);
 
