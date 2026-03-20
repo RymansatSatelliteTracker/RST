@@ -68,6 +68,7 @@ export class DefaultSatelliteModel {
         satelliteId: defsat.satelliteId,
         satelliteName: defsat.satelliteName,
         userRegistered: false,
+        noradId: defsat.noradId,
       });
     });
     return satIdTypes;
