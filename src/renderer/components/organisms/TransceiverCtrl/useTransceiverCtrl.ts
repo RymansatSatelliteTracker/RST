@@ -511,9 +511,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     calcBaseFreqSum();
 
     // 補正値を反映した周波数を無線機に送信する
-    // const freq = calcAdjustedFreq(TransceiverUtil.parseNumber(txFrequency.value), TransceiverUtil.parseNumber(newFreq));
-    // await updateTxFreq(freq);
-    await updateTxFreq(TransceiverUtil.parseNumber(txFrequency.value));
+    const freq = calcAdjustedFreq(TransceiverUtil.parseNumber(txFrequency.value), TransceiverUtil.parseNumber(newFreq));
+    await updateTxFreq(freq);
   });
 
   /**

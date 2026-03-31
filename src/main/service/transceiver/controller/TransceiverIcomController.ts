@@ -519,7 +519,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       // 運用モードを無線機から取得
       // memo: 運用モードの送信時以外は、運用モードの取得は必ず行う。
       // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、運用モードの取得は行わない。
-      AppMainLogger.debug(`sendAndRecvForSubForLoop Rx周波数取得要求`);
+      AppMainLogger.debug(`sendAndRecvForSubForLoop Tx運用モード取得要求`);
       const recvMode = await this.sendAndSyncRecv(this.cmdMaker.makeGetMode(), "GET_MODE");
       await this.handleRecvData(recvMode);
 
