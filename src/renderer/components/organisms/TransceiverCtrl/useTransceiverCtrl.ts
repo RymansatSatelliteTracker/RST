@@ -754,7 +754,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       // ドップラーシフト待機フラグを無効に戻す
       isDopplerShiftWaiting.value = false;
 
-      AppRendererLogger.info(`ダイヤル操作N秒経過 待機解除`);
+      AppRendererLogger.info(`ダイヤル操作N秒経過したため待機を解除しました`);
     }, Constant.Transceiver.TRANSCEIVE_WAIT_MS);
   }
 
@@ -771,7 +771,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     if (!freqData) return;
 
     // Txが変更された場合
-    if ("uplinkHz" in freqData && freqData.uplinkHz) {
+    if ("uplinkHz" in freqData && freqData.uplinkHz != null) {
       const recvTxFreq = freqData.uplinkHz;
       AppRendererLogger.debug(`Tx周波数（無線機→RST） ${recvTxFreq}`);
 
@@ -812,7 +812,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       );
     }
     // Rxが変更された場合
-    else if ("downlinkHz" in freqData && freqData.downlinkHz) {
+    else if ("downlinkHz" in freqData && freqData.downlinkHz != null) {
       const recvRxFreq = freqData.downlinkHz;
       AppRendererLogger.debug(`Rx周波数（無線機→RST） ${recvRxFreq}`);
 
@@ -1071,7 +1071,12 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       return 0;
     }
 
-    const settingFreq = setting.downlink.downlinkHz! + setting.uplink.uplinkHz!;
+    const downlinkHz = setting.downlink.downlinkHz;
+    const uplinkHz = setting.uplink.uplinkHz;
+    if (downlinkHz === null || uplinkHz === null) {
+      return 0;
+    }
+    const settingFreq = downlinkHz + uplinkHz;
 
     // 画面で設定された補正値を反映した周波数を基準周波数として返す
     const adjustRxFreq = TransceiverUtil.parseNumber(rxFrequencyAdjustment.value);

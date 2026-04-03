@@ -53,7 +53,7 @@ export default class FrequencyTrackService {
 
   /**
    * ドップラー補正されたRx周波数とドップラーファクターを元に基準周波数を算出する（逆ヘテロダイン）
-   * @param freqSum 送受信周波数の和
+   * @param freqSum 送受信周波数の和（補正値適用済みの値）
    * @param adjustFreq 補正値（Rx補正値、Tx補正値の和）
    * @param shiftedRxFreq ドップラー補正されたRx周波数
    * @param rxDopplerFactor 受信ドップラーファクター
@@ -74,7 +74,7 @@ export default class FrequencyTrackService {
 
   /**
    * ドップラー補正されたTx周波数とドップラーファクターを元に基準周波数を算出する（逆ヘテロダイン）
-   * @param freqSum 送受信周波数の和
+   * @param freqSum 送受信周波数の和（補正値適用済みの値）
    * @param adjustFreq 補正値（Rx補正値、Tx補正値の和）
    * @param shiftedTxFreq ドップラー補正されたTx周波数
    * @param txDopplerFactor Txドップラーファクター
