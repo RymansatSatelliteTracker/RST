@@ -17,6 +17,16 @@ describe("FrequencyTrackService.calcInvHeteroBaseFreqByRxFreqのテスト", () =
     expect(txBaseFreq).toBe(375); // 1000 - 625 = 375
   });
 
+  it("逆ヘテロダウンでRx、Txの基準周波数を計算する（補正値あり）", () => {
+    const service = new FrequencyTrackService(
+      new SatelliteService({ tleLine1: "dummy", tleLine2: "dummy", satelliteName: "dummy" })
+    );
+    const { rxBaseFreq, txBaseFreq } = service.calcInvHeteroBaseFreqByRxFreq(1000, 1, 500, 0.8);
+
+    expect(rxBaseFreq).toBe(625); // 500 / 0.8 = 625
+    expect(txBaseFreq).toBe(374); // 1000 - 1 - 625 = 374
+  });
+
   it("ドップラーファクターが1.0の場合", () => {
     const service = new FrequencyTrackService(
       new SatelliteService({ tleLine1: "dummy", tleLine2: "dummy", satelliteName: "dummy" })

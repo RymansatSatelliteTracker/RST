@@ -713,8 +713,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     const nowTxFreq = TransceiverUtil.parseNumber(txFrequency.value);
     const adjustRxFreq = TransceiverUtil.parseNumber(rxFrequencyAdjustment.value);
     const adjustTxFreq = TransceiverUtil.parseNumber(txFrequencyAdjustment.value);
-    const adjustedRxFreq = calcAdjustedFreq(nowRxFreq, adjustRxFreq);
-    const adjustedTxFreq = calcAdjustedFreq(nowTxFreq, adjustTxFreq);
+    // const adjustedRxFreq = calcAdjustedFreq(nowRxFreq, adjustRxFreq);
+    // const adjustedTxFreq = calcAdjustedFreq(nowTxFreq, adjustTxFreq);
     const shiftRx = dopplerRxBaseFreq.value - nowRxFreq;
     const shiftTx = dopplerTxBaseFreq.value - nowTxFreq;
     AppRendererLogger.debug(
