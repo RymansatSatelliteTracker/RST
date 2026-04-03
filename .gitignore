@@ -14,3 +14,6 @@ coverage
 
 # playwrightのE2Eテスト実行時のログ
 test-results
+
+# Claude
+.claude/settings.local.json
