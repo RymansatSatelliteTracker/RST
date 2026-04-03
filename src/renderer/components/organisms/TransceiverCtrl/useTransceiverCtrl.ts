@@ -771,7 +771,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     if (!freqData) return;
 
     // Txが変更された場合
-    if ("uplinkHz" in freqData && freqData.uplinkHz) {
+    if ("uplinkHz" in freqData && freqData.uplinkHz != null) {
       const recvTxFreq = freqData.uplinkHz;
       AppRendererLogger.debug(`Tx周波数（無線機→RST） ${recvTxFreq}`);
 
@@ -812,7 +812,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       );
     }
     // Rxが変更された場合
-    else if ("downlinkHz" in freqData && freqData.downlinkHz) {
+    else if ("downlinkHz" in freqData && freqData.downlinkHz != null) {
       const recvRxFreq = freqData.downlinkHz;
       AppRendererLogger.debug(`Rx周波数（無線機→RST） ${recvRxFreq}`);
 
