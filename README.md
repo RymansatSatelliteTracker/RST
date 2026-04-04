@@ -21,7 +21,7 @@ winget install Volta.Volta
 volta install node@22
 
 # ライブラリなどのインストール
-npm i
+npm ci
 ```
 
 #### Mac
@@ -33,7 +33,7 @@ brew install volta
 volta install node@22
 
 # ライブラリなどのインストール
-npm i
+npm ci
 ```
 
 ## 2. 実行方法
