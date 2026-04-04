@@ -54,7 +54,7 @@ export default class FrequencyTrackService {
   /**
    * ドップラー補正されたRx周波数とドップラーファクターを元に基準周波数を算出する（逆ヘテロダイン）
    * @param freqSum 送受信周波数の和
-   * @param shiftedRxFreq ドップラー補正されたRx周波数
+   * @param shiftedRxFreq ドップラー補正されたRx周波数（補正値除去済みの値）
    * @param rxDopplerFactor 受信ドップラーファクター
    */
   public calcInvHeteroBaseFreqByRxFreq(
