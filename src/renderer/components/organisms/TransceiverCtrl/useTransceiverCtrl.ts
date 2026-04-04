@@ -1039,13 +1039,15 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     const activeSatHubService = ActiveSatServiceHub.getInstance();
     const setting = activeSatHubService.getActiveSatTransceiverSetting();
     if (!setting || !setting.downlink || !setting.uplink) {
-      return 0;
+      baseFreqSum.value = 0;
+      return baseFreqSum.value;
     }
 
     const downlinkHz = setting.downlink.downlinkHz;
     const uplinkHz = setting.uplink.uplinkHz;
     if (downlinkHz === null || uplinkHz === null) {
-      return 0;
+      baseFreqSum.value = 0;
+      return baseFreqSum.value;
     }
 
     baseFreqSum.value = downlinkHz + uplinkHz;
