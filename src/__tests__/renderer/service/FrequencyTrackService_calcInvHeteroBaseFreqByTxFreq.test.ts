@@ -11,27 +11,17 @@ describe("FrequencyTrackService.calcInvHeteroBaseFreqByTxFreqのテスト", () =
     const service = new FrequencyTrackService(
       new SatelliteService({ tleLine1: "dummy", tleLine2: "dummy", satelliteName: "dummy" })
     );
-    const { rxBaseFreq, txBaseFreq } = service.calcInvHeteroBaseFreqByTxFreq(1000, 0, 500, 0.8);
+    const { rxBaseFreq, txBaseFreq } = service.calcInvHeteroBaseFreqByTxFreq(1000, 500, 0.8);
 
     expect(txBaseFreq).toBe(625); // 500 / 0.8 = 625
     expect(rxBaseFreq).toBe(375); // 1000 - 625 = 375
-  });
-
-  it("逆ヘテロダウンでRx、Txの基準周波数を計算する（補正値あり）", () => {
-    const service = new FrequencyTrackService(
-      new SatelliteService({ tleLine1: "dummy", tleLine2: "dummy", satelliteName: "dummy" })
-    );
-    const { rxBaseFreq, txBaseFreq } = service.calcInvHeteroBaseFreqByTxFreq(1000, 1, 500, 0.8);
-
-    expect(txBaseFreq).toBe(625); // 500 / 0.8 = 625
-    expect(rxBaseFreq).toBe(374); // 1000 - 1 - 625 = 374
   });
 
   it("ドップラーファクターが1.0の場合", () => {
     const service = new FrequencyTrackService(
       new SatelliteService({ tleLine1: "dummy", tleLine2: "dummy", satelliteName: "dummy" })
     );
-    const { rxBaseFreq, txBaseFreq } = service.calcInvHeteroBaseFreqByTxFreq(1000, 0, 500, 1.0);
+    const { rxBaseFreq, txBaseFreq } = service.calcInvHeteroBaseFreqByTxFreq(1000, 500, 1.0);
 
     expect(txBaseFreq).toBe(500); // 500 / 1.0 = 500
     expect(rxBaseFreq).toBe(500); // 1000 - 500 = 500
@@ -41,7 +31,7 @@ describe("FrequencyTrackService.calcInvHeteroBaseFreqByTxFreqのテスト", () =
     const service = new FrequencyTrackService(
       new SatelliteService({ tleLine1: "dummy", tleLine2: "dummy", satelliteName: "dummy" })
     );
-    const { rxBaseFreq, txBaseFreq } = service.calcInvHeteroBaseFreqByTxFreq(2000, 0, 800, 1.2);
+    const { rxBaseFreq, txBaseFreq } = service.calcInvHeteroBaseFreqByTxFreq(2000, 800, 1.2);
 
     expect(txBaseFreq).toBeCloseTo(667, 2); // 800 / 1.2 ≈ 666.667
     expect(rxBaseFreq).toBeCloseTo(1333, 2); // 2000 - 666.667 ≈ 1333.333
@@ -51,7 +41,7 @@ describe("FrequencyTrackService.calcInvHeteroBaseFreqByTxFreqのテスト", () =
     const service = new FrequencyTrackService(
       new SatelliteService({ tleLine1: "dummy", tleLine2: "dummy", satelliteName: "dummy" })
     );
-    const { rxBaseFreq, txBaseFreq } = service.calcInvHeteroBaseFreqByTxFreq(1500, 0, 600, 0.6);
+    const { rxBaseFreq, txBaseFreq } = service.calcInvHeteroBaseFreqByTxFreq(1500, 600, 0.6);
 
     expect(txBaseFreq).toBe(1000); // 600 / 0.6 = 1000
     expect(rxBaseFreq).toBe(500); // 1500 - 1000 = 500
@@ -61,7 +51,7 @@ describe("FrequencyTrackService.calcInvHeteroBaseFreqByTxFreqのテスト", () =
     const service = new FrequencyTrackService(
       new SatelliteService({ tleLine1: "dummy", tleLine2: "dummy", satelliteName: "dummy" })
     );
-    const { rxBaseFreq, txBaseFreq } = service.calcInvHeteroBaseFreqByTxFreq(145.5, 0, 70.25, 0.95);
+    const { rxBaseFreq, txBaseFreq } = service.calcInvHeteroBaseFreqByTxFreq(145.5, 70.25, 0.95);
 
     expect(txBaseFreq).toBeCloseTo(74, 3); // 70.25 / 0.95 ≈ 73.947
     expect(rxBaseFreq).toBeCloseTo(72, 3); // Math.round(145.5) - 74 = 146 - 74 = 72
@@ -71,7 +61,7 @@ describe("FrequencyTrackService.calcInvHeteroBaseFreqByTxFreqのテスト", () =
     const service = new FrequencyTrackService(
       new SatelliteService({ tleLine1: "dummy", tleLine2: "dummy", satelliteName: "dummy" })
     );
-    const { rxBaseFreq, txBaseFreq } = service.calcInvHeteroBaseFreqByTxFreq(0, 0, 0, 1.0);
+    const { rxBaseFreq, txBaseFreq } = service.calcInvHeteroBaseFreqByTxFreq(0, 0, 1.0);
 
     expect(txBaseFreq).toBe(0); // 0 / 1.0 = 0
     expect(rxBaseFreq).toBe(0); // 0 - 0 = 0
