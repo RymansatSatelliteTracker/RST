@@ -183,8 +183,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
     // Auto開始をメイン側に連携する
     await ApiTransceiver.transceiverInitAutoOn(
-      calcAdjustedRxFreq(),
       calcAdjustedTxFreq(),
+      calcAdjustedRxFreq(),
       txOpeMode.value,
       rxOpeMode.value,
       transceiverSetting.toneHz
@@ -959,7 +959,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
   /**
    * ドップラーシフトされたRx周波数を元に、Rx、Tx基準周波数を算出する
-   * @param adjustFreq 補正値（Rx補正値、Tx補正値の和）
+   * @param adjustFreq Rx補正値
    * @param shiftedAndAdjustedRxFreq ドップラー補正されたRx周波数（補正値適用済みの値）
    */
   async function calcBaseFreqByShiftedRxFreq(
@@ -980,10 +980,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     );
 
     // Rx、Txの基準周波数を更新する
-    const shiftedTxFreq = shiftedAndAdjustedRxFreq - adjustFreq;
+    const shiftedRxFreq = shiftedAndAdjustedRxFreq - adjustFreq;
     const { rxBaseFreq, txBaseFreq } = frequencyTrackService.calcInvHeteroBaseFreqByRxFreq(
       baseFreqNum,
-      shiftedTxFreq,
+      shiftedRxFreq,
       rxDopplerFactor
     );
 
@@ -992,7 +992,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
   /**
    * ドップラーシフトされたTx周波数を元に、Rx、Tx基準周波数を算出する
-   * @param adjustFreq 補正値（Rx補正値、Tx補正値の和）
+   * @param adjustFreq Tx補正値
    * @param shiftedAndAdjustedTxFreq ドップラー補正されたTx周波数（補正値適用済みの値）
    */
   async function calcBaseFreqByShiftedTxFreq(
