@@ -21,10 +21,13 @@ describe("FrequencyTrackService.calcInvHeteroBaseFreqByRxFreqのテスト", () =
     const service = new FrequencyTrackService(
       new SatelliteService({ tleLine1: "dummy", tleLine2: "dummy", satelliteName: "dummy" })
     );
+    // nominalFreqSum=1000, rxAdjust=1, radioRxFreq=500, doppler=0.8
+    // rxBase = round(500 / 0.8) - 1 = 625 - 1 = 624
+    // txBase = 1000 - 624 = 376
     const { rxBaseFreq, txBaseFreq } = service.calcInvHeteroBaseFreqByRxFreq(1000, 1, 500, 0.8);
 
-    expect(rxBaseFreq).toBe(625); // 500 / 0.8 = 625
-    expect(txBaseFreq).toBe(374); // 1000 - 1 - 625 = 374
+    expect(rxBaseFreq).toBe(624);
+    expect(txBaseFreq).toBe(376);
   });
 
   it("ドップラーファクターが1.0の場合", () => {
