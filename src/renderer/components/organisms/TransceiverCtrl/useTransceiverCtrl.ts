@@ -792,7 +792,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       txBaseFreq.value = newTxBaseFreq;
 
       AppRendererLogger.info(
-        `基準周波数を更新しました。 Rx:${rxBaseFreq.value} Tx:${txBaseFreq.value} Sum:${getBaseFreqSum()}`
+        `基準周波数（更新） Rx:${rxBaseFreq.value} Tx:${txBaseFreq.value} Sum:${getBaseFreqSum()}`
       );
     }
     // Rxが変更された場合
@@ -1063,8 +1063,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     }
 
     // 画面で設定された補正値を反映した周波数を基準周波数に設定
-    txBaseFreq.value = uplinkHz + TransceiverUtil.parseNumber(rxFrequencyAdjustment.value);
-    rxBaseFreq.value = downlinkHz + TransceiverUtil.parseNumber(txFrequencyAdjustment.value);
+    txBaseFreq.value = uplinkHz + TransceiverUtil.parseNumber(txFrequencyAdjustment.value);
+    rxBaseFreq.value = downlinkHz + TransceiverUtil.parseNumber(rxFrequencyAdjustment.value);
     baseFreqSum.value = txBaseFreq.value + rxBaseFreq.value;
   }
 
