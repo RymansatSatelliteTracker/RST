@@ -29,6 +29,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   const txFrequencyAdjustment = ref<string>("+000.000");
   // 調整用ダウンリンク周波数
   const rxFrequencyAdjustment = ref<string>("+000.000");
+  // Tx、Rx基準周波数
+  const txBaseFreq = ref<number>(0.0);
+  const rxBaseFreq = ref<number>(0.0);
   // 基準送受信周波数の和
   const baseFreqSum = ref<number>(0.0);
   // アップリンク周波数の変化量
@@ -49,9 +52,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   const savedTxFrequency = ref<string>("");
   // Auto/Beaconモード移行前のRx周波数を保持する変数
   const savedRxFrequency = ref<string>("");
-  // ドップラーシフトのTx、Rx基準周波数
-  const txBaseFreq = ref<number>(0.0);
-  const rxBaseFreq = ref<number>(0.0);
   // ビーコンモード
   const isBeaconMode = ref<boolean>(false);
   // ビーコンモードが利用可能かどうか
@@ -69,10 +69,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
   // AutoモードのOnOff管理
   const autoStore = useStoreAutoState();
-
-  // Tx、Rx周波数の初期値
-  let txFreqInitVal = 0;
-  let rxFreqInitVal = 0;
 
   // 周波数の更新タイマ
   let timerId: NodeJS.Timeout | null = null;
@@ -173,20 +169,16 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       isSatTrackingModeNormal.value = true;
     }
 
-    // Tx、Rx周波数の初期値
-    txFreqInitVal = Math.round(TransceiverUtil.parseNumber(txFrequency.value));
-    rxFreqInitVal = Math.round(TransceiverUtil.parseNumber(rxFrequency.value));
+    // // ドップラーシフトの基準周波数を設定する
+    // txBaseFreq.value = TransceiverUtil.parseNumber(txFrequency.value);
+    // rxBaseFreq.value = TransceiverUtil.parseNumber(rxFrequency.value);
 
-    // ドップラーシフトの基準周波数を設定する
-    txBaseFreq.value = txFreqInitVal;
-    rxBaseFreq.value = rxFreqInitVal;
+    // 基準周波数を更新する（逆ヘテロダインの計算用、補正値を反映したもの）
+    calcBaseFreq();
 
-    // 基準周波数の和を更新する（逆ヘテロダインの計算用）
-    calcBaseFreqSum();
-
-    // 補正値を加味して基準周波数を再計算する
-    await recalcTxBaseFreqByAdjustment(TransceiverUtil.parseNumber(txFrequencyAdjustment.value));
-    await recalcRxBaseFreqByAdjustment(TransceiverUtil.parseNumber(rxFrequencyAdjustment.value));
+    // // 画面の補正値で加減算した周波数を取得
+    // const rxFreq = calcAdjustedRxFreq();
+    // const txFreq = calcAdjustedTxFreq();
 
     // ドップラーシフトのフラグを初期化
     execRxDopplerShiftCorrection.value = false;
@@ -194,8 +186,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
     // Auto開始をメイン側に連携する
     await ApiTransceiver.transceiverInitAutoOn(
-      calcAdjustedTxFreq(),
-      calcAdjustedRxFreq(),
+      TransceiverUtil.parseNumber(txFrequency.value),
+      TransceiverUtil.parseNumber(rxFrequency.value),
       txOpeMode.value,
       rxOpeMode.value,
       transceiverSetting.toneHz
@@ -378,7 +370,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   }
 
   /**
-   * アップリンク周波数を更新する
+   * アップリンク周波数を無線機に送信する
    * @param {number} newTxFrequency アップリンク周波数
    */
   async function sendTxFreq(newTxFrequency: number) {
@@ -389,7 +381,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   }
 
   /**
-   * ダウンリンク周波数を更新する
+   * ダウンリンク周波数を無線機に送信する
    * @param {number} newRxFreq ダウンリンク周波数
    */
   async function sendRxFreq(newRxFreq: number) {
@@ -400,33 +392,39 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   }
 
   /**
-   * Tx周波数をドップラーシフト補正して返す
+   * アップリンク周波数をドップラーシフト補正して更新する
    * @param {number} intervalMs 時間間隔[単位：ミリ秒]
    */
-  async function calcTxFreqDopplerShift(baseTxFreq: number, intervalMs: number): Promise<number> {
+  async function updateTxFreqByInvertingHeterodyne(intervalMs: number) {
     const freqTrackService = ActiveSatServiceHub.getInstance().getFrequencyTrackService();
     if (!freqTrackService) {
-      return 0;
+      return;
     }
 
-    // ドップラーファクターを基準周波数に適用して、Tx周波数とする
+    // ドップラーファクターを一時アップリンク周波数に適用して、アップリンク周波数とする
     const txDopplerFactor = await freqTrackService.calcUplinkDopplerFactor(currentDate.value, intervalMs);
-    return baseTxFreq * txDopplerFactor;
+    const txFreq = txBaseFreq.value * txDopplerFactor;
+
+    // 画面のアップリンク周波数を更新する
+    txFrequency.value = TransceiverUtil.formatWithDot(txFreq);
   }
 
   /**
-   * Rx周波数をドップラーシフト補正して返す
+   * ダウンリンク周波数をドップラーシフト補正して更新する
    * @param {number} intervalMs 時間間隔[単位：ミリ秒]
    */
-  async function calcRxFreqDopplerShift(baseRxFreq: number, intervalMs: number): Promise<number> {
+  async function updateRxFreqWithDopplerShift(intervalMs: number) {
     const freqTrackService = ActiveSatServiceHub.getInstance().getFrequencyTrackService();
     if (!freqTrackService) {
-      return 0;
+      return;
     }
 
-    // ドップラーファクターを基準周波数に適用して、Rx周波数とする
+    // ドップラーファクターを計算する
     const rxDopplerFactor = await freqTrackService.calcDownlinkDopplerFactor(currentDate.value, intervalMs);
-    return baseRxFreq * rxDopplerFactor;
+    const rxFreq = rxBaseFreq.value * rxDopplerFactor;
+
+    // 画面のダウンリンク周波数を更新する
+    rxFrequency.value = TransceiverUtil.formatWithDot(rxFreq);
   }
 
   /**
@@ -496,27 +494,17 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * Tx周波数が変更された場合
    */
   watch(txFrequency, async (newFrequency) => {
-    // 補正値を反映した周波数を無線機に送信する
-    const freq = calcAdjustedFreq(
-      TransceiverUtil.parseNumber(newFrequency),
-      TransceiverUtil.parseNumber(txFrequencyAdjustment.value)
-    );
-    await sendTxFreq(freq);
+    await sendTxFreq(TransceiverUtil.parseNumber(newFrequency));
   });
 
   /**
    * 画面でTx補正値が変更された場合
    */
   watch(txFrequencyAdjustment, async (newFreq) => {
-    // 補正値を反映した周波数を無線機に送信する
-    const adjustFreq = TransceiverUtil.parseNumber(newFreq);
-    const freq = calcAdjustedFreq(TransceiverUtil.parseNumber(txFrequency.value), adjustFreq);
-    await sendTxFreq(freq);
+    // 基準周波数を更新する
+    calcBaseFreq();
 
-    // Autoモード中の場合、補正値加算後の周波数からTx基準周波数を割り戻して更新する
-    if (autoStore.tranceiverAuto) {
-      await recalcTxBaseFreqByAdjustment(adjustFreq);
-    }
+    await sendTxFreq(TransceiverUtil.parseNumber(txFrequency.value));
   });
 
   /**
@@ -535,7 +523,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   });
 
   /**
-   * 画面でTx運用モードが変更された場合
+   * Tx運用モードが変更された場合
    */
   watch(txOpeMode, async (newTxOpeMode) => {
     // 無線機にTx運用モードを設定する
@@ -546,7 +534,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   });
 
   /**
-   * 画面でRx周波数が変更された場合
+   * Rx周波数が変更された場合
    * TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時は何もしない
    */
   watch(rxFrequency, async (newFreq) => {
@@ -555,12 +543,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       return;
     }
 
-    // 補正値を反映した周波数を無線機に送信する
-    const freq = calcAdjustedFreq(
-      TransceiverUtil.parseNumber(newFreq),
-      TransceiverUtil.parseNumber(rxFrequencyAdjustment.value)
-    );
-    await sendRxFreq(freq);
+    await sendRxFreq(TransceiverUtil.parseNumber(newFreq));
   });
 
   /**
@@ -572,15 +555,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       return;
     }
 
-    // 補正値を反映した周波数を無線機に送信する
-    const adjustFreq = TransceiverUtil.parseNumber(newFreq);
-    const freq = calcAdjustedFreq(TransceiverUtil.parseNumber(rxFrequency.value), adjustFreq);
-    await sendRxFreq(freq);
+    // 基準周波数を更新する
+    calcBaseFreq();
 
-    // Autoモード中の場合、補正値加算後の周波数からRx基準周波数を割り戻して更新する
-    if (autoStore.tranceiverAuto) {
-      await recalcRxBaseFreqByAdjustment(adjustFreq);
-    }
+    await sendRxFreq(TransceiverUtil.parseNumber(rxFrequency.value));
   });
 
   /**
@@ -622,7 +600,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   });
 
   /**
-   * 画面でRx運用モードが変更された場合
+   * Rx運用モードが変更された場合
    * TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時も何もしない
    */
   watch(rxOpeMode, async (newRxOpeMode) => {
@@ -706,31 +684,27 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     // サテライトモードがONの場合、ダウンリンク周波数をドップラーシフト補正して更新する
     // TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時も何もしない
     if (isSatelliteMode.value && execRxDopplerShiftCorrection.value) {
-      const rxFreq = await calcRxFreqDopplerShift(rxBaseFreq.value, autoTrackingIntervalMsec);
-      // 画面のRx周波数を更新する
-      rxFrequency.value = TransceiverUtil.formatWithDot(rxFreq);
+      await updateRxFreqWithDopplerShift(autoTrackingIntervalMsec);
     }
 
     // アップリンク周波数をドップラーシフト補正して更新する
     if (execTxDopplerShiftCorrection.value) {
-      const txFreq = await calcTxFreqDopplerShift(txBaseFreq.value, autoTrackingIntervalMsec);
-      // 画面のTx周波数を更新する
-      txFrequency.value = TransceiverUtil.formatWithDot(txFreq);
+      await updateTxFreqByInvertingHeterodyne(autoTrackingIntervalMsec);
     }
 
     // 以下は、コメントアウトしても良い。2025年11月時点ではデバッグログとして出力しておく。
     // デバッグログ
     const nowRxFreq = TransceiverUtil.parseNumber(rxFrequency.value);
     const nowTxFreq = TransceiverUtil.parseNumber(txFrequency.value);
-    const adjustRxFreq = Math.round(TransceiverUtil.parseNumber(rxFrequencyAdjustment.value));
-    const adjustTxFreq = Math.round(TransceiverUtil.parseNumber(txFrequencyAdjustment.value));
-    const shiftRx = Math.round(rxBaseFreq.value - nowRxFreq);
-    const shiftTx = Math.round(txBaseFreq.value - nowTxFreq);
+    const adjustRxFreq = TransceiverUtil.parseNumber(rxFrequencyAdjustment.value);
+    const adjustTxFreq = TransceiverUtil.parseNumber(txFrequencyAdjustment.value);
+    const shiftRx = rxBaseFreq.value - nowRxFreq;
+    const shiftTx = txBaseFreq.value - nowTxFreq;
     AppRendererLogger.debug(
       `ドップラーシフト補正後:Rx=${nowRxFreq} Tx=${nowTxFreq}` +
         ` シフト値：Rx=${shiftRx} Tx=${shiftTx}` +
         ` 補正値：Rx=${adjustRxFreq} Tx=${adjustTxFreq}` +
-        ` 基準周波数:${getBaseFreqSum()}=${rxBaseFreq.value}+${txBaseFreq.value}`
+        ` 基準周波数:${getBaseFreqSum()}=${rxBaseFreq.value} + ${txBaseFreq.value}`
     );
   }
 
@@ -804,10 +778,14 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       }
       // 以降、AutoOn時の基準周波数更新処理
 
+      // 補正値（基準周波数を補正するためのRx、Txの和）
+      const adjustRxFreq = TransceiverUtil.parseNumber(rxFrequencyAdjustment.value);
+      const adjustFreq = adjustRxFreq + adjustTxFreq;
+
       // ドップラーシフトの基準周波数を再算出する
       const { newRxBaseFreq, newTxBaseFreq } = await calcBaseFreqByShiftedTxFreq(
         getBaseFreqSum(),
-        adjustTxFreq,
+        adjustFreq,
         recvTxFreq
       );
       rxBaseFreq.value = newRxBaseFreq;
@@ -845,10 +823,14 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       }
       // 以降、AutoOn時の基準周波数更新処理
 
+      // 補正値（基準周波数を補正するためのRx、Txの和）
+      const adjustTxFreq = TransceiverUtil.parseNumber(txFrequencyAdjustment.value);
+      const adjustFreq = adjustRxFreq + adjustTxFreq;
+
       // ドップラーシフトの基準周波数を再算出する
       const { newRxBaseFreq, newTxBaseFreq } = await calcBaseFreqByShiftedRxFreq(
         getBaseFreqSum(),
-        adjustRxFreq,
+        adjustFreq,
         recvRxFreq
       );
       rxBaseFreq.value = newRxBaseFreq;
@@ -985,12 +967,12 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   /**
    * ドップラーシフトされたRx周波数を元に、Rx、Tx基準周波数を算出する
    * @param adjustFreq Rx補正値
-   * @param shiftedAndAdjustedRxFreq ドップラー補正されたRx周波数（補正値適用済みの値）
+   * @param shiftedRxFreq ドップラー補正されたRx周波数
    */
   async function calcBaseFreqByShiftedRxFreq(
     baseFreqNum: number,
     adjustFreq: number,
-    shiftedAndAdjustedRxFreq: number
+    shiftedRxFreq: number
   ): Promise<{ newRxBaseFreq: number; newTxBaseFreq: number }> {
     const activeSatHubService = ActiveSatServiceHub.getInstance();
     const frequencyTrackService = activeSatHubService.getFrequencyTrackService();
@@ -1005,9 +987,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     );
 
     // Rx、Txの基準周波数を更新する
-    const shiftedRxFreq = shiftedAndAdjustedRxFreq - adjustFreq;
     const { rxBaseFreq, txBaseFreq } = frequencyTrackService.calcInvHeteroBaseFreqByRxFreq(
       baseFreqNum,
+      adjustFreq,
       shiftedRxFreq,
       rxDopplerFactor
     );
@@ -1017,13 +999,13 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
   /**
    * ドップラーシフトされたTx周波数を元に、Rx、Tx基準周波数を算出する
-   * @param adjustFreq Tx補正値
-   * @param shiftedAndAdjustedTxFreq ドップラー補正されたTx周波数（補正値適用済みの値）
+   * @param adjustFreq 補正値（Rx補正値、Tx補正値の和）
+   * @param shiftedTxFreq ドップラー補正されたTx周波数
    */
   async function calcBaseFreqByShiftedTxFreq(
     baseFreqNum: number,
     adjustFreq: number,
-    shiftedAndAdjustedTxFreq: number
+    shiftedTxFreq: number
   ): Promise<{ newRxBaseFreq: number; newTxBaseFreq: number }> {
     const activeSatHubService = ActiveSatServiceHub.getInstance();
 
@@ -1039,9 +1021,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     );
 
     // Rx、Txの基準周波数を更新する
-    const shiftedTxFreq = shiftedAndAdjustedTxFreq - adjustFreq;
     const { rxBaseFreq, txBaseFreq } = frequencyTrackService.calcInvHeteroBaseFreqByTxFreq(
       baseFreqNum,
+      adjustFreq,
       shiftedTxFreq,
       txDopplerFactor
     );
@@ -1050,33 +1032,40 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   }
 
   /**
-   * 現在の衛星の送受信周波数の和を取得する（逆ヘテロダインの計算用）
+   * 現在の衛星の送受信周波数の和を取得する（逆ヘテロダインの計算用、補正値が反映されたもの）
    */
   function getBaseFreqSum(): number {
-    return Math.round(baseFreqSum.value);
+    return baseFreqSum.value;
   }
 
   /**
-   * 基準周波数の和を更新する（逆ヘテロダインの計算用）
+   * 基準周波数を更新する（逆ヘテロダインの計算用、補正値を反映したもの）
    */
-  function calcBaseFreqSum(): number {
+  function calcBaseFreq() {
+    calcBaseFreqWithAdjust();
+  }
+
+  /**
+   * 基準周波数に補正値を反映する
+   */
+  function calcBaseFreqWithAdjust() {
     // アクティブ衛星の周波数設定値を取得する
     const activeSatHubService = ActiveSatServiceHub.getInstance();
     const setting = activeSatHubService.getActiveSatTransceiverSetting();
     if (!setting || !setting.downlink || !setting.uplink) {
-      baseFreqSum.value = 0;
-      return baseFreqSum.value;
+      return;
     }
 
     const downlinkHz = setting.downlink.downlinkHz;
     const uplinkHz = setting.uplink.uplinkHz;
     if (downlinkHz === null || uplinkHz === null) {
-      baseFreqSum.value = 0;
-      return baseFreqSum.value;
+      return;
     }
 
-    baseFreqSum.value = downlinkHz + uplinkHz;
-    return baseFreqSum.value;
+    // 画面で設定された補正値を反映した周波数を基準周波数に設定
+    txBaseFreq.value = uplinkHz + TransceiverUtil.parseNumber(rxFrequencyAdjustment.value);
+    rxBaseFreq.value = downlinkHz + TransceiverUtil.parseNumber(txFrequencyAdjustment.value);
+    baseFreqSum.value = txBaseFreq.value + rxBaseFreq.value;
   }
 
   /**
@@ -1121,69 +1110,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   }
 
   /**
-   * Tx補正値変更時にTx基準周波数とSumを再算出する
-   * ※補正値加算後の周波数をドップラーファクターで割り戻し、Tx基準周波数を再算出し、Sumを更新する。
-   * @param adjustFreq 補正値
-   */
-  async function recalcTxBaseFreqByAdjustment(adjustFreq: number) {
-    const freqTrackService = ActiveSatServiceHub.getInstance().getFrequencyTrackService();
-    if (!freqTrackService) return;
-
-    // Txのドップラーファクター
-    const txDopplerFactor = await freqTrackService.calcUplinkDopplerFactor(currentDate.value, autoTrackingIntervalMsec);
-
-    // Tx周波数の初期値を元にドップラー補正後のTx周波数を算出。
-    // その値に補正値を加算した周波数をドップラーファクターで割り戻して新しいTx基準周波数を算出する
-    const dopFreq = await calcTxFreqDopplerShift(txFreqInitVal, autoTrackingIntervalMsec);
-    const dopFreqWithAdjust = dopFreq + adjustFreq;
-    const newBaseTx = Math.round(dopFreqWithAdjust / txDopplerFactor);
-
-    // Tx基準周波数とSumを更新
-    txBaseFreq.value = newBaseTx;
-    baseFreqSum.value = Math.round(newBaseTx + rxBaseFreq.value);
-
-    AppRendererLogger.info(
-      `Tx補正値の変更により基準周波数を再計算しました。` +
-        ` newBaseTx:${newBaseTx} baseRx:${rxBaseFreq.value} newSum:${baseFreqSum.value}`
-    );
-  }
-
-  /**
-   * Rx補正値変更時にRx基準周波数とSumを再算出する
-   * ※補正値加算後の周波数をドップラーファクターで割り戻し、Rx基準周波数を再算出し、Sumを更新する。
-   * @param adjustFreq 補正値
-   */
-  async function recalcRxBaseFreqByAdjustment(adjustFreq: number) {
-    const freqTrackService = ActiveSatServiceHub.getInstance().getFrequencyTrackService();
-    if (!freqTrackService) return;
-
-    // Rxのドップラーファクター
-    const rxDopplerFactor = await freqTrackService.calcDownlinkDopplerFactor(
-      currentDate.value,
-      autoTrackingIntervalMsec
-    );
-
-    // Rx周波数の初期値を元にドップラー補正後のRx周波数を算出。
-    // その値に補正値を加算した周波数をドップラーファクターで割り戻して新しいRx基準周波数を算出する
-    const dopFreq = await calcRxFreqDopplerShift(rxFreqInitVal, autoTrackingIntervalMsec);
-    const dopFreqWithAdjust = dopFreq + adjustFreq;
-    const newBaseRx = Math.round(dopFreqWithAdjust / rxDopplerFactor);
-
-    // Rx基準周波数とSumを更新
-    rxBaseFreq.value = newBaseRx;
-    baseFreqSum.value = Math.round(txBaseFreq.value + newBaseRx);
-
-    AppRendererLogger.info(
-      `Rx補正値の変更により基準周波数を再計算しました。` +
-        ` baseTx:${txBaseFreq.value} newBaseRx:${newBaseRx} newSum:${baseFreqSum.value}`
-    );
-  }
-
-  /**
    * 画面の周波数に補正値を反映した周波数を返す
    */
   function calcAdjustedFreq(freq: number, adjustFreq: number) {
-    return Math.round(freq + adjustFreq);
+    return freq + adjustFreq;
   }
 
   return {
