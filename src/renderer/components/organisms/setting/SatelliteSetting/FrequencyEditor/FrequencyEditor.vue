@@ -8,16 +8,20 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn variant="outlined" @click="onOk">設定</v-btn>
-        <v-btn variant="outlined" @click="isShow = false">閉じる</v-btn>
+        <v-btn variant="outlined" size="large" @click="onOk">{{ I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_OK) }}</v-btn>
+        <v-btn variant="outlined" size="large" @click="isShow = false">{{
+          I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_CANCEL)
+        }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script setup lang="ts">
+import I18nMsgs from "@/common/I18nMsgs";
 import { FrequencyModel } from "@/common/model/FrequencyModel";
 import ApiFrequency from "@/renderer/api/ApiFrequency";
+import I18nUtil from "@/renderer/common/util/I18nUtil";
 import FrequencyEditorList from "@/renderer/components/organisms/setting/SatelliteSetting/FrequencyEditor/FrequencyEditorList/FrequencyEditorList.vue";
 import emitter from "@/renderer/util/EventBus";
 import { ref, toRaw, watch } from "vue";
@@ -49,3 +53,6 @@ async function onOk() {
   isShow.value = false;
 }
 </script>
+<style lang="scss" scoped>
+@import "@/renderer/components/styles/global.scss";
+</style>
