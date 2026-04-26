@@ -14,10 +14,10 @@
           ref="listRef"
         ></VirtualScrollList>
         <!-- ダブルクリックしたら衛星情報を表示 -->
-        <EditSatelliteInfo
+        <EditFrequencySatelliteInfo
           v-if="enableEditSatelliteInfo"
-          :isShow="enableEditSatelliteInfo"
-          :selectedItem="selectedSatelliteItem"
+          v-model:isShow="enableEditSatelliteInfo"
+          v-model:satellite="selectedSatelliteItem"
           @onOk="onCloseEditSatelliteInfo"
           @onCancel="onCloseEditSatelliteInfo"
         />
@@ -43,8 +43,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-import { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes";
-import EditSatelliteInfo from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/EditSatelliteInfo/EditSatelliteInfo.vue";
+import Constant from "@/common/Constant";
+import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
+import EditFrequencySatelliteInfo from "@/renderer/components/organisms/setting/SatelliteSetting/FrequencyEditor/EditFrequencySatelliteInfo/EditFrequencySatelliteInfo.vue";
 
 import VirtualScrollList from "@/renderer/components/molecules/VirtualScrollList/VirtualScrollList.vue";
 import { mdiArrowDownBold, mdiArrowUpBold, mdiDelete } from "@mdi/js";
@@ -53,11 +54,21 @@ import { mdiArrowDownBold, mdiArrowUpBold, mdiDelete } from "@mdi/js";
 const satellites = defineModel<DefaultSatelliteType[]>("satellites", { default: [] });
 
 // 選択されたアイテム
-const selectedSatelliteItem = ref<SatelliteIdentiferType>({
+const selectedSatelliteItem = ref<DefaultSatelliteType>({
   satelliteId: -1,
   satelliteName: "",
-  userRegistered: false,
   noradId: "",
+  uplink1: { uplinkHz: null, uplinkMode: "" },
+  uplink2: { uplinkHz: null, uplinkMode: "" },
+  uplink3: { uplinkHz: null, uplinkMode: "" },
+  downlink1: { downlinkHz: null, downlinkMode: "" },
+  downlink2: { downlinkHz: null, downlinkMode: "" },
+  downlink3: { downlinkHz: null, downlinkMode: "" },
+  beacon: { beaconHz: null, beaconMode: "" },
+  toneHz: null,
+  enableSatelliteMode: false,
+  satelliteMode: Constant.Transceiver.TrackingMode.NORMAL,
+  outline: "",
 });
 // 衛星情報編集画面表示用のフラグ
 const enableEditSatelliteInfo = ref(false);
@@ -68,7 +79,7 @@ const listRef = ref<InstanceType<typeof VirtualScrollList> | null>(null);
  * 衛星情報編集画面を表示する
  * @param index
  */
-function showEditSatelliteInfo(item: SatelliteIdentiferType) {
+function showEditSatelliteInfo(item: DefaultSatelliteType) {
   enableEditSatelliteInfo.value = true;
   selectedSatelliteItem.value = item;
 }

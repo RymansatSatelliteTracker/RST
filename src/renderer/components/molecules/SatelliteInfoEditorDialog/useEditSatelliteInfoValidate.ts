@@ -1,7 +1,7 @@
 import I18nMsgs from "@/common/I18nMsgs";
 import { useValidate } from "@/renderer/common/hook/useValidate";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
-import EditSatelliteInfoForm from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/EditSatelliteInfo/EditSatelliteInfoForm";
+import EditSatelliteInfoForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/EditSatelliteInfoForm";
 import * as zod from "zod";
 
 // 最大周波数

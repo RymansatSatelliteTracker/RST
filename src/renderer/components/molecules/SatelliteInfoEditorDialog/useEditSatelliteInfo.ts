@@ -1,6 +1,6 @@
 import { AppConfigSatellite } from "@/common/model/AppConfigModel";
 import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
-import EditSatelliteInfoForm from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/EditSatelliteInfo/EditSatelliteInfoForm";
+import EditSatelliteInfoForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/EditSatelliteInfoForm";
 /**
  * 衛星情報編集画面関係のフック
  */
@@ -89,5 +89,34 @@ export default function useEditSatelliteInfo() {
     targetAppConfig.outline = srcForm.outline;
   }
 
-  return { transformAppConfigToForm, transformDefSatToForm, transformFormToAppConfig };
+  /**
+   * デフォルト衛星定義の構造に変換する
+   * @param targetDefSat
+   * @param srcForm
+   */
+  function transformFormToDefaultSatellite(targetDefSat: DefaultSatelliteType, srcForm: EditSatelliteInfoForm) {
+    targetDefSat.satelliteId = srcForm.satelliteId;
+    targetDefSat.satelliteName = srcForm.editSatelliteName;
+    targetDefSat.noradId = srcForm.noradId;
+    targetDefSat.uplink1.uplinkHz = srcForm.uplink1Hz ? srcForm.uplink1Hz : null;
+    targetDefSat.uplink1.uplinkMode = srcForm.uplink1Mode;
+    targetDefSat.uplink2.uplinkHz = srcForm.uplink2Hz ? srcForm.uplink2Hz : null;
+    targetDefSat.uplink2.uplinkMode = srcForm.uplink2Mode;
+    targetDefSat.uplink3.uplinkHz = srcForm.uplink3Hz ? srcForm.uplink3Hz : null;
+    targetDefSat.uplink3.uplinkMode = srcForm.uplink3Mode;
+    targetDefSat.downlink1.downlinkHz = srcForm.downlink1Hz ? srcForm.downlink1Hz : null;
+    targetDefSat.downlink1.downlinkMode = srcForm.downlink1Mode;
+    targetDefSat.downlink2.downlinkHz = srcForm.downlink2Hz ? srcForm.downlink2Hz : null;
+    targetDefSat.downlink2.downlinkMode = srcForm.downlink2Mode;
+    targetDefSat.downlink3.downlinkHz = srcForm.downlink3Hz ? srcForm.downlink3Hz : null;
+    targetDefSat.downlink3.downlinkMode = srcForm.downlink3Mode;
+    targetDefSat.beacon.beaconHz = srcForm.beaconHz ? srcForm.beaconHz : null;
+    targetDefSat.beacon.beaconMode = srcForm.beaconMode;
+    targetDefSat.enableSatelliteMode = srcForm.enableSatelliteMode;
+    targetDefSat.satelliteMode = srcForm.satelliteMode;
+    targetDefSat.toneHz = srcForm.toneHz ? srcForm.toneHz : null;
+    targetDefSat.outline = srcForm.outline;
+  }
+
+  return { transformAppConfigToForm, transformDefSatToForm, transformFormToAppConfig, transformFormToDefaultSatellite };
 }
