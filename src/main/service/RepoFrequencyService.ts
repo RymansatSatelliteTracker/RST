@@ -30,8 +30,11 @@ export default class RepoFrequencyService {
     const storeTarget = structuredClone(frequencyModel);
     // repo配下のfrequency.jsonにはsatelliteIdを保存しない
     storeTarget.frequency.satellites = storeTarget.frequency.satellites.map((sat) => {
-      const { satelliteId, ...repoSatellite } = sat;
-      return repoSatellite as typeof sat;
+      const { satelliteId, noradId, ...rest } = sat;
+      return {
+        noradId,
+        ...rest,
+      } as typeof sat;
     });
     storeTarget.frequency.lastUpdateTime = Date.now();
 
