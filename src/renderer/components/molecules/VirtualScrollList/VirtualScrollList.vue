@@ -4,7 +4,7 @@
       <template v-slot:default="{ item, index }">
         <span v-if="index === items.length - 1" v-intersect.once="onIntersect"></span>
         <v-list-item
-          :key="item[itemKey]"
+          :key="getItemKey(item, index)"
           @click="selectItem(index)"
           @dblclick="emitItemDblClick(item)"
           :class="{ 'v-list-item--active': isSelected(index) }"
@@ -40,6 +40,15 @@ let currentPage: number = 0;
 const emits = defineEmits(["itemDblClick"]);
 function emitItemDblClick(item: any) {
   emits("itemDblClick", item);
+}
+
+/**
+ * アイテムのキーを返す
+ * itemKeyが未指定の場合はindexを返す
+ */
+function getItemKey(item: any, index: number) {
+  if (!itemKey.value) return index;
+  return item[itemKey.value];
 }
 
 /**
