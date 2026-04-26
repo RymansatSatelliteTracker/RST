@@ -52,7 +52,7 @@ watch(
     currentPage = 0;
     loadItems();
   },
-  { deep: true }
+  { deep: true, immediate: true }
 );
 
 /**
