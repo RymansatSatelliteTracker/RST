@@ -36,7 +36,15 @@
             <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_NORADID) }}</label>
           </v-col>
           <v-col cols="2">
-            <label class="label form__label">{{ form.noradId }}</label>
+            <TextField
+              v-if="props.editableNoradId"
+              v-model="form.noradId"
+              maxlength="5"
+              :valiSchema="valiSchemaEditSatelliteInfo"
+              valiSchemaFieldPath="noradId"
+              v-model:error-text="errors.noradId"
+            />
+            <label v-else class="label form__label">{{ form.noradId }}</label>
           </v-col>
         </v-row>
         <v-row>
@@ -288,8 +296,17 @@ import DigitTextField from "@/renderer/components/atoms/DigitTextField/DigitText
 import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
 import OpeModeSelect from "@/renderer/components/molecules/OpeModeSelect/OpeModeSelect.vue";
 import ToneFrequencySelect from "@/renderer/components/molecules/ToneFrequencySelect/ToneFrequencySelect.vue";
+import { computed } from "vue";
 import EditSatelliteInfoForm from "./EditSatelliteInfoForm";
-import { valiSchemaEditSatelliteInfo } from "./useEditSatelliteInfoValidate";
+import { getValiSchemaEditSatelliteInfo } from "./useEditSatelliteInfoValidate";
+
+const props = defineProps({
+  editableNoradId: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+});
 
 // ダイアログ表示用
 const isShow = defineModel<boolean>("isShow", { default: false });
@@ -303,6 +320,8 @@ const title = defineModel<string>("title", { default: "" });
 const manualEditFlg = defineModel<boolean>("manualEditFlg", { default: false });
 // Resetボタンの表示制御
 const showReset = defineModel<boolean>("showReset", { default: true });
+
+const valiSchemaEditSatelliteInfo = computed(() => getValiSchemaEditSatelliteInfo(props.editableNoradId));
 
 // 親に通知用のイベント
 const emits = defineEmits<{ (e: "ok"): void; (e: "cancel"): void; (e: "reset"): void }>();

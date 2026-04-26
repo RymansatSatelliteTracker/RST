@@ -5,6 +5,7 @@
     v-model:errors="errors"
     v-model:title="satellite.satelliteName"
     v-model:manualEditFlg="manualEditFlg"
+    :editableNoradId="editableNoradId"
     :showReset="true"
     @ok="onOk"
     @cancel="onCancel"
@@ -50,13 +51,15 @@ const emits = defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
 const form = ref<EditSatelliteInfoForm>(new EditSatelliteInfoForm());
 // 画面を使って設定をしたかどうか
 const manualEditFlg = ref<boolean>(false);
+// NORAD ID編集可否
+const editableNoradId = ref<boolean>(true);
 // ダイアログを開いた時点のフォーム値（Reset用）
 const originalForm = ref<EditSatelliteInfoForm | null>(null);
 // マウント時やリセット時にwatchしないためのフラグ
 let isWatched = true;
 
 // 入力チェック関係
-const { validateForm, errors } = useEditSatelliteInfoValidate();
+const { validateForm, errors } = useEditSatelliteInfoValidate(editableNoradId.value);
 // ファイルから取得した値と画面フォームで構造を変換する関数
 const { transformDefSatToForm, transformFormToDefaultSatellite } = useEditSatelliteInfo();
 

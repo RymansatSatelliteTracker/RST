@@ -131,6 +131,10 @@ export default class I18nMsgs {
     en: "Uplink and Downlink frequencies are not set.",
     ja: "アップリンク周波数とダウンリンク周波数が設定されていません。",
   };
+  public static readonly CHK_ERR_NORADID_FORMAT: I18nMsgItem = {
+    en: "NORAD ID must be exactly 5 digits and cannot be 00000",
+    ja: "NORAD IDは5桁の数字で入力してください。00000は指定できません",
+  };
   public static readonly NOTICE_UNDER_DEVELOPMENT: I18nMsgItem = {
     en: "This feature is under development and cannot be used.",
     ja: "この機能は実装中のため使用できません。",

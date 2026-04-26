@@ -6,6 +6,7 @@
     v-model:errors="errors"
     v-model:title="selectedItem.satelliteName"
     v-model:manualEditFlg="manualEditFlg"
+    :editableNoradId="editableNoradId"
     :showReset="true"
     @ok="onOk"
     @cancel="onCancel"
@@ -43,13 +44,15 @@ const selectedGroupId = defineModel<number>("selectedGroupId", {
 const emits = defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
 // 画面を使って設定をしたかどうか
 const manualEditFlg = ref<boolean>(false);
+// NORAD ID編集可否
+const editableNoradId = ref<boolean>(false);
 // マウント時やリセット時にwatchしないためのフラグ
 let isWatched = true;
 
 // フォーム
 const form = ref<EditSatelliteInfoForm>(new EditSatelliteInfoForm());
 // 入力チェック関係
-const { validateForm, errors } = useEditSatelliteInfoValidate();
+const { validateForm, errors } = useEditSatelliteInfoValidate(editableNoradId.value);
 // ファイルから取得した値と画面フォームで構造を変換する関数
 const { transformAppConfigToForm, transformDefSatToForm, transformFormToAppConfig } = useEditSatelliteInfo();
 

@@ -11,7 +11,8 @@ const MIN_FREQ = 0;
 /**
  * 衛星情報編集画面の入力チェックフック
  */
-export function useEditSatelliteInfoValidate() {
+export function useEditSatelliteInfoValidate(enableNoradIdValidate: boolean = false) {
+  const valiSchemaEditSatelliteInfo = getValiSchemaEditSatelliteInfo(enableNoradIdValidate);
   // 入力チェック共通フック
   const { validateAll, errors } = useValidate(valiSchemaEditSatelliteInfo);
 
@@ -79,6 +80,11 @@ export function useEditSatelliteInfoValidate() {
   return { validateForm, errors };
 }
 
+const noradIdSchema = zod.lazy(() => {
+  const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NORADID_FORMAT);
+  return zod.coerce.string().regex(/^(?!00000$)[0-9]{5}$/, { message: message });
+});
+
 const frequencyHzSchema = zod.lazy(() => {
   const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM_MIN_MAX, String(MIN_FREQ), String(MAX_FREQ));
   return zod.union([
@@ -92,25 +98,28 @@ const frequencyHzSchema = zod.lazy(() => {
 /**
  * 衛星情報編集設定の入力チェックZodスキーマ定義
  */
-export const valiSchemaEditSatelliteInfo = zod.object({
-  editSatelliteName: zod.lazy(() => {
-    const message1 = I18nUtil.getMsg(I18nMsgs.CHK_ERR_STRING_MIN, "1");
-    const message2 = I18nUtil.getMsg(I18nMsgs.CHK_ERR_STRING_ALPHANUMSYMB);
-    return (
-      zod.coerce
-        .string({ message: message1 })
-        .min(1, { message: message1 })
-        // アルファベット、数字、記号(＆*/ '-+_()[])
-        .regex(/^[A-Za-z0-9&*/ '()+_\[\]-]*$/, { message: message2 })
-    );
-  }),
-  uplink1Hz: frequencyHzSchema,
-  uplink2Hz: frequencyHzSchema,
-  uplink3Hz: frequencyHzSchema,
+export function getValiSchemaEditSatelliteInfo(enableNoradIdValidate: boolean = false) {
+  return zod.object({
+    editSatelliteName: zod.lazy(() => {
+      const message1 = I18nUtil.getMsg(I18nMsgs.CHK_ERR_STRING_MIN, "1");
+      const message2 = I18nUtil.getMsg(I18nMsgs.CHK_ERR_STRING_ALPHANUMSYMB);
+      return (
+        zod.coerce
+          .string({ message: message1 })
+          .min(1, { message: message1 })
+          // アルファベット、数字、記号(＆*/ '-+_()[])
+          .regex(/^[A-Za-z0-9&*/ '()+_\[\]-]*$/, { message: message2 })
+      );
+    }),
+    noradId: enableNoradIdValidate ? noradIdSchema : zod.any(),
+    uplink1Hz: frequencyHzSchema,
+    uplink2Hz: frequencyHzSchema,
+    uplink3Hz: frequencyHzSchema,
 
-  downlink1Hz: frequencyHzSchema,
-  downlink2Hz: frequencyHzSchema,
-  downlink3Hz: frequencyHzSchema,
+    downlink1Hz: frequencyHzSchema,
+    downlink2Hz: frequencyHzSchema,
+    downlink3Hz: frequencyHzSchema,
 
-  beaconHz: frequencyHzSchema,
-});
+    beaconHz: frequencyHzSchema,
+  });
+}
