@@ -217,11 +217,11 @@ export default class I18nMsgs {
   public static readonly SERIAL_NOT_CONNECTED: I18nMsgItem = { en: "Serial not connected", ja: "シリアルが未接続です" };
   public static readonly SERIAL_NOT_CONNECTED_ROTATOR: I18nMsgItem = {
     en: "Serial not connected",
-    ja: "ローテータのシリアルが未接続です",
+    ja: "ローテータが未接続です",
   };
   public static readonly SERIAL_NOT_CONNECTED_TRANSCEIVER: I18nMsgItem = {
     en: "Serial not connected",
-    ja: "無線機のシリアルが未接続です",
+    ja: "無線機が未接続です",
   };
   public static readonly SERIAL_CONNECTION_FAILED: I18nMsgItem = {
     en: "Serial connection failed",

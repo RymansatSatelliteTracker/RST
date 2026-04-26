@@ -52,41 +52,49 @@ export default class FrequencyTrackService {
   }
 
   /**
-   * ドップラー補正されたRx周波数とドップラーファクターを元に基準周波数を算出する（逆ヘテロダイン）
-   * @param freqSum 送受信周波数の和
-   * @param shiftedRxFreq ドップラー補正されたRx周波数（補正値除去済みの値）
+   * 無線機のRx周波数とドップラーファクターを元に基準周波数を算出する（逆ヘテロダイン）
+   * 無線機周波数 = (Rx基準周波数 + Rx補正値) × ドップラーファクタ
+   * → Rx基準周波数 = 無線機周波数 / ドップラーファクタ - Rx補正値
+   * @param plainBaseFreqSum 基準周波数の和（補正値なし）
+   * @param rxAdjustFreq Rx補正値
+   * @param rxFreq 無線機のRx周波数（補正値・ドップラーシフト適用済み）
    * @param rxDopplerFactor 受信ドップラーファクター
    */
   public calcInvHeteroBaseFreqByRxFreq(
-    freqSum: number,
-    shiftedRxFreq: number,
+    plainBaseFreqSum: number,
+    rxAdjustFreq: number,
+    rxFreq: number,
     rxDopplerFactor: number
   ): { rxBaseFreq: number; txBaseFreq: number } {
-    // Rx周波数をドップラーファクターで割り戻して、Rx基準周波数を算出する
-    const rxBaseFreq = Math.round(shiftedRxFreq / rxDopplerFactor);
-    // Tx基準周波数は、送受信周波数の和からRx基準周波数を引いて算出する
-    const txBaseFreq = Math.round(freqSum) - rxBaseFreq;
+    // 無線機周波数をドップラーファクターで割り戻して補正値を引き、Rx基準周波数を算出する
+    const rxBaseFreq = rxFreq / rxDopplerFactor - rxAdjustFreq;
+    // Tx基準周波数は、送受信基準周波数の和からRx基準周波数を引いて算出する
+    const txBaseFreq = plainBaseFreqSum - rxBaseFreq;
 
-    return { rxBaseFreq, txBaseFreq };
+    return { rxBaseFreq: Math.round(rxBaseFreq), txBaseFreq: Math.round(txBaseFreq) };
   }
 
   /**
-   * ドップラー補正されたTx周波数とドップラーファクターを元に基準周波数を算出する（逆ヘテロダイン）
-   * @param freqSum 送受信周波数の和
-   * @param shiftedTxFreq ドップラー補正されたTx周波数（補正値除去済みの値）
+   * 無線機のTx周波数とドップラーファクターを元に基準周波数を算出する（逆ヘテロダイン）
+   * 無線機周波数 = (Tx基準周波数 + Tx補正値) × ドップラーファクタ
+   * → Tx基準周波数 = 無線機周波数 / ドップラーファクタ - Tx補正値
+   * @param plainBaseFreqSum 基準周波数の和（補正値なし）
+   * @param txAdjustFreq Tx補正値
+   * @param txFreq 無線機のTx周波数（補正値・ドップラーシフト適用済み）
    * @param txDopplerFactor Txドップラーファクター
    */
   public calcInvHeteroBaseFreqByTxFreq(
-    freqSum: number,
-    shiftedTxFreq: number,
+    plainBaseFreqSum: number,
+    txAdjustFreq: number,
+    txFreq: number,
     txDopplerFactor: number
   ): { rxBaseFreq: number; txBaseFreq: number } {
-    // Tx周波数をドップラーファクターで割り戻して、Tx基準周波数を算出する
-    const txBaseFreq = Math.round(shiftedTxFreq / txDopplerFactor);
-    // Rx基準周波数は、送受信周波数の和からTx基準周波数を引いて算出する
-    const rxBaseFreq = Math.round(freqSum) - txBaseFreq;
+    // 無線機周波数をドップラーファクターで割り戻して補正値を引き、Tx基準周波数を算出する
+    const txBaseFreq = txFreq / txDopplerFactor - txAdjustFreq;
+    // Rx基準周波数は、送受信基準周波数の和からTx基準周波数を引いて算出する
+    const rxBaseFreq = plainBaseFreqSum - txBaseFreq;
 
-    return { rxBaseFreq, txBaseFreq };
+    return { rxBaseFreq: Math.round(rxBaseFreq), txBaseFreq: Math.round(txBaseFreq) };
   }
 
   /**
