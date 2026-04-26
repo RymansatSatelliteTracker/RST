@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <FrequencyEditorDialog v-model:isShow="showFrequencyEditor" />
+    <FrequencyEditor v-model:isShow="showFrequencyEditor" />
 
     <div class="menu_area">
       <Menu />
@@ -42,11 +42,11 @@
 
 <script setup lang="ts">
 import Aos from "@/renderer/components/organisms/Aos/Aos.vue";
-import FrequencyEditorDialog from "@/renderer/components/organisms/develop/FrequencyEditorDialog.vue";
 import Map from "@/renderer/components/organisms/Map/Map.vue";
 import Menu from "@/renderer/components/organisms/Menu/Menu.vue";
 import NowTime from "@/renderer/components/organisms/NowTime/NowTime.vue";
 import Radar from "@/renderer/components/organisms/Radar/Radar.vue";
+import FrequencyEditor from "@/renderer/components/organisms/setting/SatelliteSetting/FrequencyEditor/FrequencyEditor.vue";
 import TransceiverCtrl from "@/renderer/components/organisms/TransceiverCtrl/TransceiverCtrl.vue";
 import { onMounted, ref } from "vue";
 import SatelliteGroupSelectBox from "../../organisms/SatelliteGroupSelectBox/SatelliteGroupSelectBox.vue";
