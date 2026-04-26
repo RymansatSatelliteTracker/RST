@@ -217,11 +217,11 @@ export function makeElectronMenu(): Electron.Menu {
             }
           },
         },
+        { role: "toggleDevTools", label: "DevTools" },
         {
           label: "Frequency JSON Editor",
           click: () => onOpenFrequencyEditorClick(),
         },
-        { role: "toggleDevTools", label: "DevTools" },
       ],
     });
   }
