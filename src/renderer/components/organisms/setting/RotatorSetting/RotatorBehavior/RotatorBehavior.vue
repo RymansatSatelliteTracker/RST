@@ -80,7 +80,6 @@
               density="compact"
               hide-details
               class="radio mt-0"
-              disabled
             ></v-radio>
           </v-radio-group>
         </div>
