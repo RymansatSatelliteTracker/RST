@@ -81,7 +81,7 @@ export function useEditSatelliteInfoValidate(enableNoradIdValidate: boolean = fa
 }
 
 const noradIdSchema = zod.lazy(() => {
-  const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NORADID_FORMAT);
+  const message = I18nUtil.getMsg(I18nMsgs.CHK_ERR_NUM, "5");
   return zod.coerce.string().regex(/^(?!00000$)[0-9]{5}$/, { message: message });
 });
 
