@@ -110,7 +110,7 @@ export const apiHandler = {
    * repo配下の周波数設定情報を保存する
    * 呼び出し例）const ret = await window.rstApi.storeRepoFrequency(freqModel);
    */
-  storeRepoFrequency: function (frequencyModel: FrequencyModel): Promise<void> {
+  storeRepoFrequency: function (frequencyModel: FrequencyModel): Promise<ApiResponse<void>> {
     return ipcRenderer.invoke("storeRepoFrequency", frequencyModel);
   },
 
