@@ -2,6 +2,7 @@ import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel";
 import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
 import { AppConfigModel, AppConfigRotator, AppConfigTransceiver } from "@/common/model/AppConfigModel";
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
+import { FrequencyModel } from "@/common/model/FrequencyModel";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse, LangType } from "@/common/types/types";
 import WebClient from "@/common/WebClient";
@@ -9,8 +10,8 @@ import SerialComm from "@/main/common/SerialComm";
 import ActiveSatService from "@/main/service/ActiveSatService";
 import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService";
 import DefaultSatelliteService from "@/main/service/DefaultSatelliteService";
-import FrequencyService from "@/main/service/FrequencyService";
 import GeoLocationService from "@/main/service/GeoLocationService";
+import RepoFrequencyService from "@/main/service/RepoFrequencyService";
 import RotatorService from "@/main/service/RotatorService";
 import SerialTrialService from "@/main/service/SerialTrialService";
 import TleService from "@/main/service/TleService";
@@ -112,10 +113,17 @@ export function initializeIpcEvents() {
   });
 
   /**
-   * 保存済みの周波数設定情報を返す
+   * repo配下の保存済み周波数設定情報を返す
    */
-  ipcMain.handle("getFrequency", (event) => {
-    return new FrequencyService().getFrequency();
+  ipcMain.handle("getRepoFrequency", (event) => {
+    return new RepoFrequencyService().getRepoFrequency();
+  });
+
+  /**
+   * repo配下の周波数設定情報を保存する
+   */
+  ipcMain.handle("storeRepoFrequency", (event, frequencyModel: FrequencyModel) => {
+    return new RepoFrequencyService().storeRepoFrequency(frequencyModel);
   });
 
   /**

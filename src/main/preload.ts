@@ -99,11 +99,19 @@ export const apiHandler = {
   },
 
   /**
-   * 保存済みの周波数設定情報を返す
-   * 呼び出し例）const ret = await window.rstApi.getFrequency();
+   * repo配下の保存済み周波数設定情報を返す
+   * 呼び出し例）const ret = await window.rstApi.getRepoFrequency();
    */
-  getFrequency: function (): Promise<FrequencyModel> {
-    return ipcRenderer.invoke("getFrequency");
+  getRepoFrequency: function (): Promise<FrequencyModel> {
+    return ipcRenderer.invoke("getRepoFrequency");
+  },
+
+  /**
+   * repo配下の周波数設定情報を保存する
+   * 呼び出し例）const ret = await window.rstApi.storeRepoFrequency(freqModel);
+   */
+  storeRepoFrequency: function (frequencyModel: FrequencyModel): Promise<void> {
+    return ipcRenderer.invoke("storeRepoFrequency", frequencyModel);
   },
 
   /**

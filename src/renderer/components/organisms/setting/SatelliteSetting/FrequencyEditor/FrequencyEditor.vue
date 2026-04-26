@@ -8,7 +8,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn variant="outlined" @click="isShow = false">設定</v-btn>
+        <v-btn variant="outlined" @click="onOk">設定</v-btn>
         <v-btn variant="outlined" @click="isShow = false">閉じる</v-btn>
       </v-card-actions>
     </v-card>
@@ -19,17 +19,33 @@
 import { FrequencyModel } from "@/common/model/FrequencyModel";
 import ApiFrequency from "@/renderer/api/ApiFrequency";
 import FrequencyEditorList from "@/renderer/components/organisms/setting/SatelliteSetting/FrequencyEditor/FrequencyEditorList/FrequencyEditorList.vue";
-import { ref, watch } from "vue";
+import emitter from "@/renderer/util/EventBus";
+import { ref, toRaw, watch } from "vue";
 
+// ダイアログ表示用
 const isShow = defineModel<boolean>("isShow", {
   default: false,
 });
 
+// 周波数設定情報
 const frequencyModel = ref<FrequencyModel>(new FrequencyModel());
 
 watch(isShow, async (show) => {
   if (!show) return;
 
-  frequencyModel.value = await ApiFrequency.getFrequency();
+  frequencyModel.value = await ApiFrequency.getRepoFrequency();
 });
+
+/**
+ * 設定ボタン押下時の処理
+ */
+async function onOk() {
+  const res = await ApiFrequency.storeRepoFrequency(toRaw(frequencyModel.value));
+  if (!res.status) {
+    if (res.message) emitter.emit("NOTICE_ERR", res.message.ja);
+    return;
+  }
+
+  isShow.value = false;
+}
 </script>

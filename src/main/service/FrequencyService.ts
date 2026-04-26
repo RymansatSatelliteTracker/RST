@@ -11,19 +11,6 @@ import path from "path";
  */
 export default class FrequencyService {
   /**
-   * 保存済みの周波数設定情報を取得する
-   */
-  public getFrequency(): FrequencyModel {
-    const savePath = path.join(ElectronUtil.getUserDir(), Constant.Config.FREQUENCY_FILENAME);
-    if (!fs.existsSync(savePath)) {
-      return new FrequencyModel();
-    }
-
-    const fileContent = fs.readFileSync(savePath, "utf-8");
-    return Object.assign(new FrequencyModel(), JSON.parse(fileContent));
-  }
-
-  /**
    * 周波数設定情報を指定のURLから取得し更新する
    * @returns ファイルを更新したらtrue
    *          ファイルを更新しなかったらfalse
