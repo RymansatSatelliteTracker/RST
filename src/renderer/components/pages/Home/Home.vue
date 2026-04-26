@@ -1,5 +1,7 @@
 <template>
   <div class="container">
+    <FrequencyEditorDialog v-model:isShow="showFrequencyEditor" />
+
     <div class="menu_area">
       <Menu />
     </div>
@@ -40,6 +42,7 @@
 
 <script setup lang="ts">
 import Aos from "@/renderer/components/organisms/Aos/Aos.vue";
+import FrequencyEditorDialog from "@/renderer/components/organisms/develop/FrequencyEditorDialog.vue";
 import Map from "@/renderer/components/organisms/Map/Map.vue";
 import Menu from "@/renderer/components/organisms/Menu/Menu.vue";
 import NowTime from "@/renderer/components/organisms/NowTime/NowTime.vue";
@@ -53,12 +56,17 @@ import useHome from "./useHome";
 // データ
 // 各種計算に必要な日時を作成する
 const currentDate = ref(new Date());
+const showFrequencyEditor = ref(false);
 
 // フック
 // 人工衛星のTLE文字列配列を取得する
 const { init, tleStrings } = useHome();
 
 onMounted(async () => {
+  window.rstApi.onOpenFrequencyEditor(() => {
+    showFrequencyEditor.value = true;
+  });
+
   await init();
 });
 </script>

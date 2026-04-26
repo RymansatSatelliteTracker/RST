@@ -17,7 +17,7 @@ import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";
 /**
  * ここにレンダラに公開するAPIを定義する
  */
-const apiHandler = {
+export const apiHandler = {
   /**
    * アプリケーション設定を返す
    */
@@ -308,6 +308,16 @@ const apiHandler = {
   onDispLangChange: (callback: Function) => {
     ipcRenderer.on("onDispLangChange", (event: IpcRendererEvent, lang: LangType) => {
       callback(lang);
+    });
+  },
+  /**
+   * Frequency JSON Editor を開くイベント
+   * メイン側で以下の記載を行うと"openFrequencyEditor"が発火し、レンダラ側のコールバックが実行される
+   * mainWindow.webContents.send("openFrequencyEditor");
+   */
+  onOpenFrequencyEditor: (callback: Function) => {
+    ipcRenderer.on("openFrequencyEditor", (event: IpcRendererEvent) => {
+      callback();
     });
   },
   /**

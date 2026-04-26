@@ -46,6 +46,13 @@ function onLangClick(lang: LangType) {
   getMainWindow().webContents.send("onDispLangChange", lang);
 }
 
+/**
+ * Frequency JSON Editor を開く
+ */
+function onOpenFrequencyEditorClick() {
+  getMainWindow().webContents.send("openFrequencyEditor");
+}
+
 // Aboutパネル
 app.setAboutPanelOptions({
   applicationName: "RST (Rymansat Satellite Tracker)",
@@ -209,6 +216,10 @@ export function makeElectronMenu(): Electron.Menu {
               (window as BrowserWindow).reload();
             }
           },
+        },
+        {
+          label: "Frequency JSON Editor",
+          click: () => onOpenFrequencyEditorClick(),
         },
         { role: "toggleDevTools", label: "DevTools" },
       ],
