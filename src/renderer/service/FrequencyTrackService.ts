@@ -55,13 +55,13 @@ export default class FrequencyTrackService {
    * 無線機のRx周波数とドップラーファクターを元に基準周波数を算出する（逆ヘテロダイン）
    * 無線機周波数 = (Rx基準周波数 + Rx補正値) × ドップラーファクタ
    * → Rx基準周波数 = 無線機周波数 / ドップラーファクタ - Rx補正値
-   * @param nominalFreqSum 送受信基準周波数の和（補正値なし）
+   * @param plainFreqSum 送受信基準周波数の和（補正値なし）
    * @param rxAdjustFreq Rx補正値
    * @param rxFreq 無線機のRx周波数（補正値・ドップラーシフト適用済み）
    * @param rxDopplerFactor 受信ドップラーファクター
    */
   public calcInvHeteroBaseFreqByRxFreq(
-    nominalFreqSum: number,
+    plainFreqSum: number,
     rxAdjustFreq: number,
     rxFreq: number,
     rxDopplerFactor: number
@@ -69,7 +69,7 @@ export default class FrequencyTrackService {
     // 無線機周波数をドップラーファクターで割り戻して補正値を引き、Rx基準周波数を算出する
     const rxBaseFreq = Math.round(rxFreq / rxDopplerFactor) - rxAdjustFreq;
     // Tx基準周波数は、送受信基準周波数の和からRx基準周波数を引いて算出する
-    const txBaseFreq = Math.round(nominalFreqSum) - rxBaseFreq;
+    const txBaseFreq = Math.round(plainFreqSum) - rxBaseFreq;
 
     return { rxBaseFreq, txBaseFreq };
   }
@@ -78,23 +78,23 @@ export default class FrequencyTrackService {
    * 無線機のTx周波数とドップラーファクターを元に基準周波数を算出する（逆ヘテロダイン）
    * 無線機周波数 = (Tx基準周波数 + Tx補正値) × ドップラーファクタ
    * → Tx基準周波数 = 無線機周波数 / ドップラーファクタ - Tx補正値
-   * @param nominalFreqSum 送受信基準周波数の和（補正値なし）
+   * @param plainTxBaseFreq Tx基準周波数（補正値なし）
    * @param txAdjustFreq Tx補正値
    * @param txFreq 無線機のTx周波数（補正値・ドップラーシフト適用済み）
    * @param txDopplerFactor Txドップラーファクター
    */
   public calcInvHeteroBaseFreqByTxFreq(
-    nominalFreqSum: number,
+    plainTxBaseFreq: number,
     txAdjustFreq: number,
     txFreq: number,
     txDopplerFactor: number
   ): { rxBaseFreq: number; txBaseFreq: number } {
     // 無線機周波数をドップラーファクターで割り戻して補正値を引き、Tx基準周波数を算出する
-    const txBaseFreq = Math.round(txFreq / txDopplerFactor) - txAdjustFreq;
+    const txBaseFreq = txFreq / txDopplerFactor - txAdjustFreq;
     // Rx基準周波数は、送受信基準周波数の和からTx基準周波数を引いて算出する
-    const rxBaseFreq = Math.round(nominalFreqSum) - txBaseFreq;
+    const rxBaseFreq = plainTxBaseFreq - txBaseFreq;
 
-    return { rxBaseFreq, txBaseFreq };
+    return { rxBaseFreq: Math.round(rxBaseFreq), txBaseFreq: Math.round(txBaseFreq) };
   }
 
   /**
