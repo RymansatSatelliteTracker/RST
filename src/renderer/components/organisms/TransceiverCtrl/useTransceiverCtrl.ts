@@ -967,6 +967,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   /**
    * 無線機のRx周波数を元に、Rx、Tx基準周波数を算出する
    * @param plainRxBaseFreq Rx基準周波数（補正値なし）
+   * @param plainTxBaseFreq Tx基準周波数（補正値なし）
    * @param rxAdjustFreq Rx補正値
    * @param rxFreq 無線機のRx周波数（補正値・ドップラーシフト適用済み）
    */
@@ -1002,6 +1003,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   /**
    * 無線機のTx周波数を元に、Rx、Tx基準周波数を算出する
    * @param plainTxBaseFreq Tx基準周波数（補正値なし）
+   * @param plainRxBaseFreq Rx基準周波数（補正値なし）
    * @param txAdjustFreq Tx補正値
    * @param txFreq 無線機のTx周波数（補正値・ドップラーシフト適用済み）
    */
