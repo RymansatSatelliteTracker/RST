@@ -90,12 +90,12 @@ export default function useEditSatelliteInfo() {
   }
 
   /**
-   * デフォルト衛星定義の構造に変換する
+   * repo配下の周波数設定用の構造に変換する
+   * satelliteIdはfrequency.jsonに保存しないため設定しない
    * @param targetDefSat
    * @param srcForm
    */
-  function transformFormToDefaultSatellite(targetDefSat: DefaultSatelliteType, srcForm: EditSatelliteInfoForm) {
-    targetDefSat.satelliteId = srcForm.satelliteId;
+  function transformFormToRepoFrequencySatellite(targetDefSat: DefaultSatelliteType, srcForm: EditSatelliteInfoForm) {
     targetDefSat.satelliteName = srcForm.editSatelliteName;
     targetDefSat.noradId = srcForm.noradId;
     targetDefSat.uplink1.uplinkHz = srcForm.uplink1Hz ? srcForm.uplink1Hz : null;
@@ -118,5 +118,10 @@ export default function useEditSatelliteInfo() {
     targetDefSat.outline = srcForm.outline;
   }
 
-  return { transformAppConfigToForm, transformDefSatToForm, transformFormToAppConfig, transformFormToDefaultSatellite };
+  return {
+    transformAppConfigToForm,
+    transformDefSatToForm,
+    transformFormToAppConfig,
+    transformFormToRepoFrequencySatellite,
+  };
 }

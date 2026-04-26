@@ -61,7 +61,7 @@ let isWatched = true;
 // 入力チェック関係
 const { validateForm, errors } = useEditSatelliteInfoValidate(editableNoradId.value);
 // ファイルから取得した値と画面フォームで構造を変換する関数
-const { transformDefSatToForm, transformFormToDefaultSatellite } = useEditSatelliteInfo();
+const { transformDefSatToForm, transformFormToRepoFrequencySatellite } = useEditSatelliteInfo();
 
 watch(
   isShow,
@@ -105,7 +105,7 @@ async function onOk() {
     return;
   }
 
-  transformFormToDefaultSatellite(satellite.value, form.value);
+  transformFormToRepoFrequencySatellite(satellite.value, form.value);
   emits("onOk");
 }
 

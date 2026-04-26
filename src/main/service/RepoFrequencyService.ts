@@ -28,6 +28,11 @@ export default class RepoFrequencyService {
    */
   public storeRepoFrequency(frequencyModel: FrequencyModel): ApiResponse<void> {
     const storeTarget = structuredClone(frequencyModel);
+    // repo配下のfrequency.jsonにはsatelliteIdを保存しない
+    storeTarget.frequency.satellites = storeTarget.frequency.satellites.map((sat) => {
+      const { satelliteId, ...repoSatellite } = sat;
+      return repoSatellite as typeof sat;
+    });
     storeTarget.frequency.lastUpdateTime = Date.now();
 
     const validater = new FrequencyValidator();
