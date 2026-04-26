@@ -9,6 +9,7 @@ import SerialComm from "@/main/common/SerialComm";
 import ActiveSatService from "@/main/service/ActiveSatService";
 import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService";
 import DefaultSatelliteService from "@/main/service/DefaultSatelliteService";
+import FrequencyService from "@/main/service/FrequencyService";
 import GeoLocationService from "@/main/service/GeoLocationService";
 import RotatorService from "@/main/service/RotatorService";
 import SerialTrialService from "@/main/service/SerialTrialService";
@@ -108,6 +109,13 @@ export function initializeIpcEvents() {
    */
   ipcMain.handle("getSavedSatelliteIdentifer", (event) => {
     return new DefaultSatelliteService().getSavedSatelliteIdentifer();
+  });
+
+  /**
+   * 保存済みの周波数設定情報を返す
+   */
+  ipcMain.handle("getFrequency", (event) => {
+    return new FrequencyService().getFrequency();
   });
 
   /**

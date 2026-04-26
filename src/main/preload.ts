@@ -8,6 +8,7 @@ import {
 } from "@/common/model/AppConfigModel";
 import { AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel";
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
+import { FrequencyModel } from "@/common/model/FrequencyModel";
 import { AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel";
 import { MessageModel } from "@/common/model/MessageModel";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
@@ -95,6 +96,14 @@ export const apiHandler = {
    */
   getSavedSatelliteIdentifer: function (): Promise<string> {
     return ipcRenderer.invoke("getSavedSatelliteIdentifer");
+  },
+
+  /**
+   * 保存済みの周波数設定情報を返す
+   * 呼び出し例）const ret = await window.rstApi.getFrequency();
+   */
+  getFrequency: function (): Promise<FrequencyModel> {
+    return ipcRenderer.invoke("getFrequency");
   },
 
   /**

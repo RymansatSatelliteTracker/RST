@@ -17,9 +17,9 @@
 
 <script setup lang="ts">
 import { FrequencyModel } from "@/common/model/FrequencyModel";
-import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil";
+import ApiFrequency from "@/renderer/api/ApiFrequency";
 import FrequencyEditorList from "@/renderer/components/organisms/setting/SatelliteSetting/FrequencyEditor/FrequencyEditorList/FrequencyEditorList.vue";
-import { onMounted, ref } from "vue";
+import { ref, watch } from "vue";
 
 const isShow = defineModel<boolean>("isShow", {
   default: false,
@@ -27,9 +27,9 @@ const isShow = defineModel<boolean>("isShow", {
 
 const frequencyModel = ref<FrequencyModel>(new FrequencyModel());
 
-onMounted(() => {
-  // テスト用のダミーデータ
-  frequencyModel.value.frequency.satellites.push(createDefaultSatellite(1, "TEST_SAT1", "12345"));
-  frequencyModel.value.frequency.satellites.push(createDefaultSatellite(2, "TEST_SAT2", "12346"));
+watch(isShow, async (show) => {
+  if (!show) return;
+
+  frequencyModel.value = await ApiFrequency.getFrequency();
 });
 </script>
