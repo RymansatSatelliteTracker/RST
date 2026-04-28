@@ -18,6 +18,7 @@
 </template>
 
 <script setup lang="ts">
+import Constant from "@/common/Constant";
 import I18nMsgs from "@/common/I18nMsgs";
 import { FrequencyModel } from "@/common/model/FrequencyModel";
 import ApiFrequency from "@/renderer/api/ApiFrequency";
@@ -46,7 +47,8 @@ watch(isShow, async (show) => {
 async function onOk() {
   const res = await ApiFrequency.storeRepoFrequency(toRaw(frequencyModel.value));
   if (!res.status) {
-    if (res.message) emitter.emit("NOTICE_ERR", res.message.ja);
+    if (res.message)
+      emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.SYSTEM_SAVE_SETTING_FAILED));
     return;
   }
 
