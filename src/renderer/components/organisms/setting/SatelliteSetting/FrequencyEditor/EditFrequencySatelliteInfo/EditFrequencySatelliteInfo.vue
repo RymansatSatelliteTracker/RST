@@ -26,24 +26,7 @@ import { ref, toRaw, watch } from "vue";
 // ダイアログ表示用
 const isShow = defineModel<boolean>("isShow", { default: false });
 // 親からもらう編集中の衛星
-const satellite = defineModel<DefaultSatelliteType>("satellite", {
-  default: {
-    satelliteId: -1,
-    satelliteName: "",
-    noradId: "",
-    uplink1: { uplinkHz: null, uplinkMode: "" },
-    uplink2: { uplinkHz: null, uplinkMode: "" },
-    uplink3: { uplinkHz: null, uplinkMode: "" },
-    downlink1: { downlinkHz: null, downlinkMode: "" },
-    downlink2: { downlinkHz: null, downlinkMode: "" },
-    downlink3: { downlinkHz: null, downlinkMode: "" },
-    beacon: { beaconHz: null, beaconMode: "" },
-    toneHz: null,
-    enableSatelliteMode: false,
-    satelliteMode: Constant.Transceiver.TrackingMode.NORMAL,
-    outline: "",
-  },
-});
+const satellite = defineModel<DefaultSatelliteType>("satellite", { required: true });
 // 親に通知用のイベント
 const emits = defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
 
