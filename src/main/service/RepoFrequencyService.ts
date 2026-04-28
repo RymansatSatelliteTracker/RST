@@ -7,11 +7,11 @@ import fs from "fs";
 import path from "path";
 
 /**
- * repo配下のFrequencyサービス
+ * リポジトリ登録用のFrequencyサービス
  */
 export default class RepoFrequencyService {
   /**
-   * repo配下の保存済み周波数設定情報を取得する
+   * 保存済み周波数設定情報を取得する
    */
   public getRepoFrequency(): FrequencyModel {
     const savePath = this.getRepoFrequencyPath();
@@ -24,7 +24,7 @@ export default class RepoFrequencyService {
   }
 
   /**
-   * repo配下の周波数設定情報を保存する
+   * 周波数設定情報を保存する
    */
   public storeRepoFrequency(frequencyModel: FrequencyModel): ApiResponse<void> {
     const storeTarget = structuredClone(frequencyModel);
@@ -50,7 +50,7 @@ export default class RepoFrequencyService {
   }
 
   /**
-   * repo配下の周波数設定ファイルパスを返す
+   * 周波数設定ファイルパスを返す
    */
   private getRepoFrequencyPath(): string {
     return path.join(process.cwd(), "satellite_data", Constant.Config.FREQUENCY_FILENAME);
