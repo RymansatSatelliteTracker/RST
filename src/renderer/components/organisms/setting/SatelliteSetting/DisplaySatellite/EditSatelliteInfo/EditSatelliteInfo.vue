@@ -21,12 +21,12 @@ import { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/sat
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite";
 import ApiDefaultSatellite from "@/renderer/api/ApiDefaultSatellite";
-import emitter from "@/renderer/util/EventBus";
-import { onMounted, ref, watch } from "vue";
 import EditSatelliteInfoForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/EditSatelliteInfoForm";
 import SatelliteInfoEditorDialog from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialog.vue";
 import useEditSatelliteInfo from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useEditSatelliteInfo";
 import { useEditSatelliteInfoValidate } from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useEditSatelliteInfoValidate";
+import emitter from "@/renderer/util/EventBus";
+import { onMounted, ref, watch } from "vue";
 
 // ダイアログ表示用
 const isShow = defineModel<boolean>("isShow", {

@@ -8,8 +8,8 @@ import {
 } from "@/common/model/AppConfigModel";
 import { AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel";
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
-import { FrequencyModel } from "@/common/model/FrequencyModel";
 import { AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel";
+import { FrequencyModel } from "@/common/model/FrequencyModel";
 import { MessageModel } from "@/common/model/MessageModel";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse, LangType } from "@/common/types/types";
