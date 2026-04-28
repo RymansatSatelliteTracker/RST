@@ -18,7 +18,7 @@ import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";
 /**
  * ここにレンダラに公開するAPIを定義する
  */
-export const apiHandler = {
+const apiHandler = {
   /**
    * アプリケーション設定を返す
    */
