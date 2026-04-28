@@ -45,8 +45,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-import Constant from "@/common/Constant";
 import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
+import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil";
 import EditFrequencySatelliteInfo from "@/renderer/components/organisms/setting/SatelliteSetting/FrequencyEditor/EditFrequencySatelliteInfo/EditFrequencySatelliteInfo.vue";
 
 import VirtualScrollList from "@/renderer/components/molecules/VirtualScrollList/VirtualScrollList.vue";
@@ -55,30 +55,8 @@ import { mdiArrowDownBold, mdiArrowUpBold, mdiDelete, mdiPlusCircle } from "@mdi
 // 衛星リスト
 const satellites = defineModel<DefaultSatelliteType[]>("satellites", { default: [] });
 
-/**
- * 空の衛星情報を作成する
- */
-function createEmptySatellite(): DefaultSatelliteType {
-  return {
-    satelliteId: -1,
-    satelliteName: "",
-    noradId: "",
-    uplink1: { uplinkHz: null, uplinkMode: "" },
-    uplink2: { uplinkHz: null, uplinkMode: "" },
-    uplink3: { uplinkHz: null, uplinkMode: "" },
-    downlink1: { downlinkHz: null, downlinkMode: "" },
-    downlink2: { downlinkHz: null, downlinkMode: "" },
-    downlink3: { downlinkHz: null, downlinkMode: "" },
-    beacon: { beaconHz: null, beaconMode: "" },
-    toneHz: null,
-    enableSatelliteMode: false,
-    satelliteMode: Constant.Transceiver.TrackingMode.NORMAL,
-    outline: "",
-  };
-}
-
 // 選択されたアイテム
-const selectedSatelliteItem = ref<DefaultSatelliteType>(createEmptySatellite());
+const selectedSatelliteItem = ref<DefaultSatelliteType>(createDefaultSatellite(-1, "", ""));
 // 衛星情報編集画面表示用のフラグ
 const enableEditSatelliteInfo = ref(false);
 // 新規追加中かどうか
@@ -92,7 +70,7 @@ const listRef = ref<InstanceType<typeof VirtualScrollList> | null>(null);
  * 衛星情報追加画面を表示する
  */
 function showAddSatelliteInfo() {
-  satellites.value.push(createEmptySatellite());
+  satellites.value.push(createDefaultSatellite(-1, "", ""));
   newSatelliteIndex.value = satellites.value.length - 1;
   selectedSatelliteItem.value = satellites.value[newSatelliteIndex.value];
   isNewSatellite.value = true;
