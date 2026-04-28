@@ -113,14 +113,14 @@ export function initializeIpcEvents() {
   });
 
   /**
-   * repo配下の保存済み周波数設定情報を返す
+   * リポジトリ登録用の保存済み周波数設定情報を返す
    */
   ipcMain.handle("getRepoFrequency", (event) => {
     return new RepoFrequencyService().getRepoFrequency();
   });
 
   /**
-   * repo配下の周波数設定情報を保存する
+   * リポジトリ登録用の周波数設定情報を保存する
    */
   ipcMain.handle("storeRepoFrequency", (event, frequencyModel: FrequencyModel) => {
     return new RepoFrequencyService().storeRepoFrequency(frequencyModel);
