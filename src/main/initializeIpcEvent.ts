@@ -2,6 +2,7 @@ import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel";
 import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
 import { AppConfigModel, AppConfigRotator, AppConfigTransceiver } from "@/common/model/AppConfigModel";
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
+import { FrequencyModel } from "@/common/model/FrequencyModel";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse, LangType } from "@/common/types/types";
 import WebClient from "@/common/WebClient";
@@ -10,6 +11,7 @@ import ActiveSatService from "@/main/service/ActiveSatService";
 import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService";
 import DefaultSatelliteService from "@/main/service/DefaultSatelliteService";
 import GeoLocationService from "@/main/service/GeoLocationService";
+import RepoFrequencyService from "@/main/service/RepoFrequencyService";
 import RotatorService from "@/main/service/RotatorService";
 import SerialTrialService from "@/main/service/SerialTrialService";
 import TleService from "@/main/service/TleService";
@@ -108,6 +110,20 @@ export function initializeIpcEvents() {
    */
   ipcMain.handle("getSavedSatelliteIdentifer", (event) => {
     return new DefaultSatelliteService().getSavedSatelliteIdentifer();
+  });
+
+  /**
+   * リポジトリ登録用の保存済み周波数設定情報を返す
+   */
+  ipcMain.handle("getRepoFrequency", (event) => {
+    return new RepoFrequencyService().getRepoFrequency();
+  });
+
+  /**
+   * リポジトリ登録用の周波数設定情報を保存する
+   */
+  ipcMain.handle("storeRepoFrequency", (event, frequencyModel: FrequencyModel) => {
+    return new RepoFrequencyService().storeRepoFrequency(frequencyModel);
   });
 
   /**

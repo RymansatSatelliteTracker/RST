@@ -9,6 +9,7 @@ import {
 import { AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel";
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
 import { AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel";
+import { FrequencyModel } from "@/common/model/FrequencyModel";
 import { MessageModel } from "@/common/model/MessageModel";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse, LangType } from "@/common/types/types";
@@ -95,6 +96,22 @@ const apiHandler = {
    */
   getSavedSatelliteIdentifer: function (): Promise<string> {
     return ipcRenderer.invoke("getSavedSatelliteIdentifer");
+  },
+
+  /**
+   * リポジトリ登録用の保存済み周波数設定情報を返す
+   * 呼び出し例）const ret = await window.rstApi.getRepoFrequency();
+   */
+  getRepoFrequency: function (): Promise<FrequencyModel> {
+    return ipcRenderer.invoke("getRepoFrequency");
+  },
+
+  /**
+   * リポジトリ登録用の周波数設定情報を保存する
+   * 呼び出し例）const ret = await window.rstApi.storeRepoFrequency(freqModel);
+   */
+  storeRepoFrequency: function (frequencyModel: FrequencyModel): Promise<ApiResponse<void>> {
+    return ipcRenderer.invoke("storeRepoFrequency", frequencyModel);
   },
 
   /**
@@ -308,6 +325,16 @@ const apiHandler = {
   onDispLangChange: (callback: Function) => {
     ipcRenderer.on("onDispLangChange", (event: IpcRendererEvent, lang: LangType) => {
       callback(lang);
+    });
+  },
+  /**
+   * Frequency JSON Editor を開くイベント
+   * メイン側で以下の記載を行うと"openFrequencyEditor"が発火し、レンダラ側のコールバックが実行される
+   * mainWindow.webContents.send("openFrequencyEditor");
+   */
+  onOpenFrequencyEditor: (callback: Function) => {
+    ipcRenderer.on("openFrequencyEditor", (event: IpcRendererEvent) => {
+      callback();
     });
   },
   /**

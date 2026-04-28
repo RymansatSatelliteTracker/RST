@@ -212,6 +212,10 @@ export default class I18nMsgs {
     en: "TLE update completed",
     ja: "TLEの更新が完了しました",
   };
+  public static readonly SYSTEM_SAVE_SETTING_FAILED: I18nMsgItem = {
+    en: "Failed to save the settings.",
+    ja: "設定の保存に失敗しました。",
+  };
 
   // シリアル接続系
   public static readonly SERIAL_NOT_CONNECTED: I18nMsgItem = { en: "Serial not connected", ja: "シリアルが未接続です" };

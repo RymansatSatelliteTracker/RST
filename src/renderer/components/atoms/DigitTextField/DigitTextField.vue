@@ -78,11 +78,15 @@ async function onBlur(val: string) {
 }
 // model → displayValue への変換
 // 編集中は更新しないようにしないと無限ループが発生する
-watch(model, async (newVal) => {
-  if (isEditing) return;
-  await nextTick();
-  displayValue.value = formatWithDot(newVal);
-});
+watch(
+  model,
+  async (newVal) => {
+    if (isEditing) return;
+    await nextTick();
+    displayValue.value = formatWithDot(newVal);
+  },
+  { immediate: true }
+);
 // displayValue → model への変換
 // modelとの同期はこいつに任せる
 watch(displayValue, (newVal) => {
