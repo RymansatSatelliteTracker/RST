@@ -99,7 +99,7 @@ const apiHandler = {
   },
 
   /**
-   * repo配下の保存済み周波数設定情報を返す
+   * リポジトリ登録用の保存済み周波数設定情報を返す
    * 呼び出し例）const ret = await window.rstApi.getRepoFrequency();
    */
   getRepoFrequency: function (): Promise<FrequencyModel> {
@@ -107,7 +107,7 @@ const apiHandler = {
   },
 
   /**
-   * repo配下の周波数設定情報を保存する
+   * リポジトリ登録用の周波数設定情報を保存する
    * 呼び出し例）const ret = await window.rstApi.storeRepoFrequency(freqModel);
    */
   storeRepoFrequency: function (frequencyModel: FrequencyModel): Promise<ApiResponse<void>> {
