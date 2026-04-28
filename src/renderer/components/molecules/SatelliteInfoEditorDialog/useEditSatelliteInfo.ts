@@ -90,7 +90,7 @@ export default function useEditSatelliteInfo() {
   }
 
   /**
-   * repo配下の周波数設定用の構造に変換する
+   * リポジトリ登録用の周波数設定用の構造に変換する
    * satelliteIdはfrequency.jsonに保存しないため設定しない
    * @param targetDefSat
    * @param srcForm

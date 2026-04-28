@@ -28,7 +28,7 @@ export default class RepoFrequencyService {
    */
   public storeRepoFrequency(frequencyModel: FrequencyModel): ApiResponse<void> {
     const storeTarget = structuredClone(frequencyModel);
-    // repo配下のfrequency.jsonにはsatelliteIdを保存しない
+    // リポジトリ登録用のfrequency.jsonにはsatelliteIdを保存しない
     storeTarget.frequency.satellites = storeTarget.frequency.satellites.map((sat) => {
       const { satelliteId, noradId, ...rest } = sat;
       return {
