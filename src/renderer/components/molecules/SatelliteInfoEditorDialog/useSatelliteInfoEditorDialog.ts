@@ -1,16 +1,19 @@
 import { AppConfigSatellite } from "@/common/model/AppConfigModel";
 import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
-import EditSatelliteInfoForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/EditSatelliteInfoForm";
+import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm";
 /**
  * 衛星情報編集画面関係のフック
  */
-export default function useEditSatelliteInfo() {
+export default function useSatelliteInfoEditorDialog() {
   /**
    * 画面フォームの構造に変換する(共通部分)
    * @param targetForm
    * @param srcObj
    */
-  function transformToForm(targetForm: EditSatelliteInfoForm, srcObj: AppConfigSatellite | DefaultSatelliteType) {
+  function transformToForm(
+    targetForm: SatelliteInfoEditorDialogForm,
+    srcObj: AppConfigSatellite | DefaultSatelliteType
+  ) {
     // 共通
     targetForm.satelliteId = srcObj.satelliteId;
     // 参照用はここでは設定しない
@@ -39,7 +42,7 @@ export default function useEditSatelliteInfo() {
    * @param targetForm
    * @param srcObj
    */
-  function transformAppConfigToForm(targetForm: EditSatelliteInfoForm, srcObj: AppConfigSatellite) {
+  function transformAppConfigToForm(targetForm: SatelliteInfoEditorDialogForm, srcObj: AppConfigSatellite) {
     transformToForm(targetForm, srcObj);
     targetForm.editSatelliteName = srcObj.userRegisteredSatelliteName;
     targetForm.autoModeUplinkFreq = srcObj.autoModeUplinkFreq ?? 1;
@@ -50,7 +53,7 @@ export default function useEditSatelliteInfo() {
    * @param targetForm
    * @param srcObj
    */
-  function transformDefSatToForm(targetForm: EditSatelliteInfoForm, srcObj: DefaultSatelliteType) {
+  function transformDefSatToForm(targetForm: SatelliteInfoEditorDialogForm, srcObj: DefaultSatelliteType) {
     transformToForm(targetForm, srcObj);
     targetForm.editSatelliteName = srcObj.satelliteName;
     targetForm.autoModeUplinkFreq = 1;
@@ -61,7 +64,7 @@ export default function useEditSatelliteInfo() {
    * @param targetAppConfig
    * @param srcForm
    */
-  function transformFormToAppConfig(targetAppConfig: AppConfigSatellite, srcForm: EditSatelliteInfoForm) {
+  function transformFormToAppConfig(targetAppConfig: AppConfigSatellite, srcForm: SatelliteInfoEditorDialogForm) {
     targetAppConfig.satelliteId = srcForm.satelliteId;
     targetAppConfig.userRegisteredSatelliteName = srcForm.editSatelliteName;
     targetAppConfig.noradId = srcForm.noradId;
@@ -95,7 +98,10 @@ export default function useEditSatelliteInfo() {
    * @param targetDefSat
    * @param srcForm
    */
-  function transformFormToRepoFrequencySatellite(targetDefSat: DefaultSatelliteType, srcForm: EditSatelliteInfoForm) {
+  function transformFormToRepoFrequencySatellite(
+    targetDefSat: DefaultSatelliteType,
+    srcForm: SatelliteInfoEditorDialogForm
+  ) {
     targetDefSat.satelliteName = srcForm.editSatelliteName;
     targetDefSat.noradId = srcForm.noradId;
     targetDefSat.uplink1.uplinkHz = srcForm.uplink1Hz ? srcForm.uplink1Hz : null;

@@ -1,7 +1,7 @@
 import I18nMsgs from "@/common/I18nMsgs";
 import { useValidate } from "@/renderer/common/hook/useValidate";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
-import EditSatelliteInfoForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/EditSatelliteInfoForm";
+import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm";
 import * as zod from "zod";
 
 // 最大周波数
@@ -11,15 +11,15 @@ const MIN_FREQ = 0;
 /**
  * 衛星情報編集画面の入力チェックフック
  */
-export function useEditSatelliteInfoValidate(enableNoradIdValidate: boolean = false) {
-  const valiSchemaEditSatelliteInfo = getValiSchemaEditSatelliteInfo(enableNoradIdValidate);
+export function useSatelliteInfoEditorDialogValidate(enableNoradIdValidate: boolean = false) {
+  const valiSchemaSatelliteInfoEditorDialog = getValiSchemaSatelliteInfoEditorDialog(enableNoradIdValidate);
   // 入力チェック共通フック
-  const { validateAll, errors } = useValidate(valiSchemaEditSatelliteInfo);
+  const { validateAll, errors } = useValidate(valiSchemaSatelliteInfoEditorDialog);
 
   /**
    * Form全体の入力チェックの実行
    */
-  async function validateForm(form: EditSatelliteInfoForm) {
+  async function validateForm(form: SatelliteInfoEditorDialogForm) {
     let result = await validateAll(form);
     // 単項目にエラーがある場合相関チェックせずに結果を返す
     if (!result) return result;
@@ -98,7 +98,7 @@ const frequencyHzSchema = zod.lazy(() => {
 /**
  * 衛星情報編集設定の入力チェックZodスキーマ定義
  */
-export function getValiSchemaEditSatelliteInfo(enableNoradIdValidate: boolean = false) {
+export function getValiSchemaSatelliteInfoEditorDialog(enableNoradIdValidate: boolean = false) {
   return zod.object({
     editSatelliteName: zod.lazy(() => {
       const message1 = I18nUtil.getMsg(I18nMsgs.CHK_ERR_STRING_MIN, "1");

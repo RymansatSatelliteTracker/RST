@@ -3,7 +3,7 @@ import { autoModeFreqType } from "@/common/types/satelliteSettingTypes";
 /**
  * 衛星情報編集フォーム
  */
-export default class EditSatelliteInfoForm {
+export default class SatelliteInfoEditorDialogForm {
   public satelliteId: number = -1;
   // 表示用衛星名
   public refSatelliteName: string = "";

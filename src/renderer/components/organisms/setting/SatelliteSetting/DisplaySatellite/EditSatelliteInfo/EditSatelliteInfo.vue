@@ -21,10 +21,10 @@ import { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/sat
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite";
 import ApiDefaultSatellite from "@/renderer/api/ApiDefaultSatellite";
-import EditSatelliteInfoForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/EditSatelliteInfoForm";
+import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm";
 import SatelliteInfoEditorDialog from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialog.vue";
-import useEditSatelliteInfo from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useEditSatelliteInfo";
-import { useEditSatelliteInfoValidate } from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useEditSatelliteInfoValidate";
+import useSatelliteInfoEditorDialog from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useSatelliteInfoEditorDialog";
+import { useSatelliteInfoEditorDialogValidate } from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useSatelliteInfoEditorDialogValidate";
 import emitter from "@/renderer/util/EventBus";
 import { onMounted, ref, watch } from "vue";
 
@@ -50,11 +50,11 @@ const editableNoradId = ref<boolean>(false);
 let isWatched = true;
 
 // フォーム
-const form = ref<EditSatelliteInfoForm>(new EditSatelliteInfoForm());
+const form = ref<SatelliteInfoEditorDialogForm>(new SatelliteInfoEditorDialogForm());
 // 入力チェック関係
-const { validateForm, errors } = useEditSatelliteInfoValidate(editableNoradId.value);
+const { validateForm, errors } = useSatelliteInfoEditorDialogValidate(editableNoradId.value);
 // ファイルから取得した値と画面フォームで構造を変換する関数
-const { transformAppConfigToForm, transformDefSatToForm, transformFormToAppConfig } = useEditSatelliteInfo();
+const { transformAppConfigToForm, transformDefSatToForm, transformFormToAppConfig } = useSatelliteInfoEditorDialog();
 
 onMounted(async function () {
   // 衛星を取得

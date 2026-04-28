@@ -16,10 +16,10 @@
 <script setup lang="ts">
 import Constant from "@/common/Constant";
 import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
-import EditSatelliteInfoForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/EditSatelliteInfoForm";
+import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm";
 import SatelliteInfoEditorDialog from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialog.vue";
-import useEditSatelliteInfo from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useEditSatelliteInfo";
-import { useEditSatelliteInfoValidate } from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useEditSatelliteInfoValidate";
+import useSatelliteInfoEditorDialog from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useSatelliteInfoEditorDialog";
+import { useSatelliteInfoEditorDialogValidate } from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useSatelliteInfoEditorDialogValidate";
 import emitter from "@/renderer/util/EventBus";
 import { ref, toRaw, watch } from "vue";
 
@@ -31,20 +31,20 @@ const satellite = defineModel<DefaultSatelliteType>("satellite", { required: tru
 const emits = defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
 
 // フォーム
-const form = ref<EditSatelliteInfoForm>(new EditSatelliteInfoForm());
+const form = ref<SatelliteInfoEditorDialogForm>(new SatelliteInfoEditorDialogForm());
 // 画面を使って設定をしたかどうか
 const manualEditFlg = ref<boolean>(false);
 // NORAD ID編集可否
 const editableNoradId = ref<boolean>(true);
 // ダイアログを開いた時点のフォーム値（Reset用）
-const originalForm = ref<EditSatelliteInfoForm | null>(null);
+const originalForm = ref<SatelliteInfoEditorDialogForm | null>(null);
 // マウント時やリセット時にwatchしないためのフラグ
 let isWatched = true;
 
 // 入力チェック関係
-const { validateForm, errors } = useEditSatelliteInfoValidate(editableNoradId.value);
+const { validateForm, errors } = useSatelliteInfoEditorDialogValidate(editableNoradId.value);
 // ファイルから取得した値と画面フォームで構造を変換する関数
-const { transformDefSatToForm, transformFormToRepoFrequencySatellite } = useEditSatelliteInfo();
+const { transformDefSatToForm, transformFormToRepoFrequencySatellite } = useSatelliteInfoEditorDialog();
 
 watch(
   isShow,

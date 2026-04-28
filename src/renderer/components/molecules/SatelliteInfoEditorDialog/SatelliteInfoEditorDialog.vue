@@ -40,7 +40,7 @@
               v-if="props.editableNoradId"
               v-model="form.noradId"
               maxlength="5"
-              :valiSchema="valiSchemaEditSatelliteInfo"
+              :valiSchema="valiSchemaSatelliteInfoEditorDialog"
               valiSchemaFieldPath="noradId"
               v-model:error-text="errors.noradId"
             />
@@ -56,7 +56,7 @@
             <TextField
               v-model="form.editSatelliteName"
               maxlength="24"
-              :valiSchema="valiSchemaEditSatelliteInfo"
+              :valiSchema="valiSchemaSatelliteInfoEditorDialog"
               valiSchemaFieldPath="editSatelliteName"
               v-model:error-text="errors.editSatelliteName"
             />
@@ -72,7 +72,7 @@
             <DigitTextField
               v-model="form.uplink1Hz"
               suffix="Hz"
-              :valiSchema="valiSchemaEditSatelliteInfo"
+              :valiSchema="valiSchemaSatelliteInfoEditorDialog"
               valiSchemaFieldPath="uplink1Hz"
               v-model:error-text="errors.uplink1Hz"
               :padEndDigit="9"
@@ -91,7 +91,7 @@
             <DigitTextField
               v-model="form.uplink2Hz"
               suffix="Hz"
-              :valiSchema="valiSchemaEditSatelliteInfo"
+              :valiSchema="valiSchemaSatelliteInfoEditorDialog"
               valiSchemaFieldPath="uplink2Hz"
               v-model:error-text="errors.uplink2Hz"
               :disabled="!(form.uplink1Hz && form.uplink1Mode)"
@@ -113,7 +113,7 @@
             <DigitTextField
               v-model="form.uplink3Hz"
               suffix="Hz"
-              :valiSchema="valiSchemaEditSatelliteInfo"
+              :valiSchema="valiSchemaSatelliteInfoEditorDialog"
               valiSchemaFieldPath="uplink3Hz"
               v-model:error-text="errors.uplink3Hz"
               :disabled="!(form.uplink2Hz && form.uplink2Mode)"
@@ -149,7 +149,7 @@
             <DigitTextField
               v-model="form.downlink1Hz"
               suffix="Hz"
-              :valiSchema="valiSchemaEditSatelliteInfo"
+              :valiSchema="valiSchemaSatelliteInfoEditorDialog"
               valiSchemaFieldPath="downlink1Hz"
               v-model:error-text="errors.downlink1Hz"
               :padEndDigit="9"
@@ -168,7 +168,7 @@
             <DigitTextField
               v-model="form.downlink2Hz"
               suffix="Hz"
-              :valiSchema="valiSchemaEditSatelliteInfo"
+              :valiSchema="valiSchemaSatelliteInfoEditorDialog"
               valiSchemaFieldPath="downlink2Hz"
               v-model:error-text="errors.downlink2Hz"
               :disabled="!(form.downlink1Hz && form.downlink1Mode)"
@@ -190,7 +190,7 @@
             <DigitTextField
               v-model="form.downlink3Hz"
               suffix="Hz"
-              :valiSchema="valiSchemaEditSatelliteInfo"
+              :valiSchema="valiSchemaSatelliteInfoEditorDialog"
               valiSchemaFieldPath="downlink3Hz"
               v-model:error-text="errors.downlink3Hz"
               :disabled="!(form.downlink2Hz && form.downlink2Mode)"
@@ -216,7 +216,7 @@
             <DigitTextField
               v-model="form.beaconHz"
               suffix="Hz"
-              :valiSchema="valiSchemaEditSatelliteInfo"
+              :valiSchema="valiSchemaSatelliteInfoEditorDialog"
               valiSchemaFieldPath="beaconHz"
               v-model:error-text="errors.beaconHz"
               :padEndDigit="9"
@@ -297,8 +297,8 @@ import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
 import OpeModeSelect from "@/renderer/components/molecules/OpeModeSelect/OpeModeSelect.vue";
 import ToneFrequencySelect from "@/renderer/components/molecules/ToneFrequencySelect/ToneFrequencySelect.vue";
 import { computed } from "vue";
-import EditSatelliteInfoForm from "./EditSatelliteInfoForm";
-import { getValiSchemaEditSatelliteInfo } from "./useEditSatelliteInfoValidate";
+import SatelliteInfoEditorDialogForm from "./SatelliteInfoEditorDialogForm";
+import { getValiSchemaSatelliteInfoEditorDialog } from "./useSatelliteInfoEditorDialogValidate";
 
 const props = defineProps({
   editableNoradId: {
@@ -311,7 +311,7 @@ const props = defineProps({
 // ダイアログ表示用
 const isShow = defineModel<boolean>("isShow", { default: false });
 // フォーム
-const form = defineModel<EditSatelliteInfoForm>("form", { default: new EditSatelliteInfoForm() });
+const form = defineModel<SatelliteInfoEditorDialogForm>("form", { default: new SatelliteInfoEditorDialogForm() });
 // 入力エラー
 const errors = defineModel<Record<string, string | undefined>>("errors", { default: {} });
 // タイトル表示用
@@ -321,7 +321,9 @@ const manualEditFlg = defineModel<boolean>("manualEditFlg", { default: false });
 // Resetボタンの表示制御
 const showReset = defineModel<boolean>("showReset", { default: true });
 
-const valiSchemaEditSatelliteInfo = computed(() => getValiSchemaEditSatelliteInfo(props.editableNoradId));
+const valiSchemaSatelliteInfoEditorDialog = computed(() =>
+  getValiSchemaSatelliteInfoEditorDialog(props.editableNoradId)
+);
 
 // 親に通知用のイベント
 const emits = defineEmits<{ (e: "ok"): void; (e: "cancel"): void; (e: "reset"): void }>();
