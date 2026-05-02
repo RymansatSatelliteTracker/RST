@@ -1,3 +1,4 @@
+import Constant from "@/common/Constant";
 import { AppConfigSatellite } from "@/common/model/AppConfigModel";
 import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
 import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm";
@@ -5,6 +6,18 @@ import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/Satel
  * 衛星情報編集画面関係のフック
  */
 export default function useSatelliteInfoEditorDialog() {
+  /**
+   * satelliteModeを画面表示用に正規化する
+   * REVERSE以外はNORMAL扱いとする
+   * @param mode satelliteMode
+   * @returns 正規化したsatelliteMode
+   */
+  function normalizeSatelliteModeForUi(mode: string | null | undefined): string {
+    return mode === Constant.Transceiver.TrackingMode.REVERSE
+      ? Constant.Transceiver.TrackingMode.REVERSE
+      : Constant.Transceiver.TrackingMode.NORMAL;
+  }
+
   /**
    * 画面フォームの構造に変換する(共通部分)
    * @param targetForm
@@ -34,7 +47,7 @@ export default function useSatelliteInfoEditorDialog() {
     targetForm.beaconMode = srcObj.beacon.beaconMode;
     targetForm.toneHz = srcObj.toneHz;
     targetForm.enableSatelliteMode = srcObj.enableSatelliteMode;
-    targetForm.satelliteMode = srcObj.satelliteMode;
+    targetForm.satelliteMode = normalizeSatelliteModeForUi(srcObj.satelliteMode);
     targetForm.outline = srcObj.outline;
   }
   /**
