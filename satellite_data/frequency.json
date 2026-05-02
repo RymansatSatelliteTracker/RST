@@ -34,7 +34,7 @@
           "beaconMode": ""
         },
         "enableSatelliteMode": false,
-        "satelliteMode": "1",
+        "satelliteMode": "NORMAL",
         "toneHz": null,
         "outline": ""
       },
@@ -70,7 +70,7 @@
           "beaconMode": ""
         },
         "enableSatelliteMode": false,
-        "satelliteMode": "1",
+        "satelliteMode": "NORMAL",
         "toneHz": 67.0,
         "outline": ""
       },
@@ -106,7 +106,7 @@
           "beaconMode": ""
         },
         "enableSatelliteMode": false,
-        "satelliteMode": "1",
+        "satelliteMode": "NORMAL",
         "toneHz": null,
         "outline": ""
       },
@@ -142,7 +142,7 @@
           "beaconMode": ""
         },
         "enableSatelliteMode": false,
-        "satelliteMode": "1",
+        "satelliteMode": "NORMAL",
         "toneHz": null,
         "outline": ""
       },
@@ -178,7 +178,7 @@
           "beaconMode": ""
         },
         "enableSatelliteMode": false,
-        "satelliteMode": "1",
+        "satelliteMode": "NORMAL",
         "toneHz": null,
         "outline": ""
       },
@@ -214,7 +214,7 @@
           "beaconMode": ""
         },
         "enableSatelliteMode": false,
-        "satelliteMode": "1",
+        "satelliteMode": "NORMAL",
         "toneHz": 67.0,
         "outline": "ISS Crossband Repeater"
       },
@@ -250,7 +250,7 @@
           "beaconMode": ""
         },
         "enableSatelliteMode": false,
-        "satelliteMode": "1",
+        "satelliteMode": "NORMAL",
         "toneHz": null,
         "outline": ""
       },
@@ -286,7 +286,7 @@
           "beaconMode": ""
         },
         "enableSatelliteMode": false,
-        "satelliteMode": "1",
+        "satelliteMode": "NORMAL",
         "toneHz": null,
         "outline": ""
       },
@@ -322,7 +322,7 @@
           "beaconMode": ""
         },
         "enableSatelliteMode": false,
-        "satelliteMode": "1",
+        "satelliteMode": "NORMAL",
         "toneHz": null,
         "outline": ""
       },
@@ -358,7 +358,7 @@
           "beaconMode": ""
         },
         "enableSatelliteMode": false,
-        "satelliteMode": "1",
+        "satelliteMode": "NORMAL",
         "toneHz": null,
         "outline": ""
       },
@@ -394,7 +394,7 @@
           "beaconMode": ""
         },
         "enableSatelliteMode": false,
-        "satelliteMode": "1",
+        "satelliteMode": "NORMAL",
         "toneHz": null,
         "outline": ""
       },
@@ -430,7 +430,7 @@
           "beaconMode": ""
         },
         "enableSatelliteMode": false,
-        "satelliteMode": "1",
+        "satelliteMode": "NORMAL",
         "toneHz": null,
         "outline": ""
       },
@@ -466,7 +466,7 @@
           "beaconMode": ""
         },
         "enableSatelliteMode": false,
-        "satelliteMode": "1",
+        "satelliteMode": "NORMAL",
         "toneHz": null,
         "outline": ""
       },
@@ -502,7 +502,7 @@
           "beaconMode": ""
         },
         "enableSatelliteMode": false,
-        "satelliteMode": "1",
+        "satelliteMode": "NORMAL",
         "toneHz": null,
         "outline": ""
       },
@@ -538,7 +538,7 @@
           "beaconMode": ""
         },
         "enableSatelliteMode": false,
-        "satelliteMode": "1",
+        "satelliteMode": "NORMAL",
         "toneHz": null,
         "outline": ""
       }

@@ -34,7 +34,7 @@
           "beaconMode": ""
         },
         "enableSatelliteMode": false,
-        "satelliteMode": "1",
+        "satelliteMode": "NORMAL",
         "toneHz": null,
         "outline": ""
       }

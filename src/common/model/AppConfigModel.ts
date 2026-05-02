@@ -96,7 +96,7 @@ export class AppConfigSatellite {
   // 衛星モード有効フラグ
   public enableSatelliteMode = false;
   // 衛星モード
-  public satelliteMode = "1";
+  public satelliteMode = Constant.Transceiver.TrackingMode.NORMAL;
   // トーン周波数
   public toneHz: number | null = null;
   // 対象衛星概要

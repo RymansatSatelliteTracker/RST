@@ -1,3 +1,4 @@
+import Constant from "@/common/Constant";
 import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
 
 /**
@@ -24,7 +25,7 @@ export function createDefaultSatellite(
     downlink3: { downlinkHz: null, downlinkMode: "" },
     beacon: { beaconHz: null, beaconMode: "" },
     enableSatelliteMode: false,
-    satelliteMode: "1",
+    satelliteMode: Constant.Transceiver.TrackingMode.NORMAL,
     toneHz: null,
     outline: "",
   };

@@ -1,3 +1,4 @@
+import Constant from "@/common/Constant";
 import { autoModeFreqType } from "@/common/types/satelliteSettingTypes";
 
 /**
@@ -28,6 +29,6 @@ export default class SatelliteInfoEditorDialogForm {
   public beaconHz: number | null = null;
   public beaconMode: string = "";
   public enableSatelliteMode: boolean = false;
-  public satelliteMode: string = "1";
+  public satelliteMode: string = Constant.Transceiver.TrackingMode.NORMAL;
   public outline: string = "";
 }
