@@ -6,6 +6,7 @@ export type SatelliteIdentiferType = {
   satelliteId: number;
   satelliteName: string;
   userRegistered: boolean;
+  noradId: string;
 };
 
 /**

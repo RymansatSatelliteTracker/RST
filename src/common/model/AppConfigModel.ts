@@ -96,7 +96,7 @@ export class AppConfigSatellite {
   // 衛星モード有効フラグ
   public enableSatelliteMode = false;
   // 衛星モード
-  public satelliteMode = "1";
+  public satelliteMode = Constant.Transceiver.TrackingMode.NORMAL;
   // トーン周波数
   public toneHz: number | null = null;
   // 対象衛星概要
@@ -175,6 +175,8 @@ export class AppConfigTransceiver {
   public autoTrackingIntervalSec = "1";
   // 自動追尾準備・終了時間（分）
   public autoTrackingStartEndTime = "1";
+  // 無線機操作後ドップラーシフト再開時間（秒）
+  public dopplerResumeDelaySec = "2";
   // 無線機の送信周波数
   public txFrequency = "2430.000.000";
   // 無線機の受信周波数

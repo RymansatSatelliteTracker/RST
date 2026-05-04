@@ -106,14 +106,23 @@ import { mdiArrowDownBold, mdiArrowUpBold, mdiDelete } from "@mdi/js";
 // 衛星グループリスト
 const satelliteGroups = defineModel<AppConfigSatelliteGroupForSatSetting[]>("satelliteGroups", { default: [] });
 // 選択されたグループ
-const selectedGroup = ref({ groupName: "", groupId: -1, satellites: [] } as AppConfigSatelliteGroupForSatSetting);
+const selectedGroup = ref<AppConfigSatelliteGroupForSatSetting>({
+  groupName: "",
+  groupId: -1,
+  satellites: [],
+} as AppConfigSatelliteGroupForSatSetting);
 // グループに所属する衛星リスト
 const selectedSatellites = defineModel<SatelliteIdentiferType[]>("selectedSatellites", { default: [] });
 // 衛星リストから選択したアイテムのインデックス
 const selectedItemIndex = ref<number | null>(null);
 
 // 選択されたアイテム
-const selectedSatelliteItem = ref({ satelliteId: -1, satelliteName: "", userRegistered: false });
+const selectedSatelliteItem = ref<SatelliteIdentiferType>({
+  satelliteId: -1,
+  satelliteName: "",
+  userRegistered: false,
+  noradId: "",
+});
 // 衛星グループ画面表示用のフラグ
 const enableGroupSatellite = ref(false);
 // 衛星登録画面表示用のフラグ
@@ -234,7 +243,7 @@ function showRegistSatellite() {
   if (item) {
     selectedSatelliteItem.value = item;
   } else {
-    selectedSatelliteItem.value = { satelliteId: -1, satelliteName: "", userRegistered: false };
+    selectedSatelliteItem.value = { satelliteId: -1, satelliteName: "", userRegistered: false, noradId: "" };
   }
 }
 

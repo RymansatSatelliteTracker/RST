@@ -341,7 +341,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       // サブ・周波数の取得
       const recvDataSubFreq = await this.sendAndSyncRecv(this.cmdMaker.makeGetFreq(), "GET_FREQ");
       this.state.setRecvTxFreqHz(TransceiverIcomRecvParser.parseFreq(recvDataSubFreq));
-      AppMainLogger.debug(`Tx周波数 （無線機→RST）`);
+      AppMainLogger.debug(`Tx周波数取得要求 （無線機→RST） ${recvDataSubFreq}`);
     }
 
     // メイン側のデータ取得
@@ -349,7 +349,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // メイン・周波数の取得
     const recvDataMainFreq = await this.sendAndSyncRecv(this.cmdMaker.makeGetFreq(), "GET_FREQ");
     this.state.setRecvRxFreqHz(TransceiverIcomRecvParser.parseFreq(recvDataMainFreq));
-    AppMainLogger.debug(`Rx周波数 （無線機→RST）`);
+    AppMainLogger.debug(`Rx周波数取得要求 （無線機→RST） ${recvDataMainFreq}`);
   }
 
   /**
@@ -450,6 +450,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     } else if (this.state.isRecvRxFreqUpdate) {
       // Rx周波数を無線機から取得
       // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、周波数の取得は行わない
+      AppMainLogger.debug(`sendAndRecvForMainForLoop Rx周波数取得要求`);
       const recvDataMainFreq = await this.sendAndSyncRecv(this.cmdMaker.makeGetFreq(), "GET_FREQ");
       await this.handleRecvData(recvDataMainFreq);
       this.state.isRecvRxFreqUpdate = false;
@@ -497,6 +498,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     } else if (this.state.isRecvTxFreqUpdate) {
       // Tx周波数を無線機から取得
       // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、周波数の取得は行わない
+      AppMainLogger.debug(`sendAndRecvForSubForLoop Tx周波数取得要求`);
       const recvDataSubFreq = await this.sendAndSyncRecv(this.cmdMaker.makeGetFreq(), "GET_FREQ");
       await this.handleRecvData(recvDataSubFreq);
       this.state.isRecvTxFreqUpdate = false;
@@ -517,6 +519,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       // 運用モードを無線機から取得
       // memo: 運用モードの送信時以外は、運用モードの取得は必ず行う。
       // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、運用モードの取得は行わない。
+      AppMainLogger.debug(`sendAndRecvForSubForLoop Tx運用モード取得要求`);
       const recvMode = await this.sendAndSyncRecv(this.cmdMaker.makeGetMode(), "GET_MODE");
       await this.handleRecvData(recvMode);
 
@@ -956,8 +959,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       case "00":
         // 表示周波数の取得
         if (trimedData.length === 22) {
+          AppMainLogger.debug(`${comId}：トランシーブ受信 周波数データ（00）`);
           // 無線機から受信した周波数データを処理する
-          await this.procRecvFreqData(trimedData);
+          await this.procRecvFreqData(comId, trimedData);
         }
 
         res.data = true;
@@ -972,8 +976,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       // 表示周波数の取得
       case "03":
         if (trimedData.length === 22) {
+          AppMainLogger.debug(`${comId}：取得受信 表示周波数（03）`);
           // 無線機から受信した周波数データを処理する
-          await this.procRecvFreqData(trimedData);
+          await this.procRecvFreqData(comId, trimedData);
         }
         res.data = false;
         this.isDopplerShiftWaitingCallback(res);
@@ -987,7 +992,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         }
 
         // 無線機から受信した運用モードデータを処理する
-        AppMainLogger.debug(`${comId}：トランシーブ 運用モード（01）`);
+        AppMainLogger.debug(`${comId}：トランシーブ受信 運用モード（01）`);
         await this.procRecvOpeMode(comId, trimedData);
 
         res.data = false;
@@ -1005,7 +1010,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         }
 
         // 無線機から受信した運用モードデータを処理する
-        AppMainLogger.debug(`${comId}：トランシーブ 運用モード（04）`);
+        AppMainLogger.debug(`${comId}：取得受信 運用モード（04）`);
         await this.procRecvOpeMode(comId, trimedData);
 
         res.data = false;
@@ -1019,7 +1024,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         }
 
         // 無線機から受信したデータモードを処理する
-        AppMainLogger.debug(`${comId}：トランシーブ データモード（1a）`);
+        AppMainLogger.debug(`${comId}：取得受信 データモード（1a）`);
         this.procRecvDataMode(comId, trimedData);
 
         res.data = false;
@@ -1041,9 +1046,10 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
   /**
    * 無線機から受信した周波数データを処理する
+   * @param {number} comId 通信管理ID
    * @param {string} recvData 受信データ
    */
-  private async procRecvFreqData(recvData: string) {
+  private async procRecvFreqData(comId: number, recvData: string) {
     if (!this.freqCallback) {
       return;
     }
@@ -1062,18 +1068,18 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         // メインバンドの受信データをRx周波数とする
         res.data = { downlinkHz: freqHz, downlinkMode: "" } as DownlinkType;
         this.state.setRecvRxFreqHz(freqHz);
-        AppMainLogger.debug(`Rx周波数 （無線機→RST）`);
+        AppMainLogger.debug(`${comId}：Rx周波数 （無線機→RST） ${freqHz} isMain=${this.state.isMain}`);
       } else {
         // サブバンドは受信データをTx周波数とする
         res.data = { uplinkHz: freqHz, uplinkMode: "" } as UplinkType;
         this.state.setRecvTxFreqHz(freqHz);
-        AppMainLogger.debug(`Tx周波数 （無線機→RST）`);
+        AppMainLogger.debug(`${comId}：Tx周波数 （無線機→RST） ${freqHz} isMain=${this.state.isMain}`);
       }
     } else {
       // サテライトモードがOFFの場合は、受信データをアップリンク周波数とする
       res.data = { uplinkHz: freqHz, uplinkMode: "" } as UplinkType;
       this.state.setRecvTxFreqHz(freqHz);
-      AppMainLogger.debug(`Tx周波数 （無線機→RST） サテライトOff`);
+      AppMainLogger.debug(`${comId}：Tx周波数 （無線機→RST） ${freqHz} isMain=${this.state.isMain} サテライトOff`);
     }
 
     // 周波数のコールバック呼び出し

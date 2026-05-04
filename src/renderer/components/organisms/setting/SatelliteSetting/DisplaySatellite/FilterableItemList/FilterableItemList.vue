@@ -3,7 +3,11 @@
   <div>
     <v-row>
       <v-col>
-        <TextField v-model="filterText" :label="I18nUtil.getMsg(I18nMsgs.GCOM_SEARCH)"></TextField>
+        <TextField
+          v-model="filterText"
+          :label="I18nUtil.getMsg(I18nMsgs.GCOM_SEARCH)"
+          :placeholder="I18nUtil.getMsg(I18nMsgs.G31_SEARCH)"
+        ></TextField>
       </v-col>
     </v-row>
     <v-row>
@@ -11,7 +15,7 @@
         <VirtualScrollList
           style="overflow-y: auto"
           :items="filteredItems"
-          :itemName="'satelliteName'"
+          :itemName="'displayText'"
           :itemKey="'satelliteId'"
           :height="355"
           :selectMode="'inclusive'"
@@ -41,6 +45,14 @@ import EditSatelliteInfo from "@/renderer/components/organisms/setting/Satellite
 import AppRendererLogger from "@/renderer/util/AppRendererLogger";
 import { computed, onMounted, ref } from "vue";
 
+type DisplaySatelliteItem = {
+  satelliteId: number;
+  satelliteName: string;
+  userRegistered: boolean;
+  noradId: string;
+  displayText: string;
+};
+
 // 衛星情報編集画面表示用のフラグ
 const enableEditSatelliteInfo = ref(false);
 // 衛星情報編集画面に表示用の選択されたアイテム
@@ -48,7 +60,7 @@ const selectedEditSatelliteItem = ref<SatelliteIdentiferType>();
 // フィルタテキスト
 const filterText = ref("");
 // リストに表示するアイテム
-const items = ref<SatelliteIdentiferType[]>([]);
+const items = ref<DisplaySatelliteItem[]>([]);
 // リストの関数を使用するためのref
 const listRef = ref<InstanceType<typeof VirtualScrollList> | null>(null);
 
@@ -60,7 +72,9 @@ onMounted(function () {
     .then((satIdentifer: SatelliteIdentiferType[]) => {
       if (satIdentifer) {
         // 衛星名でソートして値を格納する
-        items.value = satIdentifer.sort((a, b) => a.satelliteName.localeCompare(b.satelliteName));
+        items.value = satIdentifer
+          .map((item) => ({ ...item, displayText: `<${item.noradId}> ${item.satelliteName}` }))
+          .sort((a, b) => a.satelliteName.localeCompare(b.satelliteName));
       }
     })
     .catch((error) => {
@@ -76,7 +90,9 @@ const filteredItems = computed(function () {
   if (!filterText.value) {
     ret = items.value;
   } else {
-    ret = items.value.filter((item) => item.satelliteName.toLowerCase().includes(filterText.value.toLowerCase()));
+    ret = items.value.filter((item) =>
+      (item.satelliteName + item.noradId).toLowerCase().includes(filterText.value.toLowerCase())
+    );
   }
 
   return ret;

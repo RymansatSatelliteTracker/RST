@@ -1,16 +1,32 @@
+import Constant from "@/common/Constant";
 import { AppConfigSatellite } from "@/common/model/AppConfigModel";
 import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
-import EditSatelliteInfoForm from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/EditSatelliteInfo/EditSatelliteInfoForm";
+import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm";
 /**
  * 衛星情報編集画面関係のフック
  */
-export default function useEditSatelliteInfo() {
+export default function useSatelliteInfoEditorDialog() {
+  /**
+   * satelliteModeを画面表示用に正規化する
+   * REVERSE以外はNORMAL扱いとする
+   * @param mode satelliteMode
+   * @returns 正規化したsatelliteMode
+   */
+  function normalizeSatelliteModeForUi(mode: string | null | undefined): string {
+    return mode === Constant.Transceiver.TrackingMode.REVERSE
+      ? Constant.Transceiver.TrackingMode.REVERSE
+      : Constant.Transceiver.TrackingMode.NORMAL;
+  }
+
   /**
    * 画面フォームの構造に変換する(共通部分)
    * @param targetForm
    * @param srcObj
    */
-  function transformToForm(targetForm: EditSatelliteInfoForm, srcObj: AppConfigSatellite | DefaultSatelliteType) {
+  function transformToForm(
+    targetForm: SatelliteInfoEditorDialogForm,
+    srcObj: AppConfigSatellite | DefaultSatelliteType
+  ) {
     // 共通
     targetForm.satelliteId = srcObj.satelliteId;
     // 参照用はここでは設定しない
@@ -31,7 +47,7 @@ export default function useEditSatelliteInfo() {
     targetForm.beaconMode = srcObj.beacon.beaconMode;
     targetForm.toneHz = srcObj.toneHz;
     targetForm.enableSatelliteMode = srcObj.enableSatelliteMode;
-    targetForm.satelliteMode = srcObj.satelliteMode;
+    targetForm.satelliteMode = normalizeSatelliteModeForUi(srcObj.satelliteMode);
     targetForm.outline = srcObj.outline;
   }
   /**
@@ -39,7 +55,7 @@ export default function useEditSatelliteInfo() {
    * @param targetForm
    * @param srcObj
    */
-  function transformAppConfigToForm(targetForm: EditSatelliteInfoForm, srcObj: AppConfigSatellite) {
+  function transformAppConfigToForm(targetForm: SatelliteInfoEditorDialogForm, srcObj: AppConfigSatellite) {
     transformToForm(targetForm, srcObj);
     targetForm.editSatelliteName = srcObj.userRegisteredSatelliteName;
     targetForm.autoModeUplinkFreq = srcObj.autoModeUplinkFreq ?? 1;
@@ -50,7 +66,7 @@ export default function useEditSatelliteInfo() {
    * @param targetForm
    * @param srcObj
    */
-  function transformDefSatToForm(targetForm: EditSatelliteInfoForm, srcObj: DefaultSatelliteType) {
+  function transformDefSatToForm(targetForm: SatelliteInfoEditorDialogForm, srcObj: DefaultSatelliteType) {
     transformToForm(targetForm, srcObj);
     targetForm.editSatelliteName = srcObj.satelliteName;
     targetForm.autoModeUplinkFreq = 1;
@@ -61,7 +77,7 @@ export default function useEditSatelliteInfo() {
    * @param targetAppConfig
    * @param srcForm
    */
-  function transformFormToAppConfig(targetAppConfig: AppConfigSatellite, srcForm: EditSatelliteInfoForm) {
+  function transformFormToAppConfig(targetAppConfig: AppConfigSatellite, srcForm: SatelliteInfoEditorDialogForm) {
     targetAppConfig.satelliteId = srcForm.satelliteId;
     targetAppConfig.userRegisteredSatelliteName = srcForm.editSatelliteName;
     targetAppConfig.noradId = srcForm.noradId;
@@ -89,5 +105,42 @@ export default function useEditSatelliteInfo() {
     targetAppConfig.outline = srcForm.outline;
   }
 
-  return { transformAppConfigToForm, transformDefSatToForm, transformFormToAppConfig };
+  /**
+   * リポジトリ登録用の周波数設定用の構造に変換する
+   * satelliteIdはfrequency.jsonに保存しないため設定しない
+   * @param targetDefSat
+   * @param srcForm
+   */
+  function transformFormToRepoFrequencySatellite(
+    targetDefSat: DefaultSatelliteType,
+    srcForm: SatelliteInfoEditorDialogForm
+  ) {
+    targetDefSat.satelliteName = srcForm.editSatelliteName;
+    targetDefSat.noradId = srcForm.noradId;
+    targetDefSat.uplink1.uplinkHz = srcForm.uplink1Hz ? srcForm.uplink1Hz : null;
+    targetDefSat.uplink1.uplinkMode = srcForm.uplink1Mode;
+    targetDefSat.uplink2.uplinkHz = srcForm.uplink2Hz ? srcForm.uplink2Hz : null;
+    targetDefSat.uplink2.uplinkMode = srcForm.uplink2Mode;
+    targetDefSat.uplink3.uplinkHz = srcForm.uplink3Hz ? srcForm.uplink3Hz : null;
+    targetDefSat.uplink3.uplinkMode = srcForm.uplink3Mode;
+    targetDefSat.downlink1.downlinkHz = srcForm.downlink1Hz ? srcForm.downlink1Hz : null;
+    targetDefSat.downlink1.downlinkMode = srcForm.downlink1Mode;
+    targetDefSat.downlink2.downlinkHz = srcForm.downlink2Hz ? srcForm.downlink2Hz : null;
+    targetDefSat.downlink2.downlinkMode = srcForm.downlink2Mode;
+    targetDefSat.downlink3.downlinkHz = srcForm.downlink3Hz ? srcForm.downlink3Hz : null;
+    targetDefSat.downlink3.downlinkMode = srcForm.downlink3Mode;
+    targetDefSat.beacon.beaconHz = srcForm.beaconHz ? srcForm.beaconHz : null;
+    targetDefSat.beacon.beaconMode = srcForm.beaconMode;
+    targetDefSat.enableSatelliteMode = srcForm.enableSatelliteMode;
+    targetDefSat.satelliteMode = srcForm.satelliteMode;
+    targetDefSat.toneHz = srcForm.toneHz ? srcForm.toneHz : null;
+    targetDefSat.outline = srcForm.outline;
+  }
+
+  return {
+    transformAppConfigToForm,
+    transformDefSatToForm,
+    transformFormToAppConfig,
+    transformFormToRepoFrequencySatellite,
+  };
 }

@@ -212,16 +212,20 @@ export default class I18nMsgs {
     en: "TLE update completed",
     ja: "TLEの更新が完了しました",
   };
+  public static readonly SYSTEM_SAVE_SETTING_FAILED: I18nMsgItem = {
+    en: "Failed to save the settings.",
+    ja: "設定の保存に失敗しました。",
+  };
 
   // シリアル接続系
   public static readonly SERIAL_NOT_CONNECTED: I18nMsgItem = { en: "Serial not connected", ja: "シリアルが未接続です" };
   public static readonly SERIAL_NOT_CONNECTED_ROTATOR: I18nMsgItem = {
     en: "Serial not connected",
-    ja: "ローテータのシリアルが未接続です",
+    ja: "ローテータが未接続です",
   };
   public static readonly SERIAL_NOT_CONNECTED_TRANSCEIVER: I18nMsgItem = {
     en: "Serial not connected",
-    ja: "無線機のシリアルが未接続です",
+    ja: "無線機が未接続です",
   };
   public static readonly SERIAL_CONNECTION_FAILED: I18nMsgItem = {
     en: "Serial connection failed",
@@ -292,6 +296,10 @@ export default class I18nMsgs {
     en: "Auto-Tracking Start/End Time",
     ja: "自動追尾準備・終了時間",
   };
+  public static readonly G41_DOPPLER_RESUME_DELAY: I18nMsgItem = {
+    en: "Doppler Resume Delay",
+    ja: "無線機操作後ドップラーシフト再開時間",
+  };
   // 画面項目系／ローテータ設定画面
   public static readonly G51_TAB_CONNECTION: I18nMsgItem = { en: "Device", ja: "機種設定" };
   public static readonly G51_TAB_BEHIVIOR: I18nMsgItem = { en: "Behivior", ja: "動作設定" };
@@ -329,6 +337,7 @@ export default class I18nMsgs {
   // 画面項目系／衛星設定画面 表示衛星
   public static readonly G31_SATELLITE_GROUP: I18nMsgItem = { en: "Satellite Group", ja: "衛星グループ" };
   public static readonly G31_GROUP: I18nMsgItem = { en: "Group", ja: "グループ" };
+  public static readonly G31_SEARCH: I18nMsgItem = { en: "Satellite Name/ NORAD ID", ja: "衛星名/NORAD ID" };
   // 画面項目系／衛星設定画面　衛星情報編集
   public static readonly G31_INTERNATIONAL_NAME: I18nMsgItem = { en: "International Name", ja: "国際呼称" };
   public static readonly G31_NORADID: I18nMsgItem = { en: "NORAD ID", ja: "NORAD ID" };

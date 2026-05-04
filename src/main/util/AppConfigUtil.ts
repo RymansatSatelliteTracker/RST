@@ -427,7 +427,7 @@ export class AppConfigUtil {
           // 返却に必要な衛星IDと衛星名の組み合わせにする
           if (appConfigSat === null) {
             // ないはずだが衛星IDがヒットしなければundefined
-            return { satelliteId: satelliteId, satelliteName: "undefined", userRegistered: false };
+            return { satelliteId: satelliteId, satelliteName: "undefined", userRegistered: false, noradId: "" };
           } else {
             // デフォルト衛星が取得できたらその情報を返すが
             // ユーザ登録した衛星名があったらそちらを優先する
@@ -435,6 +435,7 @@ export class AppConfigUtil {
               satelliteId: appConfigSat.satelliteId,
               satelliteName: appConfigSat.userRegisteredSatelliteName,
               userRegistered: appConfigSat.userRegistered,
+              noradId: appConfigSat.noradId,
             };
           }
         })

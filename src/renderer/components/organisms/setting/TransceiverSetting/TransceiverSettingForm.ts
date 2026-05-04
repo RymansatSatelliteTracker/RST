@@ -9,4 +9,6 @@ export default class TransceiverSettingForm extends TransceiverConnForm {
   public autoTrackingIntervalSec = "";
   // 自動追尾準備・終了時間 (分)
   public autoTrackingStartEndTime = "";
+  // 無線機操作後ドップラーシフト再開時間 (秒)
+  public dopplerResumeDelaySec = "";
 }

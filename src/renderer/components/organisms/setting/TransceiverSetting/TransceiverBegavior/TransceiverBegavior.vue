@@ -31,6 +31,22 @@
             />
           </div>
         </div>
+        <!-- 無線機操作後ドップラーシフト再開時間 -->
+        <div class="d-flex mt-2">
+          <label class="label form_label">{{ I18nUtil.getMsg(I18nMsgs.G41_DOPPLER_RESUME_DELAY) }}</label>
+          <div class="form_select ml-2">
+            <!-- TODO main側の処理ができるまで非活性 -->
+            <v-select
+              v-model="form.dopplerResumeDelaySec"
+              :items="doppleResumeDelaySecOptions"
+              hide-details
+              variant="outlined"
+              density="compact"
+              class="selectbox"
+              :disabled="true"
+            />
+          </div>
+        </div>
       </div>
     </v-col>
 
@@ -53,6 +69,9 @@ const autoTrackingIntervalSecOptions = ["0.1", "0.5", "1", "2", "3", "4", "5", "
 });
 const autoTrackingStartEndTimeOptions = Array.from({ length: 15 }, (_, i) => String(i + 1)).map((item) => {
   return { title: `${item} min`, value: item };
+});
+const doppleResumeDelaySecOptions = Array.from({ length: 9 }, (_, i) => String(i + 1)).map((item) => {
+  return { title: `${item} sec`, value: item };
 });
 </script>
 

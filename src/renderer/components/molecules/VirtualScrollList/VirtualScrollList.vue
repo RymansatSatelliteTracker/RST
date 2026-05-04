@@ -4,7 +4,7 @@
       <template v-slot:default="{ item, index }">
         <span v-if="index === items.length - 1" v-intersect.once="onIntersect"></span>
         <v-list-item
-          :key="item[itemKey]"
+          :key="getItemKey(item, index)"
           @click="selectItem(index)"
           @dblclick="emitItemDblClick(item)"
           :class="{ 'v-list-item--active': isSelected(index) }"
@@ -43,6 +43,15 @@ function emitItemDblClick(item: any) {
 }
 
 /**
+ * アイテムのキーを返す
+ * itemKeyが未指定の場合はindexを返す
+ */
+function getItemKey(item: any, index: number) {
+  if (!itemKey.value) return index;
+  return item[itemKey.value];
+}
+
+/**
  * コンポーネントに渡されるアイテム数が変化した時に
  * 指定の行数だけ画面表示用にロードする
  */
@@ -52,7 +61,7 @@ watch(
     currentPage = 0;
     loadItems();
   },
-  { deep: true }
+  { deep: true, immediate: true }
 );
 
 /**
