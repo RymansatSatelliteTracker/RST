@@ -25,9 +25,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   const txFrequency = ref<string>("2430.000.000");
   // ダウンリンク周波数
   const rxFrequency = ref<string>("0480.000.000");
-  // 調整用アップリンク周波数
+  // Tx周波数補正値
   const txFrequencyAdjustment = ref<string>("+000.000");
-  // 調整用ダウンリンク周波数
+  // Rx周波数補正値
   const rxFrequencyAdjustment = ref<string>("+000.000");
   // 基準周波数（補正値なし）
   let plainTxBaseFreq = 0;
@@ -85,12 +85,24 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
   // 無線機からの受信処理をスキップするか
   let isRecvProcSkip = false;
+  // アクティブ衛星のNoradId
+  let currentNoradId = "";
 
   /**
    * 表示中の衛星グループが変更された場合のイベントハンドラ
    */
   async function onChangeSatGrp() {
+    // 衛星が変更された場合は補正値をリセットする（NoradIdで判定する）
+    const changedNoradId = getActiveSatNorad();
+    if (currentNoradId !== changedNoradId) {
+      resetFreqAdj();
+    }
+    // アクティブ衛星のNoradIdを更新
+    currentNoradId = changedNoradId;
+
     isBeaconModeAvailable.value = await confirmBeaconModeAvailable();
+
+    // Autoモード中の場合は、新しい衛星であらためてAutoモードを開始する
     if (autoStore.tranceiverAuto) {
       await startAutoMode();
     }
@@ -135,6 +147,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
     // AutoOn時は受信処理をスキップする（AutoOn処理中のモード変更などにおける無線機からの不要なデータ受信を無視する）
     isRecvProcSkip = true;
+
+    // アクティブ衛星のNoradIdを保持する
+    currentNoradId = getActiveSatNorad();
 
     // Autoモード移行前の周波数を保持する
     savedTxFrequency.value = txFrequency.value;
@@ -1083,6 +1098,25 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   function updatePlainBaseFreq(txFreq: string, rxFreq: string) {
     plainTxBaseFreq = TransceiverUtil.parseNumber(txFreq);
     plainRxBaseFreq = TransceiverUtil.parseNumber(rxFreq);
+  }
+
+  /**
+   * 周波数の補正値をリセットする
+   */
+  function resetFreqAdj() {
+    txFrequencyAdjustment.value = "+000.000";
+    rxFrequencyAdjustment.value = "+000.000";
+  }
+
+  /**
+   * アクティブ衛星のNoradIDを取得する
+   */
+  function getActiveSatNorad() {
+    const satelliteService = ActiveSatServiceHub.getInstance().getSatService();
+    if (!satelliteService) {
+      return "";
+    }
+    return satelliteService.getNoradId();
   }
 
   return {
