@@ -92,11 +92,13 @@ export function makeElectronMenu(): Electron.Menu {
         // 設定インポート
         {
           label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_IMPORT_CONFIG),
+          enabled: false, // MEMO: 一時的に無効化
           click: () => new AppConfigImportSerivce().importAppConfig(),
         },
         // 設定エクスポート
         {
           label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_EXPORT_CONFIG),
+          enabled: false, // MEMO: 一時的に無効化
           click: () => new AppConfigExportSerivce().exportAppConfig(),
         },
 
@@ -129,11 +131,13 @@ export function makeElectronMenu(): Electron.Menu {
         // 設定インポート
         {
           label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_IMPORT_CONFIG),
+          enabled: false, // MEMO: 一時的に無効化
           click: () => new AppConfigImportSerivce().importAppConfig(),
         },
         // 設定エクスポート
         {
           label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_EXPORT_CONFIG),
+          enabled: false, // MEMO: 一時的に無効化
           click: () => new AppConfigExportSerivce().exportAppConfig(),
         },
 
