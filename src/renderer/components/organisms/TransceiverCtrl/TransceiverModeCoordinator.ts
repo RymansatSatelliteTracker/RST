@@ -151,7 +151,7 @@ export default class TransceiverModeCoordinator {
     this.saveFreqInAutoModeStart();
 
     // アクティブ衛星の周波数/運用モード/サテライトモード/トラッキングモードを取得
-    const transceiverSetting = ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
+    const transceiverSetting = this.getActiveSatTransceiverSetting();
 
     // サテライトモードを設定して無線機へ反映する
     const result = await this.applySatelliteModeAtAutoStart(transceiverSetting.satelliteMode);
@@ -194,18 +194,24 @@ export default class TransceiverModeCoordinator {
     // AutoOnにできない状態の場合（無線機設定に未設定項目がある場合など）はトーストを表示して処理終了
     const appConfig = await ApiAppConfig.getAppConfig();
     if (!this.isValidTransceiverSetting(appConfig)) {
-      emitter.emit(Constant.GlobalEvent.NOTICE_INFO, I18nUtil.getMsg(I18nMsgs.SYSTEM_YET_TRANSCEIVER_CONFIG));
-      return false;
+      return this.emitNoticeAndFail(Constant.GlobalEvent.NOTICE_INFO, I18nMsgs.SYSTEM_YET_TRANSCEIVER_CONFIG);
     }
 
     // 無線機接続が準備完了か確認する
     const isReady = await ApiTransceiver.isReady();
     if (!isReady.status) {
-      emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.SERIAL_NOT_CONNECTED_TRANSCEIVER));
-      return false;
+      return this.emitNoticeAndFail(Constant.GlobalEvent.NOTICE_ERR, I18nMsgs.SERIAL_NOT_CONNECTED_TRANSCEIVER);
     }
 
     return true;
+  }
+
+  /**
+   * 通知を表示して失敗を返す
+   */
+  private emitNoticeAndFail(eventType: "NOTICE_INFO" | "NOTICE_ERR", messageKey: any): false {
+    emitter.emit(eventType, I18nUtil.getMsg(messageKey));
+    return false;
   }
 
   /**
@@ -291,8 +297,7 @@ export default class TransceiverModeCoordinator {
     await this.stopUpdateFreq();
 
     // Autoモード移行前の周波数を復元する
-    this.state.txFrequency.value = this.state.savedTxFrequency.value;
-    this.state.rxFrequency.value = this.state.savedRxFrequency.value;
+    this.restoreSavedFreq();
   }
 
   /**
@@ -326,14 +331,11 @@ export default class TransceiverModeCoordinator {
    */
   public async stopBeaconMode(): Promise<void> {
     // アクティブ衛星の周波数/運用モードを取得
-    const transceiverSetting = ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
+    const transceiverSetting = this.getActiveSatTransceiverSetting();
 
     // Autoモード中じゃない場合は移行前の周波数と運用モードを復元して抜ける
     if (!this.autoStore.tranceiverAuto) {
-      this.state.txFrequency.value = this.state.savedTxFrequency.value;
-      this.state.rxFrequency.value = this.state.savedRxFrequency.value;
-      this.state.txOpeMode.value = this.state.savedTxOpeMode.value;
-      this.state.rxOpeMode.value = this.state.savedRxOpeMode.value;
+      this.restoreSavedFreqAndOpeMode();
       return;
     }
 
@@ -347,7 +349,7 @@ export default class TransceiverModeCoordinator {
    */
   private setFreqAndOpeModeInModeStart(): void {
     // アクティブ衛星の周波数/運用モードを取得
-    const transceiverSetting = ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
+    const transceiverSetting = this.getActiveSatTransceiverSetting();
 
     const resolved = this.modeSettingResolver.resolveOnModeStart(this.state.isBeaconMode.value, transceiverSetting);
     this.applyResolvedModeState(resolved);
@@ -386,6 +388,23 @@ export default class TransceiverModeCoordinator {
   }
 
   /**
+   * 保存済みの周波数を復元する
+   */
+  private restoreSavedFreq(): void {
+    this.state.txFrequency.value = this.state.savedTxFrequency.value;
+    this.state.rxFrequency.value = this.state.savedRxFrequency.value;
+  }
+
+  /**
+   * 保存済みの周波数と運用モードを復元する
+   */
+  private restoreSavedFreqAndOpeMode(): void {
+    this.restoreSavedFreq();
+    this.state.txOpeMode.value = this.state.savedTxOpeMode.value;
+    this.state.rxOpeMode.value = this.state.savedRxOpeMode.value;
+  }
+
+  /**
    * 無線機の設定が完了しているか判定する
    */
   private isValidTransceiverSetting(appConfig: AppConfigModel): boolean {
@@ -406,6 +425,13 @@ export default class TransceiverModeCoordinator {
   private async fetchAutoTrackingIntervalMsec(): Promise<number> {
     const appConfig = await ApiAppConfig.getAppConfig();
     return parseFloat(appConfig.transceiver.autoTrackingIntervalSec) * 1000;
+  }
+
+  /**
+   * アクティブ衛星の無線設定を取得する
+   */
+  private getActiveSatTransceiverSetting() {
+    return ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
   }
 
   /**
