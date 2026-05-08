@@ -3,9 +3,10 @@
     <l-map
       ref="map"
       v-model:zoom="zoom"
+      :crs="L.CRS.EPSG4326"
       :use-global-leaflet="true"
       :center="groundStation"
-      :options="{ attributionControl: false, zoomControl: false, maxZoom: 8.4, dragging: true }"
+      :options="{ attributionControl: false, zoomControl: false, maxZoom: 6, minZoom: 1, dragging: true }"
     >
       <!-- <l-tile-layer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base"></l-tile-layer> -->
       <!-- <l-tile-layer
@@ -17,9 +18,15 @@
 
       <!-- 地図 -->
       <l-tile-layer
-        url="https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}"
+        url="/tiles/{z}/{x}/{y}.jpg"
         layer-type="base"
         :opacity="0.7"
+        :tileSize="512"
+        :tms="true"
+        :bounds="[
+          [-90, -180],
+          [90, 180],
+        ]"
       />
 
       <!-- 太陽の位置を描画 -->
@@ -67,6 +74,7 @@ import VisibilityRange from "@/renderer/components/organisms/Satellite/Visibilit
 import SunLocation from "@/renderer/components/organisms/Sun/SunLocation/SunLocation.vue";
 import TwilightCurve from "@/renderer/components/organisms/Sun/TwilightCurve/TwilightCurve.vue";
 import { LMap, LTileLayer } from "@vue-leaflet/vue-leaflet";
+import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { ref, watch } from "vue";
 import useMap from "./useMap";
