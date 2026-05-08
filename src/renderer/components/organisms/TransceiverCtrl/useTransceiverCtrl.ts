@@ -9,6 +9,7 @@ import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
 import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/TransceiverBaseFreqMgr";
+import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/TransceiverDopplerCalc";
 import TransceiverModeSettingResolver, {
   ModeResolvedState,
 } from "@/renderer/components/organisms/TransceiverCtrl/TransceiverModeSettingResolver";
@@ -77,6 +78,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   const baseFreqMgr = new TransceiverBaseFreqMgr();
   // モードごとの周波数・運用モード解決
   const modeSettingResolver = new TransceiverModeSettingResolver();
+  // ドップラーシフト計算
+  const dopplerCalc = new TransceiverDopplerCalc();
 
   // 周波数の更新タイマ
   let timerId: NodeJS.Timeout | null = null;
@@ -387,17 +390,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * @param {number} intervalMs 時間間隔[単位：ミリ秒]
    */
   async function updateTxFreqByInvertingHeterodyne(intervalMs: number) {
-    const freqTrackService = ActiveSatServiceHub.getInstance().getFrequencyTrackService();
-    if (!freqTrackService) {
-      return;
-    }
-
-    // ドップラーファクターを一時アップリンク周波数に適用して、アップリンク周波数とする
-    const txDopplerFactor = await freqTrackService.calcUplinkDopplerFactor(currentDate.value, intervalMs);
-    const txFreq = txBaseFreq.value * txDopplerFactor;
-
-    // 画面のアップリンク周波数を更新する
-    txFrequency.value = TransceiverUtil.formatWithDot(txFreq);
+    const newTxFreq = await dopplerCalc.calcNewTxFreqWithDoppler(currentDate.value, txBaseFreq.value, intervalMs);
+    if (newTxFreq !== null) txFrequency.value = newTxFreq;
   }
 
   /**
@@ -405,17 +399,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * @param {number} intervalMs 時間間隔[単位：ミリ秒]
    */
   async function updateRxFreqWithDopplerShift(intervalMs: number) {
-    const freqTrackService = ActiveSatServiceHub.getInstance().getFrequencyTrackService();
-    if (!freqTrackService) {
-      return;
-    }
-
-    // ドップラーファクターを計算する
-    const rxDopplerFactor = await freqTrackService.calcDownlinkDopplerFactor(currentDate.value, intervalMs);
-    const rxFreq = rxBaseFreq.value * rxDopplerFactor;
-
-    // 画面のダウンリンク周波数を更新する
-    rxFrequency.value = TransceiverUtil.formatWithDot(rxFreq);
+    const newRxFreq = await dopplerCalc.calcNewRxFreqWithDoppler(currentDate.value, rxBaseFreq.value, intervalMs);
+    if (newRxFreq !== null) rxFrequency.value = newRxFreq;
   }
 
   /**
@@ -423,21 +408,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * @returns {boolean}
    */
   async function isWithinDopplerShiftActiveRange(): Promise<boolean> {
-    // 指定した日時から最も近いパスを取得する
-    const orbitPass = await ActiveSatServiceHub.getInstance().getOrbitPassAsync(currentDate.value);
-    if (!orbitPass || !orbitPass.aos || !orbitPass.los) {
-      // パスが取得できない場合はfalseで返す
-      return false;
-    }
-
-    // ドップラーシフトが有効な範囲にいるか判定する
-    const passAos = orbitPass.aos.date.getTime() - Constant.Transceiver.DOPPLER_SHIFT_RANGE_SEC * 1000;
-    const passLos = orbitPass.los.date.getTime() + Constant.Transceiver.DOPPLER_SHIFT_RANGE_SEC * 1000;
-    if (currentDate.value.getTime() >= passAos && currentDate.value.getTime() <= passLos) {
-      return true;
-    }
-
-    return false;
+    return dopplerCalc.isWithinDopplerShiftActiveRange(currentDate.value);
   }
 
   /**
@@ -965,10 +936,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
   /**
    * 無線機のRx周波数を元に、Rx、Tx基準周波数を算出する
-   * @param plainRxBaseFreq Rx基準周波数（補正値なし）
-   * @param plainTxBaseFreq Tx基準周波数（補正値なし）
-   * @param rxAdjustFreq Rx補正値
-   * @param rxFreq 無線機のRx周波数（補正値・ドップラーシフト適用済み）
    */
   async function calcBaseFreqByShiftedRxFreq(
     plainRxBaseFreq: number,
@@ -976,35 +943,18 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     rxAdjustFreq: number,
     rxFreq: number
   ): Promise<{ newRxBaseFreq: number; newTxBaseFreq: number }> {
-    const activeSatHubService = ActiveSatServiceHub.getInstance();
-    const frequencyTrackService = activeSatHubService.getFrequencyTrackService();
-    if (!frequencyTrackService) {
-      return { newRxBaseFreq: 0, newTxBaseFreq: 0 };
-    }
-
-    // Rxのドップラーファクターを計算
-    const rxDopplerFactor = await frequencyTrackService.calcDownlinkDopplerFactor(
+    return dopplerCalc.calcBaseFreqByShiftedRxFreq(
+      plainRxBaseFreq,
+      plainTxBaseFreq,
+      rxAdjustFreq,
+      rxFreq,
       currentDate.value,
       autoTrackingIntervalMsec
     );
-
-    // Rx、Txの基準周波数を更新する
-    const { rxBaseFreq, txBaseFreq } = frequencyTrackService.calcInvHeteroBaseFreqByRxFreq(
-      plainRxBaseFreq + plainTxBaseFreq,
-      rxAdjustFreq,
-      rxFreq,
-      rxDopplerFactor
-    );
-
-    return { newRxBaseFreq: rxBaseFreq, newTxBaseFreq: txBaseFreq };
   }
 
   /**
    * 無線機のTx周波数を元に、Rx、Tx基準周波数を算出する
-   * @param plainTxBaseFreq Tx基準周波数（補正値なし）
-   * @param plainRxBaseFreq Rx基準周波数（補正値なし）
-   * @param txAdjustFreq Tx補正値
-   * @param txFreq 無線機のTx周波数（補正値・ドップラーシフト適用済み）
    */
   async function calcBaseFreqByShiftedTxFreq(
     plainRxBaseFreq: number,
@@ -1012,28 +962,14 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     txAdjustFreq: number,
     txFreq: number
   ): Promise<{ newRxBaseFreq: number; newTxBaseFreq: number }> {
-    const activeSatHubService = ActiveSatServiceHub.getInstance();
-
-    const frequencyTrackService = activeSatHubService.getFrequencyTrackService();
-    if (!frequencyTrackService) {
-      return { newRxBaseFreq: 0, newTxBaseFreq: 0 };
-    }
-
-    // Txのドップラーファクターを計算
-    const txDopplerFactor = await frequencyTrackService.calcUplinkDopplerFactor(
+    return dopplerCalc.calcBaseFreqByShiftedTxFreq(
+      plainRxBaseFreq,
+      plainTxBaseFreq,
+      txAdjustFreq,
+      txFreq,
       currentDate.value,
       autoTrackingIntervalMsec
     );
-
-    // Rx、Txの基準周波数を更新する
-    const { rxBaseFreq, txBaseFreq } = frequencyTrackService.calcInvHeteroBaseFreqByTxFreq(
-      plainRxBaseFreq + plainTxBaseFreq,
-      txAdjustFreq,
-      txFreq,
-      txDopplerFactor
-    );
-
-    return { newRxBaseFreq: rxBaseFreq, newTxBaseFreq: txBaseFreq };
   }
 
   /**
