@@ -116,6 +116,17 @@ export default class TransceiverModeCoordinator {
   }
 
   /**
+   * NoradIdを更新し、変更があったかを返す
+   * @param newNoradId 新しいNoradId
+   * @returns 変更があればtrue
+   */
+  public updateCurrentNoradId(newNoradId: string): boolean {
+    const isChanged = this._currentNoradId !== newNoradId;
+    this._currentNoradId = newNoradId;
+    return isChanged;
+  }
+
+  /**
    * 周波数更新タイマIDを設定する（useTransceiverCtrl側からsetIntervalの結果を渡す）
    */
   setTimerId(id: NodeJS.Timeout | null): void {

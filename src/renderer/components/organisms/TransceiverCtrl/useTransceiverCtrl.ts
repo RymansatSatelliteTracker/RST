@@ -129,11 +129,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     // 衛星が変更された場合は補正値をリセットする（NoradIdで判定する）
     const satelliteService = ActiveSatServiceHub.getInstance().getSatService();
     const changedNoradId = satelliteService ? satelliteService.getNoradId() : "";
-    if (coordinator.currentNoradId !== changedNoradId) {
+    if (coordinator.updateCurrentNoradId(changedNoradId)) {
       resetFreqAdj();
     }
-    // アクティブ衛星のNoradIdを更新
-    coordinator.currentNoradId = changedNoradId;
 
     isBeaconModeAvailable.value = await confirmBeaconModeAvailable();
 
