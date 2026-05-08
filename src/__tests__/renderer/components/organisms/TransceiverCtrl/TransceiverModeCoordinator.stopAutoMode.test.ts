@@ -1,0 +1,75 @@
+import Constant from "@/common/Constant";
+import ApiTransceiver from "@/renderer/api/ApiTransceiver";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/TransceiverBaseFreqMgr";
+import TransceiverModeCoordinator, {
+  ModeCoordinatorState,
+} from "@/renderer/components/organisms/TransceiverCtrl/TransceiverModeCoordinator";
+import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/TransceiverModeSettingResolver";
+import { ref } from "vue";
+
+const createState = (): ModeCoordinatorState => ({
+  txFrequency: ref("2430.000.000"),
+  rxFrequency: ref("0480.000.000"),
+  txOpeMode: ref("FM"),
+  rxOpeMode: ref("FM"),
+  satelliteMode: ref(Constant.Transceiver.SatelliteMode.UNSET),
+  isSatelliteMode: ref(false),
+  isSatTrackingModeNormal: ref(true),
+  savedTxFrequency: ref(""),
+  savedRxFrequency: ref(""),
+  savedTxOpeMode: ref(""),
+  savedRxOpeMode: ref(""),
+  isBeaconMode: ref(false),
+  execTxDopplerShiftCorrection: ref(false),
+  execRxDopplerShiftCorrection: ref(false),
+  txFrequencyAdjustment: ref("+000.000"),
+  rxFrequencyAdjustment: ref("+000.000"),
+});
+
+const createCoordinator = (autoOn: boolean, state: ModeCoordinatorState): TransceiverModeCoordinator => {
+  return new TransceiverModeCoordinator(
+    state,
+    { tranceiverAuto: autoOn } as never,
+    new TransceiverModeSettingResolver(),
+    new TransceiverBaseFreqMgr(),
+    () => {},
+    () => {}
+  );
+};
+
+describe("TransceiverModeCoordinator.stopAutoMode", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("AutoモードOFF時は何もしないこと", async () => {
+    const state = createState();
+    const coordinator = createCoordinator(false, state);
+    const autoOffSpy = jest.spyOn(ApiTransceiver, "transceiverAutoOff").mockResolvedValue();
+    const stopUpdateSpy = jest.spyOn(coordinator, "stopUpdateFreq").mockResolvedValue(true);
+
+    await coordinator.stopAutoMode();
+
+    expect(autoOffSpy).not.toHaveBeenCalled();
+    expect(stopUpdateSpy).not.toHaveBeenCalled();
+  });
+
+  it("AutoモードON時はAuto終了処理後に退避周波数へ復元すること", async () => {
+    const state = createState();
+    state.txFrequency.value = "1200.000.000";
+    state.rxFrequency.value = "0145.800.000";
+    state.savedTxFrequency.value = "2430.000.000";
+    state.savedRxFrequency.value = "0480.000.000";
+
+    const coordinator = createCoordinator(true, state);
+    const autoOffSpy = jest.spyOn(ApiTransceiver, "transceiverAutoOff").mockResolvedValue();
+    const stopUpdateSpy = jest.spyOn(coordinator, "stopUpdateFreq").mockResolvedValue(true);
+
+    await coordinator.stopAutoMode();
+
+    expect(autoOffSpy).toHaveBeenCalledTimes(1);
+    expect(stopUpdateSpy).toHaveBeenCalledTimes(1);
+    expect(state.txFrequency.value).toBe("2430.000.000");
+    expect(state.rxFrequency.value).toBe("0480.000.000");
+  });
+});

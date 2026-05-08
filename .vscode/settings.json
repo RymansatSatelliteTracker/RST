@@ -49,5 +49,14 @@
   // 最終行の改行はPrettierの設定を優先する
   "files.insertFinalNewline": false,
   // 不要な最終行の改行は削除する
-  "files.trimFinalNewlines": true
+  "files.trimFinalNewlines": true,
+  // 主にGitHub Copilotの提案を承認するかどうかの設定
+  "chat.tools.terminal.autoApprove": {
+    // 自動承認するもの
+    "mkdir": true,
+    "npm run build": true,
+    "npm run ts": true,
+    "npm run ts 2>&1": true,
+    "/^git (status|show\\b.*)/": true, // git status, git show は自動承認
+  }
 }
