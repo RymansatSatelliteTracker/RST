@@ -8,6 +8,10 @@ import TransceiverUtil from "@/common/util/TransceiverUtil";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/TransceiverBaseFreqMgr";
+import TransceiverModeSettingResolver, {
+  ModeResolvedState,
+} from "@/renderer/components/organisms/TransceiverCtrl/TransceiverModeSettingResolver";
 import { useModeStateManager } from "@/renderer/components/organisms/TransceiverCtrl/useSatelliteModeStateManager";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
@@ -29,9 +33,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   const txFrequencyAdjustment = ref<string>("+000.000");
   // Rx周波数補正値
   const rxFrequencyAdjustment = ref<string>("+000.000");
-  // 基準周波数（補正値なし）
-  let plainTxBaseFreq = 0;
-  let plainRxBaseFreq = 0;
   // Tx、Rx基準周波数（補正値反映）
   const txBaseFreq = ref<number>(0.0);
   const rxBaseFreq = ref<number>(0.0);
@@ -72,6 +73,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
   // AutoモードのOnOff管理
   const autoStore = useStoreAutoState();
+  // 基準周波数（補正値なし）の管理
+  const baseFreqMgr = new TransceiverBaseFreqMgr();
+  // モードごとの周波数・運用モード解決
+  const modeSettingResolver = new TransceiverModeSettingResolver();
 
   // 周波数の更新タイマ
   let timerId: NodeJS.Timeout | null = null;
@@ -116,7 +121,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     // アクティブ衛星の周波数/運用モードを取得
     const transceiverSetting = ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
 
-    return !!(transceiverSetting.beacon && transceiverSetting.beacon.beaconHz && transceiverSetting.beacon.beaconMode);
+    return modeSettingResolver.canUseBeaconMode(transceiverSetting);
   }
 
   /**
@@ -188,7 +193,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     saveFrequencyAndOpeModeInModeStart();
 
     // 周波数の基準値を保持する（補正値を加味しない周波数）
-    updatePlainBaseFreq(txFrequency.value, rxFrequency.value);
+    baseFreqMgr.updatePlainBaseFreq(txFrequency.value, rxFrequency.value);
 
     // 基準周波数を更新する（逆ヘテロダインの計算用、補正値を反映したもの）
     calcBaseFreqWithAdjust();
@@ -282,17 +287,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
     // Autoモード中の場合
     // Autoモードの周波数/運用モードを優先して設定する
-
-    if (transceiverSetting.uplink && transceiverSetting.uplink.uplinkHz) {
-      // アップリンク周波数/運用モードをアクティブ衛星の設定で更新する
-      txFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.uplink.uplinkHz);
-      txOpeMode.value = transceiverSetting.uplink.uplinkMode;
-    }
-    if (transceiverSetting.downlink && transceiverSetting.downlink.downlinkHz) {
-      // ダウンリンク周波数/運用モードをアクティブ衛星の設定で更新する
-      rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.downlink.downlinkHz);
-      rxOpeMode.value = transceiverSetting.downlink.downlinkMode;
-    }
+    const resolved = modeSettingResolver.resolveWhenBeaconOffInAuto(transceiverSetting);
+    applyResolvedModeState(resolved);
   }
 
   /**
@@ -302,49 +298,31 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     // アクティブ衛星の周波数/運用モードを取得
     const transceiverSetting = ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
 
-    // 周波数と運用モードを設定する
-    // ここにはAutoもしくはBeaconの状態変更後に来る
-    if (isBeaconMode.value) {
-      if (!(transceiverSetting.beacon && transceiverSetting.beacon.beaconHz)) {
-        emitter.emit(Constant.GlobalEvent.NOTICE_INFO, I18nUtil.getMsg(I18nMsgs.CHK_ERR_NO_BEACON_FREQ));
-        return;
-      }
-      // BeaconModeがONということは
-      // - BeaconモードをONにした
-      // - BeaconモードONの状態でAutoモードを開始した
-      // その場合は、ビーコンモードの周波数/運用モードを優先して設定する
-      // ダウンリンクの周波数/運用モードをアクティブ衛星の設定で更新する
-      rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.beacon.beaconHz);
-      rxOpeMode.value = transceiverSetting.beacon.beaconMode;
-      return;
+    const resolved = modeSettingResolver.resolveOnModeStart(isBeaconMode.value, transceiverSetting);
+    applyResolvedModeState(resolved);
+  }
+
+  /**
+   * モード解決結果を画面状態に反映し、必要な通知を表示する
+   */
+  function applyResolvedModeState(resolved: ModeResolvedState) {
+    // 解決結果に含まれる通知メッセージをすべてトーストで表示する
+    resolved.noticeMessageKeys.forEach((messageKey) => {
+      emitter.emit(Constant.GlobalEvent.NOTICE_INFO, I18nUtil.getMsg(messageKey));
+    });
+
+    // undefinedの場合は変更不要のため現状維持とする
+    if (resolved.txFreq !== undefined) {
+      txFrequency.value = resolved.txFreq;
     }
-
-    // BeaconModeがOFFということは
-    // - BeaconモードOFFの状態でAutoモードを開始した
-    // その場合は、Autoモードの周波数/運用モードを優先して設定する
-
-    // アップリンクもダウンリンクも設定がない場合はトーストを表示して抜ける
-    if (!transceiverSetting?.uplink?.uplinkHz && !transceiverSetting?.downlink?.downlinkHz) {
-      emitter.emit(Constant.GlobalEvent.NOTICE_INFO, I18nUtil.getMsg(I18nMsgs.CHK_ERR_NO_FREQ));
-      return;
+    if (resolved.rxFreq !== undefined) {
+      rxFrequency.value = resolved.rxFreq;
     }
-
-    // アップリンク周波数/運用モードをアクティブ衛星の設定で更新する
-    // 型チェックで引っかかるので説明変数ではなく元のチェックを使う
-    if (transceiverSetting?.uplink?.uplinkHz) {
-      txFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.uplink.uplinkHz);
-      txOpeMode.value = transceiverSetting.uplink.uplinkMode;
-    } else {
-      emitter.emit(Constant.GlobalEvent.NOTICE_INFO, I18nUtil.getMsg(I18nMsgs.CHK_ERR_NO_UPLINK_FREQ));
+    if (resolved.txOpeMode !== undefined) {
+      txOpeMode.value = resolved.txOpeMode;
     }
-
-    // ダウンリンク周波数/運用モードをアクティブ衛星の設定で更新する
-    // 型チェックで引っかかるので説明変数ではなく元のチェックを使う
-    if (transceiverSetting?.downlink?.downlinkHz) {
-      rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.downlink.downlinkHz);
-      rxOpeMode.value = transceiverSetting.downlink.downlinkMode;
-    } else {
-      emitter.emit(Constant.GlobalEvent.NOTICE_INFO, I18nUtil.getMsg(I18nMsgs.CHK_ERR_NO_DOWNLINK_FREQ));
+    if (resolved.rxOpeMode !== undefined) {
+      rxOpeMode.value = resolved.rxOpeMode;
     }
   }
 
@@ -791,23 +769,26 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
       // 補正値を加味しない基準周波数を再算出する
       const adjustTxFreq = TransceiverUtil.parseNumber(txFrequencyAdjustment.value);
+      const { plainRxBaseFreq, plainTxBaseFreq } = baseFreqMgr.getPlainBaseFreqs();
       const { newRxBaseFreq, newTxBaseFreq } = await calcBaseFreqByShiftedTxFreq(
         plainRxBaseFreq,
         plainTxBaseFreq,
         adjustTxFreq,
         recvTxFreq
       );
-      plainRxBaseFreq = newRxBaseFreq;
-      plainTxBaseFreq = newTxBaseFreq;
+      baseFreqMgr.setPlainBaseFreqs(newRxBaseFreq, newTxBaseFreq);
 
       // 補正値を加算した基準周波数を再算出する
       calcBaseFreqWithAdjust();
+
+      const plainBaseFreqs = baseFreqMgr.getPlainBaseFreqs();
 
       AppRendererLogger.debug(
         `基準周波数（更新） Rx:${rxBaseFreq.value} Tx:${txBaseFreq.value} Sum:${getBaseFreqSum()}`
       );
       AppRendererLogger.debug(
-        `補正なし Rx:${plainRxBaseFreq} Tx:${plainTxBaseFreq} Sum:${plainRxBaseFreq + plainTxBaseFreq}`
+        `補正なし Rx:${plainBaseFreqs.plainRxBaseFreq} Tx:${plainBaseFreqs.plainTxBaseFreq}` +
+          ` Sum:${plainBaseFreqs.plainRxBaseFreq + plainBaseFreqs.plainTxBaseFreq}`
       );
     }
     // Rxが変更された場合
@@ -836,23 +817,26 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
       // 補正値を加味しない基準周波数を再算出する
       const adjustRxFreq = TransceiverUtil.parseNumber(rxFrequencyAdjustment.value);
+      const { plainRxBaseFreq, plainTxBaseFreq } = baseFreqMgr.getPlainBaseFreqs();
       const { newRxBaseFreq, newTxBaseFreq } = await calcBaseFreqByShiftedRxFreq(
         plainRxBaseFreq,
         plainTxBaseFreq,
         adjustRxFreq,
         recvRxFreq
       );
-      plainRxBaseFreq = newRxBaseFreq;
-      plainTxBaseFreq = newTxBaseFreq;
+      baseFreqMgr.setPlainBaseFreqs(newRxBaseFreq, newTxBaseFreq);
 
       // 補正値を加算した基準周波数を再算出する
       calcBaseFreqWithAdjust();
+
+      const plainBaseFreqs = baseFreqMgr.getPlainBaseFreqs();
 
       AppRendererLogger.debug(
         `基準周波数（更新） Rx:${rxBaseFreq.value} Tx:${txBaseFreq.value} Sum:${getBaseFreqSum()}`
       );
       AppRendererLogger.debug(
-        `補正なし Rx:${plainRxBaseFreq} Tx:${plainTxBaseFreq} Sum:${plainRxBaseFreq + plainTxBaseFreq}`
+        `補正なし Rx:${plainBaseFreqs.plainRxBaseFreq} Tx:${plainBaseFreqs.plainTxBaseFreq}` +
+          ` Sum:${plainBaseFreqs.plainRxBaseFreq + plainBaseFreqs.plainTxBaseFreq}`
       );
     }
   }
@@ -1064,9 +1048,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    */
   function calcBaseFreqWithAdjust() {
     // 画面で設定された補正値を反映した周波数を基準周波数に設定
-    txBaseFreq.value = plainTxBaseFreq + TransceiverUtil.parseNumber(txFrequencyAdjustment.value);
-    rxBaseFreq.value = plainRxBaseFreq + TransceiverUtil.parseNumber(rxFrequencyAdjustment.value);
-    baseFreqSum.value = txBaseFreq.value + rxBaseFreq.value;
+    const calculated = baseFreqMgr.calcBaseFreqWithAdjust(txFrequencyAdjustment.value, rxFrequencyAdjustment.value);
+    txBaseFreq.value = calculated.txBaseFreq;
+    rxBaseFreq.value = calculated.rxBaseFreq;
+    baseFreqSum.value = calculated.baseFreqSum;
   }
 
   /**
@@ -1090,14 +1075,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   async function getAutoTrackingIntervalMsec() {
     const appConfig = await ApiAppConfig.getAppConfig();
     return parseFloat(appConfig.transceiver.autoTrackingIntervalSec) * 1000;
-  }
-
-  /**
-   * 基準周波数を更新する（補正値を加味しない周波数）
-   */
-  function updatePlainBaseFreq(txFreq: string, rxFreq: string) {
-    plainTxBaseFreq = TransceiverUtil.parseNumber(txFreq);
-    plainRxBaseFreq = TransceiverUtil.parseNumber(rxFreq);
   }
 
   /**
