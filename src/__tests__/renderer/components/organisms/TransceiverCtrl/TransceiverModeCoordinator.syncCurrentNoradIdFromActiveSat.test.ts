@@ -42,27 +42,31 @@ describe("TransceiverModeCoordinator.syncCurrentNoradIdFromActiveSat", () => {
     jest.restoreAllMocks();
   });
 
-  it("アクティブ衛星がある場合はNoradIdを同期し、初回はtrueを返すこと", () => {
+  it("アクティブ衛星がある場合は初回true、同一NoradIdでfalseを返すこと", () => {
     const coordinator = createCoordinator();
     jest.spyOn(ActiveSatServiceHub, "getInstance").mockReturnValue({
       getSatService: () => ({ getNoradId: () => "25544" }),
     } as never);
 
+    const firstChanged = coordinator.syncCurrentNoradIdFromActiveSat();
+    const secondChanged = coordinator.syncCurrentNoradIdFromActiveSat();
+
+    expect(firstChanged).toBe(true);
+    expect(secondChanged).toBe(false);
+  });
+
+  it("アクティブ衛星ありから未設定へ遷移した場合はtrueを返すこと", () => {
+    const coordinator = createCoordinator();
+    let satService: { getNoradId: () => string } | null = { getNoradId: () => "25544" };
+    jest.spyOn(ActiveSatServiceHub, "getInstance").mockReturnValue({
+      getSatService: () => satService,
+    } as never);
+
+    coordinator.syncCurrentNoradIdFromActiveSat();
+    satService = null;
+
     const changed = coordinator.syncCurrentNoradIdFromActiveSat();
 
     expect(changed).toBe(true);
-    expect(coordinator.currentNoradId).toBe("25544");
-  });
-
-  it("アクティブ衛星がない場合は空文字を同期し、同値ならfalseを返すこと", () => {
-    const coordinator = createCoordinator();
-    jest.spyOn(ActiveSatServiceHub, "getInstance").mockReturnValue({
-      getSatService: () => null,
-    } as never);
-
-    const changed = coordinator.syncCurrentNoradIdFromActiveSat();
-
-    expect(changed).toBe(false);
-    expect(coordinator.currentNoradId).toBe("");
   });
 });

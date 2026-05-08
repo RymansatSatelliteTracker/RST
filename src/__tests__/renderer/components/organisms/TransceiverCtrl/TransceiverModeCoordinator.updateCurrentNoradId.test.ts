@@ -37,13 +37,12 @@ const createCoordinator = (): TransceiverModeCoordinator => {
 };
 
 describe("TransceiverModeCoordinator.updateCurrentNoradId", () => {
-  it("初回更新時は変更ありとしてtrueを返し、NoradIdを保持すること", () => {
+  it("初回更新時は変更ありとしてtrueを返すこと", () => {
     const coordinator = createCoordinator();
 
     const changed = coordinator.updateCurrentNoradId("25544");
 
     expect(changed).toBe(true);
-    expect(coordinator.currentNoradId).toBe("25544");
   });
 
   it("同じNoradIdを再設定した場合はfalseを返すこと", () => {
@@ -53,6 +52,14 @@ describe("TransceiverModeCoordinator.updateCurrentNoradId", () => {
     const changed = coordinator.updateCurrentNoradId("25544");
 
     expect(changed).toBe(false);
-    expect(coordinator.currentNoradId).toBe("25544");
+  });
+
+  it("異なるNoradIdへ更新した場合は再びtrueを返すこと", () => {
+    const coordinator = createCoordinator();
+    coordinator.updateCurrentNoradId("25544");
+
+    const changed = coordinator.updateCurrentNoradId("40967");
+
+    expect(changed).toBe(true);
   });
 });

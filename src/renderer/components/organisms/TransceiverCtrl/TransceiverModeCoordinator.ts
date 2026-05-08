@@ -102,20 +102,6 @@ export default class TransceiverModeCoordinator {
   }
 
   /**
-   * アクティブ衛星のNoradIdを取得する
-   */
-  get currentNoradId(): string {
-    return this._currentNoradId;
-  }
-
-  /**
-   * アクティブ衛星のNoradIdを設定する
-   */
-  set currentNoradId(value: string) {
-    this._currentNoradId = value;
-  }
-
-  /**
    * NoradIdを更新し、変更があったかを返す
    * @param newNoradId 新しいNoradId
    * @returns 変更があればtrue
