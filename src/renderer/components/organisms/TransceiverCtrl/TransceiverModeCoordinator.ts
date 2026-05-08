@@ -133,27 +133,13 @@ export default class TransceiverModeCoordinator {
    * @returns {Promise<boolean>} 成功した場合はtrue
    */
   public async startAutoMode(): Promise<boolean> {
-    // AutoOnにできない状態の場合（無線機設定に未設定項目がある場合など）はトーストを表示して処理終了
-    const appConfig = await ApiAppConfig.getAppConfig();
-    if (!this.isValidTransceiverSetting(appConfig)) {
-      emitter.emit(Constant.GlobalEvent.NOTICE_INFO, I18nUtil.getMsg(I18nMsgs.SYSTEM_YET_TRANSCEIVER_CONFIG));
+    // Autoモード開始の事前条件をチェック
+    if (!(await this.validateAutoModeStart())) {
       return false;
     }
 
-    // 無線機接続が準備完了か確認する
-    const isReady = await ApiTransceiver.isReady();
-    if (!isReady.status) {
-      emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.SERIAL_NOT_CONNECTED_TRANSCEIVER));
-      return false;
-    }
-
-    // 周波数の更新インターバルを取得
-    this._autoTrackingIntervalMsec = await this.fetchAutoTrackingIntervalMsec();
-
-    // 周波数の更新を停止
-    // MEMO: 停止されていない場合があるので、複数のタイマが発動することをガード
-    // MEMO: AutoOn時の周波数の初期設定中に、ドップラーシフトの周波数更新が競合するため、停止後に以降の処理を行う必要がある
-    await this.stopUpdateFreq();
+    // 周波数更新準備を行う（更新間隔の取得と既存タイマ停止）
+    await this.prepareAutoTracking();
 
     // AutoOn時は受信処理をスキップする（AutoOn処理中のモード変更などにおける無線機からの不要なデータ受信を無視する）
     this._isRecvProcSkip = true;
@@ -162,53 +148,26 @@ export default class TransceiverModeCoordinator {
     this._currentNoradId = this.getActiveSatNorad();
 
     // Autoモード移行前の周波数を保持する
-    this.state.savedTxFrequency.value = this.state.txFrequency.value;
-    this.state.savedRxFrequency.value = this.state.rxFrequency.value;
+    this.saveFreqInAutoModeStart();
 
     // アクティブ衛星の周波数/運用モード/サテライトモード/トラッキングモードを取得
     const transceiverSetting = ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
 
-    // 有効だったらサテライトモードを設定する
-    this.state.satelliteMode.value = transceiverSetting.satelliteMode
-      ? Constant.Transceiver.SatelliteMode.SATELLITE
-      : Constant.Transceiver.SatelliteMode.UNSET;
-
-    // 無線機にサテライトモードを設定する
-    // MEMO: satelliteMode.valueの更新時にwatchで isSatelliteMode.value が更新されるが、非同期でAPI呼び出しが行われる。
-    //       サテライトモードの変更時に無線機のモード取得が行われるが、
-    //       AutoOn時の無線機へのモード設定と同期が取れず、AutoOn時のモード設定が反映されない場合がある為、
-    //       ここで明示的、同期的にサテライトモードを設定する。
-    const result = await ApiTransceiver.setSatelliteMode(
-      this.state.satelliteMode.value === Constant.Transceiver.SatelliteMode.SATELLITE
-    );
+    // サテライトモードを設定して無線機へ反映する
+    const result = await this.applySatelliteModeAtAutoStart(transceiverSetting.satelliteMode);
     if (!result) {
       return false;
     }
 
-    // サテライトモードのトラッキングモードをアクティブ衛星の設定で更新する
-    // Reverseを明示的に指定している場合以外はNormal
-    if (
-      this.state.isSatelliteMode.value &&
-      transceiverSetting.satTrackMode === Constant.Transceiver.TrackingMode.REVERSE
-    ) {
-      this.state.isSatTrackingModeNormal.value = false;
-    } else {
-      this.state.isSatTrackingModeNormal.value = true;
-    }
+    // サテライトモードのトラッキングモードを更新する
+    this.applyTrackingModeAtAutoStart(transceiverSetting.satTrackMode);
 
     // 周波数と運用モードを設定、保存する
     this.setFreqAndOpeModeInModeStart();
     this.saveFreqAndOpeModeInModeStart();
 
-    // 周波数の基準値を保持する（補正値を加味しない周波数）
-    this.baseFreqMgr.updatePlainBaseFreq(this.state.txFrequency.value, this.state.rxFrequency.value);
-
-    // 基準周波数を更新する（逆ヘテロダインの計算用、補正値を反映したもの）
-    this.onCalcBaseFreqWithAdjust();
-
-    // ドップラーシフトのフラグを初期化
-    this.state.execRxDopplerShiftCorrection.value = false;
-    this.state.execTxDopplerShiftCorrection.value = false;
+    // 基準周波数更新とドップラーシフトフラグ初期化を行う
+    this.prepareBaseFreqAndDopplerFlagsAtAutoStart();
 
     // Auto開始をメイン側に連携する
     await ApiTransceiver.transceiverInitAutoOn(
@@ -226,6 +185,94 @@ export default class TransceiverModeCoordinator {
     this._isRecvProcSkip = false;
 
     return true;
+  }
+
+  /**
+   * Autoモード開始の事前条件を検証する
+   */
+  private async validateAutoModeStart(): Promise<boolean> {
+    // AutoOnにできない状態の場合（無線機設定に未設定項目がある場合など）はトーストを表示して処理終了
+    const appConfig = await ApiAppConfig.getAppConfig();
+    if (!this.isValidTransceiverSetting(appConfig)) {
+      emitter.emit(Constant.GlobalEvent.NOTICE_INFO, I18nUtil.getMsg(I18nMsgs.SYSTEM_YET_TRANSCEIVER_CONFIG));
+      return false;
+    }
+
+    // 無線機接続が準備完了か確認する
+    const isReady = await ApiTransceiver.isReady();
+    if (!isReady.status) {
+      emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.SERIAL_NOT_CONNECTED_TRANSCEIVER));
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * 周波数追尾の事前準備を行う
+   */
+  private async prepareAutoTracking(): Promise<void> {
+    // 周波数の更新インターバルを取得
+    this._autoTrackingIntervalMsec = await this.fetchAutoTrackingIntervalMsec();
+
+    // 周波数の更新を停止
+    // MEMO: 停止されていない場合があるので、複数のタイマが発動することをガード
+    // MEMO: AutoOn時の周波数の初期設定中に、ドップラーシフトの周波数更新が競合するため、停止後に以降の処理を行う必要がある
+    await this.stopUpdateFreq();
+  }
+
+  /**
+   * Autoモード移行前の周波数を保持する
+   */
+  private saveFreqInAutoModeStart(): void {
+    this.state.savedTxFrequency.value = this.state.txFrequency.value;
+    this.state.savedRxFrequency.value = this.state.rxFrequency.value;
+  }
+
+  /**
+   * Auto開始時にサテライトモードを更新し、無線機へ反映する
+   */
+  private async applySatelliteModeAtAutoStart(enableSatelliteMode: boolean): Promise<boolean> {
+    // 有効だったらサテライトモードを設定する
+    this.state.satelliteMode.value = enableSatelliteMode
+      ? Constant.Transceiver.SatelliteMode.SATELLITE
+      : Constant.Transceiver.SatelliteMode.UNSET;
+
+    // 無線機にサテライトモードを設定する
+    // MEMO: satelliteMode.valueの更新時にwatchで isSatelliteMode.value が更新されるが、非同期でAPI呼び出しが行われる。
+    //       サテライトモードの変更時に無線機のモード取得が行われるが、
+    //       AutoOn時の無線機へのモード設定と同期が取れず、AutoOn時のモード設定が反映されない場合がある為、
+    //       ここで明示的、同期的にサテライトモードを設定する。
+    return await ApiTransceiver.setSatelliteMode(
+      this.state.satelliteMode.value === Constant.Transceiver.SatelliteMode.SATELLITE
+    );
+  }
+
+  /**
+   * Auto開始時にサテライトのトラッキングモードを更新する
+   */
+  private applyTrackingModeAtAutoStart(satTrackMode: string | null): void {
+    // Reverseを明示的に指定している場合以外はNormal
+    if (this.state.isSatelliteMode.value && satTrackMode === Constant.Transceiver.TrackingMode.REVERSE) {
+      this.state.isSatTrackingModeNormal.value = false;
+    } else {
+      this.state.isSatTrackingModeNormal.value = true;
+    }
+  }
+
+  /**
+   * Auto開始時の基準周波数更新とドップラーシフトフラグ初期化を行う
+   */
+  private prepareBaseFreqAndDopplerFlagsAtAutoStart(): void {
+    // 周波数の基準値を保持する（補正値を加味しない周波数）
+    this.baseFreqMgr.updatePlainBaseFreq(this.state.txFrequency.value, this.state.rxFrequency.value);
+
+    // 基準周波数を更新する（逆ヘテロダインの計算用、補正値を反映したもの）
+    this.onCalcBaseFreqWithAdjust();
+
+    // ドップラーシフトのフラグを初期化
+    this.state.execRxDopplerShiftCorrection.value = false;
+    this.state.execTxDopplerShiftCorrection.value = false;
   }
 
   /**
