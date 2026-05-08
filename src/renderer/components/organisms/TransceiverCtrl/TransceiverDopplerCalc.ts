@@ -13,7 +13,7 @@ export default class TransceiverDopplerCalc {
    * @param currentDate 現在日時
    * @returns 有効範囲内の場合はtrue
    */
-  async isWithinDopplerShiftActiveRange(currentDate: Date): Promise<boolean> {
+  public async isWithinDopplerShiftActiveRange(currentDate: Date): Promise<boolean> {
     // 指定した日時から最も近いパスを取得する
     const orbitPass = await ActiveSatServiceHub.getInstance().getOrbitPassAsync(currentDate);
     if (!orbitPass || !orbitPass.aos || !orbitPass.los) {
@@ -39,7 +39,7 @@ export default class TransceiverDopplerCalc {
    * @param intervalMs 計算に使用する時間間隔（ミリ秒）
    * @returns 補正後のTx周波数文字列（FrequencyTrackService未取得の場合はnull）
    */
-  async calcNewTxFreqWithDoppler(
+  public async calcNewTxFreqWithDoppler(
     currentDate: Date,
     txBaseFreq: number,
     intervalMs: number
@@ -63,7 +63,7 @@ export default class TransceiverDopplerCalc {
    * @param intervalMs 計算に使用する時間間隔（ミリ秒）
    * @returns 補正後のRx周波数文字列（FrequencyTrackService未取得の場合はnull）
    */
-  async calcNewRxFreqWithDoppler(
+  public async calcNewRxFreqWithDoppler(
     currentDate: Date,
     rxBaseFreq: number,
     intervalMs: number
@@ -90,7 +90,7 @@ export default class TransceiverDopplerCalc {
    * @param intervalMs 計算に使用する時間間隔（ミリ秒）
    * @returns 再算出されたRx・Tx基準周波数（FrequencyTrackService未取得の場合は両方0）
    */
-  async calcBaseFreqByShiftedRxFreq(
+  public async calcBaseFreqByShiftedRxFreq(
     plainRxBaseFreq: number,
     plainTxBaseFreq: number,
     rxAdjustFreq: number,
@@ -127,7 +127,7 @@ export default class TransceiverDopplerCalc {
    * @param intervalMs 計算に使用する時間間隔（ミリ秒）
    * @returns 再算出されたRx・Tx基準周波数（FrequencyTrackService未取得の場合は両方0）
    */
-  async calcBaseFreqByShiftedTxFreq(
+  public async calcBaseFreqByShiftedTxFreq(
     plainRxBaseFreq: number,
     plainTxBaseFreq: number,
     txAdjustFreq: number,
