@@ -127,9 +127,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    */
   async function onChangeSatGrp() {
     // 衛星が変更された場合は補正値をリセットする（NoradIdで判定する）
-    const satelliteService = ActiveSatServiceHub.getInstance().getSatService();
-    const changedNoradId = satelliteService ? satelliteService.getNoradId() : "";
-    if (coordinator.updateCurrentNoradId(changedNoradId)) {
+    if (coordinator.syncCurrentNoradIdFromActiveSat()) {
       resetFreqAdj();
     }
 

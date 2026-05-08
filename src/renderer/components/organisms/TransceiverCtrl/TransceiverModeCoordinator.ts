@@ -127,6 +127,15 @@ export default class TransceiverModeCoordinator {
   }
 
   /**
+   * アクティブ衛星のNoradIdを同期し、変更があったかを返す
+   * @returns 変更があればtrue
+   */
+  public syncCurrentNoradIdFromActiveSat(): boolean {
+    const currentNoradId = this.getActiveSatNorad();
+    return this.updateCurrentNoradId(currentNoradId);
+  }
+
+  /**
    * 周波数更新タイマIDを設定する（useTransceiverCtrl側からsetIntervalの結果を渡す）
    */
   setTimerId(id: NodeJS.Timeout | null): void {
