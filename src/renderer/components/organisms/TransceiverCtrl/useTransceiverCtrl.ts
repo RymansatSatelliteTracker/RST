@@ -456,7 +456,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       return;
     }
 
+    // ドップラーシフト補正を実行するかどうかのフラグを更新
     updateDopplerShiftCorrectionFlags();
+    // ドップラーシフト補正を実行する
     await applyDopplerShiftCorrections();
 
     logDopplerShiftResult();
