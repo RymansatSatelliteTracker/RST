@@ -4,7 +4,7 @@ import { ApiResponse } from "@/common/types/types";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
 import TransceiverOpeModeResolver, {
   OpeModeResolverState,
-} from "@/renderer/components/organisms/TransceiverCtrl/TransceiverOpeModeResolver";
+} from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver";
 import emitter from "@/renderer/util/EventBus";
 import { ref } from "vue";
 
@@ -38,7 +38,7 @@ describe("TransceiverOpeModeResolver.applyFromTransceiver", () => {
     expect(emitSpy).toHaveBeenCalledWith(Constant.GlobalEvent.NOTICE_ERR, expect.any(String));
   });
 
-  it("アップリンク運用モード受信時はTx運用モードを更新すること", () => {
+  it("アチE�Eリンク運用モード受信時�ETx運用モードを更新すること", () => {
     const state = createState();
     const resolver = new TransceiverOpeModeResolver(state);
     const res = {
@@ -54,7 +54,7 @@ describe("TransceiverOpeModeResolver.applyFromTransceiver", () => {
     expect(state.rxOpeMode.value).toBe(Constant.Transceiver.OpeMode.UNSET);
   });
 
-  it("ダウンリンク運用モード受信時はRx運用モードを更新すること", () => {
+  it("ダウンリンク運用モード受信時�ERx運用モードを更新すること", () => {
     const state = createState();
     const resolver = new TransceiverOpeModeResolver(state);
     const res = {
@@ -70,3 +70,4 @@ describe("TransceiverOpeModeResolver.applyFromTransceiver", () => {
     expect(state.rxOpeMode.value).toBe(Constant.Transceiver.OpeMode.FM);
   });
 });
+

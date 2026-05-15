@@ -1,9 +1,9 @@
 import Constant from "@/common/Constant";
-import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/TransceiverBaseFreqMgr";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
 import TransceiverModeCoordinator, {
   ModeCoordinatorState,
-} from "@/renderer/components/organisms/TransceiverCtrl/TransceiverModeCoordinator";
-import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/TransceiverModeSettingResolver";
+} from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator";
+import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 import { ref } from "vue";
 
@@ -42,7 +42,7 @@ describe("TransceiverModeCoordinator.syncCurrentNoradIdFromActiveSat", () => {
     jest.restoreAllMocks();
   });
 
-  it("アクティブ衛星がある場合は初回true、同一NoradIdでfalseを返すこと", () => {
+  it("アクチE��ブ衛星がある場合�E初回true、同一NoradIdでfalseを返すこと", () => {
     const coordinator = createCoordinator();
     jest.spyOn(ActiveSatServiceHub, "getInstance").mockReturnValue({
       getSatService: () => ({ getNoradId: () => "25544" }),
@@ -55,7 +55,7 @@ describe("TransceiverModeCoordinator.syncCurrentNoradIdFromActiveSat", () => {
     expect(secondChanged).toBe(false);
   });
 
-  it("アクティブ衛星ありから未設定へ遷移した場合はtrueを返すこと", () => {
+  it("アクチE��ブ衛星ありから未設定へ遷移した場合�Etrueを返すこと", () => {
     const coordinator = createCoordinator();
     let satService: { getNoradId: () => string } | null = { getNoradId: () => "25544" };
     jest.spyOn(ActiveSatServiceHub, "getInstance").mockReturnValue({
@@ -70,3 +70,4 @@ describe("TransceiverModeCoordinator.syncCurrentNoradIdFromActiveSat", () => {
     expect(changed).toBe(true);
   });
 });
+

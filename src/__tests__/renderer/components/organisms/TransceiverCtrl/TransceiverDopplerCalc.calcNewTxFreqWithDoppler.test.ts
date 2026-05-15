@@ -1,4 +1,4 @@
-import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/TransceiverDopplerCalc";
+import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 
 describe("TransceiverDopplerCalc", () => {
@@ -11,7 +11,7 @@ describe("TransceiverDopplerCalc", () => {
     const txBaseFreq = 2430000000;
     const intervalMs = 1000;
 
-    it("FrequencyTrackServiceが取得できない場合はnullを返すこと", async () => {
+    it("FrequencyTrackServiceが取得できなぁE��合�Enullを返すこと", async () => {
       const calc = new TransceiverDopplerCalc();
       const hubInstance = ActiveSatServiceHub.getInstance();
       jest.spyOn(hubInstance, "getFrequencyTrackService").mockReturnValue(null);
@@ -28,11 +28,11 @@ describe("TransceiverDopplerCalc", () => {
       } as any);
 
       const result = await calc.calcNewTxFreqWithDoppler(currentDate, txBaseFreq, intervalMs);
-      // 2430000000 * 1.0 = 2430000000 → "2430.000.000"
+      // 2430000000 * 1.0 = 2430000000 ↁE"2430.000.000"
       expect(result).toBe("2430.000.000");
     });
 
-    it("ドップラーファクターが1より小さい場合（衛星が遠ざかる）に周波数が低下すること", async () => {
+    it("ドップラーファクターぁEより小さぁE��合（衛星が遠ざかる）に周波数が低下すること", async () => {
       const calc = new TransceiverDopplerCalc();
       const hubInstance = ActiveSatServiceHub.getInstance();
       const factor = 0.99999;
@@ -46,3 +46,4 @@ describe("TransceiverDopplerCalc", () => {
     });
   });
 });
+

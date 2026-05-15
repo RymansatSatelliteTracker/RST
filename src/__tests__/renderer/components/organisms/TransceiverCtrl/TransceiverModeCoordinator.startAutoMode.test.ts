@@ -3,11 +3,11 @@ import { AppConfigModel } from "@/common/model/AppConfigModel";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
-import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/TransceiverBaseFreqMgr";
 import TransceiverModeCoordinator, {
   ModeCoordinatorState,
-} from "@/renderer/components/organisms/TransceiverCtrl/TransceiverModeCoordinator";
-import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/TransceiverModeSettingResolver";
+} from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
+import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
 import emitter from "@/renderer/util/EventBus";
 import { ref } from "vue";
 

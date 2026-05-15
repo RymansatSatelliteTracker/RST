@@ -1,9 +1,9 @@
 import Constant from "@/common/Constant";
-import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/TransceiverBaseFreqMgr";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
 import TransceiverModeCoordinator, {
   ModeCoordinatorState,
-} from "@/renderer/components/organisms/TransceiverCtrl/TransceiverModeCoordinator";
-import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/TransceiverModeSettingResolver";
+} from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator";
+import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
 import { ref } from "vue";
 
 const createState = (): ModeCoordinatorState => ({
@@ -37,7 +37,7 @@ const createCoordinator = (): TransceiverModeCoordinator => {
 };
 
 describe("TransceiverModeCoordinator.updateCurrentNoradId", () => {
-  it("初回更新時は変更ありとしてtrueを返すこと", () => {
+  it("初回更新時�E変更ありとしてtrueを返すこと", () => {
     const coordinator = createCoordinator();
 
     const changed = coordinator.updateCurrentNoradId("25544");
@@ -45,7 +45,7 @@ describe("TransceiverModeCoordinator.updateCurrentNoradId", () => {
     expect(changed).toBe(true);
   });
 
-  it("同じNoradIdを再設定した場合はfalseを返すこと", () => {
+  it("同じNoradIdを�E設定した場合�Efalseを返すこと", () => {
     const coordinator = createCoordinator();
     coordinator.updateCurrentNoradId("25544");
 
@@ -54,7 +54,7 @@ describe("TransceiverModeCoordinator.updateCurrentNoradId", () => {
     expect(changed).toBe(false);
   });
 
-  it("異なるNoradIdへ更新した場合は再びtrueを返すこと", () => {
+  it("異なるNoradIdへ更新した場合�E再�Etrueを返すこと", () => {
     const coordinator = createCoordinator();
     coordinator.updateCurrentNoradId("25544");
 
@@ -63,3 +63,4 @@ describe("TransceiverModeCoordinator.updateCurrentNoradId", () => {
     expect(changed).toBe(true);
   });
 });
+

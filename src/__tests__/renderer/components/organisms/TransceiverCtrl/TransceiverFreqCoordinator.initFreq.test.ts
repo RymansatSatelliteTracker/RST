@@ -2,7 +2,7 @@ import { AppConfigModel } from "@/common/model/AppConfigModel";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import TransceiverFreqCoordinator, {
   FreqCoordinatorState,
-} from "@/renderer/components/organisms/TransceiverCtrl/TransceiverFreqCoordinator";
+} from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverFreqCoordinator";
 import { ref } from "vue";
 
 const createState = (): FreqCoordinatorState => ({
@@ -31,3 +31,4 @@ describe("TransceiverFreqCoordinator.initFreq", () => {
     expect(state.rxFrequency.value).toBe("0480.000.000");
   });
 });
+

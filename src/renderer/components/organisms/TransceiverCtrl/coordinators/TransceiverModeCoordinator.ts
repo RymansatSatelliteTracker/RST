@@ -6,10 +6,10 @@ import TransceiverUtil from "@/common/util/TransceiverUtil";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
-import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/TransceiverBaseFreqMgr";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
 import TransceiverModeSettingResolver, {
   ModeResolvedState,
-} from "@/renderer/components/organisms/TransceiverCtrl/TransceiverModeSettingResolver";
+} from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
 import emitter from "@/renderer/util/EventBus";

@@ -1,7 +1,7 @@
 import ApiTransceiver from "@/renderer/api/ApiTransceiver";
 import TransceiverFreqCoordinator, {
   FreqCoordinatorState,
-} from "@/renderer/components/organisms/TransceiverCtrl/TransceiverFreqCoordinator";
+} from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverFreqCoordinator";
 import { ref } from "vue";
 
 const createState = (): FreqCoordinatorState => ({
@@ -16,7 +16,7 @@ describe("TransceiverFreqCoordinator.sendTxFreq", () => {
     jest.restoreAllMocks();
   });
 
-  it("アップリンク周波数を無線機へ送信すること", async () => {
+  it("アチE�Eリンク周波数を無線機へ送信すること", async () => {
     const coordinator = new TransceiverFreqCoordinator(createState(), ref(new Date("2026-05-09T00:00:00.000Z")));
     const setFreqSpy = jest.spyOn(ApiTransceiver, "setTransceiverFrequency").mockResolvedValue();
 
@@ -28,3 +28,4 @@ describe("TransceiverFreqCoordinator.sendTxFreq", () => {
     });
   });
 });
+

@@ -1,7 +1,7 @@
 import I18nMsgs from "@/common/I18nMsgs";
 import TransceiverModeSettingResolver, {
   TransceiverSettingLike,
-} from "@/renderer/components/organisms/TransceiverCtrl/TransceiverModeSettingResolver";
+} from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
 
 // テスト用の設定データファクトリ
 const makeUplinkSetting = (uplinkHz: number, uplinkMode: string) => ({ uplinkHz, uplinkMode });
@@ -19,11 +19,10 @@ describe("TransceiverModeSettingResolver", () => {
   let resolver: TransceiverModeSettingResolver;
 
   beforeEach(() => {
-    // 各テスト前に新しいインスタンスを生成する
+    // テスト前に新しいインスタンスを生成する
     resolver = new TransceiverModeSettingResolver();
   });
 
-  // ──────────────────────────────────────────────
   describe("canUseBeaconMode", () => {
     it("ビーコン周波数と運用モードが両方設定済みの場合はtrueを返すこと", () => {
       expect(resolver.canUseBeaconMode(fullSetting)).toBe(true);
@@ -42,7 +41,7 @@ describe("TransceiverModeSettingResolver", () => {
       expect(resolver.canUseBeaconMode(setting)).toBe(false);
     });
 
-    it("beaconModeが未設定（null）の場合はfalseを返すこと", () => {
+    it("beaconModeが未設定(null)の場合はfalseを返すこと", () => {
       const setting: TransceiverSettingLike = {
         ...fullSetting,
         beacon: { beaconHz: 145000000, beaconMode: null },
@@ -51,7 +50,6 @@ describe("TransceiverModeSettingResolver", () => {
     });
   });
 
-  // ──────────────────────────────────────────────
   describe("resolveOnModeStart - Beaconモード開始時（isBeaconMode=true）", () => {
     it("ビーコン設定が揃っている場合はrxFreqとrxOpeModeが設定されること", () => {
       const result = resolver.resolveOnModeStart(true, fullSetting);
@@ -96,7 +94,6 @@ describe("TransceiverModeSettingResolver", () => {
     });
   });
 
-  // ──────────────────────────────────────────────
   describe("resolveOnModeStart - Autoモード開始時（isBeaconMode=false）", () => {
     it("Tx/Rx両方設定済みの場合はtxFreq/rxFreq/txOpeMode/rxOpeModeが全て設定されること", () => {
       const result = resolver.resolveOnModeStart(false, fullSetting);
@@ -152,7 +149,7 @@ describe("TransceiverModeSettingResolver", () => {
       expect(result.txFreq).toBe("2430.000.000");
     });
 
-    it("uplinkModeがnullの場合はtxOpeModeがUNSET（空文字）になること", () => {
+    it("uplinkModeがnullの場合はtxOpeModeがUNSETになること", () => {
       const setting: TransceiverSettingLike = {
         uplink: { uplinkHz: 2430000000, uplinkMode: null },
         downlink: fullSetting.downlink,
@@ -164,7 +161,7 @@ describe("TransceiverModeSettingResolver", () => {
       expect(result.txOpeMode).toBe("");
     });
 
-    it("downlinkModeがnullの場合はrxOpeModeがUNSET（空文字）になること", () => {
+    it("downlinkModeがnullの場合はrxOpeModeがUNSETになること", () => {
       const setting: TransceiverSettingLike = {
         uplink: fullSetting.uplink,
         downlink: { downlinkHz: 480000000, downlinkMode: null },
@@ -177,7 +174,6 @@ describe("TransceiverModeSettingResolver", () => {
     });
   });
 
-  // ──────────────────────────────────────────────
   describe("resolveWhenBeaconOffInAuto", () => {
     it("Tx/Rx両方設定済みの場合はtxFreq/rxFreqが設定されること", () => {
       const result = resolver.resolveWhenBeaconOffInAuto(fullSetting);

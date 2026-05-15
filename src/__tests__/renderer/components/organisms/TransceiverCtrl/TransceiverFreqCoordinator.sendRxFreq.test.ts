@@ -1,7 +1,7 @@
 import ApiTransceiver from "@/renderer/api/ApiTransceiver";
 import TransceiverFreqCoordinator, {
   FreqCoordinatorState,
-} from "@/renderer/components/organisms/TransceiverCtrl/TransceiverFreqCoordinator";
+} from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverFreqCoordinator";
 import { ref } from "vue";
 
 const createState = (): FreqCoordinatorState => ({
@@ -28,3 +28,4 @@ describe("TransceiverFreqCoordinator.sendRxFreq", () => {
     });
   });
 });
+

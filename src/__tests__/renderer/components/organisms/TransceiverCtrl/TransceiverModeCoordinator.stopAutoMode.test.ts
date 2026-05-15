@@ -1,10 +1,10 @@
 import Constant from "@/common/Constant";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver";
-import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/TransceiverBaseFreqMgr";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
 import TransceiverModeCoordinator, {
   ModeCoordinatorState,
-} from "@/renderer/components/organisms/TransceiverCtrl/TransceiverModeCoordinator";
-import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/TransceiverModeSettingResolver";
+} from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator";
+import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
 import { ref } from "vue";
 
 const createState = (): ModeCoordinatorState => ({
@@ -42,7 +42,7 @@ describe("TransceiverModeCoordinator.stopAutoMode", () => {
     jest.restoreAllMocks();
   });
 
-  it("AutoモードOFF時は何もしないこと", async () => {
+  it("AutoモードOFF時�E何もしなぁE��と", async () => {
     const state = createState();
     const coordinator = createCoordinator(false, state);
     const autoOffSpy = jest.spyOn(ApiTransceiver, "transceiverAutoOff").mockResolvedValue();
@@ -54,7 +54,7 @@ describe("TransceiverModeCoordinator.stopAutoMode", () => {
     expect(stopUpdateSpy).not.toHaveBeenCalled();
   });
 
-  it("AutoモードON時はAuto終了処理後に退避周波数へ復元すること", async () => {
+  it("AutoモードON時�EAuto終亁E�E琁E��に退避周波数へ復允E��ること", async () => {
     const state = createState();
     state.txFrequency.value = "1200.000.000";
     state.rxFrequency.value = "0145.800.000";
@@ -73,3 +73,4 @@ describe("TransceiverModeCoordinator.stopAutoMode", () => {
     expect(state.rxFrequency.value).toBe("0480.000.000");
   });
 });
+

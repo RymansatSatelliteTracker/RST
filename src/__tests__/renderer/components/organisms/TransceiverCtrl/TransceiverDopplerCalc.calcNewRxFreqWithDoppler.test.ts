@@ -1,4 +1,4 @@
-import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/TransceiverDopplerCalc";
+import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 
 describe("TransceiverDopplerCalc", () => {
@@ -11,7 +11,7 @@ describe("TransceiverDopplerCalc", () => {
     const rxBaseFreq = 480000000;
     const intervalMs = 1000;
 
-    it("FrequencyTrackServiceが取得できない場合はnullを返すこと", async () => {
+    it("FrequencyTrackServiceが取得できなぁE��合�Enullを返すこと", async () => {
       const calc = new TransceiverDopplerCalc();
       const hubInstance = ActiveSatServiceHub.getInstance();
       jest.spyOn(hubInstance, "getFrequencyTrackService").mockReturnValue(null);
@@ -28,8 +28,9 @@ describe("TransceiverDopplerCalc", () => {
       } as any);
 
       const result = await calc.calcNewRxFreqWithDoppler(currentDate, rxBaseFreq, intervalMs);
-      // 480000000 * 1.0 = 480000000 → "0480.000.000"
+      // 480000000 * 1.0 = 480000000 ↁE"0480.000.000"
       expect(result).toBe("0480.000.000");
     });
   });
 });
+
