@@ -459,20 +459,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     updateDopplerShiftCorrectionFlags();
     await applyDopplerShiftCorrections();
 
-    // 以下は、コメントアウトしても良い。2025年11月時点ではデバッグログとして出力しておく。
-    // デバッグログ
-    const nowRxFreq = TransceiverUtil.parseNumber(rxFrequency.value);
-    const nowTxFreq = TransceiverUtil.parseNumber(txFrequency.value);
-    const adjustRxFreq = TransceiverUtil.parseNumber(rxFrequencyAdjustment.value);
-    const adjustTxFreq = TransceiverUtil.parseNumber(txFrequencyAdjustment.value);
-    const shiftRx = rxBaseFreq.value - nowRxFreq;
-    const shiftTx = txBaseFreq.value - nowTxFreq;
-    AppRendererLogger.debug(
-      `ドップラーシフト補正後:Rx=${nowRxFreq} Tx=${nowTxFreq}` +
-        ` シフト値：Rx=${shiftRx} Tx=${shiftTx}` +
-        ` 補正値：Rx=${adjustRxFreq} Tx=${adjustTxFreq}` +
-        ` 基準周波数:${getBaseFreqSum()}=${rxBaseFreq.value}+${txBaseFreq.value}`
-    );
+    logDopplerShiftResult();
   }
 
   /**
@@ -501,6 +488,25 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     if (execTxDopplerShiftCorrection.value) {
       await freqCoordinator.updateTxFreqByInvertingHeterodyne(coordinator.autoTrackingIntervalMsec);
     }
+  }
+
+  /**
+   * ドップラーシフト補正結果のデバッグログを出力する
+   */
+  function logDopplerShiftResult() {
+    // 以下は、コメントアウトしても良い。2025年11月時点ではデバッグログとして出力しておく。
+    const nowRxFreq = TransceiverUtil.parseNumber(rxFrequency.value);
+    const nowTxFreq = TransceiverUtil.parseNumber(txFrequency.value);
+    const adjustRxFreq = TransceiverUtil.parseNumber(rxFrequencyAdjustment.value);
+    const adjustTxFreq = TransceiverUtil.parseNumber(txFrequencyAdjustment.value);
+    const shiftRx = rxBaseFreq.value - nowRxFreq;
+    const shiftTx = txBaseFreq.value - nowTxFreq;
+    AppRendererLogger.debug(
+      `ドップラーシフト補正後:Rx=${nowRxFreq} Tx=${nowTxFreq}` +
+        ` シフト値：Rx=${shiftRx} Tx=${shiftTx}` +
+        ` 補正値：Rx=${adjustRxFreq} Tx=${adjustTxFreq}` +
+        ` 基準周波数:${getBaseFreqSum()}=${rxBaseFreq.value}+${txBaseFreq.value}`
+    );
   }
 
   onMounted(async () => {
