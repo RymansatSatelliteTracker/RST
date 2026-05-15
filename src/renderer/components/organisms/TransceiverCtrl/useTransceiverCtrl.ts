@@ -1,4 +1,3 @@
-import CommonUtil from "@/common/CommonUtil";
 import Constant from "@/common/Constant";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse } from "@/common/types/types";
@@ -11,6 +10,8 @@ import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverC
 import TransceiverFreqCoordinator from "@/renderer/components/organisms/TransceiverCtrl/TransceiverFreqCoordinator";
 import TransceiverModeCoordinator from "@/renderer/components/organisms/TransceiverCtrl/TransceiverModeCoordinator";
 import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/TransceiverModeSettingResolver";
+import TransceiverModeStateResolver from "@/renderer/components/organisms/TransceiverCtrl/TransceiverModeStateResolver";
+import TransceiverOpeModeResolver from "@/renderer/components/organisms/TransceiverCtrl/TransceiverOpeModeResolver";
 import { useModeStateManager } from "@/renderer/components/organisms/TransceiverCtrl/useSatelliteModeStateManager";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
@@ -72,6 +73,25 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
   // AutoモードのOnOff管理
   const autoStore = useStoreAutoState();
+  // サテライトモード切替時の状態保存/復元管理
+  const { save, load } = useModeStateManager();
+  const modeStateResolver = new TransceiverModeStateResolver(
+    {
+      rxFrequency,
+      rxOpeMode,
+      txOpeMode,
+      isSatTrackingModeNormal,
+      isSatelliteMode,
+    },
+    autoStore,
+    save,
+    load
+  );
+  // 無線機からの運用モード受信値を画面状態へ反映
+  const opeModeResolver = new TransceiverOpeModeResolver({
+    txOpeMode,
+    rxOpeMode,
+  });
   // 基準周波数（補正値なし）の管理
   const baseFreqMgr = new TransceiverBaseFreqMgr();
   // モードごとの周波数・運用モード解決
@@ -221,15 +241,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   watch(
     satelliteMode,
     (newMode, oldMode) => {
-      if (oldMode === undefined) return;
-      saveState(oldMode);
-
-      // UNSETモードに遷移する場合は過去状態をロードする
-      if (newMode === Constant.Transceiver.SatelliteMode.UNSET) {
-        loadState(newMode);
-      }
-
-      isSatelliteMode.value = newMode === Constant.Transceiver.SatelliteMode.SATELLITE;
+      modeStateResolver.onSatelliteModeChanged(newMode, oldMode);
     },
     { immediate: true }
   );
@@ -639,45 +651,13 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
     // 無線機の運用モードのイベントハンドラ
     // 受信した無線機の運用モードでtxOpeMode,rxOpeModeを更新する
-    ApiTransceiver.onChangeTransceiverMode(async (res: ApiResponse<UplinkType | DownlinkType>) => {
+    ApiTransceiver.onChangeTransceiverMode((res: ApiResponse<UplinkType | DownlinkType>) => {
       // 受信処理スキップ状態の場合は処理を終了する（AutoOn処理中のモード変更などにおける無線機からの不要なデータ受信を無視する）
       if (coordinator.isRecvProcSkip) {
         return;
       }
 
-      if (!res.status) {
-        emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(res.message));
-        // 運用モードが取得できない場合はUNSETにする
-        txOpeMode.value = Constant.Transceiver.OpeMode.UNSET;
-        rxOpeMode.value = Constant.Transceiver.OpeMode.UNSET;
-        return;
-      }
-
-      const opeMode = res.data;
-      if (!opeMode) {
-        // 運用モードが取得できない場合はUNSETにする
-        txOpeMode.value = Constant.Transceiver.OpeMode.UNSET;
-        rxOpeMode.value = Constant.Transceiver.OpeMode.UNSET;
-        return;
-      }
-
-      if ("uplinkMode" in opeMode && opeMode.uplinkMode) {
-        if (!CommonUtil.isEmpty(opeMode.uplinkMode)) {
-          // アップリンク運用モードを更新する
-          txOpeMode.value = opeMode.uplinkMode;
-        } else {
-          // 運用モードが取得できない場合はUNSETにする
-          txOpeMode.value = Constant.Transceiver.OpeMode.UNSET;
-        }
-      } else if ("downlinkMode" in opeMode && opeMode.downlinkMode) {
-        if (!CommonUtil.isEmpty(opeMode.downlinkMode)) {
-          // ダウンリンク運用モードを更新する
-          rxOpeMode.value = opeMode.downlinkMode;
-        } else {
-          // 運用モードが取得できない場合はUNSETにする
-          rxOpeMode.value = Constant.Transceiver.OpeMode.UNSET;
-        }
-      }
+      opeModeResolver.applyFromTransceiver(res);
     });
 
     // 無線機周波数保存イベントを受けて設定ファイルに現在の無線機周波数を保存する
@@ -688,54 +668,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       await ApiAppConfig.storeAppConfig(config);
     });
   });
-
-  const { save, load } = useModeStateManager();
-
-  /**
-   * モードごとの状態を保存する
-   * @param mode モード名（サテライトモードやSPLITなど）
-   */
-  function saveState(mode: string) {
-    // Autoモード中は状態を保存しない
-    if (autoStore.tranceiverAuto) return;
-
-    const state = {
-      rxFrequency: rxFrequency.value,
-      rxOpeMode: rxOpeMode.value,
-      isSatTrackingModeNormal: isSatTrackingModeNormal.value,
-    };
-    save(mode, state);
-  }
-
-  /**
-   * モードごとの状態を呼び出す
-   * @param mode モード名（サテライトモードやSPLITなど）
-   */
-  function loadState(mode: string) {
-    // Autoモード中は状態を読み込まない
-    if (autoStore.tranceiverAuto) return;
-
-    const state = load(mode);
-    rxFrequency.value = state.rxFrequency;
-    rxOpeMode.value = state.rxOpeMode;
-    switch (mode) {
-      case Constant.Transceiver.SatelliteMode.SATELLITE:
-        isSatTrackingModeNormal.value = state.isSatTrackingModeNormal;
-        // このモード以外はtx/rxが同期している
-        // モードを切り替えるとsatelliteにしたときにrx設定あり->rxが空欄という挙動になる
-        // tx入力してるのにrxを空欄にしたいというケースはないので、txをrxに合わせる
-        const isRxOpeModeUNSET: boolean = rxOpeMode.value === Constant.Transceiver.OpeMode.UNSET;
-        const isTxOpeModeUNSET: boolean = txOpeMode.value === Constant.Transceiver.OpeMode.UNSET;
-        if (isRxOpeModeUNSET && !isTxOpeModeUNSET) rxOpeMode.value = txOpeMode.value;
-        break;
-      case Constant.Transceiver.SatelliteMode.SPLIT:
-        isSatTrackingModeNormal.value = true; // SPLITモードではトラッキングモードは常にNORMAL
-        break;
-      default:
-        isSatTrackingModeNormal.value = false; // その他のモードではトラッキングモードは無効
-        break;
-    }
-  }
 
   /**
    * 無線機のRx周波数を元に、Rx、Tx基準周波数を算出する
