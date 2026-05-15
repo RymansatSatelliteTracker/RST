@@ -12,6 +12,7 @@ import TransceiverModeSettingResolver from "@/renderer/components/organisms/Tran
 import TransceiverModeStateResolver from "@/renderer/components/organisms/TransceiverCtrl/TransceiverModeStateResolver";
 import TransceiverOpeModeResolver from "@/renderer/components/organisms/TransceiverCtrl/TransceiverOpeModeResolver";
 import TransceiverRecvFreqResolver from "@/renderer/components/organisms/TransceiverCtrl/TransceiverRecvFreqResolver";
+import TransceiverSyncCoordinator from "@/renderer/components/organisms/TransceiverCtrl/TransceiverSyncCoordinator";
 import { useModeStateManager } from "@/renderer/components/organisms/TransceiverCtrl/useSatelliteModeStateManager";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
@@ -88,6 +89,13 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   );
   // 無線機からの運用モード受信値を画面状態へ反映
   const opeModeResolver = new TransceiverOpeModeResolver({
+    txOpeMode,
+    rxOpeMode,
+  });
+  // サテライトモードOFF時のTx/Rx同期管理
+  const syncCoordinator = new TransceiverSyncCoordinator({
+    txFrequency,
+    rxFrequency,
     txOpeMode,
     rxOpeMode,
   });
@@ -410,16 +418,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * Rxから先に更新する
    */
   watch([satelliteMode, txFrequency] as const, ([newSatelliteMode, newTxFrequency]) => {
-    if (newSatelliteMode === Constant.Transceiver.SatelliteMode.SATELLITE) return;
-    // 無限更新防止
-    if (rxFrequency.value === newTxFrequency) return;
-    rxFrequency.value = newTxFrequency;
+    syncCoordinator.syncRxFrequency(newSatelliteMode, newTxFrequency);
   });
   watch([satelliteMode, rxFrequency] as const, ([newSatelliteMode, newRxFrequency]) => {
-    if (newSatelliteMode === Constant.Transceiver.SatelliteMode.SATELLITE) return;
-    // 無限更新防止
-    if (txFrequency.value === newRxFrequency) return;
-    txFrequency.value = newRxFrequency;
+    syncCoordinator.syncTxFrequency(newSatelliteMode, newRxFrequency);
   });
 
   /**
@@ -429,16 +431,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * Rxから先に更新する
    */
   watch([satelliteMode, txOpeMode] as const, ([newSatelliteMode, newTxOpeMode]) => {
-    if (newSatelliteMode === Constant.Transceiver.SatelliteMode.SATELLITE) return;
-    // 無限更新防止
-    if (rxOpeMode.value === newTxOpeMode) return;
-    rxOpeMode.value = newTxOpeMode;
+    syncCoordinator.syncRxOpeMode(newSatelliteMode, newTxOpeMode);
   });
   watch([satelliteMode, rxOpeMode] as const, ([newSatelliteMode, newRxOpeMode]) => {
-    if (newSatelliteMode === Constant.Transceiver.SatelliteMode.SATELLITE) return;
-    // 無限更新防止
-    if (txOpeMode.value === newRxOpeMode) return;
-    txOpeMode.value = newRxOpeMode;
+    syncCoordinator.syncTxOpeMode(newSatelliteMode, newRxOpeMode);
   });
 
   /**
@@ -460,24 +456,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       return;
     }
 
-    // ドップラーシフト補正を実行するかどうかを判定する
-    execTxDopplerShiftCorrection.value =
-      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_SAT ||
-      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_RX;
-    execRxDopplerShiftCorrection.value =
-      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_SAT ||
-      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_TX;
-
-    // サテライトモードがONの場合、ダウンリンク周波数をドップラーシフト補正して更新する
-    // TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時も何もしない
-    if (isSatelliteMode.value && execRxDopplerShiftCorrection.value) {
-      await freqCoordinator.updateRxFreqWithDopplerShift(coordinator.autoTrackingIntervalMsec);
-    }
-
-    // アップリンク周波数をドップラーシフト補正して更新する
-    if (execTxDopplerShiftCorrection.value) {
-      await freqCoordinator.updateTxFreqByInvertingHeterodyne(coordinator.autoTrackingIntervalMsec);
-    }
+    updateDopplerShiftCorrectionFlags();
+    await applyDopplerShiftCorrections();
 
     // 以下は、コメントアウトしても良い。2025年11月時点ではデバッグログとして出力しておく。
     // デバッグログ
@@ -493,6 +473,34 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
         ` 補正値：Rx=${adjustRxFreq} Tx=${adjustTxFreq}` +
         ` 基準周波数:${getBaseFreqSum()}=${rxBaseFreq.value}+${txBaseFreq.value}`
     );
+  }
+
+  /**
+   * ドップラーシフト補正を実行するかどうかのフラグを更新する
+   */
+  function updateDopplerShiftCorrectionFlags() {
+    execTxDopplerShiftCorrection.value =
+      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_SAT ||
+      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_RX;
+    execRxDopplerShiftCorrection.value =
+      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_SAT ||
+      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_TX;
+  }
+
+  /**
+   * ドップラーシフト補正を実行する
+   */
+  async function applyDopplerShiftCorrections() {
+    // サテライトモードがONの場合、ダウンリンク周波数をドップラーシフト補正して更新する
+    // TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時も何もしない
+    if (isSatelliteMode.value && execRxDopplerShiftCorrection.value) {
+      await freqCoordinator.updateRxFreqWithDopplerShift(coordinator.autoTrackingIntervalMsec);
+    }
+
+    // アップリンク周波数をドップラーシフト補正して更新する
+    if (execTxDopplerShiftCorrection.value) {
+      await freqCoordinator.updateTxFreqByInvertingHeterodyne(coordinator.autoTrackingIntervalMsec);
+    }
   }
 
   onMounted(async () => {
