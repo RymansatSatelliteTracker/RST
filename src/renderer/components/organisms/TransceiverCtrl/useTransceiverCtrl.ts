@@ -5,6 +5,7 @@ import TransceiverUtil from "@/common/util/TransceiverUtil";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver";
 import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/TransceiverBaseFreqMgr";
+import TransceiverDopplerWaitCoordinator from "@/renderer/components/organisms/TransceiverCtrl/TransceiverDopplerWaitCoordinator";
 import TransceiverFreqCoordinator from "@/renderer/components/organisms/TransceiverCtrl/TransceiverFreqCoordinator";
 import TransceiverModeCoordinator from "@/renderer/components/organisms/TransceiverCtrl/TransceiverModeCoordinator";
 import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/TransceiverModeSettingResolver";
@@ -90,6 +91,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     txOpeMode,
     rxOpeMode,
   });
+  // ドップラーシフト待機状態と待機タイマの管理
+  const dopplerWaitCoordinator = new TransceiverDopplerWaitCoordinator(autoStore);
   // 基準周波数（補正値なし）の管理
   const baseFreqMgr = new TransceiverBaseFreqMgr();
   // モードごとの周波数・運用モード解決
@@ -121,11 +124,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     calcBaseFreqWithAdjust,
     getBaseFreqSum
   );
-
-  // ドップラーシフト待機フラグ
-  let isDopplerShiftWaiting = ref<boolean>(false);
-  // ドップラーシフト周波数送信の待機タイマ
-  let dopplerTimerId: NodeJS.Timeout | null = null;
 
   /**
    * 周波数更新インターバルを開始する
@@ -458,7 +456,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     }
 
     // ドップラーシフト待機フラグが有効の場合は処理を中断する
-    if (isDopplerShiftWaiting.value) {
+    if (dopplerWaitCoordinator.isWaiting) {
       return;
     }
 
@@ -497,38 +495,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     );
   }
 
-  /**
-   * ドップラーシフトの待機を設定する
-   */
-  async function setupDopplerShiftWaiting(res: ApiResponse<boolean>) {
-    if (!res.data) {
-      return;
-    }
-
-    // Autoモード中でない場合は何もしない
-    // MEMO: 無線機で周波数を変更した直後にAutoOnとした場合に、その周波数を元に一定時間待機後の基準周波数の更新が走ってしまうため、
-    //       AutoOnでない場合は処理を終了する
-    if (!autoStore.tranceiverAuto) {
-      return;
-    }
-
-    // ドップラーシフト待機タイマが既に存在する場合はクリアする
-    if (dopplerTimerId) {
-      clearTimeout(dopplerTimerId);
-    }
-
-    // ドップラーシフト待機フラグを有効にする
-    isDopplerShiftWaiting.value = true;
-
-    // 一定時間待機後にドップラーシフトの基準周波数を変更する
-    dopplerTimerId = setTimeout(async () => {
-      // ドップラーシフト待機フラグを無効に戻す
-      isDopplerShiftWaiting.value = false;
-
-      AppRendererLogger.info(`ダイヤル操作N秒経過したため待機を解除しました`);
-    }, Constant.Transceiver.TRANSCEIVE_WAIT_MS);
-  }
-
   onMounted(async () => {
     // 無線機の設定を初期化する
     await initTransceiver();
@@ -541,8 +507,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     ActiveSatServiceHub.getInstance().addOnChangeActiveSat(onChangeSatGrp);
 
     // 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機する
-    ApiTransceiver.dopplerShiftWaitingCallback(async (res: ApiResponse<boolean>) => {
-      await setupDopplerShiftWaiting(res);
+    ApiTransceiver.dopplerShiftWaitingCallback((res: ApiResponse<boolean>) => {
+      dopplerWaitCoordinator.setupWaiting(res);
     });
 
     // 無線機で周波数が変更された場合
