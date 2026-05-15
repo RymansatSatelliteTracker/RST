@@ -1,5 +1,4 @@
 import ApiTransceiver from "@/renderer/api/ApiTransceiver";
-import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/TransceiverDopplerCalc";
 import TransceiverFreqCoordinator, {
   FreqCoordinatorState,
 } from "@/renderer/components/organisms/TransceiverCtrl/TransceiverFreqCoordinator";
@@ -18,11 +17,7 @@ describe("TransceiverFreqCoordinator.sendRxFreq", () => {
   });
 
   it("ダウンリンク周波数を無線機へ送信すること", async () => {
-    const coordinator = new TransceiverFreqCoordinator(
-      createState(),
-      ref(new Date("2026-05-09T00:00:00.000Z")),
-      {} as TransceiverDopplerCalc
-    );
+    const coordinator = new TransceiverFreqCoordinator(createState(), ref(new Date("2026-05-09T00:00:00.000Z")));
     const setFreqSpy = jest.spyOn(ApiTransceiver, "setTransceiverFrequency").mockResolvedValue();
 
     await coordinator.sendRxFreq(480000000);

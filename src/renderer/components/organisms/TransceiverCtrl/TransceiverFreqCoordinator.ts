@@ -21,11 +21,14 @@ export interface FreqCoordinatorState {
  * 周波数の初期化・送信・ドップラー補正更新を扱うクラス
  */
 export default class TransceiverFreqCoordinator {
+  private dopplerCalc: TransceiverDopplerCalc;
+
   constructor(
     private state: FreqCoordinatorState,
-    private currentDate: Ref<Date>,
-    private dopplerCalc: TransceiverDopplerCalc
-  ) {}
+    private currentDate: Ref<Date>
+  ) {
+    this.dopplerCalc = new TransceiverDopplerCalc();
+  }
 
   /**
    * 無線機周波数を初期化する
