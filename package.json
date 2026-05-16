@@ -44,6 +44,10 @@
       {
         "from": "resources/data/init-data",
         "to": "data/init-data"
+      },
+      {
+        "from": "dist/tiles",
+        "to": "tiles"
       }
     ],
     "extraMetadata": {

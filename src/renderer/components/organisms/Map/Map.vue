@@ -18,7 +18,7 @@
 
       <!-- 地図 -->
       <l-tile-layer
-        url="/tiles/{z}/{x}/{y}.jpg"
+        :url="`${tilePath}/{z}/{x}/{y}.jpg`"
         layer-type="base"
         :opacity="0.7"
         :tileSize="512"
@@ -102,7 +102,7 @@ watch(
 
 // フック
 // 人工衛星のAOSリストを取得する
-const { groundStation, groundStation2, offsetLongitude, isGroundStation2Enable } = useMap();
+const { groundStation, groundStation2, offsetLongitude, isGroundStation2Enable, tilePath } = useMap();
 </script>
 
 <style module lang="scss">
