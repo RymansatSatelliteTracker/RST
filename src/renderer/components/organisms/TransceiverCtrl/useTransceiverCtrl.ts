@@ -236,6 +236,41 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     await ApiTransceiver.setSatelliteMode(false);
   }
 
+  /**
+   * Rx周波数差分変更時の処理
+   */
+  function onDiffRxFrequencyChanged(newDiffFrequency: number) {
+    if (newDiffFrequency === 0.0) {
+      return;
+    }
+
+    rxBaseFreq.value = TransceiverUtil.subtractFrequencies(rxBaseFreq.value, diffRxFrequency.value);
+
+    if (!isSatelliteMode.value) {
+      // サテライトモードがOFFの場合は中断する
+      // TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時も何もしない
+      diffRxFrequency.value = 0.0;
+      return;
+    }
+
+    if (isSatTrackingModeNormal.value) {
+      // トラッキングモードがNORMALの場合、アップリンク周波数とダウンリンク周波数の変化量を同一方向に同じステップで変化させる
+      txFrequency.value = TransceiverUtil.formatWithDot(
+        TransceiverUtil.subtractFrequencies(TransceiverUtil.parseNumber(txFrequency.value), diffRxFrequency.value)
+      );
+      // ドップラーシフトの基準周波数に画面で操作した変化量を反映する
+      txBaseFreq.value = TransceiverUtil.subtractFrequencies(txBaseFreq.value, diffRxFrequency.value);
+    } else {
+      // トラッキングモードがREVERSEの場合、アップリンク周波数とダウンリンク周波数の変化量を逆方向に同じステップで変化させる
+      txFrequency.value = TransceiverUtil.formatWithDot(
+        TransceiverUtil.addFrequencies(TransceiverUtil.parseNumber(txFrequency.value), diffRxFrequency.value)
+      );
+      // ドップラーシフトの基準周波数に画面で操作した変化量を反映する
+      txBaseFreq.value = TransceiverUtil.addFrequencies(txBaseFreq.value, diffRxFrequency.value);
+    }
+    diffRxFrequency.value = 0.0;
+  }
+
   // ──────────────────────────────────────────────
   // モード遷移 watch
   // ──────────────────────────────────────────────
@@ -356,38 +391,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * 画面でRx周波数が変更された場合
    */
   watch(diffRxFrequency, async (newDiffFrequency) => {
-    // 変化量が0の場合は何もしない
-    if (newDiffFrequency === 0.0) {
-      return;
-    }
-
-    // ドップラーシフト基準周波数に画面で操作した変化量を反映する
-    rxBaseFreq.value = TransceiverUtil.subtractFrequencies(rxBaseFreq.value, diffRxFrequency.value);
-
-    if (!isSatelliteMode.value) {
-      // サテライトモードがOFFの場合は中断する
-      // TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時も何もしない
-      diffRxFrequency.value = 0.0;
-      return;
-    }
-
-    if (isSatTrackingModeNormal.value) {
-      // トラッキングモードがNORMALの場合、アップリンク周波数とダウンリンク周波数の変化量を同一方向に同じステップで変化させる
-      txFrequency.value = TransceiverUtil.formatWithDot(
-        TransceiverUtil.subtractFrequencies(TransceiverUtil.parseNumber(txFrequency.value), diffRxFrequency.value)
-      );
-      // ドップラーシフトの基準周波数に画面で操作した変化量を反映する
-      txBaseFreq.value = TransceiverUtil.subtractFrequencies(txBaseFreq.value, diffRxFrequency.value);
-    } else {
-      // トラッキングモードがREVERSEの場合、アップリンク周波数とダウンリンク周波数の変化量を逆方向に同じステップで変化させる
-      txFrequency.value = TransceiverUtil.formatWithDot(
-        TransceiverUtil.addFrequencies(TransceiverUtil.parseNumber(txFrequency.value), diffRxFrequency.value)
-      );
-      // ドップラーシフトの基準周波数に画面で操作した変化量を反映する
-      txBaseFreq.value = TransceiverUtil.addFrequencies(txBaseFreq.value, diffRxFrequency.value);
-    }
-    // 周波数の変化量を初期化する
-    diffRxFrequency.value = 0.0;
+    onDiffRxFrequencyChanged(newDiffFrequency);
   });
 
   /**
