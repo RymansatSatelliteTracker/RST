@@ -115,24 +115,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     },
     currentDate
   );
-  // 無線機からの周波数受信値を画面状態と基準周波数へ反映
-  const recvFreqResolver = new TransceiverRecvFreqResolver(
-    {
-      txFrequency,
-      rxFrequency,
-      txFrequencyAdjustment,
-      rxFrequencyAdjustment,
-      txBaseFreq,
-      rxBaseFreq,
-    },
-    autoStore,
-    baseFreqMgr,
-    currentDate,
-    () => coordinator.autoTrackingIntervalMsec,
-    calcBaseFreqWithAdjust,
-    getBaseFreqSum
-  );
-
   /**
    * 周波数更新インターバルを開始する
    * @param {number} intervalMs 時間間隔[単位：ミリ秒]
@@ -170,6 +152,23 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     baseFreqMgr,
     calcBaseFreqWithAdjust,
     startUpdateFreqInterval
+  );
+  // 無線機からの周波数受信値を画面状態と基準周波数へ反映
+  const recvFreqResolver = new TransceiverRecvFreqResolver(
+    {
+      txFrequency,
+      rxFrequency,
+      txFrequencyAdjustment,
+      rxFrequencyAdjustment,
+      txBaseFreq,
+      rxBaseFreq,
+    },
+    autoStore,
+    baseFreqMgr,
+    currentDate,
+    () => coordinator.autoTrackingIntervalMsec,
+    calcBaseFreqWithAdjust,
+    getBaseFreqSum
   );
 
   /**
