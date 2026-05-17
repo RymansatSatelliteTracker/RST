@@ -2,8 +2,8 @@ import Constant from "@/common/Constant";
 import I18nMsgs from "@/common/I18nMsgs";
 import { ApiResponse } from "@/common/types/types";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
-import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
 import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
 import TransceiverRecvFreqResolver, {
   RecvFreqResolverState,
 } from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverRecvFreqResolver";
@@ -24,7 +24,7 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
     jest.restoreAllMocks();
   });
 
-  it("受信失敗時は通知を表示して処琁E��終亁E��ること", async () => {
+  it("受信失敗時は通知を表示して処理を終了すること", async () => {
     const state = createState();
     const baseFreqMgr = new TransceiverBaseFreqMgr();
     const calcWithAdjust = jest.fn();
@@ -50,7 +50,7 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
     expect(calcWithAdjust).not.toHaveBeenCalled();
   });
 
-  it("Tx周波数受信かつAutoOff時�E画面周波数のみ更新すること", async () => {
+  it("Tx周波数受信かつAutoOff時、画面周波数のみ更新すること", async () => {
     const state = createState();
     const baseFreqMgr = new TransceiverBaseFreqMgr();
     const calcWithAdjust = jest.fn();
@@ -75,7 +75,7 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
     expect(calcWithAdjust).not.toHaveBeenCalled();
   });
 
-  it("Rx周波数受信かつAutoOn時�E基準周波数を�E算�Eすること", async () => {
+  it("Rx周波数受信かつAutoOn時、基準周波数を算出すること", async () => {
     const state = createState();
     const baseFreqMgr = new TransceiverBaseFreqMgr();
     baseFreqMgr.setPlainBaseFreqs(480000000, 2430000000);
@@ -117,4 +117,3 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
     });
   });
 });
-

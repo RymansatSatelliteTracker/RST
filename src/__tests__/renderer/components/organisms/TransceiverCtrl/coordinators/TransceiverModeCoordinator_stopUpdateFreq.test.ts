@@ -1,9 +1,9 @@
 import CommonUtil from "@/common/CommonUtil";
 import Constant from "@/common/Constant";
-import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
 import TransceiverModeCoordinator, {
   ModeCoordinatorState,
 } from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
 import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
 import { ref } from "vue";
 
@@ -42,7 +42,7 @@ describe("TransceiverModeCoordinator.stopUpdateFreq", () => {
     jest.restoreAllMocks();
   });
 
-  it("タイマID未設定�E場合�Efalseを返すこと", async () => {
+  it("タイマID未設定の場合、falseを返すこと", async () => {
     const coordinator = createCoordinator();
     const sleepSpy = jest.spyOn(CommonUtil, "sleep").mockResolvedValue();
 
@@ -52,7 +52,7 @@ describe("TransceiverModeCoordinator.stopUpdateFreq", () => {
     expect(sleepSpy).not.toHaveBeenCalled();
   });
 
-  it("タイマID設定済みの場合�E停止してtrueを返すこと", async () => {
+  it("タイマID設定済みの場合、停止してtrueを返すこと", async () => {
     const coordinator = createCoordinator();
     const sleepSpy = jest.spyOn(CommonUtil, "sleep").mockResolvedValue();
     const clearIntervalSpy = jest.spyOn(global, "clearInterval");
@@ -69,4 +69,3 @@ describe("TransceiverModeCoordinator.stopUpdateFreq", () => {
     expect(secondResult).toBe(false);
   });
 });
-

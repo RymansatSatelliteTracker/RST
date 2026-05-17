@@ -15,42 +15,14 @@ const fullSetting: TransceiverSettingLike = {
   beacon: makeBeaconSetting(145000000, "CW"),
 };
 
-describe("TransceiverModeSettingResolver", () => {
+describe("TransceiverModeSettingResolver.resolveOnModeStart", () => {
   let resolver: TransceiverModeSettingResolver;
 
   beforeEach(() => {
-    // テスト前に新しいインスタンスを生成する
     resolver = new TransceiverModeSettingResolver();
   });
 
-  describe("canUseBeaconMode", () => {
-    it("ビーコン周波数と運用モードが両方設定済みの場合はtrueを返すこと", () => {
-      expect(resolver.canUseBeaconMode(fullSetting)).toBe(true);
-    });
-
-    it("ビーコン設定がnullの場合はfalseを返すこと", () => {
-      const setting: TransceiverSettingLike = { ...fullSetting, beacon: null };
-      expect(resolver.canUseBeaconMode(setting)).toBe(false);
-    });
-
-    it("beaconHzが未設定の場合はfalseを返すこと", () => {
-      const setting: TransceiverSettingLike = {
-        ...fullSetting,
-        beacon: { beaconHz: null, beaconMode: "CW" },
-      };
-      expect(resolver.canUseBeaconMode(setting)).toBe(false);
-    });
-
-    it("beaconModeが未設定(null)の場合はfalseを返すこと", () => {
-      const setting: TransceiverSettingLike = {
-        ...fullSetting,
-        beacon: { beaconHz: 145000000, beaconMode: null },
-      };
-      expect(resolver.canUseBeaconMode(setting)).toBe(false);
-    });
-  });
-
-  describe("resolveOnModeStart - Beaconモード開始時（isBeaconMode=true）", () => {
+  describe("Beaconモード開始時（isBeaconMode=true）", () => {
     it("ビーコン設定が揃っている場合はrxFreqとrxOpeModeが設定されること", () => {
       const result = resolver.resolveOnModeStart(true, fullSetting);
 
@@ -94,7 +66,7 @@ describe("TransceiverModeSettingResolver", () => {
     });
   });
 
-  describe("resolveOnModeStart - Autoモード開始時（isBeaconMode=false）", () => {
+  describe("Autoモード開始時（isBeaconMode=false）", () => {
     it("Tx/Rx両方設定済みの場合はtxFreq/rxFreq/txOpeMode/rxOpeModeが全て設定されること", () => {
       const result = resolver.resolveOnModeStart(false, fullSetting);
 
@@ -171,61 +143,6 @@ describe("TransceiverModeSettingResolver", () => {
       const result = resolver.resolveOnModeStart(false, setting);
 
       expect(result.rxOpeMode).toBe("");
-    });
-  });
-
-  describe("resolveWhenBeaconOffInAuto", () => {
-    it("Tx/Rx両方設定済みの場合はtxFreq/rxFreqが設定されること", () => {
-      const result = resolver.resolveWhenBeaconOffInAuto(fullSetting);
-
-      expect(result.txFreq).toBe("2430.000.000");
-      expect(result.rxFreq).toBe("0480.000.000");
-      expect(result.txOpeMode).toBe("FM");
-      expect(result.rxOpeMode).toBe("FM");
-      expect(result.noticeMessageKeys).toHaveLength(0);
-    });
-
-    it("アップリンクが未設定の場合はtxFreqがundefinedで通知なしであること", () => {
-      const setting: TransceiverSettingLike = {
-        uplink: null,
-        downlink: fullSetting.downlink,
-        beacon: fullSetting.beacon,
-      };
-
-      const result = resolver.resolveWhenBeaconOffInAuto(setting);
-
-      // Tx未設定でも通知は出さない（ビーコンOFF時は現状維持）
-      expect(result.txFreq).toBeUndefined();
-      expect(result.noticeMessageKeys).toHaveLength(0);
-      expect(result.rxFreq).toBe("0480.000.000");
-    });
-
-    it("ダウンリンクが未設定の場合はrxFreqがundefinedで通知なしであること", () => {
-      const setting: TransceiverSettingLike = {
-        uplink: fullSetting.uplink,
-        downlink: null,
-        beacon: fullSetting.beacon,
-      };
-
-      const result = resolver.resolveWhenBeaconOffInAuto(setting);
-
-      expect(result.rxFreq).toBeUndefined();
-      expect(result.noticeMessageKeys).toHaveLength(0);
-      expect(result.txFreq).toBe("2430.000.000");
-    });
-
-    it("Tx/Rx両方未設定の場合はtxFreq/rxFreqともundefinedで通知なしであること", () => {
-      const setting: TransceiverSettingLike = {
-        uplink: null,
-        downlink: null,
-        beacon: fullSetting.beacon,
-      };
-
-      const result = resolver.resolveWhenBeaconOffInAuto(setting);
-
-      expect(result.txFreq).toBeUndefined();
-      expect(result.rxFreq).toBeUndefined();
-      expect(result.noticeMessageKeys).toHaveLength(0);
     });
   });
 });
