@@ -58,6 +58,19 @@ describe("TransceiverModeSettingResolver.resolveOnModeStart", () => {
       expect(result.noticeMessageKeys).toContain(I18nMsgs.CHK_ERR_NO_BEACON_FREQ);
     });
 
+    it("ビーコン運用モードが空文字の場合は設定済みとして反映されること", () => {
+      const setting: TransceiverSettingLike = {
+        ...fullSetting,
+        beacon: { beaconHz: 145000000, beaconMode: "" },
+      };
+
+      const result = resolver.resolveOnModeStart(true, setting);
+
+      expect(result.rxFreq).toBe("0145.000.000");
+      expect(result.rxOpeMode).toBe("");
+      expect(result.noticeMessageKeys).toHaveLength(0);
+    });
+
     it("ビーコン設定がnullの場合はエラー通知が返ること", () => {
       const setting: TransceiverSettingLike = { ...fullSetting, beacon: null };
 

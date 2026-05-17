@@ -45,4 +45,12 @@ describe("TransceiverModeSettingResolver.canUseBeaconMode", () => {
     };
     expect(resolver.canUseBeaconMode(setting)).toBe(false);
   });
+
+  it("beaconModeが空文字の場合はtrueを返すこと", () => {
+    const setting: TransceiverSettingLike = {
+      ...fullSetting,
+      beacon: { beaconHz: 145000000, beaconMode: "" },
+    };
+    expect(resolver.canUseBeaconMode(setting)).toBe(true);
+  });
 });

@@ -56,8 +56,8 @@ export default class TransceiverModeSettingResolver {
    * ビーコンモードを利用できるか判定する
    */
   public canUseBeaconMode(transceiverSetting: TransceiverSettingLike): boolean {
-    // ビーコン周波数とビーコン運用モードの両方が設定済みの場合のみ利用可能とする
-    return !!(transceiverSetting.beacon?.beaconHz && transceiverSetting.beacon?.beaconMode);
+    // ビーコン周波数とビーコン運用モード（空文字を含む）が設定済みの場合のみ利用可能とする
+    return this.hasBeaconSetting(transceiverSetting);
   }
 
   /**
@@ -101,8 +101,9 @@ export default class TransceiverModeSettingResolver {
    * @returns モード解決結果（ビーコン設定未入力の場合は通知メッセージを含む）
    */
   private resolveBeaconModeSetting(transceiverSetting: TransceiverSettingLike): ModeResolvedState {
+    const beacon = transceiverSetting.beacon;
     // ビーコン周波数または運用モードが未設定の場合はエラー通知のみ返す
-    if (!(transceiverSetting.beacon?.beaconHz && transceiverSetting.beacon?.beaconMode)) {
+    if (!beacon || beacon.beaconHz == null || beacon.beaconMode == null) {
       return {
         noticeMessageKeys: [I18nMsgs.CHK_ERR_NO_BEACON_FREQ],
       };
@@ -110,10 +111,18 @@ export default class TransceiverModeSettingResolver {
 
     // ビーコン設定をダウンリンクに反映する（アップリンクはビーコンモードでは変更しない）
     return {
-      rxFreq: TransceiverUtil.formatWithDot(transceiverSetting.beacon.beaconHz),
-      rxOpeMode: transceiverSetting.beacon.beaconMode,
+      rxFreq: TransceiverUtil.formatWithDot(beacon.beaconHz),
+      rxOpeMode: beacon.beaconMode,
       noticeMessageKeys: [],
     };
+  }
+
+  /**
+   * ビーコン周波数と運用モードの設定有無を判定する
+   * beaconMode は null/undefined を未設定とし、空文字は設定済みとして扱う
+   */
+  private hasBeaconSetting(transceiverSetting: TransceiverSettingLike): boolean {
+    return transceiverSetting.beacon?.beaconHz != null && transceiverSetting.beacon?.beaconMode != null;
   }
 
   /**
