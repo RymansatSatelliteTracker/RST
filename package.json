@@ -46,7 +46,7 @@
         "to": "data/init-data"
       },
       {
-        "from": "dist/tiles",
+        "from": "public/tiles",
         "to": "tiles"
       }
     ],
