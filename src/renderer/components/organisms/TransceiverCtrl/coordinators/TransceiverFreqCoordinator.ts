@@ -23,7 +23,7 @@ export interface FreqCoordinatorState {
 export default class TransceiverFreqCoordinator {
   private dopplerCalc: TransceiverDopplerCalc;
 
-  constructor(
+  public constructor(
     private state: FreqCoordinatorState,
     private currentDate: Ref<Date>
   ) {

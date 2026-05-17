@@ -1,4 +1,3 @@
-import CommonUtil from "@/common/CommonUtil";
 import Constant from "@/common/Constant";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse } from "@/common/types/types";
@@ -41,25 +40,15 @@ export default class TransceiverOpeModeResolver {
       return;
     }
 
+    // アップリンク運用モードを更新する
     if ("uplinkMode" in opeMode && opeMode.uplinkMode) {
-      if (!CommonUtil.isEmpty(opeMode.uplinkMode)) {
-        // アップリンク運用モードを更新する
-        this.state.txOpeMode.value = opeMode.uplinkMode;
-      } else {
-        // 運用モードが取得できない場合はUNSETにする
-        this.state.txOpeMode.value = Constant.Transceiver.OpeMode.UNSET;
-      }
+      this.state.txOpeMode.value = opeMode.uplinkMode;
       return;
     }
 
+    // ダウンリンク運用モードを更新する
     if ("downlinkMode" in opeMode && opeMode.downlinkMode) {
-      if (!CommonUtil.isEmpty(opeMode.downlinkMode)) {
-        // ダウンリンク運用モードを更新する
-        this.state.rxOpeMode.value = opeMode.downlinkMode;
-      } else {
-        // 運用モードが取得できない場合はUNSETにする
-        this.state.rxOpeMode.value = Constant.Transceiver.OpeMode.UNSET;
-      }
+      this.state.rxOpeMode.value = opeMode.downlinkMode;
     }
   }
 

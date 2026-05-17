@@ -29,9 +29,6 @@ export interface RecvFreqResolverState {
 }
 
 /**
- * 無線機から受信した周波数を画面状態と基準周波数へ反映するtype定義
- */
-/**
  * 無線機から受信した周波数を画面状態と基準周波数へ反映するクラス
  */
 export default class TransceiverRecvFreqResolver {

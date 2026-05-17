@@ -78,7 +78,7 @@ export default class TransceiverModeCoordinator {
    * @param onCalcBaseFreqWithAdjust - 補正値を反映した基準周波数を再算出するコールバック
    * @param onStartUpdateFreqInterval - 周波数更新インターバルを開始するコールバック
    */
-  constructor(
+  public constructor(
     private state: ModeCoordinatorState,
     private autoStore: ReturnType<typeof useStoreAutoState>,
     private modeSettingResolver: TransceiverModeSettingResolver,
@@ -124,7 +124,7 @@ export default class TransceiverModeCoordinator {
   /**
    * 周波数更新タイマIDを設定する（useTransceiverCtrl側からsetIntervalの結果を渡す）
    */
-  setTimerId(id: NodeJS.Timeout | null): void {
+  public setTimerId(id: NodeJS.Timeout | null): void {
     this.timerId = id;
   }
 
