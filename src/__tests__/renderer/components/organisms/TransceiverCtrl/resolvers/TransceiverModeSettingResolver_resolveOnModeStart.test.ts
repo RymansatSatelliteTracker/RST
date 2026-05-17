@@ -1,3 +1,4 @@
+import Constant from "@/common/Constant";
 import I18nMsgs from "@/common/I18nMsgs";
 import TransceiverModeSettingResolver, {
   TransceiverSettingLike,
@@ -130,7 +131,7 @@ describe("TransceiverModeSettingResolver.resolveOnModeStart", () => {
 
       const result = resolver.resolveOnModeStart(false, setting);
 
-      expect(result.txOpeMode).toBe("");
+      expect(result.txOpeMode).toBe(Constant.Transceiver.OpeMode.UNSET);
     });
 
     it("downlinkModeがnullの場合はrxOpeModeがUNSETになること", () => {
@@ -142,7 +143,7 @@ describe("TransceiverModeSettingResolver.resolveOnModeStart", () => {
 
       const result = resolver.resolveOnModeStart(false, setting);
 
-      expect(result.rxOpeMode).toBe("");
+      expect(result.rxOpeMode).toBe(Constant.Transceiver.OpeMode.UNSET);
     });
   });
 });
