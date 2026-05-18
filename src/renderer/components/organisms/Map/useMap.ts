@@ -1,3 +1,4 @@
+import ApiCommon from "@/renderer/api/ApiCommon";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 import { onMounted, ref } from "vue";
 
@@ -6,6 +7,8 @@ import { onMounted, ref } from "vue";
  * @returns {*} 地上局1(自局)の位置、地上局2(他局)の位置
  */
 const useMap = () => {
+  // 地図タイルのルートパス
+  const tilePath = ref<string>("");
   // 地上局1(自局)の位置
   const groundStation = ref<[number, number]>([0.0, 0.0]);
   // 地上局2(他局)の位置
@@ -46,6 +49,9 @@ const useMap = () => {
   }
 
   onMounted(async () => {
+    // 地図タイルのルートパスを取得
+    tilePath.value = await ApiCommon.getTilesPath();
+
     // 初期表示時の地上局で画面を更新
     await onChangeGroundStation();
 
@@ -53,7 +59,7 @@ const useMap = () => {
     ActiveSatServiceHub.getInstance().addOnChangeActiveSat(onChangeGroundStation);
   });
 
-  return { groundStation, groundStation2, offsetLongitude, isGroundStation2Enable };
+  return { groundStation, groundStation2, offsetLongitude, isGroundStation2Enable, tilePath };
 };
 
 export default useMap;

@@ -44,6 +44,10 @@
       {
         "from": "resources/data/init-data",
         "to": "data/init-data"
+      },
+      {
+        "from": "public/tiles",
+        "to": "tiles"
       }
     ],
     "extraMetadata": {
@@ -127,6 +131,7 @@
     "@mdi/js": "^7.4.47",
     "@types/geojson": "^7946.0.15",
     "@types/jest": "^29.5.12",
+    "@types/leaflet": "^1.9.21",
     "@types/serialport": "^8.0.5",
     "@vitejs/plugin-vue": "^5.2.4",
     "concurrently": "^8.2.2",

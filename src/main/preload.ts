@@ -15,6 +15,7 @@ import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse, LangType } from "@/common/types/types";
 import type { TleStrings } from "@/renderer/types/satellite-type";
 import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";
+import path from "path";
 /**
  * ここにレンダラに公開するAPIを定義する
  */
@@ -363,6 +364,21 @@ const apiHandler = {
     ipcRenderer.on("onNoticeMessage", (event: IpcRendererEvent, args: any) => {
       callback(args[0] as MessageModel);
     });
+  },
+
+  /**
+   * 地図タイルのルートパス
+   * 使用例）const tilePath = await window.rstApi.getTilesPath();
+   */
+  getTilesPath: () => {
+    // 開発環境かビルド環境かで地図タイルのパスを切り替える
+    if (process.env.npm_lifecycle_event === "app:dev") {
+      // 開発環境ではpublicフォルダのtilesを参照する
+      return "/tiles";
+    } else {
+      // ビルド環境ではresourcesPathのtilesを参照する
+      return path.join(process.resourcesPath, "tiles");
+    }
   },
 };
 

@@ -141,7 +141,32 @@ WARNING: The convert command is deprecated in IMv7, use "magick" instead of "con
 
 rst.ico がWindowsのアイコンファイルとなる。
 
-### 7. その他技術的な特記事項
+### 7. 地図データの作成方法
+
+1. [Natural Earth III – Texture Maps]から地図画像データをDL  
+  - [2. Earth without clouds](https://www.shadedrelief.com/natural3/pages/textures.html)の[16,200 x 8,100 JPEG (30 MB)]をDLする。  
+  - [Projection information and world (.tfw) files (4 KB)]をDLする。  
+    ※ 2. Earth without cloudsと同一ページの最下部にDLリンクあり。
+
+2. ファイル名変更&ユーザーフォルダ配下への格納  
+  - [16,200 x 8,100 JPEG (30 MB)]のファイル名を[natural_earth.jpg]に変更する。  
+  - [16200x8100.tfw]のファイル名を[natural_earth.tfw]に変更する。  
+  - ユーザーフォルダ配下に[EPSG4326]フォルダを新規作成して、[natural_earth.jpg]、[natural_earth.tfw]を格納する。  
+
+3. 以下からQGISをダウンロード、インストールする。    
+  https://qgis.org/download/
+
+4. OSGeo4W Shellを起動して地図タイルを生成  
+  - 以下をOSGeo4W Shellで実行する。
+```
+cd C:\Users\ユーザーフォルダ\EPSG4326
+gdal_translate -a_srs EPSG:4326 -a_ullr -180 90 180 -90 natural_earth.jpg temp.tif
+gdalinfo temp.tif
+gdal2tiles -p geodetic -z 1-6 --tilesize=512 --tiledriver=JPEG --jpeg-quality=85 temp.tif tiles
+for /r "C:\Users\ユーザーフォルダ\EPSG4326\tiles" %f in (*.kml) do del "%f"
+```
+
+### 8. その他技術的な特記事項
 
 #### メインプロセスのimportエイリアスについて
 
