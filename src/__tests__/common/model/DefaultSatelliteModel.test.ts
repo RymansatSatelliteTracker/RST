@@ -23,7 +23,7 @@ describe("DefaultSatelliteModel", () => {
   }
 
   beforeAll(() => {
-    const TEST_HOME_DIR = path.resolve(__dirname, "data_DefaultSatelliteModel");
+    const TEST_HOME_DIR = path.resolve(import.meta.dirname, "data_DefaultSatelliteModel");
     // 設定ファイルが扱えないため
     jest.spyOn(AppConfigUtil, "getTlePath").mockImplementation(() => {
       return path.join(TEST_HOME_DIR, Constant.Tle.TLE_FILENAME);

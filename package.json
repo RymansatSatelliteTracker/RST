@@ -2,24 +2,22 @@
   "name": "rst",
   "productName": "RST",
   "private": true,
+  "type": "module",
   "version": "v0.1.4e",
   "author": {
     "name": "rsp.",
     "email": "xxx@rymansat.com"
   },
   "main": "dist/electron/main/main.js",
-  "_moduleAliases": {
-    "@/main": "dist/electron/main",
-    "@/common": "dist/electron/common"
-  },
   "scripts": {
-    "app:dev": "tsc && concurrently vite \"electron -r tsconfig-paths/register -r source-map-support/register .\" \"tsc -w\"",
+    "app:dev": "concurrently \"vite\" \"npm:dev:main\" \"electron .\"",
+    "dev:main": "concurrently \"tsc -w\" \"tsc-alias -w\"",
     "app:build": "npm run vite:build && tsc && npm run app:import-replace && electron-builder",
     "app:build-win": "npm run vite:build && tsc && npm run app:import-replace && electron-builder --win",
     "app:build-mac": "npm run vite:build && tsc && npm run app:import-replace && electron-builder --mac",
     "app:build-linux": "npm run vite:build && tsc && npm run app:import-replace && electron-builder --linux",
-    "app:import-replace": "tsc-alias -p tsconfig.json -s ./src",
-    "app:preview": "npm run vite:build && tsc && electron .",
+    "app:import-replace": "tsc-alias -p tsconfig.json",
+    "app:preview": "npm run vite:build && tsc && npm run app:import-replace && electron .",
     "vite:build": "vue-tsc --noEmit && vite build",
     "vite:dev": "vite",
     "vite:preview": "vite preview",
@@ -28,6 +26,10 @@
     "test": "jest --config ./jest.config.json --coverage",
     "test:e2e": "playwright test src/__tests__/playwright",
     "format": "prettier --write ."
+  },
+  "tsc-alias": {
+    "resolveFullPaths": true,
+    "resolveFullExtension": ".js"
   },
   "build": {
     "appId": "RST",
@@ -117,11 +119,9 @@
     "leaflet": "^1.9.4",
     "leaflet-arrowheads": "^1.4.0",
     "mitt": "^3.0.1",
-    "module-alias": "^2.2.3",
     "pinia-plugin-persistedstate": "^4.1.1",
     "satellite.js": "^6.0.2",
     "serialport": "^12.0.0",
-    "tsconfig-paths": "^4.2.0",
     "vue": "^3.4.27",
     "vuetify": "^3.6.8",
     "yaml": "^2.5.0",
@@ -150,7 +150,6 @@
     "tsc-alias": "^1.8.16",
     "typescript": "^5.4.5",
     "vite": ">=5.4.21",
-    "vite-plugin-electron": "^0.28.7",
     "vite-tsconfig-paths": "^5.0.1",
     "vue-router": "^4.3.2",
     "vue-tsc": "^2.0.29"
