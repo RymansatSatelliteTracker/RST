@@ -9,8 +9,7 @@ import StartupService from "@/main/service/StartupService.js";
 import TransceiverService from "@/main/service/TransceiverSerivice.js";
 import AppMainLogger from "@/main/util/AppMainLogger.js";
 import AppWindowUtil from "@/main/util/AppWindowUtil.js";
-import { app, BrowserWindow, Menu } from "electron";
-import electronReload from "electron-reload";
+import { BrowserWindow, Menu, app } from "electron";
 import * as path from "path";
 
 // Logger初期化
@@ -144,10 +143,6 @@ function createWindow() {
 
   // 開発環境の場合
   if (EnvUtil.isDev()) {
-    // メインプロセス側のホットリロード設定
-    // memo: メイン側のソース保存時に再起動させたくない場合は、ここをコメントアウトしてください
-    // enableHotReload();
-
     // ウィンドウ内のコンテンツの設定（レンダラプロセスのURLを指定）
     mainWindow.loadURL("http://localhost:5173");
 
@@ -189,20 +184,6 @@ async function onAppClose() {
 
   // テスト用シリアルポートをクローズ
   await new SerialTrialService().close();
-}
-
-/**
- * メインプロセスのホットリロードを有効化する
- */
-function enableHotReload() {
-  const electronPath = path.resolve(
-    import.meta.dirname,
-    "../../../node_modules/electron/dist/electron" + (process.platform === "win32" ? ".exe" : "")
-  );
-  electronReload(import.meta.dirname, {
-    electron: electronPath,
-    forceHardReset: true,
-  });
 }
 
 /**
