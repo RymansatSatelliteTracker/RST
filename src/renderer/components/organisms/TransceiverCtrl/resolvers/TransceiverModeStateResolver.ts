@@ -1,6 +1,6 @@
-import Constant from "@/common/Constant";
-import { ModeState } from "@/renderer/components/organisms/TransceiverCtrl/useSatelliteModeStateManager";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
+import Constant from "@/common/Constant.js";
+import { ModeState } from "@/renderer/components/organisms/TransceiverCtrl/useSatelliteModeStateManager.js";
+import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
 import { Ref } from "vue";
 
 /**

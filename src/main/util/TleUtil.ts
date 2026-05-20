@@ -1,7 +1,7 @@
-import Constant from "@/common/Constant";
-import type { OrbitElement } from "@/common/types/satelliteSettingTypes";
-import type { TleStrings } from "@/renderer/types/satellite-type";
-import CoordinateCalcUtil from "../../renderer/util/CoordinateCalcUtil";
+import Constant from "@/common/Constant.js";
+import type { OrbitElement } from "@/common/types/satelliteSettingTypes.js";
+import type { TleStrings } from "@/renderer/types/satellite-type.js";
+import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil.js";
 
 /**
  * TLE関係のユーティリティ

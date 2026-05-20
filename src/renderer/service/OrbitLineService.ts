@@ -1,8 +1,8 @@
-import Constant from "@/common/Constant";
-import { InvalidArgumentError } from "@/common/exceptions";
-import type { OrbitLineCache } from "@/renderer/types/satellite-type";
-import AppRendererLogger from "@/renderer/util/AppRendererLogger";
-import type SatelliteService from "./SatelliteService";
+import Constant from "@/common/Constant.js";
+import { InvalidArgumentError } from "@/common/exceptions.js";
+import type { OrbitLineCache } from "@/renderer/types/satellite-type.js";
+import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
+import type SatelliteService from "./SatelliteService.js";
 
 /**
  * 人工衛星の軌道配列を作成する

@@ -1,5 +1,5 @@
-import Constant from "@/common/Constant";
-import EnvUtil from "@/common/util/EnvUtil";
+import Constant from "@/common/Constant.js";
+import EnvUtil from "@/common/util/EnvUtil.js";
 import { BrowserWindow } from "electron";
 import Store from "electron-store";
 

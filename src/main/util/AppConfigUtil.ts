@@ -1,17 +1,17 @@
-import Constant from "@/common/Constant";
+import Constant from "@/common/Constant.js";
 import {
   AppConfigMainDisplay,
   AppConfigModel,
   AppConfigSatellite,
   AppConfigSatelliteGroup,
-} from "@/common/model/AppConfigModel";
-import { AppConfigRotatorDevice, AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel";
-import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
-import { AppConfigTransceiverDevice, AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel";
-import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService";
-import AppMainLogger from "@/main/util/AppMainLogger";
-import FileUtil from "@/main/util/FileUtil";
-import TransactionRegistry from "@/main/util/TransactionRegistry";
+} from "@/common/model/AppConfigModel.js";
+import { AppConfigRotatorDevice, AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel.js";
+import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import { AppConfigTransceiverDevice, AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel.js";
+import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
+import FileUtil from "@/main/util/FileUtil.js";
+import TransactionRegistry from "@/main/util/TransactionRegistry.js";
 import Store from "electron-store";
 import * as path from "path";
 

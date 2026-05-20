@@ -1,4 +1,4 @@
-import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel";
+import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
 
 /**
  * メイン表示する衛星関係のレンダラ側API

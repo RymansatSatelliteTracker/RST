@@ -1,6 +1,6 @@
-import { RspAntennaIoCalibConfigModel, RspAntennaIoDegVoltMap } from "@/common/model/RspAntennaIoCalibConfigModel";
-import AppMainLogger from "@/main/util/AppMainLogger";
-import FileUtil from "@/main/util/FileUtil";
+import { RspAntennaIoCalibConfigModel, RspAntennaIoDegVoltMap } from "@/common/model/RspAntennaIoCalibConfigModel.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
+import FileUtil from "@/main/util/FileUtil.js";
 
 type CalcParam = { a: number; b: number };
 type KeyValue = { [key: number]: CalcParam };

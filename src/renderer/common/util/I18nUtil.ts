@@ -1,6 +1,6 @@
-import { I18nMsgItem } from "@/common/types/types";
-import { useStoreDispLang } from "@/renderer/store/useStoreDispLang";
-import AppRendererLogger from "@/renderer/util/AppRendererLogger";
+import { I18nMsgItem } from "@/common/types/types.js";
+import { useStoreDispLang } from "@/renderer/store/useStoreDispLang.js";
+import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
 
 /**
  * 多元言語対応のメッセージ取得ユーティリティ

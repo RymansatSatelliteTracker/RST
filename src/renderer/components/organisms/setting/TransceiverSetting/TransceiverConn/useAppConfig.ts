@@ -1,5 +1,5 @@
-import { AppConfigModel } from "@/common/model/AppConfigModel";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
+import { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 
 /**
  * 無線機設定関係のフック

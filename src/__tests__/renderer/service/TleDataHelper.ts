@@ -1,5 +1,5 @@
-import TleUtil from "@/main/util/TleUtil";
-import SatelliteService from "@/renderer/service/SatelliteService";
+import TleUtil from "@/main/util/TleUtil.js";
+import SatelliteService from "@/renderer/service/SatelliteService.js";
 
 class TleDataHelper {
   /**

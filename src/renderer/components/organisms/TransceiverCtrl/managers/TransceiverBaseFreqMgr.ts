@@ -1,4 +1,4 @@
-import TransceiverUtil from "@/common/util/TransceiverUtil";
+import TransceiverUtil from "@/common/util/TransceiverUtil.js";
 
 /**
  * 無線機制御で使用する基準周波数（補正値なし）を管理する

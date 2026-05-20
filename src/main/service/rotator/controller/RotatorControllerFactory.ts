@@ -1,13 +1,13 @@
-import Constant from "@/common/Constant";
-import { InvalidArgumentError } from "@/common/exceptions";
-import { AppConfigRotator } from "@/common/model/AppConfigModel";
-import { AppConfigRotatorDevice } from "@/common/model/AppConfigRotatorModel";
-import RotatorBtAzElController from "@/main/service/rotator/controller/RotatorBtAzElController";
-import RotatorControllerBase from "@/main/service/rotator/controller/RotatorControllerBase";
-import RotatorRspUsbIoController from "@/main/service/rotator/controller/RotatorRspUsbIoController";
-import RotatorSimController from "@/main/service/rotator/controller/RotatorSimController";
-import RotatorSt2Controller from "@/main/service/rotator/controller/RotatorSt2Controller";
-import AppMainLogger from "@/main/util/AppMainLogger";
+import Constant from "@/common/Constant.js";
+import { InvalidArgumentError } from "@/common/exceptions.js";
+import { AppConfigRotator } from "@/common/model/AppConfigModel.js";
+import { AppConfigRotatorDevice } from "@/common/model/AppConfigRotatorModel.js";
+import RotatorBtAzElController from "@/main/service/rotator/controller/RotatorBtAzElController.js";
+import RotatorControllerBase from "@/main/service/rotator/controller/RotatorControllerBase.js";
+import RotatorRspUsbIoController from "@/main/service/rotator/controller/RotatorRspUsbIoController.js";
+import RotatorSimController from "@/main/service/rotator/controller/RotatorSimController.js";
+import RotatorSt2Controller from "@/main/service/rotator/controller/RotatorSt2Controller.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
 
 /**
  * AntennaControllerのファクトリ

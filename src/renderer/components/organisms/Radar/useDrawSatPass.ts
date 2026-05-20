@@ -1,12 +1,12 @@
-import Constant from "@/common/Constant";
-import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel";
-import ApiActiveSat from "@/renderer/api/ApiActiveSat";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
-import GroundStationHelper from "@/renderer/common/util/GroundStationHelper";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import { SatAzEl } from "@/renderer/types/satellite-type";
-import CanvasUtil from "@/renderer/util/CanvasUtil";
+import Constant from "@/common/Constant.js";
+import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
+import ApiActiveSat from "@/renderer/api/ApiActiveSat.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper.js";
+import GroundStationHelper from "@/renderer/common/util/GroundStationHelper.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import { SatAzEl } from "@/renderer/types/satellite-type.js";
+import CanvasUtil from "@/renderer/util/CanvasUtil.js";
 import { onMounted, Ref, watch } from "vue";
 
 type CenterPosition = {

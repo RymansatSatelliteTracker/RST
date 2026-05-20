@@ -1,4 +1,4 @@
-import { TleStrings } from "@/renderer/types/satellite-type";
+import { TleStrings } from "@/renderer/types/satellite-type.js";
 
 /**
  * アクティブ衛星グループモデル

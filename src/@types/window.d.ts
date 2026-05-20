@@ -1,4 +1,4 @@
-import { apiHandler } from "../main/preload";
+import { apiHandler } from "../main/preload.js";
 
 declare global {
   interface Window {

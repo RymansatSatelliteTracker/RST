@@ -1,7 +1,7 @@
-import ApiActiveSat from "@/renderer/api/ApiActiveSat";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import { SelectOption } from "@/renderer/types/vue-types";
+import ApiActiveSat from "@/renderer/api/ApiActiveSat.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import { SelectOption } from "@/renderer/types/vue-types.js";
 import { onMounted, ref, Ref } from "vue";
 
 /**

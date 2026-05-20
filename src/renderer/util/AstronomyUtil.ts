@@ -1,6 +1,6 @@
-import Constant from "@/common/Constant";
-import { EclipticCoords, EquatorialCoords } from "@/renderer/types/astronomy-type";
-import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil";
+import Constant from "@/common/Constant.js";
+import { EclipticCoords, EquatorialCoords } from "@/renderer/types/astronomy-type.js";
+import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil.js";
 
 /**
  * 天文計算関係のユーティリティ

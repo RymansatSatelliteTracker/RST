@@ -1,12 +1,12 @@
-import CommonUtil from "@/common/CommonUtil";
-import I18nMsgs from "@/common/I18nMsgs";
-import { AppConfigTransceiver } from "@/common/model/AppConfigModel";
-import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
-import { ApiResponse } from "@/common/types/types";
-import { getMainWindow } from "@/main/main";
-import TransceiverControllerBase from "@/main/service/transceiver/controller/TransceiverControllerBase";
-import TransceiverControllerFactory from "@/main/service/transceiver/controller/TransceiverControllerFactory";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
+import CommonUtil from "@/common/CommonUtil.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { AppConfigTransceiver } from "@/common/model/AppConfigModel.js";
+import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
+import { ApiResponse } from "@/common/types/types.js";
+import { getMainWindow } from "@/main/main.js";
+import TransceiverControllerBase from "@/main/service/transceiver/controller/TransceiverControllerBase.js";
+import TransceiverControllerFactory from "@/main/service/transceiver/controller/TransceiverControllerFactory.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 
 /**
  * 無線機サービス

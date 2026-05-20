@@ -1,7 +1,7 @@
-import Constant from "@/common/Constant";
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import { ApiResponse } from "@/common/types/types";
-import RotatorControllerBase from "@/main/service/rotator/controller/RotatorControllerBase";
+import Constant from "@/common/Constant.js";
+import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import { ApiResponse } from "@/common/types/types.js";
+import RotatorControllerBase from "@/main/service/rotator/controller/RotatorControllerBase.js";
 
 /**
  * アンテナ（ローテーター）のコントローラ

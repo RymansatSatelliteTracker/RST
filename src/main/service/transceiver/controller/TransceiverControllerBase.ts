@@ -1,5 +1,5 @@
-import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
-import { ApiResponse } from "@/common/types/types";
+import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
+import { ApiResponse } from "@/common/types/types.js";
 
 /**
  * 無線機のコントローラ親クラス

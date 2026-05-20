@@ -1,10 +1,10 @@
-import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel";
-import ApiActiveSat from "@/renderer/api/ApiActiveSat";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import ActiveSatHelper from "@/renderer/common/util/ActiveSatHelper";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
-import { SelectOption } from "@/renderer/types/vue-types";
+import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
+import ApiActiveSat from "@/renderer/api/ApiActiveSat.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ActiveSatHelper from "@/renderer/common/util/ActiveSatHelper.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
+import { SelectOption } from "@/renderer/types/vue-types.js";
 import { onMounted, ref, Ref } from "vue";
 
 /**

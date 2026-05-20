@@ -16,8 +16,8 @@
 <script setup lang="ts">
 import Constant from "@/common/Constant";
 import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
-import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm";
 import SatelliteInfoEditorDialog from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialog.vue";
+import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm";
 import useSatelliteInfoEditorDialog from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useSatelliteInfoEditorDialog";
 import { useSatelliteInfoEditorDialogValidate } from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useSatelliteInfoEditorDialogValidate";
 import emitter from "@/renderer/util/EventBus";

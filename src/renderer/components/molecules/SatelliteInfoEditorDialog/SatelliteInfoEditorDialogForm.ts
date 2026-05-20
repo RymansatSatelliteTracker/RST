@@ -1,5 +1,5 @@
-import Constant from "@/common/Constant";
-import { autoModeFreqType } from "@/common/types/satelliteSettingTypes";
+import Constant from "@/common/Constant.js";
+import { autoModeFreqType } from "@/common/types/satelliteSettingTypes.js";
 
 /**
  * 衛星情報編集フォーム

@@ -31,4 +31,3 @@ describe("TransceiverFreqCoordinator.initFreq", () => {
     expect(state.rxFrequency.value).toBe("0480.000.000");
   });
 });
-

@@ -1,5 +1,5 @@
-import { AppConfigModel } from "../../../../../common/model/AppConfigModel";
-import ApiAppConfig from "../../../../api/ApiAppConfig";
+import { AppConfigModel } from "../../../../../common/model/AppConfigModel.js";
+import ApiAppConfig from "../../../../api/ApiAppConfig.js";
 
 /**
  * 地上局設定関係のフック

@@ -1,12 +1,12 @@
-import CommonUtil from "@/common/CommonUtil";
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking";
-import ApiSirial from "@/renderer/api/ApiSirial";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import RotatorConnForm from "@/renderer/components/organisms/setting/RotatorSetting/RotatorConn/RotatorConnForm";
-import emitter from "@/renderer/util/EventBus";
+import CommonUtil from "@/common/CommonUtil.js";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking.js";
+import ApiSirial from "@/renderer/api/ApiSirial.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import RotatorConnForm from "@/renderer/components/organisms/setting/RotatorSetting/RotatorConn/RotatorConnForm.js";
+import emitter from "@/renderer/util/EventBus.js";
 import { computed, Ref } from "vue";
 
 /**

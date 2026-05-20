@@ -1,5 +1,5 @@
-import ApiActiveSat from "@/renderer/api/ApiActiveSat";
-import SatelliteService from "@/renderer/service/SatelliteService";
+import ApiActiveSat from "@/renderer/api/ApiActiveSat.js";
+import SatelliteService from "@/renderer/service/SatelliteService.js";
 
 /**
  * 衛星サービスファクトリ

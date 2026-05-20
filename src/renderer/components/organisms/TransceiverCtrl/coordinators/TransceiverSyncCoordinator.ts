@@ -1,4 +1,4 @@
-import Constant from "@/common/Constant";
+import Constant from "@/common/Constant.js";
 import { Ref } from "vue";
 
 /**

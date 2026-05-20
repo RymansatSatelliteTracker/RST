@@ -1,9 +1,9 @@
-import { ActiveSatelliteModel } from "@/common/model/ActiveSatModel";
-import { AppConfigSatellite } from "@/common/model/AppConfigModel";
-import TleUtil from "@/main/util/TleUtil";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite";
-import ApiTle from "@/renderer/api/ApiTle";
+import { ActiveSatelliteModel } from "@/common/model/ActiveSatModel.js";
+import { AppConfigSatellite } from "@/common/model/AppConfigModel.js";
+import TleUtil from "@/main/util/TleUtil.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite.js";
+import ApiTle from "@/renderer/api/ApiTle.js";
 
 /**
  * アクティブ衛星グループ、アクティブ衛星関係のヘルパ

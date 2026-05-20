@@ -1,7 +1,7 @@
-import GroundStationHelper from "@/renderer/common/util/GroundStationHelper";
-import GroundStationServiceFactory from "@/renderer/common/util/GroundStationServiceFactory";
-import SatelliteServiceFactory from "@/renderer/common/util/SatelliteServiceFactory";
-import { SatAzEl } from "@/renderer/types/satellite-type";
+import GroundStationHelper from "@/renderer/common/util/GroundStationHelper.js";
+import GroundStationServiceFactory from "@/renderer/common/util/GroundStationServiceFactory.js";
+import SatelliteServiceFactory from "@/renderer/common/util/SatelliteServiceFactory.js";
+import { SatAzEl } from "@/renderer/types/satellite-type.js";
 import { onUnmounted, Ref } from "vue";
 
 /**

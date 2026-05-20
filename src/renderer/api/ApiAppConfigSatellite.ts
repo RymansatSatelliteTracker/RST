@@ -1,4 +1,4 @@
-import { AppConfigModel, AppConfigSatellite } from "@/common/model/AppConfigModel";
+import { AppConfigModel, AppConfigSatellite } from "@/common/model/AppConfigModel.js";
 
 /**
  * アプリケーション設定の衛星関係のレンダラ側API

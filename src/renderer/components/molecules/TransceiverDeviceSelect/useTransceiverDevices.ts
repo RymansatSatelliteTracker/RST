@@ -1,9 +1,9 @@
-import CommonUtil from "@/common/CommonUtil";
-import I18nMsgs from "@/common/I18nMsgs";
-import { AppConfigTransceiverDevice } from "@/common/model/AppConfigTransceiverModel";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import { SelectOption } from "@/renderer/types/vue-types";
+import CommonUtil from "@/common/CommonUtil.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { AppConfigTransceiverDevice } from "@/common/model/AppConfigTransceiverModel.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import { SelectOption } from "@/renderer/types/vue-types.js";
 import { ModelRef, ref, watch } from "vue";
 
 /**

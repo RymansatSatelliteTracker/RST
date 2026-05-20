@@ -1,5 +1,5 @@
-import Constant from "@/common/Constant";
-import { Location3, PolarLocation } from "@/renderer/types/location-type";
+import Constant from "@/common/Constant.js";
+import { Location3, PolarLocation } from "@/renderer/types/location-type.js";
 
 /**
  * 座標計算関係のユーティリティ

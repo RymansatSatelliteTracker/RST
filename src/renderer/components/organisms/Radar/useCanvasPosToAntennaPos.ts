@@ -1,5 +1,5 @@
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
+import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
 import { ref, Ref } from "vue";
 
 /**

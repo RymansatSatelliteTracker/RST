@@ -1,8 +1,8 @@
-import CommonUtil from "@/common/CommonUtil";
-import Constant from "@/common/Constant";
-import { getMainWindow } from "@/main/main";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
-import FileUtil from "@/main/util/FileUtil";
+import CommonUtil from "@/common/CommonUtil.js";
+import Constant from "@/common/Constant.js";
+import { getMainWindow } from "@/main/main.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import FileUtil from "@/main/util/FileUtil.js";
 import { dialog } from "electron";
 
 /**

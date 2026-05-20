@@ -1,5 +1,5 @@
-import Constant from "@/common/Constant";
-import emitter from "@/renderer/util/EventBus";
+import Constant from "@/common/Constant.js";
+import emitter from "@/renderer/util/EventBus.js";
 import { onMounted, ref } from "vue";
 
 /**

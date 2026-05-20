@@ -1,10 +1,10 @@
-import CommonUtil from "@/common/CommonUtil";
-import I18nMsgs from "@/common/I18nMsgs";
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import { AppConfigRotator } from "@/common/model/AppConfigModel";
-import { ApiResponse } from "@/common/types/types";
-import RotatorSerialControllerBase from "@/main/service/rotator/controller/RotatorSerialControllerBase";
-import AppMainLogger from "@/main/util/AppMainLogger";
+import CommonUtil from "@/common/CommonUtil.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import { AppConfigRotator } from "@/common/model/AppConfigModel.js";
+import { ApiResponse } from "@/common/types/types.js";
+import RotatorSerialControllerBase from "@/main/service/rotator/controller/RotatorSerialControllerBase.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
 
 // 受信タイムアウト（ミリ秒）
 const RECV_TIEOUT_MSEC = 10 * 1000;

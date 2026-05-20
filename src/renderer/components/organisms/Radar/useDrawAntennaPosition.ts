@@ -1,5 +1,5 @@
-import { RotatorAzEl } from "@/renderer/types/satellite-type";
-import { CenterPosition } from "@/renderer/util/CanvasUtil";
+import { RotatorAzEl } from "@/renderer/types/satellite-type.js";
+import { CenterPosition } from "@/renderer/util/CanvasUtil.js";
 import { Ref, watch } from "vue";
 
 /**

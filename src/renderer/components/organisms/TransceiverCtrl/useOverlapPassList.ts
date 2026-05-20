@@ -1,6 +1,6 @@
-import Constant from "@/common/Constant";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import { PassesCache } from "@/renderer/types/pass-type";
+import Constant from "@/common/Constant.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import { PassesCache } from "@/renderer/types/pass-type.js";
 import { onMounted, onUnmounted, ref, watch, type Ref } from "vue";
 
 /**

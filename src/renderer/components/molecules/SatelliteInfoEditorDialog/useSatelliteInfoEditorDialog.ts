@@ -1,7 +1,7 @@
-import Constant from "@/common/Constant";
-import { AppConfigSatellite } from "@/common/model/AppConfigModel";
-import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
-import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm";
+import Constant from "@/common/Constant.js";
+import { AppConfigSatellite } from "@/common/model/AppConfigModel.js";
+import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes.js";
+import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm.js";
 /**
  * 衛星情報編集画面関係のフック
  */

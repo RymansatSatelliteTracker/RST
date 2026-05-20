@@ -1,13 +1,13 @@
-import CommonUtil from "@/common/CommonUtil";
-import Constant from "@/common/Constant";
-import { TleItemMap, TleJsonModel } from "@/common/model/TleModel";
-import { StringMap } from "@/common/types/types";
-import WebClient from "@/common/WebClient";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
-import AppMainLogger from "@/main/util/AppMainLogger";
-import FileUtil from "@/main/util/FileUtil";
-import TleUtil from "@/main/util/TleUtil";
-import type { TleStrings } from "@/renderer/types/satellite-type";
+import CommonUtil from "@/common/CommonUtil.js";
+import Constant from "@/common/Constant.js";
+import { TleItemMap, TleJsonModel } from "@/common/model/TleModel.js";
+import { StringMap } from "@/common/types/types.js";
+import WebClient from "@/common/WebClient.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
+import FileUtil from "@/main/util/FileUtil.js";
+import TleUtil from "@/main/util/TleUtil.js";
+import type { TleStrings } from "@/renderer/types/satellite-type.js";
 
 /**
  * TLEサービス

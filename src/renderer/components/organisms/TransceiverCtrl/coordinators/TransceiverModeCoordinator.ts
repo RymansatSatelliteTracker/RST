@@ -1,18 +1,18 @@
-import CommonUtil from "@/common/CommonUtil";
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import { AppConfigModel } from "@/common/model/AppConfigModel";
-import TransceiverUtil from "@/common/util/TransceiverUtil";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import ApiTransceiver from "@/renderer/api/ApiTransceiver";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
+import CommonUtil from "@/common/CommonUtil.js";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import TransceiverUtil from "@/common/util/TransceiverUtil.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
 import TransceiverModeSettingResolver, {
   ModeResolvedState,
-} from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
-import emitter from "@/renderer/util/EventBus";
+} from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
+import emitter from "@/renderer/util/EventBus.js";
 import { Ref } from "vue";
 
 /**

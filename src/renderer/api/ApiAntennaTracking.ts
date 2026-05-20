@@ -1,6 +1,6 @@
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import { AppConfigRotator } from "@/common/model/AppConfigModel";
-import { ApiResponse } from "@/common/types/types";
+import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import { AppConfigRotator } from "@/common/model/AppConfigModel.js";
+import { ApiResponse } from "@/common/types/types.js";
 
 export type AntennaTrackingItem = {
   trackedAt: string;

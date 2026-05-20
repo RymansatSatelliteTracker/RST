@@ -1,9 +1,9 @@
-import CommonUtil from "@/common/CommonUtil";
-import Constant from "@/common/Constant";
-import { AppConfigTransceiver } from "@/common/model/AppConfigModel";
-import ApiSirial from "@/renderer/api/ApiSirial";
-import ApiTransceiver from "@/renderer/api/ApiTransceiver";
-import TransceiverConnForm from "@/renderer/components/organisms/setting/TransceiverSetting/TransceiverConn/TransceiverConnForm";
+import CommonUtil from "@/common/CommonUtil.js";
+import Constant from "@/common/Constant.js";
+import { AppConfigTransceiver } from "@/common/model/AppConfigModel.js";
+import ApiSirial from "@/renderer/api/ApiSirial.js";
+import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
+import TransceiverConnForm from "@/renderer/components/organisms/setting/TransceiverSetting/TransceiverConn/TransceiverConnForm.js";
 import { Ref } from "vue";
 
 /**

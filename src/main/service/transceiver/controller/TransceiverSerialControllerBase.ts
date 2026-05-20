@@ -1,8 +1,8 @@
-import I18nMsgs from "@/common/I18nMsgs";
-import { AppConfigTransceiver } from "@/common/model/AppConfigModel";
-import { ApiResponse } from "@/common/types/types";
-import SerialComm from "@/main/common/SerialComm";
-import TransceiverControllerBase from "@/main/service/transceiver/controller/TransceiverControllerBase";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { AppConfigTransceiver } from "@/common/model/AppConfigModel.js";
+import { ApiResponse } from "@/common/types/types.js";
+import SerialComm from "@/main/common/SerialComm.js";
+import TransceiverControllerBase from "@/main/service/transceiver/controller/TransceiverControllerBase.js";
 
 /**
  * 無線機コントローラの親クラス

@@ -1,6 +1,10 @@
-import { TleItemMap } from "@/common/model/TleModel";
-import { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes";
-import { createDefaultSatellite, initializeDefaultSatellites, normalizeData } from "@/common/util/DefaultSatelliteUtil";
+import { TleItemMap } from "@/common/model/TleModel.js";
+import { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
+import {
+  createDefaultSatellite,
+  initializeDefaultSatellites,
+  normalizeData,
+} from "@/common/util/DefaultSatelliteUtil.js";
 
 /**
  * アプリケーション内で管理しておく対象衛星のデフォルト情報

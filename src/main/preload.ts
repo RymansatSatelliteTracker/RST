@@ -1,19 +1,19 @@
-import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel";
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
+import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
+import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
 import {
   AppConfigModel,
   AppConfigRotator,
   AppConfigSatellite,
   AppConfigTransceiver,
-} from "@/common/model/AppConfigModel";
-import { AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel";
-import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
-import { AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel";
-import { FrequencyModel } from "@/common/model/FrequencyModel";
-import { MessageModel } from "@/common/model/MessageModel";
-import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
-import { ApiResponse, LangType } from "@/common/types/types";
-import type { TleStrings } from "@/renderer/types/satellite-type";
+} from "@/common/model/AppConfigModel.js";
+import { AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel.js";
+import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import { AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel.js";
+import { FrequencyModel } from "@/common/model/FrequencyModel.js";
+import { MessageModel } from "@/common/model/MessageModel.js";
+import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
+import { ApiResponse, LangType } from "@/common/types/types.js";
+import type { TleStrings } from "@/renderer/types/satellite-type.js";
 import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";
 import path from "path";
 /**

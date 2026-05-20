@@ -1,5 +1,5 @@
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import { AppConfigRotator } from "@/common/model/AppConfigModel";
+import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import { AppConfigRotator } from "@/common/model/AppConfigModel.js";
 
 /**
  * ローテータのヘルパー

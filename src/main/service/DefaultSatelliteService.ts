@@ -1,15 +1,15 @@
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import { DefaultSatelliteModel } from "@/common/model/DefaultSatelliteModel";
-import { FrequencyModel } from "@/common/model/FrequencyModel";
-import { TleItemMap } from "@/common/model/TleModel";
-import { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes";
-import { ApiResponse } from "@/common/types/types";
-import TleService from "@/main/service/TleService";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
-import AppMainLogger from "@/main/util/AppMainLogger";
-import ElectronUtil from "@/main/util/ElectronUtil";
-import FileUtil from "@/main/util/FileUtil";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { DefaultSatelliteModel } from "@/common/model/DefaultSatelliteModel.js";
+import { FrequencyModel } from "@/common/model/FrequencyModel.js";
+import { TleItemMap } from "@/common/model/TleModel.js";
+import { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
+import { ApiResponse } from "@/common/types/types.js";
+import TleService from "@/main/service/TleService.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
+import ElectronUtil from "@/main/util/ElectronUtil.js";
+import FileUtil from "@/main/util/FileUtil.js";
 import fs from "fs";
 import path from "path";
 

@@ -1,7 +1,7 @@
 import I18nMsgs from "@/common/I18nMsgs";
+import I18nUtil from "@/renderer/common/util/I18nUtil";
 import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm";
 import { useSatelliteInfoEditorDialogValidate } from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useSatelliteInfoEditorDialogValidate";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
 import { createPinia, setActivePinia } from "pinia";
 
 describe("useSatelliteInfoEditorDialogValidate", () => {

@@ -1,11 +1,11 @@
-import { ActiveSatelliteGroupModel, ActiveSatelliteModel } from "@/common/model/ActiveSatModel";
-import { AppConfigMainDisplay } from "@/common/model/AppConfigModel";
-import { getMainWindow } from "@/main/main";
-import DefaultSatelliteCacheService from "@/main/service/DefaultSatelliteCacheService";
-import TleService from "@/main/service/TleService";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
-import TleUtil from "@/main/util/TleUtil";
-import { TleStrings } from "@/renderer/types/satellite-type";
+import { ActiveSatelliteGroupModel, ActiveSatelliteModel } from "@/common/model/ActiveSatModel.js";
+import { AppConfigMainDisplay } from "@/common/model/AppConfigModel.js";
+import { getMainWindow } from "@/main/main.js";
+import DefaultSatelliteCacheService from "@/main/service/DefaultSatelliteCacheService.js";
+import TleService from "@/main/service/TleService.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import TleUtil from "@/main/util/TleUtil.js";
+import { TleStrings } from "@/renderer/types/satellite-type.js";
 
 /**
  * アクティブ衛星サービス

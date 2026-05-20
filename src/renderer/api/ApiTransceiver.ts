@@ -1,6 +1,6 @@
-import { AppConfigTransceiver } from "@/common/model/AppConfigModel";
-import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
-import { ApiResponse } from "@/common/types/types";
+import { AppConfigTransceiver } from "@/common/model/AppConfigModel.js";
+import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
+import { ApiResponse } from "@/common/types/types.js";
 
 /**
  * 無線機関係のレンダラ側API

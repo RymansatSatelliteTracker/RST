@@ -1,7 +1,7 @@
-import { StringMap } from "@/common/types/types";
-import ApiActiveSat from "@/renderer/api/ApiActiveSat";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import CanvasUtil from "@/renderer/util/CanvasUtil";
+import { StringMap } from "@/common/types/types.js";
+import ApiActiveSat from "@/renderer/api/ApiActiveSat.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import CanvasUtil from "@/renderer/util/CanvasUtil.js";
 import { LPolyline } from "@vue-leaflet/vue-leaflet";
 import "leaflet-arrowheads";
 import { onMounted, onUnmounted, ref, watch, type Ref } from "vue";

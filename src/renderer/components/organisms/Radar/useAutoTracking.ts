@@ -1,5 +1,5 @@
-import AntennaAutoTrackingService from "@/renderer/service/AntennaAutoTrackingService";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
+import AntennaAutoTrackingService from "@/renderer/service/AntennaAutoTrackingService.js";
+import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
 import { Ref } from "vue";
 
 /**

@@ -1,8 +1,8 @@
-import { AppConfigMainDisplay, AppConfigModel } from "@/common/model/AppConfigModel";
-import { AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel";
-import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
-import { AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel";
-import { ApiResponse } from "@/common/types/types";
+import { AppConfigMainDisplay, AppConfigModel } from "@/common/model/AppConfigModel.js";
+import { AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel.js";
+import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import { AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel.js";
+import { ApiResponse } from "@/common/types/types.js";
 
 /**
  * アプリケーション設定関係のレンダラ側API

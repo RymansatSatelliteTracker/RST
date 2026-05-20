@@ -1,6 +1,6 @@
-import { I18nMsgItem } from "@/common/types/types";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
-import AppMainLogger from "@/main/util/AppMainLogger";
+import { I18nMsgItem } from "@/common/types/types.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
 
 /**
  * 多元言語対応のメッセージ取得ユーティリティ

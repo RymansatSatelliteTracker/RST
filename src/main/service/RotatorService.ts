@@ -1,14 +1,14 @@
-import CommonUtil from "@/common/CommonUtil";
-import I18nMsgs from "@/common/I18nMsgs";
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import { AppConfigRotator } from "@/common/model/AppConfigModel";
-import { AppConfigRotatorDevice } from "@/common/model/AppConfigRotatorModel";
-import { ApiResponse } from "@/common/types/types";
-import { getMainWindow } from "@/main/main";
-import RotatorControllerBase from "@/main/service/rotator/controller/RotatorControllerBase";
-import RotatorControllerFactory from "@/main/service/rotator/controller/RotatorControllerFactory";
-import RotatorSerialHelper from "@/main/service/rotator/RotatorSerialHelper";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
+import CommonUtil from "@/common/CommonUtil.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import { AppConfigRotator } from "@/common/model/AppConfigModel.js";
+import { AppConfigRotatorDevice } from "@/common/model/AppConfigRotatorModel.js";
+import { ApiResponse } from "@/common/types/types.js";
+import { getMainWindow } from "@/main/main.js";
+import RotatorControllerBase from "@/main/service/rotator/controller/RotatorControllerBase.js";
+import RotatorControllerFactory from "@/main/service/rotator/controller/RotatorControllerFactory.js";
+import RotatorSerialHelper from "@/main/service/rotator/RotatorSerialHelper.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 
 /**
  * ローテーターサービス

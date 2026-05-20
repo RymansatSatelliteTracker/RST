@@ -1,8 +1,8 @@
-import Constant from "@/common/Constant";
-import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
-import { ApiResponse } from "@/common/types/types";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import emitter from "@/renderer/util/EventBus";
+import Constant from "@/common/Constant.js";
+import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
+import { ApiResponse } from "@/common/types/types.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import emitter from "@/renderer/util/EventBus.js";
 import { Ref } from "vue";
 
 /**
