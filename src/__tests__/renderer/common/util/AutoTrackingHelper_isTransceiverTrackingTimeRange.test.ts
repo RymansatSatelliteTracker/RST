@@ -1,10 +1,7 @@
 import { AppConfigModel } from "@/common/model/AppConfigModel";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc";
+import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 import type { PassesCache } from "@/renderer/types/pass-type";
-
-const RANGE_MINUTE = 10;
 
 // テスト用パス生成ヘルパー。AOS/LOSを指定してPassesCacheを生成する
 function makePass(aosDate: Date, losDate: Date): PassesCache {
@@ -22,38 +19,40 @@ function makePass(aosDate: Date, losDate: Date): PassesCache {
   };
 }
 
-describe("TransceiverDopplerCalc", () => {
+describe("AutoTrackingHelper", () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
 
-  function mockAppConfig(autoTrackingStartEndTime: string = String(RANGE_MINUTE)): AppConfigModel {
-    const appConfig = new AppConfigModel();
-    appConfig.transceiver.autoTrackingStartEndTime = autoTrackingStartEndTime;
-    return appConfig;
-  }
-
-  describe("isWithinDopplerShiftActiveRange", () => {
+  describe("isTransceiverTrackingTimeRange", () => {
     const BASE = new Date("2025-01-01T12:00:00Z");
     // AOS: 12:10, LOS: 12:20
     const AOS = new Date("2025-01-01T12:10:00Z");
     const LOS = new Date("2025-01-01T12:20:00Z");
 
+    function createAppConfig(
+      rotatorStartAgoMinute: number = 0,
+      transceiverAutoTrackingStartEndTime: string = "10"
+    ): AppConfigModel {
+      const appConfig = new AppConfigModel();
+      appConfig.rotator.startAgoMinute = rotatorStartAgoMinute;
+      appConfig.transceiver.autoTrackingStartEndTime = transceiverAutoTrackingStartEndTime;
+      return appConfig;
+    }
+
     it("パスが取得できない場合、falseを返すこと", async () => {
-      const calc = new TransceiverDopplerCalc();
+      const appConfig = createAppConfig();
       const hubInstance = ActiveSatServiceHub.getInstance();
-      jest.spyOn(ApiAppConfig, "getAppConfig").mockResolvedValue(mockAppConfig());
       jest.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(null);
 
-      const result = await calc.isWithinDopplerShiftActiveRange(BASE);
+      const result = await AutoTrackingHelper.isTransceiverTrackingTimeRange(appConfig, BASE);
 
       expect(result).toBe(false);
     });
 
     it("AOSがnullの場合、falseを返すこと", async () => {
-      const calc = new TransceiverDopplerCalc();
+      const appConfig = createAppConfig();
       const hubInstance = ActiveSatServiceHub.getInstance();
-      jest.spyOn(ApiAppConfig, "getAppConfig").mockResolvedValue(mockAppConfig());
       jest.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue({
         aos: null,
         maxEl: null,
@@ -65,14 +64,13 @@ describe("TransceiverDopplerCalc", () => {
         durationMs: null,
       });
 
-      const result = await calc.isWithinDopplerShiftActiveRange(BASE);
+      const result = await AutoTrackingHelper.isTransceiverTrackingTimeRange(appConfig, BASE);
       expect(result).toBe(false);
     });
 
     it("LOSがnullの場合、falseを返すこと", async () => {
-      const calc = new TransceiverDopplerCalc();
+      const appConfig = createAppConfig();
       const hubInstance = ActiveSatServiceHub.getInstance();
-      jest.spyOn(ApiAppConfig, "getAppConfig").mockResolvedValue(mockAppConfig());
       jest.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue({
         aos: {
           date: AOS,
@@ -84,80 +82,74 @@ describe("TransceiverDopplerCalc", () => {
         durationMs: null,
       });
 
-      const result = await calc.isWithinDopplerShiftActiveRange(BASE);
+      const result = await AutoTrackingHelper.isTransceiverTrackingTimeRange(appConfig, BASE);
       expect(result).toBe(false);
     });
 
     it("現在時刻がAOS直前（autoTrackingStartEndTime内）の場合、trueを返すこと", async () => {
-      const calc = new TransceiverDopplerCalc();
+      const appConfig = createAppConfig(0, "10");
       const hubInstance = ActiveSatServiceHub.getInstance();
-      jest.spyOn(ApiAppConfig, "getAppConfig").mockResolvedValue(mockAppConfig());
       jest.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(makePass(AOS, LOS));
 
-      // AOS - (RANGE_MINUTE * 60 - 1)秒 = 有効範囲内
-      const currentDate = new Date(AOS.getTime() - (RANGE_MINUTE * 60 - 1) * 1000);
-      const result = await calc.isWithinDopplerShiftActiveRange(currentDate);
+      // AOS - (10分 - 1秒) = 有効範囲内
+      const currentDate = new Date(AOS.getTime() - (10 * 60 - 1) * 1000);
+      const result = await AutoTrackingHelper.isTransceiverTrackingTimeRange(appConfig, currentDate);
       expect(result).toBe(true);
     });
 
     it("現在時刻がAOS直前（autoTrackingStartEndTime外）の場合、falseを返すこと", async () => {
-      const calc = new TransceiverDopplerCalc();
+      const appConfig = createAppConfig(0, "10");
       const hubInstance = ActiveSatServiceHub.getInstance();
-      jest.spyOn(ApiAppConfig, "getAppConfig").mockResolvedValue(mockAppConfig());
       jest.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(makePass(AOS, LOS));
 
-      // AOS - (RANGE_MINUTE * 60 + 1)秒 = 有効範囲外
-      const currentDate = new Date(AOS.getTime() - (RANGE_MINUTE * 60 + 1) * 1000);
-      const result = await calc.isWithinDopplerShiftActiveRange(currentDate);
+      // AOS - (10分 + 1秒) = 有効範囲外
+      const currentDate = new Date(AOS.getTime() - (10 * 60 + 1) * 1000);
+      const result = await AutoTrackingHelper.isTransceiverTrackingTimeRange(appConfig, currentDate);
       expect(result).toBe(false);
     });
 
     it("現在時刻がAOS〜LOS間の場合、trueを返すこと", async () => {
-      const calc = new TransceiverDopplerCalc();
+      const appConfig = createAppConfig(0, "10");
       const hubInstance = ActiveSatServiceHub.getInstance();
-      jest.spyOn(ApiAppConfig, "getAppConfig").mockResolvedValue(mockAppConfig());
       jest.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(makePass(AOS, LOS));
 
       // AOS + 5分 = パス中
       const currentDate = new Date(AOS.getTime() + 5 * 60 * 1000);
-      const result = await calc.isWithinDopplerShiftActiveRange(currentDate);
+      const result = await AutoTrackingHelper.isTransceiverTrackingTimeRange(appConfig, currentDate);
       expect(result).toBe(true);
     });
 
     it("現在時刻がLOS直後（autoTrackingStartEndTime内）の場合、trueを返すこと", async () => {
-      const calc = new TransceiverDopplerCalc();
+      const appConfig = createAppConfig(0, "10");
       const hubInstance = ActiveSatServiceHub.getInstance();
-      jest.spyOn(ApiAppConfig, "getAppConfig").mockResolvedValue(mockAppConfig());
       jest.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(makePass(AOS, LOS));
 
-      // LOS + (RANGE_MINUTE * 60 - 1)秒 = 有効範囲内
-      const currentDate = new Date(LOS.getTime() + (RANGE_MINUTE * 60 - 1) * 1000);
-      const result = await calc.isWithinDopplerShiftActiveRange(currentDate);
+      // LOS + (10分 - 1秒) = 有効範囲内
+      const currentDate = new Date(LOS.getTime() + (10 * 60 - 1) * 1000);
+      const result = await AutoTrackingHelper.isTransceiverTrackingTimeRange(appConfig, currentDate);
       expect(result).toBe(true);
     });
 
     it("現在時刻がLOS直後（autoTrackingStartEndTime外）の場合、falseを返すこと", async () => {
-      const calc = new TransceiverDopplerCalc();
+      const appConfig = createAppConfig(0, "10");
       const hubInstance = ActiveSatServiceHub.getInstance();
-      jest.spyOn(ApiAppConfig, "getAppConfig").mockResolvedValue(mockAppConfig());
       jest.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(makePass(AOS, LOS));
 
-      // LOS + (RANGE_MINUTE * 60 + 1)秒 = 有効範囲外
-      const currentDate = new Date(LOS.getTime() + (RANGE_MINUTE * 60 + 1) * 1000);
-      const result = await calc.isWithinDopplerShiftActiveRange(currentDate);
+      // LOS + (10分 + 1秒) = 有効範囲外
+      const currentDate = new Date(LOS.getTime() + (10 * 60 + 1) * 1000);
+      const result = await AutoTrackingHelper.isTransceiverTrackingTimeRange(appConfig, currentDate);
       expect(result).toBe(false);
     });
 
-    it("パス取得時の基準日時にautoTrackingStartEndTime分の前倒しを適用すること", async () => {
-      const calc = new TransceiverDopplerCalc();
+    it("パス取得時の基準日時は無線機の開始・終了時刻で前倒しすること", async () => {
+      const appConfig = createAppConfig(12, "10");
       const hubInstance = ActiveSatServiceHub.getInstance();
-      jest.spyOn(ApiAppConfig, "getAppConfig").mockResolvedValue(mockAppConfig());
       const getOrbitPassAsyncSpy = jest.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(makePass(AOS, LOS));
 
       const currentDate = new Date(AOS.getTime() - 5 * 60 * 1000);
-      await calc.isWithinDopplerShiftActiveRange(currentDate);
+      await AutoTrackingHelper.isTransceiverTrackingTimeRange(appConfig, currentDate);
 
-      expect(getOrbitPassAsyncSpy).toHaveBeenCalledWith(new Date(currentDate.getTime() - RANGE_MINUTE * 60 * 1000));
+      expect(getOrbitPassAsyncSpy).toHaveBeenCalledWith(new Date(currentDate.getTime() - 10 * 60 * 1000));
     });
   });
 });

@@ -1,5 +1,6 @@
-import Constant from "@/common/Constant";
 import TransceiverUtil from "@/common/util/TransceiverUtil";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig";
+import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 
 /**
@@ -14,21 +15,8 @@ export default class TransceiverDopplerCalc {
    * @returns 有効範囲内の場合はtrue
    */
   public async isWithinDopplerShiftActiveRange(currentDate: Date): Promise<boolean> {
-    // 指定した日時から最も近いパスを取得する
-    const orbitPass = await ActiveSatServiceHub.getInstance().getOrbitPassAsync(currentDate);
-    if (!orbitPass || !orbitPass.aos || !orbitPass.los) {
-      // パスが取得できない場合はfalseで返す
-      return false;
-    }
-
-    // ドップラーシフトが有効な範囲にいるか判定する
-    const passAos = orbitPass.aos.date.getTime() - Constant.Transceiver.DOPPLER_SHIFT_RANGE_SEC * 1000;
-    const passLos = orbitPass.los.date.getTime() + Constant.Transceiver.DOPPLER_SHIFT_RANGE_SEC * 1000;
-    if (currentDate.getTime() >= passAos && currentDate.getTime() <= passLos) {
-      return true;
-    }
-
-    return false;
+    const appConfig = await ApiAppConfig.getAppConfig();
+    return AutoTrackingHelper.isTransceiverTrackingTimeRange(appConfig, currentDate);
   }
 
   /**

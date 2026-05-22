@@ -35,6 +35,7 @@
         <div class="d-flex mt-2">
           <label class="label form_label">{{ I18nUtil.getMsg(I18nMsgs.G41_DOPPLER_RESUME_DELAY) }}</label>
           <div class="form_select ml-2">
+            <!-- TODO main側の処理ができるまで非活性 -->
             <v-select
               v-model="form.dopplerResumeDelaySec"
               :items="doppleResumeDelaySecOptions"
@@ -42,6 +43,7 @@
               variant="outlined"
               density="compact"
               class="selectbox"
+              :disabled="true"
             />
           </div>
         </div>
