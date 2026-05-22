@@ -23,11 +23,12 @@ const items = ref<SelectOption[]>([]);
 const { selectedSatGroupId, updateAppConfig } = useSatelliteGroupSelectBox(items);
 
 /**
- * indexを親コンポーネントに連携する
+ * indexを親コンポーネントに連携す
+ * @param {number} satGrpupId 選択された衛星ID
  */
-async function updateIndex(satGrpupId: string) {
+async function updateIndex(satGrpupId: number) {
   // アクティブ衛星グループをAppConifgに保存
-  await updateAppConfig(satGrpupId);
+  await updateAppConfig(String(satGrpupId));
 }
 </script>
 

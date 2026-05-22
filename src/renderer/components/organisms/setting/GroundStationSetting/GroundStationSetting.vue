@@ -241,7 +241,7 @@ const { getAppConfig, storeAppConfig } = useAppConfig();
 const { fromGridLocator } = useGridLocator();
 
 // ダイアログの表示可否
-const isShow = defineModel("isShow");
+const isShow = defineModel<boolean>("isShow");
 const emits = defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
 
 // フォーム

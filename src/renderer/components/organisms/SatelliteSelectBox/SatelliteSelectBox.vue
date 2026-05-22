@@ -24,11 +24,12 @@ const { selectedSatId, updateAppConfig } = useSatelliteSelectBox(items);
 
 /**
  * indexを親コンポーネントに連携する
- * @param {string} satId 選択された衛星ID
+ * @param {number} satId 選択された衛星ID
  */
-async function updateIndex(satId: string) {
+async function updateIndex(satId: number) {
   // アクティブ衛星をAppConifgに保存
-  await updateAppConfig(satId);
+  void updateAppConfig(String(satId));
+
 }
 </script>
 

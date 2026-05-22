@@ -20,7 +20,7 @@ import { ref, watch } from "vue";
 
 // 選択範囲は0~85
 const minElevationRange = ref(Array.from({ length: Constant.SatSetting.ELEVATION_RANGE_LENGTH }, (_, i) => i));
-const satelliteChoiceMinEl = defineModel("satelliteChoiceMinEl");
+const satelliteChoiceMinEl = defineModel<number | null>("satelliteChoiceMinEl");
 
 // 衛星パス抽出最小仰角を更新する
 watch(satelliteChoiceMinEl, async (newMinEl) => {
