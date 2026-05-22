@@ -10,8 +10,7 @@
   },
   "main": "dist/electron/main/main.js",
   "scripts": {
-    "app:dev": "concurrently \"vite\" \"npm:dev:main\" \"electron .\"",
-    "dev:main": "concurrently \"tsc -w\" \"tsc-alias -w\"",
+    "app:dev": "concurrently \"vite\" \"tsc -w\" \"tsc-alias -w\" \"wait-on dist/electron/main/main.js && electron .\"",
     "app:build": "npm run vite:build && tsc && npm run app:import-replace && electron-builder",
     "app:build-win": "npm run vite:build && tsc && npm run app:import-replace && electron-builder --win",
     "app:build-mac": "npm run vite:build && tsc && npm run app:import-replace && electron-builder --mac",
@@ -150,7 +149,8 @@
     "vite": ">=5.4.21",
     "vite-tsconfig-paths": "^5.1.4",
     "vue-router": "^4.6.4",
-    "vue-tsc": "^2.2.12"
+    "vue-tsc": "^2.2.12",
+    "wait-on": "^9.0.10"
   },
   "volta": {
     "node": "22.18.0"
