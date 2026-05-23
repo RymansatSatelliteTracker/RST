@@ -24,6 +24,8 @@
     "watch": "tsc -w",
     "test": "jest --config ./jest.config.json --coverage",
     "test:e2e": "playwright test src/__tests__/playwright",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
     "format": "prettier --write ."
   },
   "tsc-alias": {
@@ -126,6 +128,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.4",
     "@mdi/js": "^7.4.47",
     "@types/geojson": "^7946.0.16",
     "@types/jest": "^29.5.14",
@@ -147,8 +150,10 @@
     "ts-jest": "^29.4.9",
     "tsc-alias": "^1.8.17",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.59.3",
     "vite": ">=5.4.21",
     "vite-tsconfig-paths": "^5.1.4",
+    "vue-eslint-parser": "^10.4.0",
     "vue-router": "^4.6.4",
     "vue-tsc": "^2.2.12",
     "wait-on": "^9.0.10"
