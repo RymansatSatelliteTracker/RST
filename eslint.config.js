@@ -28,7 +28,7 @@ export default [
       // TypeScriptルール
       "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }], // _で始まる引数は無視
       "@typescript-eslint/consistent-type-imports": "warn", // type import推奨
-      "@typescript-eslint/no-unnecessary-type-assertion": "off", // 不必要な型アサーションを許可
+      "@typescript-eslint/no-unnecessary-type-assertion": "off", // 明示的な型アサーションを許可
 
       // Vueルール
       "vue/multi-word-component-names": "off", // コンポーネント名制約OFF
