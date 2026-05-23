@@ -2,10 +2,11 @@ import { AppConfigUtil } from "@/main/util/AppConfigUtil";
 import { FileTransaction } from "@/main/util/FileTransaction";
 import FileUtil from "@/main/util/FileUtil";
 import TransactionRegistry from "@/main/util/TransactionRegistry";
+import type { MockInstance } from "vitest";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 describe("FileTransaction", () => {
-  let wirteTextSpy: vi.SpyInstance;
+  let wirteTextSpy: MockInstance;
   beforeAll(() => {
     vi.spyOn(AppConfigUtil, "getConfigPath").mockImplementation(() => {
       return "/path/to/config.json";

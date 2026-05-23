@@ -7,7 +7,7 @@ import ElectronUtil from "@/main/util/ElectronUtil";
 import FileUtil from "@/main/util/FileUtil";
 import fs from "fs";
 import * as path from "path";
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 describe("DefaultSatelliteService", () => {
   const TEST_HOME_DIR = path.resolve(import.meta.dirname, "data_DefaultSatelliteService");

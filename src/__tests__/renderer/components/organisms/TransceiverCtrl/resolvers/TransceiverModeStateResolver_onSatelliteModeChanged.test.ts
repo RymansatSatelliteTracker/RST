@@ -21,7 +21,7 @@ describe("TransceiverModeStateResolver.onSatelliteModeChanged", () => {
   it("oldModeがundefinedのとき、状態を変更しないこと", () => {
     const state = createState();
     const save = vi.fn();
-    const load = vi.fn<ModeState, [string]>();
+    const load = vi.fn<(key: string) => ModeState>();
     const resolver = new TransceiverModeStateResolver(state, { tranceiverAuto: false } as never, save, load);
 
     resolver.onSatelliteModeChanged(Constant.Transceiver.SatelliteMode.SATELLITE, undefined);
@@ -34,7 +34,7 @@ describe("TransceiverModeStateResolver.onSatelliteModeChanged", () => {
   it("サテライトモードへ変更時、旧モード状態を保存してisSatelliteModeをtrueにすること", () => {
     const state = createState();
     const save = vi.fn();
-    const load = vi.fn<ModeState, [string]>();
+    const load = vi.fn<(key: string) => ModeState>();
     const resolver = new TransceiverModeStateResolver(state, { tranceiverAuto: false } as never, save, load);
 
     resolver.onSatelliteModeChanged(
@@ -54,7 +54,7 @@ describe("TransceiverModeStateResolver.onSatelliteModeChanged", () => {
   it("UNSETへ変更時、状態を読み込み、トラッキングモードを無効化すること", () => {
     const state = createState();
     const save = vi.fn();
-    const load = vi.fn<ModeState, [string]>().mockReturnValue({
+    const load = vi.fn<(key: string) => ModeState>().mockReturnValue({
       rxFrequency: "145.900.000",
       rxOpeMode: Constant.Transceiver.OpeMode.UNSET,
       isSatTrackingModeNormal: true,

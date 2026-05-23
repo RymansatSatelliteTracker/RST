@@ -31,7 +31,7 @@ describe("TransceiverDopplerWaitCoordinator.setupWaiting", () => {
   });
 
   it("AutoOn時は待機状態にして待機時間後に解除すること", () => {
-    const infoSpy = vi.spyOn(AppRendererLogger, "info").mockImplementation();
+    const infoSpy = vi.spyOn(AppRendererLogger, "info").mockImplementation(() => {});
     const coordinator = new TransceiverDopplerWaitCoordinator({ tranceiverAuto: true } as never);
 
     coordinator.setupWaiting({ data: true } as ApiResponse<boolean>);
@@ -45,7 +45,7 @@ describe("TransceiverDopplerWaitCoordinator.setupWaiting", () => {
   });
 
   it("待機中に再度呼ばれた場合は旧タイマを破棄して待機を延長すること", () => {
-    const infoSpy = vi.spyOn(AppRendererLogger, "info").mockImplementation();
+    const infoSpy = vi.spyOn(AppRendererLogger, "info").mockImplementation(() => {});
     const coordinator = new TransceiverDopplerWaitCoordinator({ tranceiverAuto: true } as never);
 
     coordinator.setupWaiting({ data: true } as ApiResponse<boolean>);
