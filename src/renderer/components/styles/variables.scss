@@ -1,6 +1,6 @@
 // 変数定義
-@use "./colors.scss" as *;
 @forward "./colors.scss";
+@use "./colors" as *;
 
 // ヘッダ関係
 $header_height: 30px;

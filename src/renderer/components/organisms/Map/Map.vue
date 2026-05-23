@@ -106,5 +106,5 @@ const { groundStation, groundStation2, offsetLongitude, isGroundStation2Enable, 
 </script>
 
 <style module lang="scss">
-@use "@/renderer/components/styles/variables.scss" as *;
+@use "@/renderer/components/styles/variables" as *;
 </style>

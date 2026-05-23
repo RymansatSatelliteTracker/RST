@@ -25,5 +25,5 @@ watch([() => props.currentDate], ([newDate]) => {
 </script>
 
 <style lang="scss" scoped>
-@use "./NowTime.scss" as *;
+@use "./NowTime" as *;
 </style>

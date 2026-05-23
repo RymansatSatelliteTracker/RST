@@ -35,5 +35,5 @@ function onChangeAntennaPosition(res: ApiResponse<AntennaPositionModel>) {
 </script>
 
 <style lang="scss" scoped>
-@use "@/renderer/components/styles/global.scss" as *;
+@use "@/renderer/components/styles/global" as *;
 </style>

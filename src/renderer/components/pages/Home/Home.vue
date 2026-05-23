@@ -72,5 +72,5 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-@use "./Home.scss" as *;
+@use "./Home" as *;
 </style>

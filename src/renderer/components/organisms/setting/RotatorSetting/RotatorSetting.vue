@@ -219,5 +219,5 @@ async function validateTabContents(): Promise<boolean> {
 </script>
 
 <style lang="scss" scoped>
-@use "./RotatorSetting.scss" as *;
+@use "./RotatorSetting" as *;
 </style>

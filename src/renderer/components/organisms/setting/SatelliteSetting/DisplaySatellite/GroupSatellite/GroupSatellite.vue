@@ -206,5 +206,5 @@ async function onCancel() {
 }
 </script>
 <style lang="scss" scoped>
-@use "./GroupSatellite.scss" as *;
+@use "./GroupSatellite" as *;
 </style>

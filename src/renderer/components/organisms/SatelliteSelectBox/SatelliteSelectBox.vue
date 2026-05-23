@@ -33,5 +33,5 @@ async function updateIndex(satId: number) {
 </script>
 
 <style lang="scss" scoped>
-@use "./SatelliteSelectBox.scss" as *;
+@use "./SatelliteSelectBox" as *;
 </style>

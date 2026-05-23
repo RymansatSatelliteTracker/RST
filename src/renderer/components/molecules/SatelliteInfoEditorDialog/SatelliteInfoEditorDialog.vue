@@ -330,5 +330,5 @@ const emits = defineEmits<{ (e: "ok"): void; (e: "cancel"): void; (e: "reset"): 
 </script>
 
 <style lang="scss" scoped>
-@use "./SatelliteInfoEditorDialog.scss" as *;
+@use "./SatelliteInfoEditorDialog" as *;
 </style>

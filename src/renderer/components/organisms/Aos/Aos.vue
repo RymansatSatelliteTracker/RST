@@ -37,5 +37,5 @@ const { overlapPassCountdown } = useOverlapAos(currentDate);
 </script>
 
 <style lang="scss" scoped>
-@use "./Aos.scss" as *;
+@use "./Aos" as *;
 </style>

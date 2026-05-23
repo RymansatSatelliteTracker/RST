@@ -1,7 +1,7 @@
 // 全体のスタイル
-@use "./colors" as *;
-@use "./variables.scss" as *;
 @forward "./colors.scss";
+@use "./colors" as *;
+@use "./variables" as *;
 
 body {
   margin: 5px;

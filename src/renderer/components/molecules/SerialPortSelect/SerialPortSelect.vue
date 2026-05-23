@@ -35,5 +35,5 @@ defineExpose({
 </script>
 
 <style lang="scss" scoped>
-@use "./SerialPortSelect.scss" as *;
+@use "./SerialPortSelect" as *;
 </style>

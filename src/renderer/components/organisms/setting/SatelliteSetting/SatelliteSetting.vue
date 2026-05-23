@@ -181,5 +181,5 @@ async function updateAppConfig(isTleUpdated: boolean) {
 }
 </script>
 <style lang="scss" scoped>
-@use "./SatelliteSetting.scss" as *;
+@use "./SatelliteSetting" as *;
 </style>

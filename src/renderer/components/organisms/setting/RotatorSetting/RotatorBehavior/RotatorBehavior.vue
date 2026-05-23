@@ -195,5 +195,5 @@ async function validateAll() {
 </script>
 
 <style lang="scss" scoped>
-@use "./RotatorBehavior.scss" as *;
+@use "./RotatorBehavior" as *;
 </style>

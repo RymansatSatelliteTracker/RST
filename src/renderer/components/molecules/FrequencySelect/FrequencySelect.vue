@@ -91,5 +91,5 @@ function handleClick(index: number) {
 </script>
 
 <style lang="scss" scoped>
-@use "./FrequencySelect.scss" as *;
+@use "./FrequencySelect" as *;
 </style>

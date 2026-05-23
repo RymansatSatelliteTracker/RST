@@ -29,5 +29,5 @@ watch(satelliteChoiceMinEl, async (newMinEl) => {
 </script>
 
 <style lang="scss" scoped>
-@use "./SatelliteChoiceMinElSelect.scss" as *;
+@use "./SatelliteChoiceMinElSelect" as *;
 </style>
