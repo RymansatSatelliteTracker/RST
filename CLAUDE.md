@@ -30,7 +30,7 @@ npm run watch
 ### テスト
 
 ```bash
-# 全てのJestユニットテストをカバレッジ付きで実行
+# 全てのVitestユニットテストをカバレッジ付きで実行
 npm run test
 
 # 特定のテストファイルを実行
@@ -95,7 +95,7 @@ npm run format
 
 - **メインプロセス**: ビルド後に"Electron: Main"設定を使用
 - **レンダラープロセス**: app:dev実行中に"Electron: Renderer"設定を使用
-- **Jestテスト**: 個別テストデバッグのためのJest Runner拡張機能をインストール
+- **Vitestテスト**: 個別テストデバッグのためのVitest Runner拡張機能をインストール
 
 ## ビルドプロセス
 

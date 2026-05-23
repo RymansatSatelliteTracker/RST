@@ -12,7 +12,7 @@ applyTo: "**"
 - Pinia
 - Vite
 - serialport
-- Jest
+- Vitest
 
 ## このシステムについて
 

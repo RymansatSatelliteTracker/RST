@@ -115,9 +115,9 @@ VsCodeでのデバッグ実行の方法です。
 3. 実行とデバッグ（`Run and Debug (Ctrl+Shift+D)`）にて、`Electron: Renderer`を選択する。
 4. F5でデバッグを開始する。
 
-#### Jest実行でのデバッグ
+#### Vitest実行でのデバッグ
 
-1. 機能拡張「Jest Runner(firsttris.vscode-jest-runner)」をインストールする
+1. 機能拡張「Vitest Runner(firsttris.vscode-jest-runner)」をインストールする
 2. 適宜ブレークポイントを設定する。
 3. テストケースのファイルの各ケース（メソッド）の上部の「Debug」をクリックする
 
