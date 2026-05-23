@@ -2,6 +2,7 @@ import { AppConfigModel } from "@/common/model/AppConfigModel";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import FrequencyTrackService from "@/renderer/service/FrequencyTrackService";
 import SatelliteService from "@/renderer/service/SatelliteService";
+import { beforeAll, describe, expect, vi } from "vitest";
 
 /**
  * FrequencyTrackServiceのテスト
@@ -13,7 +14,7 @@ import SatelliteService from "@/renderer/service/SatelliteService";
 describe("FrequencyTrackService", () => {
   beforeAll(() => {
     // 設定ファイルが扱えないため
-    jest.spyOn(ApiAppConfig, "getAppConfig").mockImplementation(async () => {
+    vi.spyOn(ApiAppConfig, "getAppConfig").mockImplementation(async () => {
       const appConfigModel = new AppConfigModel();
       // 衛星通信入門では神奈川に受信局があるため神奈川の適当な場所を指定する
       appConfigModel.groundStation.lat = 35.384;

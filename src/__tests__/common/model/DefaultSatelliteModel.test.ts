@@ -6,6 +6,7 @@ import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil";
 import FileUtil from "@/main/util/FileUtil";
 import * as path from "path";
+import { beforeAll, describe, expect, vi } from "vitest";
 
 describe("DefaultSatelliteModel", () => {
   function getLatestTLE(): TleItemMap {
@@ -25,7 +26,7 @@ describe("DefaultSatelliteModel", () => {
   beforeAll(() => {
     const TEST_HOME_DIR = path.resolve(import.meta.dirname, "data_DefaultSatelliteModel");
     // 設定ファイルが扱えないため
-    jest.spyOn(AppConfigUtil, "getTlePath").mockImplementation(() => {
+    vi.spyOn(AppConfigUtil, "getTlePath").mockImplementation(() => {
       return path.join(TEST_HOME_DIR, Constant.Tle.TLE_FILENAME);
     });
   });

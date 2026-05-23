@@ -1,9 +1,10 @@
 import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
+import { describe, expect, vi } from "vitest";
 
 describe("TransceiverDopplerCalc", () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe("calcNewTxFreqWithDoppler", () => {
@@ -14,7 +15,7 @@ describe("TransceiverDopplerCalc", () => {
     it("FrequencyTrackServiceが取得できない場合、nullを返すこと", async () => {
       const calc = new TransceiverDopplerCalc();
       const hubInstance = ActiveSatServiceHub.getInstance();
-      jest.spyOn(hubInstance, "getFrequencyTrackService").mockReturnValue(null);
+      vi.spyOn(hubInstance, "getFrequencyTrackService").mockReturnValue(null);
 
       const result = await calc.calcNewTxFreqWithDoppler(currentDate, txBaseFreq, intervalMs);
       expect(result).toBeNull();
@@ -23,8 +24,8 @@ describe("TransceiverDopplerCalc", () => {
     it("ドップラーファクター1.0のときTx基準周波数がそのまま返ること", async () => {
       const calc = new TransceiverDopplerCalc();
       const hubInstance = ActiveSatServiceHub.getInstance();
-      jest.spyOn(hubInstance, "getFrequencyTrackService").mockReturnValue({
-        calcUplinkDopplerFactor: jest.fn().mockResolvedValue(1.0),
+      vi.spyOn(hubInstance, "getFrequencyTrackService").mockReturnValue({
+        calcUplinkDopplerFactor: vi.fn().mockResolvedValue(1.0),
       } as any);
 
       const result = await calc.calcNewTxFreqWithDoppler(currentDate, txBaseFreq, intervalMs);
@@ -36,8 +37,8 @@ describe("TransceiverDopplerCalc", () => {
       const calc = new TransceiverDopplerCalc();
       const hubInstance = ActiveSatServiceHub.getInstance();
       const factor = 0.99999;
-      jest.spyOn(hubInstance, "getFrequencyTrackService").mockReturnValue({
-        calcUplinkDopplerFactor: jest.fn().mockResolvedValue(factor),
+      vi.spyOn(hubInstance, "getFrequencyTrackService").mockReturnValue({
+        calcUplinkDopplerFactor: vi.fn().mockResolvedValue(factor),
       } as any);
 
       const result = await calc.calcNewTxFreqWithDoppler(currentDate, txBaseFreq, intervalMs);

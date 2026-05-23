@@ -4,6 +4,7 @@ import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil";
 import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService";
 import DefaultSatelliteService from "@/main/service/DefaultSatelliteService";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 const DEFAULT_SATELLITE_ID = 0;
 const DEFAULT_NORAD_ID = "00000";
@@ -13,7 +14,7 @@ const APPCONFIG_NORAD_ID2 = "54321";
 const APPCONFIG_NORAD_ID3 = "99999";
 describe("AppConfigSatelliteService", () => {
   beforeAll(() => {
-    jest.spyOn(DefaultSatelliteService.prototype, "init").mockImplementation(() => {
+    vi.spyOn(DefaultSatelliteService.prototype, "init").mockImplementation(() => {
       return;
     });
     jest
@@ -21,7 +22,7 @@ describe("AppConfigSatelliteService", () => {
       .mockImplementation((satelliteId: number) => {
         return createDefaultSatellite(satelliteId, "TEST_SAT", DEFAULT_NORAD_ID);
       });
-    jest.spyOn(AppConfigUtil, "getConfig").mockImplementation(() => {
+    vi.spyOn(AppConfigUtil, "getConfig").mockImplementation(() => {
       const sat1: AppConfigSatellite = new AppConfigSatellite();
       sat1.satelliteId = APPCONFIG_SATELLITE_ID;
       sat1.noradId = APPCONFIG_NORAD_ID1;

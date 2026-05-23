@@ -4,11 +4,10 @@ import type { ApiResponse } from "@/common/types/types";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
 import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc";
 import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
-import type {
-  RecvFreqResolverState,
-} from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverRecvFreqResolver";
+import type { RecvFreqResolverState } from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverRecvFreqResolver";
 import TransceiverRecvFreqResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverRecvFreqResolver";
 import emitter from "@/renderer/util/EventBus";
+import { describe, expect, vi } from "vitest";
 import { ref } from "vue";
 
 const createState = (): RecvFreqResolverState => ({
@@ -22,13 +21,13 @@ const createState = (): RecvFreqResolverState => ({
 
 describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("受信失敗時は通知を表示して処理を終了すること", async () => {
     const state = createState();
     const baseFreqMgr = new TransceiverBaseFreqMgr();
-    const calcWithAdjust = jest.fn();
+    const calcWithAdjust = vi.fn();
     const resolver = new TransceiverRecvFreqResolver(
       state,
       { tranceiverAuto: false } as never,
@@ -38,8 +37,8 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
       calcWithAdjust,
       () => 0
     );
-    jest.spyOn(I18nUtil, "getMsg").mockReturnValue("mocked notice");
-    const emitSpy = jest.spyOn(emitter, "emit").mockImplementation(() => {});
+    vi.spyOn(I18nUtil, "getMsg").mockReturnValue("mocked notice");
+    const emitSpy = vi.spyOn(emitter, "emit").mockImplementation(() => {});
 
     await resolver.applyFromTransceiver({
       status: false,
@@ -54,7 +53,7 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
   it("Tx周波数受信かつAutoOff時、画面周波数のみ更新すること", async () => {
     const state = createState();
     const baseFreqMgr = new TransceiverBaseFreqMgr();
-    const calcWithAdjust = jest.fn();
+    const calcWithAdjust = vi.fn();
     const resolver = new TransceiverRecvFreqResolver(
       state,
       { tranceiverAuto: false } as never,
@@ -80,11 +79,11 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
     const state = createState();
     const baseFreqMgr = new TransceiverBaseFreqMgr();
     baseFreqMgr.setPlainBaseFreqs(480000000, 2430000000);
-    const calcRxSpy = jest.spyOn(TransceiverDopplerCalc.prototype, "calcBaseFreqByShiftedRxFreq").mockResolvedValue({
+    const calcRxSpy = vi.spyOn(TransceiverDopplerCalc.prototype, "calcBaseFreqByShiftedRxFreq").mockResolvedValue({
       newRxBaseFreq: 481000000,
       newTxBaseFreq: 2429000000,
     });
-    const calcWithAdjust = jest.fn();
+    const calcWithAdjust = vi.fn();
     const resolver = new TransceiverRecvFreqResolver(
       state,
       { tranceiverAuto: true } as never,

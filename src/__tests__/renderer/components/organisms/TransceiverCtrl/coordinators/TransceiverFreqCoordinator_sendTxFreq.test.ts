@@ -1,8 +1,7 @@
 import ApiTransceiver from "@/renderer/api/ApiTransceiver";
-import type {
-  FreqCoordinatorState,
-} from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverFreqCoordinator";
+import type { FreqCoordinatorState } from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverFreqCoordinator";
 import TransceiverFreqCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverFreqCoordinator";
+import { describe, expect, vi } from "vitest";
 import { ref } from "vue";
 
 const createState = (): FreqCoordinatorState => ({
@@ -14,12 +13,12 @@ const createState = (): FreqCoordinatorState => ({
 
 describe("TransceiverFreqCoordinator.sendTxFreq", () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("アップリンク周波数を無線機へ送信すること", async () => {
     const coordinator = new TransceiverFreqCoordinator(createState(), ref(new Date("2026-05-09T00:00:00.000Z")));
-    const setFreqSpy = jest.spyOn(ApiTransceiver, "setTransceiverFrequency").mockResolvedValue();
+    const setFreqSpy = vi.spyOn(ApiTransceiver, "setTransceiverFrequency").mockResolvedValue();
 
     await coordinator.sendTxFreq(2430000000);
 

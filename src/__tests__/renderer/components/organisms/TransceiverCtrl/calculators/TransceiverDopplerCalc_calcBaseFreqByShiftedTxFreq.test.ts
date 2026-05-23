@@ -3,7 +3,7 @@ import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 
 describe("TransceiverDopplerCalc", () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe("calcBaseFreqByShiftedTxFreq", () => {
@@ -13,7 +13,7 @@ describe("TransceiverDopplerCalc", () => {
     it("FrequencyTrackServiceが取得できない場合、0を返すこと", async () => {
       const calc = new TransceiverDopplerCalc();
       const hubInstance = ActiveSatServiceHub.getInstance();
-      jest.spyOn(hubInstance, "getFrequencyTrackService").mockReturnValue(null);
+      vi.spyOn(hubInstance, "getFrequencyTrackService").mockReturnValue(null);
 
       const result = await calc.calcBaseFreqByShiftedTxFreq(
         480000000,
@@ -29,9 +29,9 @@ describe("TransceiverDopplerCalc", () => {
     it("ドップラーファクター1.0のとき送受信周波数の計算が実行されること", async () => {
       const calc = new TransceiverDopplerCalc();
       const hubInstance = ActiveSatServiceHub.getInstance();
-      jest.spyOn(hubInstance, "getFrequencyTrackService").mockReturnValue({
-        calcUplinkDopplerFactor: jest.fn().mockResolvedValue(1.0),
-        calcInvHeteroBaseFreqByTxFreq: jest.fn().mockReturnValue({
+      vi.spyOn(hubInstance, "getFrequencyTrackService").mockReturnValue({
+        calcUplinkDopplerFactor: vi.fn().mockResolvedValue(1.0),
+        calcInvHeteroBaseFreqByTxFreq: vi.fn().mockReturnValue({
           rxBaseFreq: 480000000,
           txBaseFreq: 2430000000,
         }),

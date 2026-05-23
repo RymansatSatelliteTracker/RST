@@ -7,6 +7,7 @@ import ElectronUtil from "@/main/util/ElectronUtil";
 import FileUtil from "@/main/util/FileUtil";
 import fs from "fs";
 import * as path from "path";
+import { beforeAll, describe, expect, vi } from "vitest";
 
 describe("DefaultSatelliteService", () => {
   const TEST_HOME_DIR = path.resolve(import.meta.dirname, "data_DefaultSatelliteService");
@@ -46,20 +47,20 @@ describe("DefaultSatelliteService", () => {
 
   beforeAll(() => {
     // テストの場合ユーザディレクトリが取れなくて落ちるのでモック化
-    jest.spyOn(ElectronUtil, "getUserDir").mockImplementation(() => {
+    vi.spyOn(ElectronUtil, "getUserDir").mockImplementation(() => {
       return TEST_WORK_DIR;
     });
     // 設定ファイルが扱えないため
-    jest.spyOn(AppConfigUtil, "getConfig").mockImplementation(() => {
+    vi.spyOn(AppConfigUtil, "getConfig").mockImplementation(() => {
       const jsonText = FileUtil.readText(path.join(TEST_WORK_DIR, Constant.Config.CONFIG_FILENAME + ".json"));
       return JSON.parse(jsonText)["param"] as AppConfigModel;
     });
-    jest.spyOn(AppConfigUtil, "getConfigDir").mockImplementation(() => {
+    vi.spyOn(AppConfigUtil, "getConfigDir").mockImplementation(() => {
       return TEST_WORK_DIR;
     });
     // 今回の試験対象外のため
-    jest.spyOn(TleService.prototype, "getTleAndSave").mockImplementation(async () => {});
-    jest.spyOn(AppConfigUtil, "saveTleLastRetrievedDate").mockImplementation(() => {});
+    vi.spyOn(TleService.prototype, "getTleAndSave").mockImplementation(async () => {});
+    vi.spyOn(AppConfigUtil, "saveTleLastRetrievedDate").mockImplementation(() => {});
   });
 
   /**

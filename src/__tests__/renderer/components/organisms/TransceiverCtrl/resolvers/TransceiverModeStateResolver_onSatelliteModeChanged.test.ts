@@ -1,9 +1,8 @@
 import Constant from "@/common/Constant";
-import type {
-  ModeStateResolverState,
-} from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeStateResolver";
+import type { ModeStateResolverState } from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeStateResolver";
 import TransceiverModeStateResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeStateResolver";
 import type { ModeState } from "@/renderer/components/organisms/TransceiverCtrl/useSatelliteModeStateManager";
+import { describe, expect, vi } from "vitest";
 import { ref } from "vue";
 
 const createState = (): ModeStateResolverState => ({
@@ -16,13 +15,13 @@ const createState = (): ModeStateResolverState => ({
 
 describe("TransceiverModeStateResolver.onSatelliteModeChanged", () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("oldModeがundefinedのとき、状態を変更しないこと", () => {
     const state = createState();
-    const save = jest.fn();
-    const load = jest.fn<ModeState, [string]>();
+    const save = vi.fn();
+    const load = vi.fn<ModeState, [string]>();
     const resolver = new TransceiverModeStateResolver(state, { tranceiverAuto: false } as never, save, load);
 
     resolver.onSatelliteModeChanged(Constant.Transceiver.SatelliteMode.SATELLITE, undefined);
@@ -34,8 +33,8 @@ describe("TransceiverModeStateResolver.onSatelliteModeChanged", () => {
 
   it("サテライトモードへ変更時、旧モード状態を保存してisSatelliteModeをtrueにすること", () => {
     const state = createState();
-    const save = jest.fn();
-    const load = jest.fn<ModeState, [string]>();
+    const save = vi.fn();
+    const load = vi.fn<ModeState, [string]>();
     const resolver = new TransceiverModeStateResolver(state, { tranceiverAuto: false } as never, save, load);
 
     resolver.onSatelliteModeChanged(
@@ -54,8 +53,8 @@ describe("TransceiverModeStateResolver.onSatelliteModeChanged", () => {
 
   it("UNSETへ変更時、状態を読み込み、トラッキングモードを無効化すること", () => {
     const state = createState();
-    const save = jest.fn();
-    const load = jest.fn<ModeState, [string]>().mockReturnValue({
+    const save = vi.fn();
+    const load = vi.fn<ModeState, [string]>().mockReturnValue({
       rxFrequency: "145.900.000",
       rxOpeMode: Constant.Transceiver.OpeMode.UNSET,
       isSatTrackingModeNormal: true,

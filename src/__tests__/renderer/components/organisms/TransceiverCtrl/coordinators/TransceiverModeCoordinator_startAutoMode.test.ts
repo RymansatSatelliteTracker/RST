@@ -3,13 +3,12 @@ import { AppConfigModel } from "@/common/model/AppConfigModel";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
-import type {
-  ModeCoordinatorState,
-} from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator";
+import type { ModeCoordinatorState } from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator";
 import TransceiverModeCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator";
 import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
 import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
 import emitter from "@/renderer/util/EventBus";
+import { describe, expect, vi } from "vitest";
 import { ref } from "vue";
 
 const createState = (): ModeCoordinatorState => ({
@@ -44,7 +43,7 @@ const createCoordinator = (autoOn: boolean = false): TransceiverModeCoordinator 
 
 describe("TransceiverModeCoordinator.startAutoMode", () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("無線機設定が未完了の場合はfalseを返し、isReadyを呼ばないこと", async () => {
@@ -55,10 +54,10 @@ describe("TransceiverModeCoordinator.startAutoMode", () => {
 
     const coordinator = createCoordinator();
 
-    jest.spyOn(ApiAppConfig, "getAppConfig").mockResolvedValue(appConfig);
-    const getMsgSpy = jest.spyOn(I18nUtil, "getMsg").mockReturnValue("設定未完了");
-    const emitSpy = jest.spyOn(emitter, "emit");
-    const isReadySpy = jest.spyOn(ApiTransceiver, "isReady").mockResolvedValue({
+    vi.spyOn(ApiAppConfig, "getAppConfig").mockResolvedValue(appConfig);
+    const getMsgSpy = vi.spyOn(I18nUtil, "getMsg").mockReturnValue("設定未完了");
+    const emitSpy = vi.spyOn(emitter, "emit");
+    const isReadySpy = vi.spyOn(ApiTransceiver, "isReady").mockResolvedValue({
       status: true,
       data: true,
       message: null,
@@ -80,14 +79,14 @@ describe("TransceiverModeCoordinator.startAutoMode", () => {
 
     const coordinator = createCoordinator();
 
-    jest.spyOn(ApiAppConfig, "getAppConfig").mockResolvedValue(appConfig);
-    const isReadySpy = jest.spyOn(ApiTransceiver, "isReady").mockResolvedValue({
+    vi.spyOn(ApiAppConfig, "getAppConfig").mockResolvedValue(appConfig);
+    const isReadySpy = vi.spyOn(ApiTransceiver, "isReady").mockResolvedValue({
       status: false,
       data: false,
       message: null,
     });
-    const getMsgSpy = jest.spyOn(I18nUtil, "getMsg").mockReturnValue("未接続");
-    const emitSpy = jest.spyOn(emitter, "emit");
+    const getMsgSpy = vi.spyOn(I18nUtil, "getMsg").mockReturnValue("未接続");
+    const emitSpy = vi.spyOn(emitter, "emit");
 
     const result = await coordinator.startAutoMode();
 
