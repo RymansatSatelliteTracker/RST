@@ -1,30 +1,78 @@
+// https://www.typescriptlang.org/tsconfig/
 {
+  "include": ["./src/**/*"] /* Specify files and patterns to include in the TypeScript program. */,
   "compilerOptions": {
-    "target": "es2023",
-    "useDefineForClassFields": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "strict": true,
-    "jsx": "preserve",
-    "resolveJsonModule": true,
-    "isolatedModules": false,
-    "esModuleInterop": true,
-    "inlineSourceMap": true,
-    "inlineSources": true,
-    "lib": ["es2023", "dom"],
-    "skipLibCheck": true,
-    "outDir": "dist/electron",
-    "baseUrl": ".",
+    /* Visit https://www.typescriptlang.org/tsconfig/ to read more about this file */
+
+    /* Basic Options */
+    // "incremental": true,                   /* Save .tsbuildinfo files to allow faster subsequent builds. */
+    "target": "es2023" /* Specify the ECMAScript version for emitted JavaScript; default library declarations can be overridden by 'lib'. */,
+    "module": "esnext" /* Specify what module code is generated. */,
+    "lib": [
+      "es2023",
+      "dom"
+    ] /* Specify a set of bundled library declaration files that describe the target runtime environment. */,
+    // "allowJs": true,                       /* Allow JavaScript files to be a part of the TypeScript program. */
+    // "checkJs": true,                       /* Enable error reporting in type-checked JavaScript files. */
+    // "jsx": "preserve",                     /* Specify how JSX code is emitted. */
+    // "declaration": true,                   /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
+    // "declarationMap": true,                /* Create sourcemaps for .d.ts files. */
+    // "sourceMap": true,                     /* Create source map files for emitted JavaScript files. */
+    // "outFile": "./",                       /* Specify a file that bundles all outputs into one JavaScript file. */
+    "outDir": "dist/electron" /* Specify an output folder for all emitted files. */,
+    // "rootDir": "./",                       /* Specify the root folder within your source files. */
+    // "composite": true,                     /* Enable constraints that allow this project to be used with project references. */
+    // "tsBuildInfoFile": "./",               /* Specify the path to the .tsbuildinfo incremental build information file. */
+    // "removeComments": true,                /* Disable emitting comments. */
+    // "noEmit": true,                        /* Disable emitting files from a compilation. */
+    // "importHelpers": true,                 /* Allow importing helper functions from tslib instead of including them per-file. */
+    // "downlevelIteration": true,            /* Emit more compliant JavaScript for iteration when targeting older ECMAScript versions. */
+    "isolatedModules": true /* Ensure each file can be safely transpiled without relying on type information from other files. */,
+    "useDefineForClassFields": true /* Emit class fields using ECMAScript-standard define semantics. */,
+
+    /* Strict Type-Checking Options */
+    "strict": true /* Enable all strict type-checking options. */,
+    // "noImplicitAny": true,                 /* Report an error when TypeScript infers an 'any' type. */
+    // "strictNullChecks": true,              /* Treat 'null' and 'undefined' as distinct types. */
+    // "strictFunctionTypes": true,           /* Check function parameter types more strictly. */
+    // "strictBindCallApply": true,           /* Check that 'bind', 'call', and 'apply' are invoked with correct arguments. */
+    // "strictPropertyInitialization": true,  /* Check that class properties are initialized in the constructor. */
+    // "noImplicitThis": true,                /* Report an error when 'this' implicitly has type 'any'. */
+    // "alwaysStrict": true,                  /* Ensure files are parsed in ECMAScript strict mode and emit "use strict". */
+
+    /* Additional Checks */
+    // "noUnusedLocals": true,                /* Report errors on unused local variables. */
+    // "noUnusedParameters": true,            /* Report errors on unused function parameters. */
+    // "noImplicitReturns": true,             /* Report an error when not all code paths in a function return a value. */
+    // "noFallthroughCasesInSwitch": true,    /* Report errors for fallthrough cases in switch statements. */
+
+    /* Module Resolution Options */
+    "moduleResolution": "bundler" /* Resolve modules using bundler-like rules; supports package.json imports/exports and does not require file extensions on relative imports. */,
+    "baseUrl": "." /* Specify the base directory for resolving non-relative module names. */,
     "paths": {
       "@/*": ["./src/*"]
-    },
-    "plugins": [
-      {
-        "@/*": ["./src/*"]
-      }
-    ],
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
-  },
-  "include": ["./src/**/*"]
+    } /* Specify path mapping entries for module names relative to 'baseUrl'. */,
+    // "rootDirs": [],                        /* Allow multiple folders to be treated as one virtual root when resolving modules. */
+    // "typeRoots": [],                       /* Specify folders that act like './node_modules/@types'. */
+    // "types": [],                           /* Specify which @types packages are included in the global scope; when set, only listed packages are included. */,
+    // "allowSyntheticDefaultImports": true,  /* Allow default imports from modules that do not have a default export; this affects type checking only. */
+    "esModuleInterop": true /* Improve CommonJS/ES Module interop and enable 'allowSyntheticDefaultImports'. */,
+    // "preserveSymlinks": true,              /* Do not resolve symlinks to their real paths. */
+    // "allowUmdGlobalAccess": true,          /* Allow accessing UMD globals from module files. */
+    "resolveJsonModule": true /* Allow importing .json files as modules. */,
+
+    /* Source Map Options */
+    // "sourceRoot": "",                      /* Specify the root path for debuggers to find the original source files. */
+    // "mapRoot": "",                         /* Specify the location where debuggers should find source map files. */
+    "inlineSourceMap": true /* Include sourcemap data inside the emitted JavaScript files. */,
+    "inlineSources": true /* Include original source code in the sourcemaps; requires 'inlineSourceMap' or 'sourceMap'. */,
+
+    /* Experimental Options */
+    "experimentalDecorators": true /* Enable experimental support for legacy decorators. */,
+    "emitDecoratorMetadata": true /* Emit design-type metadata for decorated declarations; commonly used with reflect-metadata-based libraries. */,
+
+    /* Advanced Options */
+    "skipLibCheck": true /* Skip type checking of declaration files. */
+    // "forceConsistentCasingInFileNames": true, /* Ensure imports use file name casing that is consistent with the file system. */
+  }
 }
