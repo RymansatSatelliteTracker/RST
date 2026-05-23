@@ -58,7 +58,7 @@
     "npx prettier": true,
     "/^npx prettier(\\b.*)?$/": true,
     "npx jest *": true,
-    "/^git (status|show\\b.*)/": true, // git status, git show は自動承認
+    "/^git (status|show\\b.*)/": true // git status, git show は自動承認
   },
   "typescript.tsdk": "./node_modules/typescript/lib"
 }

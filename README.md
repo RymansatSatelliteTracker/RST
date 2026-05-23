@@ -25,7 +25,9 @@ npm ci
 ```
 
 #### Mac
+
 - PCにnode, nodebrewがインストールされている場合、アンインストールする
+
 ```bash
 # voltaのインストール
 brew install volta
@@ -119,14 +121,15 @@ VsCodeでのデバッグ実行の方法です。
 #### アイコン編集
 
 Inkscapeで編集を行う。
+
 - 小さいアイコン向け
-    - public\assets\アイコン\_24.svg
+  - public\assets\アイコン\_24.svg
 - 大きいアイコン向け
-    - public\assets\アイコン\_512.svg
+  - public\assets\アイコン\_512.svg
 
 #### Windows向けのicoの作成
 
-複数pngをicoファイルに格納するため、以下からImageMagicをダウンロード、インストールする。    
+複数pngをicoファイルに格納するため、以下からImageMagicをダウンロード、インストールする。  
 https://www.imagemagick.org/script/download.php
 
 以下をコマンドプロンプトで実行する。
@@ -143,21 +146,25 @@ rst.ico がWindowsのアイコンファイルとなる。
 
 ### 7. 地図データの作成方法
 
-1. [Natural Earth III – Texture Maps]から地図画像データをDL  
-  - [2. Earth without clouds](https://www.shadedrelief.com/natural3/pages/textures.html)の[16,200 x 8,100 JPEG (30 MB)]をDLする。  
-  - [Projection information and world (.tfw) files (4 KB)]をDLする。  
-    ※ 2. Earth without cloudsと同一ページの最下部にDLリンクあり。
+1. [Natural Earth III – Texture Maps]から地図画像データをDL
 
-2. ファイル名変更&ユーザーフォルダ配下への格納  
-  - [16,200 x 8,100 JPEG (30 MB)]のファイル名を[natural_earth.jpg]に変更する。  
-  - [16200x8100.tfw]のファイル名を[natural_earth.tfw]に変更する。  
-  - ユーザーフォルダ配下に[EPSG4326]フォルダを新規作成して、[natural_earth.jpg]、[natural_earth.tfw]を格納する。  
+- [2. Earth without clouds](https://www.shadedrelief.com/natural3/pages/textures.html)の[16,200 x 8,100 JPEG (30 MB)]をDLする。
+- [Projection information and world (.tfw) files (4 KB)]をDLする。  
+  ※ 2. Earth without cloudsと同一ページの最下部にDLリンクあり。
 
-3. 以下からQGISをダウンロード、インストールする。    
-  https://qgis.org/download/
+2. ファイル名変更&ユーザーフォルダ配下への格納
 
-4. OSGeo4W Shellを起動して地図タイルを生成  
-  - 以下をOSGeo4W Shellで実行する。
+- [16,200 x 8,100 JPEG (30 MB)]のファイル名を[natural_earth.jpg]に変更する。
+- [16200x8100.tfw]のファイル名を[natural_earth.tfw]に変更する。
+- ユーザーフォルダ配下に[EPSG4326]フォルダを新規作成して、[natural_earth.jpg]、[natural_earth.tfw]を格納する。
+
+3. 以下からQGISをダウンロード、インストールする。  
+   https://qgis.org/download/
+
+4. OSGeo4W Shellを起動して地図タイルを生成
+
+- 以下をOSGeo4W Shellで実行する。
+
 ```
 cd C:\Users\ユーザーフォルダ\EPSG4326
 gdal_translate -a_srs EPSG:4326 -a_ullr -180 90 180 -90 natural_earth.jpg temp.tif

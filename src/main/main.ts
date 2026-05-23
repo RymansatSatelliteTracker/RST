@@ -40,7 +40,7 @@ let mainWindow: BrowserWindow;
   try {
     await serive.initApp();
   } catch (e) {
-    AppMainLogger.error("StartupService init error", e instanceof Error ? e.stack ?? e.message : String(e));
+    AppMainLogger.error("StartupService init error", e instanceof Error ? (e.stack ?? e.message) : String(e));
     errorMessage = e instanceof Error ? e.message : String(e);
   }
 

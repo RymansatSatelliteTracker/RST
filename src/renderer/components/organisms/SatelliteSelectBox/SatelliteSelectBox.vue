@@ -29,7 +29,6 @@ const { selectedSatId, updateAppConfig } = useSatelliteSelectBox(items);
 async function updateIndex(satId: number) {
   // アクティブ衛星をAppConifgに保存
   void updateAppConfig(String(satId));
-
 }
 </script>
 
