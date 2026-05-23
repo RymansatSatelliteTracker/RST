@@ -41,11 +41,7 @@ export default class WebClient {
    * @param config
    * @returns
    */
-  public async get(
-    url: string,
-    query?: ParsedUrlQueryInput,
-    config?: AxiosRequestConfig  
-  ): Promise<AppHttpResponse> {
+  public async get(url: string, query?: ParsedUrlQueryInput, config?: AxiosRequestConfig): Promise<AppHttpResponse> {
     try {
       if(query){
         // クエリパラメータをURLに追加
@@ -72,7 +68,7 @@ export default class WebClient {
    * @param config
    * @returns
    */
-  public async post(url: string, data?: any, config?: AxiosRequestConfig  ) {
+  public async post(url: string, data?: any, config?: AxiosRequestConfig) {
     try {
       const response = await this.axios.post(url, data, config);
       return new AppHttpResponse(response.status, response.statusText, response.data);

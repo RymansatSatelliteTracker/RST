@@ -4,7 +4,7 @@ import type { AppConfigTransceiverDevice } from "@/common/model/AppConfigTransce
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import type { SelectOption } from "@/renderer/types/vue-types.js";
-import type { ModelRef} from "vue";
+import type { ModelRef } from "vue";
 import { ref, watch } from "vue";
 
 /**

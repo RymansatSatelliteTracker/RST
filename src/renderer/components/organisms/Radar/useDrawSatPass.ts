@@ -7,7 +7,7 @@ import GroundStationHelper from "@/renderer/common/util/GroundStationHelper.js";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
 import type { SatAzEl } from "@/renderer/types/satellite-type.js";
 import CanvasUtil from "@/renderer/util/CanvasUtil.js";
-import type { Ref} from "vue";
+import type { Ref } from "vue";
 import { onMounted, watch } from "vue";
 
 type CenterPosition = {

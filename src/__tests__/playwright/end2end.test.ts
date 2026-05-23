@@ -1,6 +1,6 @@
 import Constant from "@/common/Constant";
 import Store from "electron-store";
-import type { ElectronApplication, Page} from "playwright/test";
+import type { ElectronApplication, Page } from "playwright/test";
 import { _electron, expect, test } from "playwright/test";
 
 let electronApp: ElectronApplication;

@@ -14,7 +14,6 @@
 - PCにnode, nodist, Voltaがインストールされている場合、アンインストールする。
 - 注意）nodistをアンインストールした後、$HOME\.npmrc 内のnodistの記載を手動で削除する。
 
-
 ```bash
 # fnmのインストール
 winget install Schniz.fnm

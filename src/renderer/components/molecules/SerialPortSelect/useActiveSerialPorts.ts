@@ -1,6 +1,6 @@
 import ApiSirial from "@/renderer/api/ApiSirial.js";
 import type { SelectOption } from "@/renderer/types/vue-types.js";
-import type { ModelRef} from "vue";
+import type { ModelRef } from "vue";
 import { ref } from "vue";
 
 /**

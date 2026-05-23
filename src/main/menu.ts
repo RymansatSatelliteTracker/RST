@@ -9,7 +9,7 @@ import AppConfigImportSerivce from "@/main/service/AppConfigImportSerivce.js";
 import DefaultSatelliteService from "@/main/service/DefaultSatelliteService.js";
 import I18nService from "@/main/service/I18nService.js";
 import I18nUtil4Main from "@/main/util/I18nUtil4Main.js";
-import type { BaseWindow, BrowserWindow, MenuItem} from "electron";
+import type { BaseWindow, BrowserWindow, MenuItem } from "electron";
 import { app, Menu, shell } from "electron";
 import type { MenuItemConstructorOptions } from "electron/main";
 

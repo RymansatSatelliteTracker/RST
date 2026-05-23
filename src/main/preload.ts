@@ -15,7 +15,7 @@ import type { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTy
 import type { ApiResponse, LangType } from "@/common/types/types.js";
 import EnvUtil from "@/common/util/EnvUtil.js";
 import type { TleStrings } from "@/renderer/types/satellite-type.js";
-import type { IpcRendererEvent} from "electron";
+import type { IpcRendererEvent } from "electron";
 import { contextBridge, ipcRenderer } from "electron";
 import path from "path";
 /**

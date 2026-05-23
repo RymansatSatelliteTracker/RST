@@ -1,6 +1,6 @@
 import CommonUtil from "@/common/CommonUtil.js";
 import Constant from "@/common/Constant.js";
-import type { TleItemMap} from "@/common/model/TleModel.js";
+import type { TleItemMap } from "@/common/model/TleModel.js";
 import { TleJsonModel } from "@/common/model/TleModel.js";
 import type { StringMap } from "@/common/types/types.js";
 import WebClient from "@/common/WebClient.js";
