@@ -1,5 +1,5 @@
 import Constant from "@/common/Constant";
-import { ApiResponse } from "@/common/types/types";
+import type { ApiResponse } from "@/common/types/types";
 import TransceiverDopplerWaitCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverDopplerWaitCoordinator";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger";
 

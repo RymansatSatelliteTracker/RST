@@ -1,9 +1,9 @@
 import Constant from "@/common/Constant.js";
 import { InvalidArgumentError } from "@/common/exceptions.js";
-import { AppConfigRotatorDevice } from "@/common/model/AppConfigRotatorModel.js";
+import type { AppConfigRotatorDevice } from "@/common/model/AppConfigRotatorModel.js";
 import AzElBtController from "@/renderer/service/rotator/AzElBtController.js";
 import DevAntennaController from "@/renderer/service/rotator/DevAntennaController.js";
-import RotatorControllerBase from "@/renderer/service/rotator/RotatorControllerBase.js";
+import type RotatorControllerBase from "@/renderer/service/rotator/RotatorControllerBase.js";
 import St2Controller from "@/renderer/service/rotator/St2Controller.js";
 
 /**

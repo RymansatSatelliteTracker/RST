@@ -1,5 +1,5 @@
 import I18nMsgs from "@/common/I18nMsgs.js";
-import { AppConfigRotator } from "@/common/model/AppConfigModel.js";
+import type { AppConfigRotator } from "@/common/model/AppConfigModel.js";
 import { ApiResponse } from "@/common/types/types.js";
 import SerialComm from "@/main/common/SerialComm.js";
 import RotatorControllerBase from "@/main/service/rotator/controller/RotatorControllerBase.js";

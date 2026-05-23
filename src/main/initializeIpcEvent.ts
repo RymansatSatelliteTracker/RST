@@ -1,10 +1,10 @@
-import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
-import { AppConfigModel, AppConfigRotator, AppConfigTransceiver } from "@/common/model/AppConfigModel.js";
-import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
-import { FrequencyModel } from "@/common/model/FrequencyModel.js";
-import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
-import { ApiResponse, LangType } from "@/common/types/types.js";
+import type { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
+import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import type { AppConfigModel, AppConfigRotator, AppConfigTransceiver } from "@/common/model/AppConfigModel.js";
+import type { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import type { FrequencyModel } from "@/common/model/FrequencyModel.js";
+import type { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
+import type { ApiResponse, LangType } from "@/common/types/types.js";
 import WebClient from "@/common/WebClient.js";
 import SerialComm from "@/main/common/SerialComm.js";
 import ActiveSatService from "@/main/service/ActiveSatService.js";

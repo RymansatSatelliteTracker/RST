@@ -1,7 +1,7 @@
 import Constant from "@/common/Constant.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import OrbitLineService from "@/renderer/service/OrbitLineService.js";
-import SatelliteService from "@/renderer/service/SatelliteService.js";
+import type SatelliteService from "@/renderer/service/SatelliteService.js";
 
 /**
  * 人工衛星の軌道サービスファクトリ

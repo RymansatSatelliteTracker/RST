@@ -3,7 +3,7 @@ import router from "@/renderer/router/router.js";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
 import { createApp } from "vue";
 
-import { LangType } from "@/common/types/types.js";
+import type { LangType } from "@/common/types/types.js";
 import { useStoreDispLang } from "@/renderer/store/useStoreDispLang.js";
 import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
@@ -18,7 +18,7 @@ import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 // 全体SCSSの適用
 import Constant from "@/common/Constant.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
-import { MessageModel } from "@/common/model/MessageModel.js";
+import type { MessageModel } from "@/common/model/MessageModel.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import emitter from "@/renderer/util/EventBus.js";
 import "./components/styles/global.scss";

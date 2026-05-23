@@ -1,7 +1,7 @@
 import Constant from "@/common/Constant.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
-import SatelliteService from "@/renderer/service/SatelliteService.js";
-import { EcefLocation } from "@/renderer/types/location-type.js";
+import type SatelliteService from "@/renderer/service/SatelliteService.js";
+import type { EcefLocation } from "@/renderer/types/location-type.js";
 import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil.js";
 
 /**

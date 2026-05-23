@@ -1,4 +1,4 @@
-import { AppConfigTleUrl } from "@/common/model/AppConfigModel.js";
+import type { AppConfigTleUrl } from "@/common/model/AppConfigModel.js";
 import ApiTle from "@/renderer/api/ApiTle.js";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
 export function isUpdated(oldValue: AppConfigTleUrl[], newValue: AppConfigTleUrl[]) {

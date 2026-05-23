@@ -2,7 +2,7 @@ import Constant from "@/common/Constant.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper.js";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
-import { PassesCache } from "@/renderer/types/pass-type.js";
+import type { PassesCache } from "@/renderer/types/pass-type.js";
 import { onMounted, onUnmounted, ref, watch, type Ref } from "vue";
 
 /**

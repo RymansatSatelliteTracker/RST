@@ -5,9 +5,9 @@ import { AppConfigRotator } from "@/common/model/AppConfigModel.js";
 import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking.js";
 import ApiSirial from "@/renderer/api/ApiSirial.js";
 import { useValidate } from "@/renderer/common/hook/useValidate.js";
-import RotatorConnForm from "@/renderer/components/organisms/setting/RotatorSetting/RotatorConn/RotatorConnForm.js";
-import { RotatorRage } from "@/renderer/types/rotator-types.js";
-import { Ref } from "vue";
+import type RotatorConnForm from "@/renderer/components/organisms/setting/RotatorSetting/RotatorConn/RotatorConnForm.js";
+import type { RotatorRage } from "@/renderer/types/rotator-types.js";
+import type { Ref } from "vue";
 import { azTestRange, elTestRange, valiSchemaRotatorConn } from "./useRotatorConnValidate.js";
 
 /**

@@ -1,5 +1,5 @@
 import Constant from "@/common/Constant.js";
-import { EclipticCoords, EquatorialCoords } from "@/renderer/types/astronomy-type.js";
+import type { EclipticCoords, EquatorialCoords } from "@/renderer/types/astronomy-type.js";
 import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil.js";
 
 /**

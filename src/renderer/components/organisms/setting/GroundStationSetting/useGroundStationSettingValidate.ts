@@ -1,7 +1,7 @@
 import I18nMsgs from "@/common/I18nMsgs.js";
 import { useValidate } from "@/renderer/common/hook/useValidate.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
-import GroundStationSettingForm from "@/renderer/components/organisms/setting/GroundStationSetting/GroundStationSettingForm.js";
+import type GroundStationSettingForm from "@/renderer/components/organisms/setting/GroundStationSetting/GroundStationSettingForm.js";
 import * as zod from "zod";
 
 /**

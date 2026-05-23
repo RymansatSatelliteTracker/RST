@@ -1,4 +1,4 @@
-import { RspAntennaIoCalibConfigModel, RspAntennaIoDegVoltMap } from "@/common/model/RspAntennaIoCalibConfigModel.js";
+import type { RspAntennaIoCalibConfigModel, RspAntennaIoDegVoltMap } from "@/common/model/RspAntennaIoCalibConfigModel.js";
 import AppMainLogger from "@/main/util/AppMainLogger.js";
 import FileUtil from "@/main/util/FileUtil.js";
 

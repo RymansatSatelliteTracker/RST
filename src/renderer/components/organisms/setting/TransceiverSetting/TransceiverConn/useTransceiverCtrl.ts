@@ -3,8 +3,8 @@ import Constant from "@/common/Constant.js";
 import { AppConfigTransceiver } from "@/common/model/AppConfigModel.js";
 import ApiSirial from "@/renderer/api/ApiSirial.js";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
-import TransceiverConnForm from "@/renderer/components/organisms/setting/TransceiverSetting/TransceiverConn/TransceiverConnForm.js";
-import { Ref } from "vue";
+import type TransceiverConnForm from "@/renderer/components/organisms/setting/TransceiverSetting/TransceiverConn/TransceiverConnForm.js";
+import type { Ref } from "vue";
 
 /**
  * 無線機制御関係のフック

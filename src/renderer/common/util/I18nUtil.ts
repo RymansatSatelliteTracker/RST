@@ -1,4 +1,4 @@
-import { I18nMsgItem } from "@/common/types/types.js";
+import type { I18nMsgItem } from "@/common/types/types.js";
 import { useStoreDispLang } from "@/renderer/store/useStoreDispLang.js";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
 

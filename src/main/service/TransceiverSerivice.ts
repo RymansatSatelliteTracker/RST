@@ -1,10 +1,10 @@
 import CommonUtil from "@/common/CommonUtil.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
-import { AppConfigTransceiver } from "@/common/model/AppConfigModel.js";
-import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
+import type { AppConfigTransceiver } from "@/common/model/AppConfigModel.js";
+import type { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
 import { ApiResponse } from "@/common/types/types.js";
 import { getMainWindow } from "@/main/main.js";
-import TransceiverControllerBase from "@/main/service/transceiver/controller/TransceiverControllerBase.js";
+import type TransceiverControllerBase from "@/main/service/transceiver/controller/TransceiverControllerBase.js";
 import TransceiverControllerFactory from "@/main/service/transceiver/controller/TransceiverControllerFactory.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 

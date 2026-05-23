@@ -1,5 +1,5 @@
 import CommonUtil from "@/common/CommonUtil.js";
-import { AppConfigRotatorDevice } from "@/common/model/AppConfigRotatorModel.js";
+import type { AppConfigRotatorDevice } from "@/common/model/AppConfigRotatorModel.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 
 // 設定ファイル（JSON）のルートのキー名

@@ -1,10 +1,11 @@
 import Constant from "@/common/Constant";
 import I18nMsgs from "@/common/I18nMsgs";
-import { ApiResponse } from "@/common/types/types";
+import type { ApiResponse } from "@/common/types/types";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
-import TransceiverOpeModeResolver, {
+import type {
   OpeModeResolverState,
 } from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver";
+import TransceiverOpeModeResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver";
 import emitter from "@/renderer/util/EventBus";
 import { ref } from "vue";
 

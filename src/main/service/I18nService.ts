@@ -1,4 +1,4 @@
-import { LangType } from "@/common/types/types.js";
+import type { LangType } from "@/common/types/types.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 
 /**

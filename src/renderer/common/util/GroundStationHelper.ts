@@ -1,5 +1,5 @@
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
-import { EcefLocation } from "@/renderer/types/location-type.js";
+import type { EcefLocation } from "@/renderer/types/location-type.js";
 import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil.js";
 
 /**

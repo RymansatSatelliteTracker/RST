@@ -1,6 +1,6 @@
 import Constant from "@/common/Constant.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
-import { I18nMsgItem } from "@/common/types/types.js";
+import type { I18nMsgItem } from "@/common/types/types.js";
 import TransceiverUtil from "@/common/util/TransceiverUtil.js";
 
 /** アップリンク設定の必要最低限の形 */

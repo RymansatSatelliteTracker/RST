@@ -1,7 +1,7 @@
 import I18nMsgs from "@/common/I18nMsgs.js";
 import { useValidate } from "@/renderer/common/hook/useValidate.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
-import TransceiverConnForm from "@/renderer/components/organisms/setting/TransceiverSetting/TransceiverConn/TransceiverConnForm.js";
+import type TransceiverConnForm from "@/renderer/components/organisms/setting/TransceiverSetting/TransceiverConn/TransceiverConnForm.js";
 import * as zod from "zod";
 
 /**

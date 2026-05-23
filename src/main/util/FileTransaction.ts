@@ -1,6 +1,6 @@
-import { AppConfigModel } from "@/common/model/AppConfigModel.js";
-import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
-import { FileType } from "@/common/types/types.js";
+import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import type { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import type { FileType } from "@/common/types/types.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 import AppMainLogger from "@/main/util/AppMainLogger.js";
 import FileUtil from "@/main/util/FileUtil.js";

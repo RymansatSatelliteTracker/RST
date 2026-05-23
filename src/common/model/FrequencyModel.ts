@@ -1,4 +1,4 @@
-import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes.js";
+import type { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes.js";
 
 /**
  * アプリケーション内で管理しておく衛星周波数設定

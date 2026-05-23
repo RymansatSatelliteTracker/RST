@@ -1,5 +1,5 @@
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
-import { ApiResponse } from "@/common/types/types.js";
+import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import type { ApiResponse } from "@/common/types/types.js";
 import RotatorHelper from "@/common/util/RotatorHelper.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 import AppMainLogger from "@/main/util/AppMainLogger.js";

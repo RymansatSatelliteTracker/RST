@@ -1,19 +1,19 @@
 import Constant from "@/common/Constant.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
-import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
-import { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import type { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
+import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
 import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper.js";
 import GroundStationHelper from "@/renderer/common/util/GroundStationHelper.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
-import RotatorControllerBase from "@/renderer/service/rotator/RotatorControllerBase.js";
+import type RotatorControllerBase from "@/renderer/service/rotator/RotatorControllerBase.js";
 import RotatorControllerFactory from "@/renderer/service/rotator/RotatorControllerFactory.js";
 import { AppConfigUtil } from "@/renderer/util/AppConfigUtil.js";
 import emitter from "@/renderer/util/EventBus.js";
-import { Ref } from "vue";
+import type { Ref } from "vue";
 
 /**
  * アンテナ（ローテータ）の自動衛星追尾サービス

@@ -1,10 +1,11 @@
 import CommonUtil from "@/common/CommonUtil.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
-import { AppConfigTransceiverDevice } from "@/common/model/AppConfigTransceiverModel.js";
+import type { AppConfigTransceiverDevice } from "@/common/model/AppConfigTransceiverModel.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
-import { SelectOption } from "@/renderer/types/vue-types.js";
-import { ModelRef, ref, watch } from "vue";
+import type { SelectOption } from "@/renderer/types/vue-types.js";
+import type { ModelRef} from "vue";
+import { ref, watch } from "vue";
 
 /**
  * 無線機の機種のSelectBox向けリストを生成するフック

@@ -1,5 +1,5 @@
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
-import { SelectOption } from "@/renderer/types/vue-types.js";
+import type { SelectOption } from "@/renderer/types/vue-types.js";
 import { onMounted, ref } from "vue";
 
 /**

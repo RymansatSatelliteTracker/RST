@@ -1,5 +1,5 @@
-import { TleItemMap } from "@/common/model/TleModel.js";
-import { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
+import type { TleItemMap } from "@/common/model/TleModel.js";
+import type { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
 import {
   createDefaultSatellite,
   initializeDefaultSatellites,

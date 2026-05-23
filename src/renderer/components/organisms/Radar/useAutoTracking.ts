@@ -1,6 +1,6 @@
 import AntennaAutoTrackingService from "@/renderer/service/AntennaAutoTrackingService.js";
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
-import { Ref } from "vue";
+import type { Ref } from "vue";
 
 /**
  * ローテータの自動衛星追尾フック

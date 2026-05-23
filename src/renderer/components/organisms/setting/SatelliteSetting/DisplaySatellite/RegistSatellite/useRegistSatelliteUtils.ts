@@ -1,8 +1,8 @@
-import { AppConfigModel, AppConfigSatellite } from "@/common/model/AppConfigModel.js";
+import type { AppConfigModel, AppConfigSatellite } from "@/common/model/AppConfigModel.js";
 import TleUtil from "@/main/util/TleUtil.js";
 import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite.js";
 import ApiDefaultSatellite from "@/renderer/api/ApiDefaultSatellite.js";
-import RegistSatelliteForm from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/RegistSatellite/RegistSatelliteForm.js";
+import type RegistSatelliteForm from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/RegistSatellite/RegistSatelliteForm.js";
 import { parseTle, tleToOrbitalElements } from "./useValidateTle.js";
 
 /**

@@ -1,5 +1,5 @@
 import I18nMsgs from "@/common/I18nMsgs.js";
-import { AppConfigTransceiver } from "@/common/model/AppConfigModel.js";
+import type { AppConfigTransceiver } from "@/common/model/AppConfigModel.js";
 import { ApiResponse } from "@/common/types/types.js";
 import SerialComm from "@/main/common/SerialComm.js";
 import TransceiverControllerBase from "@/main/service/transceiver/controller/TransceiverControllerBase.js";

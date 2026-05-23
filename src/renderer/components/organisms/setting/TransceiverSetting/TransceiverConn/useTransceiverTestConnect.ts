@@ -4,9 +4,10 @@ import I18nMsgs from "@/common/I18nMsgs.js";
 import ApiSirial from "@/renderer/api/ApiSirial.js";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
-import TransceiverConnForm from "@/renderer/components/organisms/setting/TransceiverSetting/TransceiverConn/TransceiverConnForm.js";
+import type TransceiverConnForm from "@/renderer/components/organisms/setting/TransceiverSetting/TransceiverConn/TransceiverConnForm.js";
 import emitter from "@/renderer/util/EventBus.js";
-import { computed, Ref } from "vue";
+import type { Ref } from "vue";
+import { computed } from "vue";
 
 /**
  * 無線機接続テストのフック

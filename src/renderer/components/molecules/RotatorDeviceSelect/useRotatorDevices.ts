@@ -1,10 +1,11 @@
 import CommonUtil from "@/common/CommonUtil.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
-import { AppConfigRotatorDevice } from "@/common/model/AppConfigRotatorModel.js";
+import type { AppConfigRotatorDevice } from "@/common/model/AppConfigRotatorModel.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
-import { SelectOption } from "@/renderer/types/vue-types.js";
-import { ModelRef, ref, watch } from "vue";
+import type { SelectOption } from "@/renderer/types/vue-types.js";
+import type { ModelRef} from "vue";
+import { ref, watch } from "vue";
 
 /**
  * ローテーターの機種のSelectBox向けリストを生成するフック

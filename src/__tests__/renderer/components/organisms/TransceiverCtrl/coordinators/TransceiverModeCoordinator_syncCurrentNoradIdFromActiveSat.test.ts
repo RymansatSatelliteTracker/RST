@@ -1,7 +1,8 @@
 import Constant from "@/common/Constant";
-import TransceiverModeCoordinator, {
+import type {
   ModeCoordinatorState,
 } from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator";
+import TransceiverModeCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator";
 import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
 import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";

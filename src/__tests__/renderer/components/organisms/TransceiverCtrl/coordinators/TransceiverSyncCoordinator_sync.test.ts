@@ -1,7 +1,8 @@
 import Constant from "@/common/Constant";
-import TransceiverSyncCoordinator, {
+import type {
   SyncCoordinatorState,
 } from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverSyncCoordinator";
+import TransceiverSyncCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverSyncCoordinator";
 import { ref } from "vue";
 
 const createState = (): SyncCoordinatorState => ({

@@ -1,6 +1,6 @@
 import Constant from "@/common/Constant.js";
-import { ApiResponse } from "@/common/types/types.js";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
+import type { ApiResponse } from "@/common/types/types.js";
+import type { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
 
 /**

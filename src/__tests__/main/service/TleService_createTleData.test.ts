@@ -1,4 +1,4 @@
-import { TleItemMap } from "@/common/model/TleModel";
+import type { TleItemMap } from "@/common/model/TleModel";
 import TleService from "@/main/service/TleService";
 
 /**

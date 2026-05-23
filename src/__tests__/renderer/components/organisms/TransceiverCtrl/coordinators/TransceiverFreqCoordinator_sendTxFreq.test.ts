@@ -1,7 +1,8 @@
 import ApiTransceiver from "@/renderer/api/ApiTransceiver";
-import TransceiverFreqCoordinator, {
+import type {
   FreqCoordinatorState,
 } from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverFreqCoordinator";
+import TransceiverFreqCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverFreqCoordinator";
 import { ref } from "vue";
 
 const createState = (): FreqCoordinatorState => ({

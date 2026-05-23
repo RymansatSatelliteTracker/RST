@@ -1,7 +1,7 @@
 import Constant from "@/common/Constant.js";
 import { InvalidArgumentError } from "@/common/exceptions.js";
-import { AppConfigTransceiver } from "@/common/model/AppConfigModel.js";
-import TransceiverControllerBase from "@/main/service/transceiver/controller/TransceiverControllerBase.js";
+import type { AppConfigTransceiver } from "@/common/model/AppConfigModel.js";
+import type TransceiverControllerBase from "@/main/service/transceiver/controller/TransceiverControllerBase.js";
 import TransceiverIcomController from "@/main/service/transceiver/controller/TransceiverIcomController.js";
 import AppMainLogger from "@/main/util/AppMainLogger.js";
 

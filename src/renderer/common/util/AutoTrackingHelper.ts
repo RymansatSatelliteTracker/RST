@@ -1,4 +1,4 @@
-import { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
 import DateUtil from "@/renderer/util/DateUtil.js";
 

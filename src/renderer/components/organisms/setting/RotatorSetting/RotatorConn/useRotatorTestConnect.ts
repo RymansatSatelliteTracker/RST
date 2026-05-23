@@ -5,9 +5,10 @@ import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
 import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking.js";
 import ApiSirial from "@/renderer/api/ApiSirial.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
-import RotatorConnForm from "@/renderer/components/organisms/setting/RotatorSetting/RotatorConn/RotatorConnForm.js";
+import type RotatorConnForm from "@/renderer/components/organisms/setting/RotatorSetting/RotatorConn/RotatorConnForm.js";
 import emitter from "@/renderer/util/EventBus.js";
-import { computed, Ref } from "vue";
+import type { Ref } from "vue";
+import { computed } from "vue";
 
 /**
  * ローテーター接続テストのフック

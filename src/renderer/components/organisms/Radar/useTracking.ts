@@ -1,8 +1,9 @@
 import GroundStationHelper from "@/renderer/common/util/GroundStationHelper.js";
 import GroundStationServiceFactory from "@/renderer/common/util/GroundStationServiceFactory.js";
 import SatelliteServiceFactory from "@/renderer/common/util/SatelliteServiceFactory.js";
-import { SatAzEl } from "@/renderer/types/satellite-type.js";
-import { onUnmounted, Ref } from "vue";
+import type { SatAzEl } from "@/renderer/types/satellite-type.js";
+import type { Ref } from "vue";
+import { onUnmounted } from "vue";
 
 /**
  * 衛星の軌跡、衛星位置関係のフック

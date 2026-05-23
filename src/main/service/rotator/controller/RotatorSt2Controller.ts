@@ -1,7 +1,7 @@
 import CommonUtil from "@/common/CommonUtil.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
 import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
-import { AppConfigRotator } from "@/common/model/AppConfigModel.js";
+import type { AppConfigRotator } from "@/common/model/AppConfigModel.js";
 import { ApiResponse } from "@/common/types/types.js";
 import RotatorSerialControllerBase from "@/main/service/rotator/controller/RotatorSerialControllerBase.js";
 import RotatorSerialHelper from "@/main/service/rotator/RotatorSerialHelper.js";

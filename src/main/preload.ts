@@ -1,21 +1,22 @@
-import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
-import {
+import type { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
+import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import type {
   AppConfigModel,
   AppConfigRotator,
   AppConfigSatellite,
   AppConfigTransceiver,
 } from "@/common/model/AppConfigModel.js";
-import { AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel.js";
-import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
-import { AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel.js";
-import { FrequencyModel } from "@/common/model/FrequencyModel.js";
-import { MessageModel } from "@/common/model/MessageModel.js";
-import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
-import { ApiResponse, LangType } from "@/common/types/types.js";
+import type { AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel.js";
+import type { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import type { AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel.js";
+import type { FrequencyModel } from "@/common/model/FrequencyModel.js";
+import type { MessageModel } from "@/common/model/MessageModel.js";
+import type { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
+import type { ApiResponse, LangType } from "@/common/types/types.js";
 import EnvUtil from "@/common/util/EnvUtil.js";
 import type { TleStrings } from "@/renderer/types/satellite-type.js";
-import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";
+import type { IpcRendererEvent} from "electron";
+import { contextBridge, ipcRenderer } from "electron";
 import path from "path";
 /**
  * ここにレンダラに公開するAPIを定義する

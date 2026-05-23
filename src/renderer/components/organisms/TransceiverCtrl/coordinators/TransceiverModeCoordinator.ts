@@ -1,19 +1,20 @@
 import CommonUtil from "@/common/CommonUtil.js";
 import Constant from "@/common/Constant.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
-import { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
 import TransceiverUtil from "@/common/util/TransceiverUtil.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
-import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
-import TransceiverModeSettingResolver, {
+import type TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
+import type {
   ModeResolvedState,
 } from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver.js";
+import type TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver.js";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
+import type { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
 import emitter from "@/renderer/util/EventBus.js";
-import { Ref } from "vue";
+import type { Ref } from "vue";
 
 /**
  * Coordinatorが操作するリアクティブ状態（useTransceiverCtrlのRef群）

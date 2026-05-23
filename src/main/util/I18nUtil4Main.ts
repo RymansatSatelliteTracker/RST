@@ -1,4 +1,4 @@
-import { I18nMsgItem } from "@/common/types/types.js";
+import type { I18nMsgItem } from "@/common/types/types.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 import AppMainLogger from "@/main/util/AppMainLogger.js";
 

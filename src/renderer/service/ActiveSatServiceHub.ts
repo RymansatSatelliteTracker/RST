@@ -1,5 +1,5 @@
 import Constant from "@/common/Constant.js";
-import { BeaconType, DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
+import type { BeaconType, DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
 import ApiActiveSat from "@/renderer/api/ApiActiveSat.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite.js";
@@ -8,12 +8,12 @@ import GroundStationServiceFactory from "@/renderer/common/util/GroundStationSer
 import OrbitLineServiceFactory from "@/renderer/common/util/OrbitLineServiceFactory.js";
 import SatelliteServiceFactory from "@/renderer/common/util/SatelliteServiceFactory.js";
 import FrequencyTrackService from "@/renderer/service/FrequencyTrackService.js";
-import GroundStationService from "@/renderer/service/GroundStationService.js";
-import OrbitLineService from "@/renderer/service/OrbitLineService.js";
-import OverlapPassesService from "@/renderer/service/OverlapPassesService.js";
-import SatelliteService from "@/renderer/service/SatelliteService.js";
+import type GroundStationService from "@/renderer/service/GroundStationService.js";
+import type OrbitLineService from "@/renderer/service/OrbitLineService.js";
+import type OverlapPassesService from "@/renderer/service/OverlapPassesService.js";
+import type SatelliteService from "@/renderer/service/SatelliteService.js";
 import type { GroundStation } from "@/renderer/types/location-type.js";
-import { PassesCache } from "@/renderer/types/pass-type.js";
+import type { PassesCache } from "@/renderer/types/pass-type.js";
 
 /**
  * アクティブ衛星関係のハブクラス

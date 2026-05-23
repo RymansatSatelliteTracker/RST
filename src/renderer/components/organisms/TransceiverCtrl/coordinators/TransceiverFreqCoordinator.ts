@@ -2,7 +2,7 @@ import { AppConfigModel } from "@/common/model/AppConfigModel.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
 import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc.js";
-import { Ref } from "vue";
+import type { Ref } from "vue";
 
 /**
  * Coordinatorが操作する周波数関連のリアクティブ状態

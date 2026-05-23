@@ -1,4 +1,4 @@
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
 import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking.js";
 import RotatorControllerBase from "@/renderer/service/rotator/RotatorControllerBase.js";
 

@@ -1,5 +1,5 @@
 import { ActiveSatelliteModel } from "@/common/model/ActiveSatModel.js";
-import { AppConfigSatellite } from "@/common/model/AppConfigModel.js";
+import type { AppConfigSatellite } from "@/common/model/AppConfigModel.js";
 import TleUtil from "@/main/util/TleUtil.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite.js";

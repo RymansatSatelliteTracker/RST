@@ -1,6 +1,7 @@
-import TransceiverModeSettingResolver, {
+import type {
   TransceiverSettingLike,
 } from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
+import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
 
 // テスト用の設定データファクトリ
 const makeUplinkSetting = (uplinkHz: number, uplinkMode: string) => ({ uplinkHz, uplinkMode });

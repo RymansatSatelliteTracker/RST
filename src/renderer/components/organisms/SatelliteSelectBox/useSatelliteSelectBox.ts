@@ -1,11 +1,12 @@
-import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
+import type { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
 import ApiActiveSat from "@/renderer/api/ApiActiveSat.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import ActiveSatHelper from "@/renderer/common/util/ActiveSatHelper.js";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
-import { SelectOption } from "@/renderer/types/vue-types.js";
-import { onMounted, ref, Ref } from "vue";
+import type { SelectOption } from "@/renderer/types/vue-types.js";
+import type { Ref } from "vue";
+import { onMounted, ref } from "vue";
 
 /**
  * アクティブ衛星関係のフック
@@ -16,7 +17,7 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
   let currentSatGroupId: number;
 
   // 衛星グループごとの前回選択された衛星ID
-  let prevSelectedSatIdMap: { [key: number]: number } = {};
+  const prevSelectedSatIdMap: { [key: number]: number } = {};
   let prevItems: SelectOption[] = [];
 
   onMounted(async () => {

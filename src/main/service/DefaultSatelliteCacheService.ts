@@ -1,6 +1,6 @@
 import Constant from "@/common/Constant.js";
-import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes.js";
-import { StringMap } from "@/common/types/types.js";
+import type { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes.js";
+import type { StringMap } from "@/common/types/types.js";
 import DefaultSatelliteService from "@/main/service/DefaultSatelliteService.js";
 import ElectronUtil from "@/main/util/ElectronUtil.js";
 import FileUtil from "@/main/util/FileUtil.js";

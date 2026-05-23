@@ -1,6 +1,6 @@
 import I18nMsgs from "@/common/I18nMsgs.js";
 import { AppConfigSatellite } from "@/common/model/AppConfigModel.js";
-import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import type { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
 import { ApiResponse } from "@/common/types/types.js";
 import DefaultSatelliteService from "@/main/service/DefaultSatelliteService.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";

@@ -1,7 +1,7 @@
 import Constant from "@/common/Constant.js";
-import { AppConfigModel } from "@/common/model/AppConfigModel.js";
-import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
-import { ApiResponse } from "@/common/types/types.js";
+import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import type { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
+import type { ApiResponse } from "@/common/types/types.js";
 import TransceiverUtil from "@/common/util/TransceiverUtil.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
@@ -18,7 +18,8 @@ import { useModeStateManager } from "@/renderer/components/organisms/Transceiver
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
-import { onMounted, ref, Ref, watch } from "vue";
+import type { Ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 
 /**
  * 無線機を制御する

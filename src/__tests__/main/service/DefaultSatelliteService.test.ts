@@ -1,5 +1,5 @@
 import Constant from "@/common/Constant";
-import { AppConfigModel } from "@/common/model/AppConfigModel";
+import type { AppConfigModel } from "@/common/model/AppConfigModel";
 import DefaultSatelliteService from "@/main/service/DefaultSatelliteService";
 import TleService from "@/main/service/TleService";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil";

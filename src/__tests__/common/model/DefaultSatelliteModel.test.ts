@@ -1,7 +1,7 @@
 import Constant from "@/common/Constant";
 import { DefaultSatelliteModel } from "@/common/model/DefaultSatelliteModel";
-import { TleItemMap } from "@/common/model/TleModel";
-import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
+import type { TleItemMap } from "@/common/model/TleModel";
+import type { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
 import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil";
 import FileUtil from "@/main/util/FileUtil";

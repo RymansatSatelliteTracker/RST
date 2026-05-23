@@ -1,7 +1,7 @@
 import Constant from "@/common/Constant.js";
-import { ModeState } from "@/renderer/components/organisms/TransceiverCtrl/useSatelliteModeStateManager.js";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
-import { Ref } from "vue";
+import type { ModeState } from "@/renderer/components/organisms/TransceiverCtrl/useSatelliteModeStateManager.js";
+import type { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
+import type { Ref } from "vue";
 
 /**
  * モードにより保持する各種値
