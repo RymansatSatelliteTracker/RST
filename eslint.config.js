@@ -45,7 +45,7 @@ export default [
       ],
 
       // コーディング規約
-      eqeqeq: ["error", "always"], // ===(厳密等価演算子)強制
+      eqeqeq: ["error", "smart"], // ===(厳密等価) を基本強制（nullチェックのみ == 許可）
       curly: ["error", "all"], // 波括弧必須
     },
   },
