@@ -58,7 +58,7 @@
     "npm run ts *": true,
     "npx prettier": true,
     "/^npx prettier(\\b.*)?$/": true,
-    "npx jest *": true,
+    "npx vitest *": true,
     "/^git (status|show\\b.*)/": true // git status, git show は自動承認
   },
   "js/ts.tsdk.path": "./node_modules/typescript/lib"

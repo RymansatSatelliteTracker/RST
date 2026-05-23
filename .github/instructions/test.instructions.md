@@ -6,7 +6,7 @@ applyTo: "src/__tests__/**"
 
 ## 基本事項
 
-- このプロジェクトは単体テストのtest runnerに`jest`を使っています。
+- このプロジェクトは単体テストのtest runnerに`vitest`を使っています。
 - E2Eテストは、Playwright を使っています。
 
 ## 単体テストコード規約

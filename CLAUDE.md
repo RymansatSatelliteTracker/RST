@@ -73,10 +73,9 @@ npm run format
 
 ## テスト
 
-### ユニットテスト（Jest）
+### ユニットテスト（Vitest）
 
 - `src/__tests__/`にソースをミラーリングした構造で配置
-- TypeScriptサポートのためにts-jestを使用
 - カバレッジレポートを自動生成
 - `moduleNameMapper`でパスエイリアスを設定
 
