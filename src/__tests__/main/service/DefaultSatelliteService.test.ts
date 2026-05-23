@@ -1,10 +1,10 @@
-import Constant from "@/common/Constant";
-import type { AppConfigModel } from "@/common/model/AppConfigModel";
-import DefaultSatelliteService from "@/main/service/DefaultSatelliteService";
-import TleService from "@/main/service/TleService";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
-import ElectronUtil from "@/main/util/ElectronUtil";
-import FileUtil from "@/main/util/FileUtil";
+import Constant from "@/common/Constant.js";
+import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import DefaultSatelliteService from "@/main/service/DefaultSatelliteService.js";
+import TleService from "@/main/service/TleService.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import ElectronUtil from "@/main/util/ElectronUtil.js";
+import FileUtil from "@/main/util/FileUtil.js";
 import fs from "fs";
 import * as path from "path";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";

@@ -1,8 +1,8 @@
-import { AppConfigModel } from "@/common/model/AppConfigModel";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import type { PassesCache } from "@/renderer/types/pass-type";
+import { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import type { PassesCache } from "@/renderer/types/pass-type.js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 const RANGE_MINUTE = 10;

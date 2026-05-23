@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import Constant from "@/common/Constant";
+import Constant from "@/common/Constant.js";
 import CircleMarker from "@/renderer/components/atoms/CircleMarker/CircleMarker.vue";
 import Moon from "@/renderer/components/organisms/Moon/Moon.vue";
 import OrbitLine from "@/renderer/components/organisms/OrbitLine/OrbitLine.vue";
@@ -77,7 +77,7 @@ import { LMap, LTileLayer } from "@vue-leaflet/vue-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { ref, watch } from "vue";
-import useMap from "./useMap";
+import useMap from "./useMap.js";
 
 // propsを取得する
 const props = defineProps({

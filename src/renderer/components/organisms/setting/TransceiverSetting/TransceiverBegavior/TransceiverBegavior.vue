@@ -56,9 +56,9 @@
 </template>
 
 <script setup lang="ts">
-import I18nMsgs from "@/common/I18nMsgs";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import TransceiverBegaviorForm from "./TransceiverBegaviorForm";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import TransceiverBegaviorForm from "./TransceiverBegaviorForm.js";
 
 // 親との送受信
 const form = defineModel<TransceiverBegaviorForm>("form", { required: true });

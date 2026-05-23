@@ -57,9 +57,9 @@
 
 <script setup lang="ts">
 import Button from "@/renderer/components/atoms/Button/Button.vue";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
+import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
 import { watch } from "vue";
-import useDateTimePicker from "./useDateTimePicker";
+import useDateTimePicker from "./useDateTimePicker.js";
 
 // フック
 const {

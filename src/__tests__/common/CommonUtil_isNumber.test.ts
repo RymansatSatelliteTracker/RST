@@ -1,4 +1,4 @@
-import CommonUtil from "@/common/CommonUtil";
+import CommonUtil from "@/common/CommonUtil.js";
 import { describe, expect, it } from "vitest";
 
 /**

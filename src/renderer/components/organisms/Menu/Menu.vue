@@ -61,8 +61,8 @@
 </template>
 
 <script setup lang="ts">
-import I18nMsgs from "@/common/I18nMsgs";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import GroundStationSetting from "@/renderer/components/organisms/setting/GroundStationSetting/GroundStationSetting.vue";
 import RotatorSetting from "@/renderer/components/organisms/setting/RotatorSetting/RotatorSetting.vue";
 import SatelliteSetting from "@/renderer/components/organisms/setting/SatelliteSetting/SatelliteSetting.vue";

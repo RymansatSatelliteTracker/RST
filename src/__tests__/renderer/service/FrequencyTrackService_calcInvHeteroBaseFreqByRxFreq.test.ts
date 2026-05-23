@@ -1,5 +1,5 @@
-import FrequencyTrackService from "@/renderer/service/FrequencyTrackService";
-import SatelliteService from "@/renderer/service/SatelliteService";
+import FrequencyTrackService from "@/renderer/service/FrequencyTrackService.js";
+import SatelliteService from "@/renderer/service/SatelliteService.js";
 import { beforeAll, describe, expect, it } from "vitest";
 
 /**

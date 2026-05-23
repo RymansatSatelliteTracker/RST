@@ -1,6 +1,6 @@
-import Constant from "@/common/Constant";
-import type { SyncCoordinatorState } from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverSyncCoordinator";
-import TransceiverSyncCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverSyncCoordinator";
+import Constant from "@/common/Constant.js";
+import type { SyncCoordinatorState } from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverSyncCoordinator.js";
+import TransceiverSyncCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverSyncCoordinator.js";
 import { describe, expect, it } from "vitest";
 import { ref } from "vue";
 

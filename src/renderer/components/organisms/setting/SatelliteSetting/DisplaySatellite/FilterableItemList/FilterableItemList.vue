@@ -35,14 +35,14 @@
   </div>
 </template>
 <script setup lang="ts">
-import I18nMsgs from "@/common/I18nMsgs";
-import { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes";
-import ApiDefaultSatellite from "@/renderer/api/ApiDefaultSatellite";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
+import ApiDefaultSatellite from "@/renderer/api/ApiDefaultSatellite.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
 import VirtualScrollList from "@/renderer/components/molecules/VirtualScrollList/VirtualScrollList.vue";
 import EditSatelliteInfo from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/EditSatelliteInfo/EditSatelliteInfo.vue";
-import AppRendererLogger from "@/renderer/util/AppRendererLogger";
+import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
 import { computed, onMounted, ref } from "vue";
 
 type DisplaySatelliteItem = {

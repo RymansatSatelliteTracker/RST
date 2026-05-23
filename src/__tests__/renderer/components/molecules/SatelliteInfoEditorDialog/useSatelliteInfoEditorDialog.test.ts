@@ -1,8 +1,8 @@
-import Constant from "@/common/Constant";
-import { AppConfigSatellite } from "@/common/model/AppConfigModel";
-import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil";
-import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm";
-import useSatelliteInfoEditorDialog from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useSatelliteInfoEditorDialog";
+import Constant from "@/common/Constant.js";
+import { AppConfigSatellite } from "@/common/model/AppConfigModel.js";
+import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil.js";
+import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm.js";
+import useSatelliteInfoEditorDialog from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useSatelliteInfoEditorDialog.js";
 import { describe, expect, it } from "vitest";
 
 describe("useSatelliteInfoEditorDialog", () => {

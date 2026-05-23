@@ -289,16 +289,16 @@
 </template>
 
 <script setup lang="ts">
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import DigitTextField from "@/renderer/components/atoms/DigitTextField/DigitTextField.vue";
 import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
 import OpeModeSelect from "@/renderer/components/molecules/OpeModeSelect/OpeModeSelect.vue";
 import ToneFrequencySelect from "@/renderer/components/molecules/ToneFrequencySelect/ToneFrequencySelect.vue";
 import { computed } from "vue";
-import SatelliteInfoEditorDialogForm from "./SatelliteInfoEditorDialogForm";
-import { getValiSchemaSatelliteInfoEditorDialog } from "./useSatelliteInfoEditorDialogValidate";
+import SatelliteInfoEditorDialogForm from "./SatelliteInfoEditorDialogForm.js";
+import { getValiSchemaSatelliteInfoEditorDialog } from "./useSatelliteInfoEditorDialogValidate.js";
 
 const props = defineProps({
   editableNoradId: {

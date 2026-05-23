@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import useFrequencySelect from "./useFreqAdjustmentSelect";
+import useFrequencySelect from "./useFreqAdjustmentSelect.js";
 
 // frequencyを取得する
 const frequency = defineModel<string>("frequency", { required: true });

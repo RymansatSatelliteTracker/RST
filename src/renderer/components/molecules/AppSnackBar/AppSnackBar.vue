@@ -9,9 +9,9 @@
 </template>
 
 <script setup lang="ts">
-import Constant from "@/common/Constant";
+import Constant from "@/common/Constant.js";
 import { ref } from "vue";
-import { useAppSnackBar } from "./useAppSnackBar";
+import { useAppSnackBar } from "./useAppSnackBar.js";
 
 const { isShow, close, color, text } = useAppSnackBar();
 const timeout = ref(Constant.SnackBar.DISP_TIMEOUT_MS);

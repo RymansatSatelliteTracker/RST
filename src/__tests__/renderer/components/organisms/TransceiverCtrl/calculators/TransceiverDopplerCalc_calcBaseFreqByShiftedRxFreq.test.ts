@@ -1,5 +1,5 @@
-import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
+import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 describe("TransceiverDopplerCalc", () => {

@@ -216,10 +216,10 @@
 </template>
 
 <script setup lang="ts">
-import CommonUtil from "@/common/CommonUtil";
-import I18nMsgs from "@/common/I18nMsgs";
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import CommonUtil from "@/common/CommonUtil.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
 import BorateSelect from "@/renderer/components/molecules/BorateSelect/BorateSelect.vue";
 import RotatorDeviceSelect from "@/renderer/components/molecules/RotatorDeviceSelect/RotatorDeviceSelect.vue";
@@ -227,11 +227,11 @@ import RotatorMakerSelect from "@/renderer/components/molecules/RotatorMakerSele
 import SerialPortSelect from "@/renderer/components/molecules/SerialPortSelect/SerialPortSelect.vue";
 import { mdiArrowDownBold, mdiArrowLeftBold, mdiArrowRightBold, mdiArrowUpBold } from "@mdi/js";
 import { ref } from "vue";
-import RotatorConnForm from "./RotatorConnForm";
-import { useRotatorConnValidate, valiSchemaRotatorConn } from "./useRotatorConnValidate";
-import useRotatorCtrl from "./useRotatorCtrl";
-import useRotatorMonitor from "./useRotatorMonitor";
-import useRotatorTestConnect from "./useRotatorTestConnect";
+import RotatorConnForm from "./RotatorConnForm.js";
+import { useRotatorConnValidate, valiSchemaRotatorConn } from "./useRotatorConnValidate.js";
+import useRotatorCtrl from "./useRotatorCtrl.js";
+import useRotatorMonitor from "./useRotatorMonitor.js";
+import useRotatorTestConnect from "./useRotatorTestConnect.js";
 
 // 親との送受信
 const form = defineModel<RotatorConnForm>("form", { required: true });

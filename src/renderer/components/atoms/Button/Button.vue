@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { ButtonColorType, useButton } from "./useButton";
+import { ButtonColorType, useButton } from "./useButton.js";
 
 type Props = {
   // スタイルの指定

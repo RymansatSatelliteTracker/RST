@@ -221,21 +221,21 @@
 </template>
 
 <script setup lang="ts">
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import ApiActiveSat from "@/renderer/api/ApiActiveSat";
-import ApiGeoLocation from "@/renderer/api/ApiGeoLocation";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import ApiActiveSat from "@/renderer/api/ApiActiveSat.js";
+import ApiGeoLocation from "@/renderer/api/ApiGeoLocation.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
-import emitter from "@/renderer/util/EventBus";
+import emitter from "@/renderer/util/EventBus.js";
 import { ref, watch } from "vue";
-import GroundStationSettingForm from "./GroundStationSettingForm";
-import useAppConfig from "./useAppConfig";
+import GroundStationSettingForm from "./GroundStationSettingForm.js";
+import useAppConfig from "./useAppConfig.js";
 import {
   useGroundStationSettingValidate,
   validSchemaGroundStationSettingForm,
-} from "./useGroundStationSettingValidate";
-import useGridLocator from "./userGridLocator";
+} from "./useGroundStationSettingValidate.js";
+import useGridLocator from "./userGridLocator.js";
 
 const { getAppConfig, storeAppConfig } = useAppConfig();
 const { fromGridLocator } = useGridLocator();

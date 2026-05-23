@@ -29,14 +29,14 @@
   </div>
 </template>
 <script setup lang="ts">
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import { AppConfigSatelliteGroupForSatSetting } from "@/common/model/AppConfigSatelliteSettingModel";
-import { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { AppConfigSatelliteGroupForSatSetting } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import FilterableItemList from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/FilterableItemList/FilterableItemList.vue";
 import SelectControlledItemList from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/SelectControlledItemList/SelectControlledItemList.vue";
-import emitter from "@/renderer/util/EventBus";
+import emitter from "@/renderer/util/EventBus.js";
 import { mdiArrowRightBold } from "@mdi/js";
 import { computed, ref } from "vue";
 

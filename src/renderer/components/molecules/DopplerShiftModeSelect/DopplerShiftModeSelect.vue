@@ -12,9 +12,9 @@
 </template>
 
 <script setup lang="ts">
-import Constant from "@/common/Constant";
+import Constant from "@/common/Constant.js";
 import { ref } from "vue";
-import createDopplerShiftLabelMapping from "./useDopplerShiftModeSelect";
+import createDopplerShiftLabelMapping from "./useDopplerShiftModeSelect.js";
 
 const DopplerShiftMode = Constant.Transceiver.DopplerShiftMode;
 // 和名のマッピング

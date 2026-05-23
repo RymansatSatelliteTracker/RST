@@ -1,7 +1,7 @@
-import TleDataHelper from "@/__tests__/renderer/service/TleDataHelper";
-import OverlapPassesService from "@/renderer/service/OverlapPassesService";
+import TleDataHelper from "@/__tests__/renderer/service/TleDataHelper.js";
+import OverlapPassesService from "@/renderer/service/OverlapPassesService.js";
 import { describe, expect, it } from "vitest";
-import { GROUND2_STATION, GROUND_STATION } from "./GroundStationService.test";
+import { GROUND2_STATION, GROUND_STATION } from "./GroundStationService.test.js";
 
 /**
  * [正常系]

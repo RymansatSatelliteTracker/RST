@@ -1,13 +1,13 @@
-import Constant from "@/common/Constant";
-import { AppConfigModel } from "@/common/model/AppConfigModel";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import ApiTransceiver from "@/renderer/api/ApiTransceiver";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import type { ModeCoordinatorState } from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator";
-import TransceiverModeCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator";
-import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
-import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
-import emitter from "@/renderer/util/EventBus";
+import Constant from "@/common/Constant.js";
+import { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import type { ModeCoordinatorState } from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator.js";
+import TransceiverModeCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator.js";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
+import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver.js";
+import emitter from "@/renderer/util/EventBus.js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 

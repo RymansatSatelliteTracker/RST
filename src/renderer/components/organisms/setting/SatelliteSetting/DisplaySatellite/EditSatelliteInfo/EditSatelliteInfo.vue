@@ -15,17 +15,17 @@
 </template>
 
 <script setup lang="ts">
-import Constant from "@/common/Constant";
-import { AppConfigSatellite } from "@/common/model/AppConfigModel";
-import { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite";
-import ApiDefaultSatellite from "@/renderer/api/ApiDefaultSatellite";
+import Constant from "@/common/Constant.js";
+import { AppConfigSatellite } from "@/common/model/AppConfigModel.js";
+import { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite.js";
+import ApiDefaultSatellite from "@/renderer/api/ApiDefaultSatellite.js";
 import SatelliteInfoEditorDialog from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialog.vue";
-import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm";
-import useSatelliteInfoEditorDialog from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useSatelliteInfoEditorDialog";
-import { useSatelliteInfoEditorDialogValidate } from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useSatelliteInfoEditorDialogValidate";
-import emitter from "@/renderer/util/EventBus";
+import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm.js";
+import useSatelliteInfoEditorDialog from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useSatelliteInfoEditorDialog.js";
+import { useSatelliteInfoEditorDialogValidate } from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useSatelliteInfoEditorDialogValidate.js";
+import emitter from "@/renderer/util/EventBus.js";
 import { onMounted, ref, watch } from "vue";
 
 // ダイアログ表示用

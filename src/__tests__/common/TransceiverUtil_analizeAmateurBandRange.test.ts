@@ -1,4 +1,4 @@
-import TransceiverUtil from "@/common/util/TransceiverUtil";
+import TransceiverUtil from "@/common/util/TransceiverUtil.js";
 import { describe, expect, it } from "vitest";
 
 describe("TransceiverUtil.analizeAmateurBandRangeのテスト", () => {

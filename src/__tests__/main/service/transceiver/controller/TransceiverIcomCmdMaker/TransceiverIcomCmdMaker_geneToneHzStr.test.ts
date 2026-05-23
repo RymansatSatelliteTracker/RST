@@ -1,4 +1,4 @@
-import TransceiverIcomCmdMaker from "@/main/service/transceiver/controller/TransceiverIcomCmdMaker";
+import TransceiverIcomCmdMaker from "@/main/service/transceiver/controller/TransceiverIcomCmdMaker.js";
 import { describe, expect, it } from "vitest";
 
 describe("TransceiverIcomCmdMaker.geneToneHzStrのテスト", () => {

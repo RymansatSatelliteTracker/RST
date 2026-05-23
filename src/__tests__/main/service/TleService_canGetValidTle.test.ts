@@ -1,5 +1,5 @@
-import WebClient, { AppHttpResponse } from "@/common/WebClient";
-import TleService from "@/main/service/TleService";
+import WebClient, { AppHttpResponse } from "@/common/WebClient.js";
+import TleService from "@/main/service/TleService.js";
 import { describe, expect, it, vi } from "vitest";
 
 /**

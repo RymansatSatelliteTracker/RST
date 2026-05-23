@@ -1,5 +1,5 @@
-import { GROUND_STATION } from "@/__tests__/renderer/service/GroundStationService.test";
-import AstronomyUtil from "@/renderer/util/AstronomyUtil";
+import { GROUND_STATION } from "@/__tests__/renderer/service/GroundStationService.test.js";
+import AstronomyUtil from "@/renderer/util/AstronomyUtil.js";
 import { describe, expect, it } from "vitest";
 
 /**

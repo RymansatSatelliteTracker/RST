@@ -90,17 +90,17 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, watch } from "vue";
 
-import I18nMsgs from "@/common/I18nMsgs";
-import { AppConfigSatelliteGroupForSatSetting } from "@/common/model/AppConfigSatelliteSettingModel";
-import { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { AppConfigSatelliteGroupForSatSetting } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import EditSatelliteInfo from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/EditSatelliteInfo/EditSatelliteInfo.vue";
 import GroupSatellite from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/GroupSatellite/GroupSatellite.vue";
 import RegistSatellite from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/RegistSatellite/RegistSatellite.vue";
 
-import Constant from "@/common/Constant";
+import Constant from "@/common/Constant.js";
 import VirtualScrollList from "@/renderer/components/molecules/VirtualScrollList/VirtualScrollList.vue";
-import emitter from "@/renderer/util/EventBus";
+import emitter from "@/renderer/util/EventBus.js";
 import { mdiArrowDownBold, mdiArrowUpBold, mdiDelete } from "@mdi/js";
 
 // 衛星グループリスト

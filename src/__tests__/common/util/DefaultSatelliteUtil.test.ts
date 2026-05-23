@@ -1,4 +1,8 @@
-import { createDefaultSatellite, initializeDefaultSatellites, normalizeData } from "@/common/util/DefaultSatelliteUtil";
+import {
+  createDefaultSatellite,
+  initializeDefaultSatellites,
+  normalizeData,
+} from "@/common/util/DefaultSatelliteUtil.js";
 import { describe, expect, it } from "vitest";
 
 describe("DefaultSatelliteUtil", () => {

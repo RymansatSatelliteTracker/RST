@@ -169,11 +169,11 @@
 </template>
 
 <script setup lang="ts">
-import I18nMsgs from "@/common/I18nMsgs";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
-import RotatorBehaviorForm from "./RotatorBehaviorForm";
-import { useRotatorBehaviorValidate, valiSchemaRotatorBehavior } from "./useRotatorBehaviorValidate";
+import RotatorBehaviorForm from "./RotatorBehaviorForm.js";
+import { useRotatorBehaviorValidate, valiSchemaRotatorBehavior } from "./useRotatorBehaviorValidate.js";
 
 // 親との送受信
 const form = defineModel<RotatorBehaviorForm>("form", { required: true });

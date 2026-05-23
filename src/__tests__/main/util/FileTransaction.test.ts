@@ -1,7 +1,7 @@
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
-import { FileTransaction } from "@/main/util/FileTransaction";
-import FileUtil from "@/main/util/FileUtil";
-import TransactionRegistry from "@/main/util/TransactionRegistry";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import { FileTransaction } from "@/main/util/FileTransaction.js";
+import FileUtil from "@/main/util/FileUtil.js";
+import TransactionRegistry from "@/main/util/TransactionRegistry.js";
 import type { MockInstance } from "vitest";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 

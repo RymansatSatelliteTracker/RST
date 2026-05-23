@@ -51,7 +51,7 @@ import TransceiverCtrl from "@/renderer/components/organisms/TransceiverCtrl/Tra
 import { onMounted, ref } from "vue";
 import SatelliteGroupSelectBox from "../../organisms/SatelliteGroupSelectBox/SatelliteGroupSelectBox.vue";
 import SatelliteSelectBox from "../../organisms/SatelliteSelectBox/SatelliteSelectBox.vue";
-import useHome from "./useHome";
+import useHome from "./useHome.js";
 
 // データ
 // 各種計算に必要な日時を作成する

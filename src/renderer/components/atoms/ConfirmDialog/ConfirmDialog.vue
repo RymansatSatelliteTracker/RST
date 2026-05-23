@@ -19,10 +19,10 @@
   </v-dialog>
 </template>
 <script setup lang="ts">
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import emitter from "@/renderer/util/EventBus";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import emitter from "@/renderer/util/EventBus.js";
 import { onMounted, ref } from "vue";
 
 // ダイアログ表示用

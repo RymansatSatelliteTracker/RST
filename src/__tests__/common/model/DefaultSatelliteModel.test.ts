@@ -1,10 +1,10 @@
-import Constant from "@/common/Constant";
-import { DefaultSatelliteModel } from "@/common/model/DefaultSatelliteModel";
-import type { TleItemMap } from "@/common/model/TleModel";
-import type { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
-import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
-import FileUtil from "@/main/util/FileUtil";
+import Constant from "@/common/Constant.js";
+import { DefaultSatelliteModel } from "@/common/model/DefaultSatelliteModel.js";
+import type { TleItemMap } from "@/common/model/TleModel.js";
+import type { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes.js";
+import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import FileUtil from "@/main/util/FileUtil.js";
 import * as path from "path";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 

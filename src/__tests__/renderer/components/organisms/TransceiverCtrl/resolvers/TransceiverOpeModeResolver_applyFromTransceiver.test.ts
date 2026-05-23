@@ -1,10 +1,10 @@
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import type { ApiResponse } from "@/common/types/types";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import type { OpeModeResolverState } from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver";
-import TransceiverOpeModeResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver";
-import emitter from "@/renderer/util/EventBus";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import type { ApiResponse } from "@/common/types/types.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import type { OpeModeResolverState } from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver.js";
+import TransceiverOpeModeResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver.js";
+import emitter from "@/renderer/util/EventBus.js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 

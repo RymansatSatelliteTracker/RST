@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import useTransceiverDevices from "./useTransceiverDevices";
+import useTransceiverDevices from "./useTransceiverDevices.js";
 
 const selectedValue = defineModel<string>("selectedValue", { required: true });
 const makerId = defineModel<string>("makerId", { required: true });

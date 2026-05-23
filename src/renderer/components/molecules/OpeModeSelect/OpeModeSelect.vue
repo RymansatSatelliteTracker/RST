@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import Constant from "@/common/Constant";
+import Constant from "@/common/Constant.js";
 import { ref } from "vue";
 
 const OpeMode = Constant.Transceiver.OpeMode;

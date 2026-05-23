@@ -75,10 +75,10 @@
   </v-dialog>
 </template>
 <script setup lang="ts">
-import I18nMsgs from "@/common/I18nMsgs";
-import { AppConfigSatelliteGroupForSatSetting } from "@/common/model/AppConfigSatelliteSettingModel";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { AppConfigSatelliteGroupForSatSetting } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
 import VirtualScrollList from "@/renderer/components/molecules/VirtualScrollList/VirtualScrollList.vue";
 import { mdiArrowDownBold, mdiArrowUpBold, mdiDelete, mdiPencil } from "@mdi/js";

@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import CommonUtil from "@/common/CommonUtil";
+import CommonUtil from "@/common/CommonUtil.js";
 
 const props = defineProps({
   target: {

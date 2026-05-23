@@ -12,9 +12,9 @@
 </template>
 
 <script setup lang="ts">
-import { SelectOption } from "@/renderer/types/vue-types";
+import { SelectOption } from "@/renderer/types/vue-types.js";
 import { ref } from "vue";
-import useSatelliteSelectBox from "./useSatelliteSelectBox";
+import useSatelliteSelectBox from "./useSatelliteSelectBox.js";
 
 // データ
 const items = ref<SelectOption[]>([]);

@@ -155,9 +155,9 @@
 </template>
 
 <script setup lang="ts">
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import Button from "@/renderer/components/atoms/Button/Button.vue";
 import CycleButton from "@/renderer/components/molecules/CycleButton/CycleButton.vue";
 import DopplerShiftModeSelect from "@/renderer/components/molecules/DopplerShiftModeSelect/DopplerShiftModeSelect.vue";
@@ -165,14 +165,14 @@ import FreqAdjustmentSelect from "@/renderer/components/molecules/FreqAdjustment
 import FrequencySelect from "@/renderer/components/molecules/FrequencySelect/FrequencySelect.vue";
 import OpeModeSelect from "@/renderer/components/molecules/OpeModeSelect/OpeModeSelect.vue";
 import DateTimePicker from "@/renderer/components/organisms/DateTimePicker/DateTimePicker.vue";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
-import CanvasUtil from "@/renderer/util/CanvasUtil";
-import DateUtil from "@/renderer/util/DateUtil";
-import emitter from "@/renderer/util/EventBus";
+import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
+import CanvasUtil from "@/renderer/util/CanvasUtil.js";
+import DateUtil from "@/renderer/util/DateUtil.js";
+import emitter from "@/renderer/util/EventBus.js";
 import { computed, ref, watch } from "vue";
-import useOrbitalPassList from "./useOrbitalPassList";
-import useOverlapPassList from "./useOverlapPassList";
-import useTransceiverCtrl from "./useTransceiverCtrl";
+import useOrbitalPassList from "./useOrbitalPassList.js";
+import useOverlapPassList from "./useOverlapPassList.js";
+import useTransceiverCtrl from "./useTransceiverCtrl.js";
 
 // DateTimePickerからの設定日時を受け取る
 const currentDate = ref<Date>(new Date());

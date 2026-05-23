@@ -47,8 +47,8 @@
 </template>
 
 <script setup lang="ts">
-import TransceiverUtil from "@/common/util/TransceiverUtil";
-import useFrequencySelect from "./useFrequencySelect";
+import TransceiverUtil from "@/common/util/TransceiverUtil.js";
+import useFrequencySelect from "./useFrequencySelect.js";
 
 // frequencyを取得する
 const frequency = defineModel<string>("frequency", { required: true });

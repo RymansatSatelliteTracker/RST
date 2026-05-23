@@ -45,17 +45,17 @@
 </template>
 
 <script setup lang="ts">
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import ApiSirial from "@/renderer/api/ApiSirial";
-import ApiTransceiver from "@/renderer/api/ApiTransceiver";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ApiSirial from "@/renderer/api/ApiSirial.js";
+import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
 import { ref, watch } from "vue";
 import TransceiverBegavior from "./TransceiverBegavior/TransceiverBegavior.vue";
 import TransceiverConn from "./TransceiverConn/TransceiverConn.vue";
-import TransceiverSettingForm from "./TransceiverSettingForm";
+import TransceiverSettingForm from "./TransceiverSettingForm.js";
 
 // イベント関係
 const emits = defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();

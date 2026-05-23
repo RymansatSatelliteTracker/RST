@@ -1,4 +1,4 @@
-import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
 import { describe, expect, it } from "vitest";
 
 describe("TransceiverBaseFreqMgr.calcBaseFreqWithAdjust", () => {

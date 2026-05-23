@@ -1,5 +1,5 @@
-import { AppConfigSatellite } from "@/common/model/AppConfigModel";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
+import { AppConfigSatellite } from "@/common/model/AppConfigModel.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 describe("AppConfigUtil", () => {

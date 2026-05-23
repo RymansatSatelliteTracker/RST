@@ -18,13 +18,13 @@
 </template>
 
 <script setup lang="ts">
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import { FrequencyModel } from "@/common/model/FrequencyModel";
-import ApiFrequency from "@/renderer/api/ApiFrequency";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { FrequencyModel } from "@/common/model/FrequencyModel.js";
+import ApiFrequency from "@/renderer/api/ApiFrequency.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import FrequencyEditorList from "@/renderer/components/organisms/setting/SatelliteSetting/FrequencyEditor/FrequencyEditorList/FrequencyEditorList.vue";
-import emitter from "@/renderer/util/EventBus";
+import emitter from "@/renderer/util/EventBus.js";
 import { ref, toRaw, watch } from "vue";
 
 // ダイアログ表示用

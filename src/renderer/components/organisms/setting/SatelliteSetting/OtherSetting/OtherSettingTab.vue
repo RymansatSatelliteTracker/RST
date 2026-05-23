@@ -26,11 +26,11 @@
   </v-form>
 </template>
 <script setup lang="ts">
-import I18nMsgs from "@/common/I18nMsgs";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import SatelliteChoiceMinElSelect from "@/renderer/components/molecules/SatelliteChoiceMinElSelect/SatelliteChoiceMinElSelect.vue";
 
-import { AppConfigSatelliteSetting } from "@/common/model/AppConfigModel";
+import { AppConfigSatelliteSetting } from "@/common/model/AppConfigModel.js";
 
 const satelliteSetting = defineModel<AppConfigSatelliteSetting>("satelliteSetting", {
   default: AppConfigSatelliteSetting,

@@ -1,6 +1,6 @@
-import ApiTransceiver from "@/renderer/api/ApiTransceiver";
-import type { FreqCoordinatorState } from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverFreqCoordinator";
-import TransceiverFreqCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverFreqCoordinator";
+import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
+import type { FreqCoordinatorState } from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverFreqCoordinator.js";
+import TransceiverFreqCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverFreqCoordinator.js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 

@@ -6,10 +6,10 @@
 
 <script setup lang="ts">
 import BoxLabel from "@/renderer/components/molecules/BoxLabel/BoxLabel.vue";
-import CanvasUtil from "@/renderer/util/CanvasUtil";
+import CanvasUtil from "@/renderer/util/CanvasUtil.js";
 import { ref, watch } from "vue";
-import useAos from "./useAos";
-import useOverlapAos from "./useOverlapAos";
+import useAos from "./useAos.js";
+import useOverlapAos from "./useOverlapAos.js";
 
 // propsを取得する
 const props = defineProps({

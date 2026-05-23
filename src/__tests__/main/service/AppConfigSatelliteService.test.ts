@@ -1,9 +1,9 @@
-import { AppConfigSatellite } from "@/common/model/AppConfigModel";
-import { DefaultSatelliteModel } from "@/common/model/DefaultSatelliteModel";
-import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil";
-import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService";
-import DefaultSatelliteService from "@/main/service/DefaultSatelliteService";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
+import { AppConfigSatellite } from "@/common/model/AppConfigModel.js";
+import { DefaultSatelliteModel } from "@/common/model/DefaultSatelliteModel.js";
+import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil.js";
+import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService.js";
+import DefaultSatelliteService from "@/main/service/DefaultSatelliteService.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 const DEFAULT_SATELLITE_ID = 0;

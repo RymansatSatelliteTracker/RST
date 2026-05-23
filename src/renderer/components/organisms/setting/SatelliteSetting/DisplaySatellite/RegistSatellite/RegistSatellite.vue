@@ -159,20 +159,20 @@
   </v-dialog>
 </template>
 <script setup lang="ts">
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import TextArea from "@/renderer/components/atoms/TextArea/TextArea.vue";
 import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
-import emitter from "@/renderer/util/EventBus";
-import { showConfirm } from "@/renderer/util/MessageDialog";
+import emitter from "@/renderer/util/EventBus.js";
+import { showConfirm } from "@/renderer/util/MessageDialog.js";
 import { onMounted, ref } from "vue";
-import RegistSatelliteForm from "./RegistSatelliteForm";
-import { setAppConfig, setForm } from "./useRegistSatelliteUtils";
-import { useRegistSatelliteValidate, valiSchemaRegistSatellite } from "./useRegistSatelliteValidate";
+import RegistSatelliteForm from "./RegistSatelliteForm.js";
+import { setAppConfig, setForm } from "./useRegistSatelliteUtils.js";
+import { useRegistSatelliteValidate, valiSchemaRegistSatellite } from "./useRegistSatelliteValidate.js";
 
 // ダイアログ表示用
 const isShow = defineModel<boolean>("isShow", {

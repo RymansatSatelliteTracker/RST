@@ -1,4 +1,4 @@
-import CanvasUtil from "@/renderer/util/CanvasUtil";
+import CanvasUtil from "@/renderer/util/CanvasUtil.js";
 import { createPinia, setActivePinia } from "pinia";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 

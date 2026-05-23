@@ -1,6 +1,6 @@
-import TleDataHelper from "@/__tests__/renderer/service/TleDataHelper";
-import { InvalidArgumentError } from "@/common/exceptions";
-import OrbitLineService from "@/renderer/service/OrbitLineService";
+import TleDataHelper from "@/__tests__/renderer/service/TleDataHelper.js";
+import { InvalidArgumentError } from "@/common/exceptions.js";
+import OrbitLineService from "@/renderer/service/OrbitLineService.js";
 import { describe, expect, it } from "vitest";
 
 /**

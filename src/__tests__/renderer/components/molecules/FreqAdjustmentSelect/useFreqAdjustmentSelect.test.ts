@@ -1,4 +1,4 @@
-import useFrequencySelect from "@/renderer/components/molecules/FreqAdjustmentSelect/useFreqAdjustmentSelect";
+import useFrequencySelect from "@/renderer/components/molecules/FreqAdjustmentSelect/useFreqAdjustmentSelect.js";
 import { describe, expect, it } from "vitest";
 import { ref } from "vue";
 
