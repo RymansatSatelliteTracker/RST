@@ -210,7 +210,7 @@ for /r "C:\Users\ユーザーフォルダ\EPSG4326\tiles" %f in (*.kml) do del "
 これに対処するため、tsc-aliasにて強制的に相対パスへ置換を行っている。
 
 ```ts
-import AppMainLogger from "@/main/util/AppMainLogger";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
 ```
 
 package.json
