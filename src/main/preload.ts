@@ -13,6 +13,7 @@ import { FrequencyModel } from "@/common/model/FrequencyModel.js";
 import { MessageModel } from "@/common/model/MessageModel.js";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
 import { ApiResponse, LangType } from "@/common/types/types.js";
+import EnvUtil from "@/common/util/EnvUtil.js";
 import type { TleStrings } from "@/renderer/types/satellite-type.js";
 import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";
 import path from "path";
@@ -372,7 +373,7 @@ const apiHandler = {
    */
   getTilesPath: () => {
     // 開発環境かビルド環境かで地図タイルのパスを切り替える
-    if (process.env.npm_lifecycle_event === "app:dev") {
+    if (EnvUtil.isDev()) {
       // 開発環境ではpublicフォルダのtilesを参照する
       return "/tiles";
     } else {
