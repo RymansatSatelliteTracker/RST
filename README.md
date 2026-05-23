@@ -10,29 +10,59 @@
 
 #### Windows
 
-- nodeのバージョン管理はvoltaを使用した場合の手順を記載する。volta以外を使用する場合は適宜読み替える事。
-- PCにnode, nodistがインストールされている場合、アンインストールする。
+- nodeのバージョン管理はfnmを使用した場合の手順を記載する。fnm以外を使用する場合は適宜読み替える事。
+- PCにnode, nodist, Voltaがインストールされている場合、アンインストールする。
 - 注意）nodistをアンインストールした後、$HOME\.npmrc 内のnodistの記載を手動で削除する。
 
+
 ```bash
-# voltaのインストール
-winget install Volta.Volta
+# fnmのインストール
+winget install Schniz.fnm
+
+# fnmの初期化（PowerShell）
+## プロファイルを開く
+notepad $PROFILE
+## 以下の1行を追記
+fnm env --use-on-cd | Out-String | Invoke-Expression
+## 保存後に反映
+. $PROFILE
+
 # nodeのインストール
-volta install node@22
+fnm install 22
+fnm use 22
+fnm default 22
 
 # ライブラリなどのインストール
 npm ci
 ```
 
-#### Mac
+##### fnmの初期化（Windows Git Bashを使用する場合）
 
-- PCにnode, nodebrewがインストールされている場合、アンインストールする
+- Windows Git Bashを利用する場合は、以下を設定してください。
 
 ```bash
-# voltaのインストール
-brew install volta
+# .bashrcを開く
+nano ~/.bashrc
+# 以下の1行を追記して保存
+eval "$(fnm env --use-on-cd)"
+```
+
+#### Mac
+
+- PCにnode, nodebrew, Voltaがインストールされている場合、アンインストールする
+
+```bash
+# fnmのインストール
+brew install fnm
+
+# fnmの初期化
+echo 'eval "$(fnm env --use-on-cd)"' >> ~/.zshrc
+source ~/.zshrc
+
 # nodeのインストール
-volta install node@22
+fnm install 22
+fnm use 22
+fnm default 22
 
 # ライブラリなどのインストール
 npm ci
