@@ -125,5 +125,5 @@ defineExpose({
 </script>
 
 <style lang="scss" scoped>
-@import "./FilterableItemList.scss";
+@use "./FilterableItemList.scss" as *;
 </style>

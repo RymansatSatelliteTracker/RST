@@ -393,5 +393,5 @@ async function clickGroundStation2GeoLocation(): Promise<void> {
 </script>
 
 <style lang="scss" scoped>
-@import "./GroundStationSetting.scss";
+@use "./GroundStationSetting.scss" as *;
 </style>

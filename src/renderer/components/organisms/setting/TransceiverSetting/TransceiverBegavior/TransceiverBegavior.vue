@@ -76,5 +76,5 @@ const doppleResumeDelaySecOptions = Array.from({ length: 9 }, (_, i) => String(i
 </script>
 
 <style lang="scss" scoped>
-@import "./TransceiverBegavior.scss";
+@use "./TransceiverBegavior.scss" as *;
 </style>

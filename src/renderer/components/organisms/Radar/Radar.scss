@@ -1,4 +1,4 @@
-@import "@/renderer/components/styles/variables.scss";
+@use "@/renderer/components/styles/variables.scss" as *;
 
 // レーダ全体系
 .radar_contents {

@@ -281,5 +281,5 @@ async function validateAll(): Promise<boolean> {
 </script>
 
 <style lang="scss" scoped>
-@import "./RotatorConn.scss";
+@use "./RotatorConn.scss" as *;
 </style>

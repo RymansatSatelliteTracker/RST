@@ -207,5 +207,5 @@ async function validateTabContents(): Promise<boolean> {
 </script>
 
 <style lang="scss" scoped>
-@import "./TransceiverSetting.scss";
+@use "./TransceiverSetting.scss" as *;
 </style>

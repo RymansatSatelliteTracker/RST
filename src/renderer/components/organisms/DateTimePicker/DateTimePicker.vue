@@ -89,5 +89,5 @@ watch(targetDate, (newDate) => {
 </script>
 
 <style lang="scss" scoped>
-@import "./DateTimePicker.scss";
+@use "./DateTimePicker.scss" as *;
 </style>

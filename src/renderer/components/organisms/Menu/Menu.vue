@@ -192,5 +192,5 @@ function onLeftGroundStation() {
 </script>
 
 <style lang="scss" scoped>
-@import "./Menu.scss";
+@use "./Menu.scss" as *;
 </style>

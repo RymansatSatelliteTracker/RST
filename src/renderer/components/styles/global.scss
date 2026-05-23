@@ -1,6 +1,7 @@
 // 全体のスタイル
-@import "./colors";
-@import "./variables.scss";
+@use "./colors" as *;
+@use "./variables.scss" as *;
+@forward "./colors.scss";
 
 body {
   margin: 5px;

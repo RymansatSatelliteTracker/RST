@@ -209,5 +209,5 @@ async function validateAll(): Promise<boolean> {
 </script>
 
 <style lang="scss" scoped>
-@import "./TransceiverConn.scss";
+@use "./TransceiverConn.scss" as *;
 </style>

@@ -295,5 +295,5 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-@import "./TransceiverCtrl.scss";
+@use "./TransceiverCtrl.scss" as *;
 </style>

@@ -110,5 +110,5 @@ function onCancelEditSatelliteInfo() {
 }
 </script>
 <style lang="scss" scoped>
-@import "./FrequencyEditorList.scss";
+@use "./FrequencyEditorList.scss" as *;
 </style>

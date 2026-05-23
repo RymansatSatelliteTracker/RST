@@ -56,5 +56,5 @@ async function onOk() {
 }
 </script>
 <style lang="scss" scoped>
-@import "@/renderer/components/styles/global.scss";
+@use "@/renderer/components/styles/global.scss" as *;
 </style>

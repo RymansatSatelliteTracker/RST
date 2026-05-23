@@ -270,5 +270,5 @@ function onCloseEditSatelliteInfo() {
 }
 </script>
 <style lang="scss" scoped>
-@import "./SelectControlledItemList.scss";
+@use "./SelectControlledItemList.scss" as *;
 </style>

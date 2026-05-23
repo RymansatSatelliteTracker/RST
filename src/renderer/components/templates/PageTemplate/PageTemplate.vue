@@ -18,7 +18,7 @@ import Footer from "@/renderer/components/organisms/Footer/Footer.vue";
 </script>
 
 <style lang="scss" scoped>
-@import "@/renderer/components/styles/variables.scss";
+@use "@/renderer/components/styles/variables.scss" as *;
 
 .header {
   height: $header_height;

@@ -67,5 +67,5 @@ function handleClick(index: number) {
 </script>
 
 <style lang="scss" scoped>
-@import "./FreqAdjustmentSelect.scss";
+@use "./FreqAdjustmentSelect.scss" as *;
 </style>

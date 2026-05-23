@@ -234,5 +234,5 @@ function formatPosition(value: number) {
 </script>
 
 <style lang="scss" scoped>
-@import "./Radar.scss";
+@use "./Radar.scss" as *;
 </style>

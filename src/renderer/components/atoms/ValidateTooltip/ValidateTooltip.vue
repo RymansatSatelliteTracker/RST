@@ -21,5 +21,5 @@ const props = defineProps({
 </script>
 
 <style lang="scss" scoped>
-@import "./ValidateTooltip.scss";
+@use "./ValidateTooltip.scss" as *;
 </style>

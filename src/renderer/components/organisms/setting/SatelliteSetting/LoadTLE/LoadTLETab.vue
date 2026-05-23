@@ -143,5 +143,5 @@ async function checkTleUrlAccessibility(): Promise<string> {
 defineExpose({ onOk, isTLEUpdated });
 </script>
 <style lang="scss" scoped>
-@import "./LoadTLETab.scss";
+@use "./LoadTLETab.scss" as *;
 </style>

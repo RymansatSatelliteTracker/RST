@@ -72,5 +72,5 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-@import "./Home.scss";
+@use "./Home.scss" as *;
 </style>

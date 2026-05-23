@@ -37,5 +37,5 @@ const satelliteSetting = defineModel<AppConfigSatelliteSetting>("satelliteSettin
 });
 </script>
 <style lang="scss" scoped>
-@import "./OtherSettingTab.scss";
+@use "./OtherSettingTab.scss" as *;
 </style>

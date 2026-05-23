@@ -21,5 +21,5 @@ const { btnClass } = useButton(props);
 </script>
 
 <style module lang="scss" scoped>
-@import "./Button.scss";
+@use "./Button.scss" as *;
 </style>
