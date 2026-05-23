@@ -1,6 +1,7 @@
 import { GROUND_STATION } from "@/__tests__/renderer/service/GroundStationService.test";
 import Constant from "@/common/Constant";
 import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil";
+import { describe, expect, it } from "vitest";
 
 /**
  * [正常系]

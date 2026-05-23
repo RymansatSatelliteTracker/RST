@@ -2,6 +2,7 @@ import TleDataHelper from "@/__tests__/renderer/service/TleDataHelper";
 import Constant from "@/common/Constant";
 import { InvalidArgumentError } from "@/common/exceptions";
 import GroundStationService, { VisibilityType } from "@/renderer/service/GroundStationService";
+import { describe, expect, it } from "vitest";
 
 // 地上局位置設定1：リーマンサット地上局の座標
 export const GROUND_STATION = {

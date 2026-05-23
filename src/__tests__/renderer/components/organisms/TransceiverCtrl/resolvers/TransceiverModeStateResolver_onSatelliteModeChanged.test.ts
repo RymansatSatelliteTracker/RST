@@ -2,7 +2,7 @@ import Constant from "@/common/Constant";
 import type { ModeStateResolverState } from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeStateResolver";
 import TransceiverModeStateResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeStateResolver";
 import type { ModeState } from "@/renderer/components/organisms/TransceiverCtrl/useSatelliteModeStateManager";
-import { describe, expect, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 
 const createState = (): ModeStateResolverState => ({

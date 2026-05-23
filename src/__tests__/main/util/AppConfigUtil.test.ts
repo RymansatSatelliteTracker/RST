@@ -1,6 +1,6 @@
 import { AppConfigSatellite } from "@/common/model/AppConfigModel";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil";
-import { beforeAll, describe, expect, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 describe("AppConfigUtil", () => {
   beforeAll(() => {

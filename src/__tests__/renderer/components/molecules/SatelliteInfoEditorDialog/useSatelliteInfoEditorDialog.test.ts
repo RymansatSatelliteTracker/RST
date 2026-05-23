@@ -3,6 +3,7 @@ import { AppConfigSatellite } from "@/common/model/AppConfigModel";
 import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil";
 import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm";
 import useSatelliteInfoEditorDialog from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useSatelliteInfoEditorDialog";
+import { describe, expect, it } from "vitest";
 
 describe("useSatelliteInfoEditorDialog", () => {
   it("デフォルト衛星定義からフォームへ変換できる", () => {

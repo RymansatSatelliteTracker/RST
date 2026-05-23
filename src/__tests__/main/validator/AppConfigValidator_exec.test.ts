@@ -2,12 +2,13 @@ import I18nMsgs from "@/common/I18nMsgs";
 import FileUtil from "@/main/util/FileUtil";
 import AppConfigValidator from "@/main/validator/AppConfigValidator";
 import * as path from "path";
+import { expect, it } from "vitest";
 
 /**
  * エラー
  * データが空
  */
-test("empty", () => {
+it("empty", () => {
   // 実行
   const validator = new AppConfigValidator();
   const results = validator.exec({});
@@ -22,7 +23,7 @@ test("empty", () => {
  * エラー
  * param配下に定義なし
  */
-test("param_only", () => {
+it("param_only", () => {
   // テストデータ
   const dataPath = path.resolve(import.meta.dirname, "data_AppConfigValidator_exec", "param_only.json");
   const text = FileUtil.readText(dataPath);
@@ -62,7 +63,7 @@ test("param_only", () => {
  * エラー
  * appVersionが数値
  */
-test("appVersion_num", () => {
+it("appVersion_num", () => {
   // テストデータ
   const dataPath = path.resolve(import.meta.dirname, "data_AppConfigValidator_exec", "appVersion_num.json");
   const text = FileUtil.readText(dataPath);
@@ -82,7 +83,7 @@ test("appVersion_num", () => {
  * 正常
  * 衛星設定あり
  */
-test("app_config", () => {
+it("app_config", () => {
   // テストデータ
   const dataPath = path.resolve(import.meta.dirname, "data_AppConfigValidator_exec", "app_config.json");
   const text = FileUtil.readText(dataPath);

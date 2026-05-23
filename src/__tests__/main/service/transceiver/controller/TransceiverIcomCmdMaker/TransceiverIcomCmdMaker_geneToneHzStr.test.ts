@@ -1,4 +1,5 @@
 import TransceiverIcomCmdMaker from "@/main/service/transceiver/controller/TransceiverIcomCmdMaker";
+import { describe, expect, it } from "vitest";
 
 describe("TransceiverIcomCmdMaker.geneToneHzStrのテスト", () => {
   it("小数点なしの周波数の場合は３桁＋'0'の文字列を返す", () => {

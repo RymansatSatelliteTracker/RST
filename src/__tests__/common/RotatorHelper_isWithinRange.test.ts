@@ -1,8 +1,9 @@
 import { AppConfigRotator } from "@/common/model/AppConfigModel";
 import RotatorHelper from "@/common/util/RotatorHelper";
+import { describe, expect, it } from "vitest";
 
 describe("RotatorHelper.isWithinRangeのテスト", () => {
-  test("Az,Elの範囲チェック", () => {
+  it("Az,Elの範囲チェック", () => {
     const rotatorConfig = new AppConfigRotator();
     rotatorConfig.rangeAzMin = 0;
     rotatorConfig.rangeAzMax = 10;

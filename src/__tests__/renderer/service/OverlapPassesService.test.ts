@@ -1,5 +1,6 @@
 import TleDataHelper from "@/__tests__/renderer/service/TleDataHelper";
 import OverlapPassesService from "@/renderer/service/OverlapPassesService";
+import { describe, expect, it } from "vitest";
 import { GROUND2_STATION, GROUND_STATION } from "./GroundStationService.test";
 
 /**

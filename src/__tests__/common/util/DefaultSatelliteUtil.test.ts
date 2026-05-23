@@ -1,4 +1,5 @@
 import { createDefaultSatellite, initializeDefaultSatellites, normalizeData } from "@/common/util/DefaultSatelliteUtil";
+import { describe, expect, it } from "vitest";
 
 describe("DefaultSatelliteUtil", () => {
   it("空のデフォルト衛星情報を生成できる", () => {

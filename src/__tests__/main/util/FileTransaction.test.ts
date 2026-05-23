@@ -2,7 +2,7 @@ import { AppConfigUtil } from "@/main/util/AppConfigUtil";
 import { FileTransaction } from "@/main/util/FileTransaction";
 import FileUtil from "@/main/util/FileUtil";
 import TransactionRegistry from "@/main/util/TransactionRegistry";
-import { beforeAll, describe, expect, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 describe("FileTransaction", () => {
   let wirteTextSpy: vi.SpyInstance;

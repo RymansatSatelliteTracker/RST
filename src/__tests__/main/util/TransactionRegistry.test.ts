@@ -1,4 +1,5 @@
 import TransactionRegistry from "@/main/util/TransactionRegistry";
+import { beforeAll, describe, expect, it } from "vitest";
 
 describe("TransactionRegistry", () => {
   beforeAll(() => {});

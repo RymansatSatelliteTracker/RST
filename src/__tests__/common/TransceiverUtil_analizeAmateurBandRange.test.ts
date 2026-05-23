@@ -1,12 +1,13 @@
 import TransceiverUtil from "@/common/util/TransceiverUtil";
+import { describe, expect, it } from "vitest";
 
 describe("TransceiverUtil.analizeAmateurBandRangeのテスト", () => {
-  test("null_undefined系", () => {
+  it("null_undefined系", () => {
     expect(TransceiverUtil.analizeAmateurBandRange(null!)).toBe("");
     expect(TransceiverUtil.analizeAmateurBandRange(undefined!)).toBe("");
   });
 
-  test("144MHz帯", () => {
+  it("144MHz帯", () => {
     expect(TransceiverUtil.analizeAmateurBandRange(143999999)).toBe("");
     expect(TransceiverUtil.analizeAmateurBandRange(144000000)).toBe("144");
     expect(TransceiverUtil.analizeAmateurBandRange(144000001)).toBe("144");
@@ -16,7 +17,7 @@ describe("TransceiverUtil.analizeAmateurBandRangeのテスト", () => {
     expect(TransceiverUtil.analizeAmateurBandRange(146000001)).toBe("");
   });
 
-  test("430MHz帯", () => {
+  it("430MHz帯", () => {
     expect(TransceiverUtil.analizeAmateurBandRange(429999999)).toBe("");
     expect(TransceiverUtil.analizeAmateurBandRange(430000000)).toBe("430");
     expect(TransceiverUtil.analizeAmateurBandRange(430000001)).toBe("430");
@@ -26,7 +27,7 @@ describe("TransceiverUtil.analizeAmateurBandRangeのテスト", () => {
     expect(TransceiverUtil.analizeAmateurBandRange(440000001)).toBe("");
   });
 
-  test("1.2GHz帯", () => {
+  it("1.2GHz帯", () => {
     expect(TransceiverUtil.analizeAmateurBandRange(1259999999)).toBe("");
     expect(TransceiverUtil.analizeAmateurBandRange(1260000000)).toBe("1200");
     expect(TransceiverUtil.analizeAmateurBandRange(1260000001)).toBe("1200");
@@ -36,7 +37,7 @@ describe("TransceiverUtil.analizeAmateurBandRangeのテスト", () => {
     expect(TransceiverUtil.analizeAmateurBandRange(1300000001)).toBe("");
   });
 
-  test("小さい、大きい", () => {
+  it("小さい、大きい", () => {
     expect(TransceiverUtil.analizeAmateurBandRange(-1)).toBe("");
     expect(TransceiverUtil.analizeAmateurBandRange(0)).toBe("");
     expect(TransceiverUtil.analizeAmateurBandRange(Number.MAX_SAFE_INTEGER)).toBe("");

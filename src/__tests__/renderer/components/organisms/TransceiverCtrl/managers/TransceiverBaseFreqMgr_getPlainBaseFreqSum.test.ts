@@ -1,4 +1,5 @@
 import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
+import { describe, expect, it } from "vitest";
 
 describe("TransceiverBaseFreqMgr.getPlainBaseFreqSum", () => {
   it("初期状態では基準周波数の和が0であること", () => {

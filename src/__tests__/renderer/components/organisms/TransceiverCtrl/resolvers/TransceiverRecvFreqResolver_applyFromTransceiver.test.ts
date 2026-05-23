@@ -7,7 +7,7 @@ import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverC
 import type { RecvFreqResolverState } from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverRecvFreqResolver";
 import TransceiverRecvFreqResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverRecvFreqResolver";
 import emitter from "@/renderer/util/EventBus";
-import { describe, expect, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 
 const createState = (): RecvFreqResolverState => ({

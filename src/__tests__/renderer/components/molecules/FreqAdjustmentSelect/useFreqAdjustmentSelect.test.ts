@@ -1,4 +1,5 @@
 import useFrequencySelect from "@/renderer/components/molecules/FreqAdjustmentSelect/useFreqAdjustmentSelect";
+import { describe, expect, it } from "vitest";
 import { ref } from "vue";
 
 describe("useFrequencySelect", () => {

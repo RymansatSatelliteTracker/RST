@@ -6,7 +6,7 @@ import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil";
 import FileUtil from "@/main/util/FileUtil";
 import * as path from "path";
-import { beforeAll, describe, expect, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 describe("DefaultSatelliteModel", () => {
   function getLatestTLE(): TleItemMap {
@@ -33,7 +33,7 @@ describe("DefaultSatelliteModel", () => {
   /**
    * 正常系:引数1つ
    */
-  test("デフォルト衛星定義追加(NORADIDなし)", () => {
+  it("デフォルト衛星定義追加(NORADIDなし)", () => {
     // Arrange
     const defSatModel = new DefaultSatelliteModel();
     // Act
@@ -45,7 +45,7 @@ describe("DefaultSatelliteModel", () => {
   /**
    * 正常系:引数2つ
    */
-  test("デフォルト衛星定義追加(NORADIDあり)", () => {
+  it("デフォルト衛星定義追加(NORADIDあり)", () => {
     // Arrange
     const defSatModel = new DefaultSatelliteModel();
     // Act
@@ -57,7 +57,7 @@ describe("DefaultSatelliteModel", () => {
   /**
    * 正常系:登録済み
    */
-  test("デフォルト衛星定義登録済みの場合更新しない", () => {
+  it("デフォルト衛星定義登録済みの場合更新しない", () => {
     // Arrange
     const defSatModel = new DefaultSatelliteModel();
     defSatModel.addSatellite("test", "1");
@@ -70,7 +70,7 @@ describe("DefaultSatelliteModel", () => {
   /**
    * 正常系:JSON取得
    */
-  test("JSON形式で取得", () => {
+  it("JSON形式で取得", () => {
     // Arrange
     const defSatModel = new DefaultSatelliteModel();
     defSatModel.addSatellite("test", "00001");
@@ -87,7 +87,7 @@ describe("DefaultSatelliteModel", () => {
   /**
    * 正常系:getSatelliteIdenfier
    */
-  test("SatelliteIdenfierの取得", () => {
+  it("SatelliteIdenfierの取得", () => {
     // Arrange
     const tle = getLatestTLE();
     const defSatModel = new DefaultSatelliteModel();
@@ -103,7 +103,7 @@ describe("DefaultSatelliteModel", () => {
   /**
    * 正常系:getDefaultSatelliteBySatelliteId
    */
-  test("衛星IDを指定してデフォルト衛星定義が取得できる", () => {
+  it("衛星IDを指定してデフォルト衛星定義が取得できる", () => {
     // Arrange
     const defSatModel = new DefaultSatelliteModel();
     defSatModel.addSatellite("test", "1");
@@ -117,7 +117,7 @@ describe("DefaultSatelliteModel", () => {
    * 異常系:getDefaultSatelliteBySatelliteId
    * 存在しない衛星ID
    */
-  test("衛星IDが存在しない場合デフォルト衛星定義は取得できない", () => {
+  it("衛星IDが存在しない場合デフォルト衛星定義は取得できない", () => {
     // Arrange
     const defSatModel = new DefaultSatelliteModel();
     defSatModel.addSatellite("test", "1");
@@ -131,7 +131,7 @@ describe("DefaultSatelliteModel", () => {
    * 正常系:ユーザ定義なし
    * ユーザ定義がないものはデフォルト衛星が削除される
    */
-  test("ユーザ定義がないものはデフォルト衛星が削除される", () => {
+  it("ユーザ定義がないものはデフォルト衛星が削除される", () => {
     // Arrange
     const defSatModel = new DefaultSatelliteModel();
     defSatModel.addSatellite("test", "1");
@@ -146,7 +146,7 @@ describe("DefaultSatelliteModel", () => {
    * ユーザ定義があるものはデフォルト衛星が保持される
    * ユーザ定義がないものはデフォルト衛星が削除される
    */
-  test("ユーザ定義があるものはデフォルト衛星が保持される", () => {
+  it("ユーザ定義があるものはデフォルト衛星が保持される", () => {
     // Arrange
     const defSatModel = new DefaultSatelliteModel();
     defSatModel.addSatellite("test", "0");
@@ -160,7 +160,7 @@ describe("DefaultSatelliteModel", () => {
   /**
    * デフォルト衛星情報を上書きする
    */
-  test("デフォルト衛星情報を上書きする", () => {
+  it("デフォルト衛星情報を上書きする", () => {
     // Arrange
     const defSatModel = new DefaultSatelliteModel();
     // 先に追加しておく
@@ -176,7 +176,7 @@ describe("DefaultSatelliteModel", () => {
   /**
    *
    */
-  test("常に新しい定義でデフォルト衛星情報を初期化する", () => {
+  it("常に新しい定義でデフォルト衛星情報を初期化する", () => {
     // Arrange
     // uplink1がuplinkMhzになっている
     const data = {

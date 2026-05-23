@@ -1,5 +1,6 @@
 import type { TleItemMap } from "@/common/model/TleModel";
 import TleService from "@/main/service/TleService";
+import { describe, expect, it } from "vitest";
 
 /**
  * TleService_createTleData のテスト
@@ -9,7 +10,7 @@ describe("TleService - createTleData", () => {
    * TLEがブランク
    * 保持TLEもブランク
    */
-  test("empty_tle", () => {
+  it("empty_tle", () => {
     const tleService = new TleService();
     let result = tleService["createTleData"]("", {});
     expect(result).toEqual({});
@@ -25,7 +26,7 @@ describe("TleService - createTleData", () => {
    * TLEがブランク
    * 保持TLEあり
    */
-  test("add_tle", () => {
+  it("add_tle", () => {
     const tleService = new TleService();
     const tleText = "";
     const tleItemMap: TleItemMap = {};
@@ -39,7 +40,7 @@ describe("TleService - createTleData", () => {
    * TLEが１つ（追加）
    * 保持TLEあり
    */
-  test("add_tle", () => {
+  it("add_tle", () => {
     const tleService = new TleService();
     const tleText = `name2
 1 B2BBBC DDEEEFFF 21211.11111111 +.IIIIIIII +JJJJJ-J +KKKKK-K L MMMMN
@@ -68,7 +69,7 @@ describe("TleService - createTleData", () => {
    * TLEが２つ（追加）
    * 保持TLEあり
    */
-  test("add_tle", () => {
+  it("add_tle", () => {
     const tleService = new TleService();
     const tleText = `name2
 1 B2BBBC DDEEEFFF 21211.11111111 +.IIIIIIII +JJJJJ-J +KKKKK-K L MMMMN
@@ -108,7 +109,7 @@ name3
    * TLEが１つ（変更）
    * 保持TLEあり
    */
-  test("add_tle", () => {
+  it("add_tle", () => {
     const tleService = new TleService();
     const tleText = `name2
 1 B2BBBC DDEEEFFF 21211.11111111 +.IIIIIIII +JJJJJ-J +KKKKK-K L MMMMN
@@ -143,7 +144,7 @@ name3
    * TLEが２つ（変更、追加）
    * 保持TLEあり
    */
-  test("add_tle", () => {
+  it("add_tle", () => {
     const tleService = new TleService();
     const tleText = `name2
 1 B2BBBC DDEEEFFF 21211.11111111 +.IIIIIIII +JJJJJ-J +KKKKK-K L MMMMN

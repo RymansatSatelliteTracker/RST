@@ -1,5 +1,6 @@
 import FrequencyTrackService from "@/renderer/service/FrequencyTrackService";
 import SatelliteService from "@/renderer/service/SatelliteService";
+import { beforeAll, describe, expect, it } from "vitest";
 
 /**
  * FrequencyTrackService.calcInvHeteroBaseFreqByTxFreqのテスト

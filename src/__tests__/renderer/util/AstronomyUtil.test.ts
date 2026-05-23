@@ -1,5 +1,6 @@
 import { GROUND_STATION } from "@/__tests__/renderer/service/GroundStationService.test";
 import AstronomyUtil from "@/renderer/util/AstronomyUtil";
+import { describe, expect, it } from "vitest";
 
 /**
  * [正常系]

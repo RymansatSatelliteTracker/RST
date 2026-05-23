@@ -17,11 +17,11 @@ describe("AppConfigSatelliteService", () => {
     vi.spyOn(DefaultSatelliteService.prototype, "init").mockImplementation(() => {
       return;
     });
-    jest
-      .spyOn(DefaultSatelliteModel.prototype, "getDefaultSatelliteBySatelliteId")
-      .mockImplementation((satelliteId: number) => {
+    vi.spyOn(DefaultSatelliteModel.prototype, "getDefaultSatelliteBySatelliteId").mockImplementation(
+      (satelliteId: number) => {
         return createDefaultSatellite(satelliteId, "TEST_SAT", DEFAULT_NORAD_ID);
-      });
+      }
+    );
     vi.spyOn(AppConfigUtil, "getConfig").mockImplementation(() => {
       const sat1: AppConfigSatellite = new AppConfigSatellite();
       sat1.satelliteId = APPCONFIG_SATELLITE_ID;

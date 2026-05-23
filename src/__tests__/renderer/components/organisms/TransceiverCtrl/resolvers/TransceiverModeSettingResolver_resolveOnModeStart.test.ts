@@ -1,9 +1,8 @@
 import Constant from "@/common/Constant";
 import I18nMsgs from "@/common/I18nMsgs";
-import type {
-  TransceiverSettingLike,
-} from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
+import type { TransceiverSettingLike } from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
 import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
+import { beforeEach, describe, expect, it } from "vitest";
 
 // テスト用の設定データファクトリ
 const makeUplinkSetting = (uplinkHz: number, uplinkMode: string) => ({ uplinkHz, uplinkMode });
