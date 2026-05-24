@@ -25,31 +25,31 @@ const DEFAULT_TLE_URL = [
   },
   {
     enable: true,
-    url: "http://celestrak.org/NORAD/elements/amateur.txt",
+    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=amateur&FORMAT=TLE",
   },
   {
     enable: true,
-    url: "http://celestrak.com/NORAD/elements/cubesat.txt",
+    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=cubesat&FORMAT=TLE",
   },
   {
     enable: false,
-    url: "http://celestrak.com/NORAD/elements/geo.txt",
+    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=geo&FORMAT=tle",
   },
   {
     enable: true,
-    url: "http://celestrak.com/NORAD/elements/stations.txt",
+    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=stations&FORMAT=tle",
   },
   {
     enable: true,
-    url: "http://celestrak.com/NORAD/elements/tle-new.txt",
+    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=last-30-days&FORMAT=tle",
   },
   {
     enable: false,
-    url: "http://celestrak.com/NORAD/elements/visual.txt",
+    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=visual&FORMAT=tle",
   },
   {
     enable: false,
-    url: "http://celestrak.com/NORAD/elements/weather.txt",
+    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=weather&FORMAT=tle",
   },
 ];
 /**
