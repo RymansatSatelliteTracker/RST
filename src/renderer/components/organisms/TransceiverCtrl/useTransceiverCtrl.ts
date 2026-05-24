@@ -1,4 +1,5 @@
 import Constant from "@/common/Constant";
+import { AppConfigModel } from "@/common/model/AppConfigModel";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse } from "@/common/types/types";
 import TransceiverUtil from "@/common/util/TransceiverUtil";
@@ -115,14 +116,16 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     },
     currentDate
   );
+
   /**
    * 周波数更新インターバルを開始する
    * @param {number} intervalMs 時間間隔[単位：ミリ秒]
    */
-  function startUpdateFreqInterval(intervalMs: number) {
+  async function startUpdateFreqInterval(intervalMs: number) {
+    const appConfig = await ApiAppConfig.getAppConfig();
     coordinator.setTimerId(
       setInterval(async () => {
-        await updateFreq();
+        await updateFreq(appConfig);
       }, intervalMs)
     );
   }
@@ -443,14 +446,14 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   /**
    * 周波数の更新を行う
    */
-  async function updateFreq() {
+  async function updateFreq(appConfig: AppConfigModel) {
     // Autoモード中でない場合は何もしない
     if (!autoStore.tranceiverAuto) {
       return;
     }
 
     // 人工衛星がドップラーシフトが有効となる範囲外の場合は処理終了
-    if (!(await freqCoordinator.isWithinDopplerShiftActiveRange())) {
+    if (!(await freqCoordinator.isWithinDopplerShiftActiveRange(appConfig))) {
       return;
     }
 
