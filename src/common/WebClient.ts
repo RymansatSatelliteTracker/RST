@@ -45,8 +45,12 @@ export default class WebClient {
     config?: AxiosRequestConfig | undefined
   ): Promise<AppHttpResponse> {
     try {
-      const queryStr = querystring.stringify(query);
-      const response = await this.axios.get(`${url}?${queryStr}`, config);
+      if(query){
+        // クエリパラメータをURLに追加
+        const queryStr = querystring.stringify(query);
+        url = `${url}?${queryStr}`;
+      }
+      const response = await this.axios.get(url, config);
       return new AppHttpResponse(response.status, response.statusText, response.data);
     } catch (e) {
       if (Axios.isAxiosError(e) && e.response) {
