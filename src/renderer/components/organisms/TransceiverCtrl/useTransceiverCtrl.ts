@@ -1,18 +1,22 @@
-import CommonUtil from "@/common/CommonUtil";
 import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import { AppConfigModel } from "@/common/model/AppConfigModel";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
 import { ApiResponse } from "@/common/types/types";
 import TransceiverUtil from "@/common/util/TransceiverUtil";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import TransceiverDopplerWaitCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverDopplerWaitCoordinator";
+import TransceiverFreqCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverFreqCoordinator";
+import TransceiverModeCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator";
+import TransceiverSyncCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverSyncCoordinator";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
+import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
+import TransceiverModeStateResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeStateResolver";
+import TransceiverOpeModeResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver";
+import TransceiverRecvFreqResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverRecvFreqResolver";
 import { useModeStateManager } from "@/renderer/components/organisms/TransceiverCtrl/useSatelliteModeStateManager";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger";
-import emitter from "@/renderer/util/EventBus";
 import { onMounted, ref, Ref, watch } from "vue";
 
 /**
@@ -29,9 +33,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   const txFrequencyAdjustment = ref<string>("+000.000");
   // Rx周波数補正値
   const rxFrequencyAdjustment = ref<string>("+000.000");
-  // 基準周波数（補正値なし）
-  let plainTxBaseFreq = 0;
-  let plainRxBaseFreq = 0;
   // Tx、Rx基準周波数（補正値反映）
   const txBaseFreq = ref<number>(0.0);
   const rxBaseFreq = ref<number>(0.0);
@@ -72,33 +73,112 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
   // AutoモードのOnOff管理
   const autoStore = useStoreAutoState();
+  // サテライトモード切替時の状態保存/復元管理
+  const { save, load } = useModeStateManager();
+  const modeStateResolver = new TransceiverModeStateResolver(
+    {
+      rxFrequency,
+      rxOpeMode,
+      txOpeMode,
+      isSatTrackingModeNormal,
+      isSatelliteMode,
+    },
+    autoStore,
+    save,
+    load
+  );
+  // 無線機からの運用モード受信値を画面状態へ反映
+  const opeModeResolver = new TransceiverOpeModeResolver({
+    txOpeMode,
+    rxOpeMode,
+  });
+  // サテライトモードOFF時のTx/Rx同期管理
+  const syncCoordinator = new TransceiverSyncCoordinator({
+    txFrequency,
+    rxFrequency,
+    txOpeMode,
+    rxOpeMode,
+  });
+  // ドップラーシフト待機状態と待機タイマの管理
+  const dopplerWaitCoordinator = new TransceiverDopplerWaitCoordinator(autoStore);
+  // 基準周波数（補正値なし）の管理
+  const baseFreqMgr = new TransceiverBaseFreqMgr();
+  // モードごとの周波数・運用モード解決
+  const modeSettingResolver = new TransceiverModeSettingResolver();
+  // 周波数の初期化・送信・ドップラー補正更新
+  const freqCoordinator = new TransceiverFreqCoordinator(
+    {
+      txFrequency,
+      rxFrequency,
+      txBaseFreq,
+      rxBaseFreq,
+    },
+    currentDate
+  );
+  /**
+   * 周波数更新インターバルを開始する
+   * @param {number} intervalMs 時間間隔[単位：ミリ秒]
+   */
+  function startUpdateFreqInterval(intervalMs: number) {
+    coordinator.setTimerId(
+      setInterval(async () => {
+        await updateFreq();
+      }, intervalMs)
+    );
+  }
 
-  // 周波数の更新タイマ
-  let timerId: NodeJS.Timeout | null = null;
-  // ドップラーシフト待機フラグ
-  let isDopplerShiftWaiting = ref<boolean>(false);
-  // ドップラーシフト周波数送信の待機タイマ
-  let dopplerTimerId: NodeJS.Timeout | null = null;
-
-  // 周波数の更新インターバル（ミリ秒）
-  let autoTrackingIntervalMsec = 1000;
-
-  // 無線機からの受信処理をスキップするか
-  let isRecvProcSkip = false;
-  // アクティブ衛星のNoradId
-  let currentNoradId = "";
+  // Auto/Beacon/Satellite モード遷移シーケンスの管理
+  const coordinator = new TransceiverModeCoordinator(
+    {
+      txFrequency,
+      rxFrequency,
+      txOpeMode,
+      rxOpeMode,
+      satelliteMode,
+      isSatelliteMode,
+      isSatTrackingModeNormal,
+      savedTxFrequency,
+      savedRxFrequency,
+      savedTxOpeMode,
+      savedRxOpeMode,
+      isBeaconMode,
+      execTxDopplerShiftCorrection,
+      execRxDopplerShiftCorrection,
+      txFrequencyAdjustment,
+      rxFrequencyAdjustment,
+    },
+    autoStore,
+    modeSettingResolver,
+    baseFreqMgr,
+    calcBaseFreqWithAdjust,
+    startUpdateFreqInterval
+  );
+  // 無線機からの周波数受信値を画面状態と基準周波数へ反映
+  const recvFreqResolver = new TransceiverRecvFreqResolver(
+    {
+      txFrequency,
+      rxFrequency,
+      txFrequencyAdjustment,
+      rxFrequencyAdjustment,
+      txBaseFreq,
+      rxBaseFreq,
+    },
+    autoStore,
+    baseFreqMgr,
+    currentDate,
+    () => coordinator.autoTrackingIntervalMsec,
+    calcBaseFreqWithAdjust,
+    getBaseFreqSum
+  );
 
   /**
    * 表示中の衛星グループが変更された場合のイベントハンドラ
    */
   async function onChangeSatGrp() {
     // 衛星が変更された場合は補正値をリセットする（NoradIdで判定する）
-    const changedNoradId = getActiveSatNorad();
-    if (currentNoradId !== changedNoradId) {
+    if (coordinator.syncCurrentNoradIdFromActiveSat()) {
       resetFreqAdj();
     }
-    // アクティブ衛星のNoradIdを更新
-    currentNoradId = changedNoradId;
 
     isBeaconModeAvailable.value = await confirmBeaconModeAvailable();
 
@@ -116,252 +196,35 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     // アクティブ衛星の周波数/運用モードを取得
     const transceiverSetting = ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
 
-    return !!(transceiverSetting.beacon && transceiverSetting.beacon.beaconHz && transceiverSetting.beacon.beaconMode);
+    return modeSettingResolver.canUseBeaconMode(transceiverSetting);
   }
 
   /**
    * Autoモード中はアクティブ衛星で周波数/運用モードを更新する
    */
   async function startAutoMode(): Promise<boolean> {
-    // AutoOnにできない状態の場合（無線機設定に未設定項目がある場合など）はトーストを表示して処理終了
-    const appConfig = await ApiAppConfig.getAppConfig();
-    if (!isValidTransceiverSetting(appConfig)) {
-      emitter.emit(Constant.GlobalEvent.NOTICE_INFO, I18nUtil.getMsg(I18nMsgs.SYSTEM_YET_TRANSCEIVER_CONFIG));
-      return false;
-    }
-
-    // 無線機接続が準備完了か確認する
-    const isReady = await ApiTransceiver.isReady();
-    if (!isReady.status) {
-      emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.SERIAL_NOT_CONNECTED_TRANSCEIVER));
-      return false;
-    }
-
-    // 周波数の更新インターバルを取得
-    autoTrackingIntervalMsec = await getAutoTrackingIntervalMsec();
-
-    // 周波数の更新を停止
-    // MEMO: 停止されていない場合があるので、複数のタイマが発動することをガード
-    // MEMO: AutoOn時の周波数の初期設定中に、ドップラーシフトの周波数更新が競合するため、停止後に以降の処理を行う必要がある
-    await stopUpdateFreq();
-
-    // AutoOn時は受信処理をスキップする（AutoOn処理中のモード変更などにおける無線機からの不要なデータ受信を無視する）
-    isRecvProcSkip = true;
-
-    // アクティブ衛星のNoradIdを保持する
-    currentNoradId = getActiveSatNorad();
-
-    // Autoモード移行前の周波数を保持する
-    savedTxFrequency.value = txFrequency.value;
-    savedRxFrequency.value = rxFrequency.value;
-
-    // アクティブ衛星の周波数/運用モード/サテライトモード/トラッキングモードを取得
-    const transceiverSetting = ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
-
-    // 有効だったらサテライトモードを設定する
-    satelliteMode.value = transceiverSetting.satelliteMode
-      ? Constant.Transceiver.SatelliteMode.SATELLITE
-      : Constant.Transceiver.SatelliteMode.UNSET;
-
-    // 無線機にサテライトモードを設定する
-    // MEMO: satelliteMode.valueの更新時にwatchで isSatelliteMode.value が更新されるが、非同期でAPI呼び出しが行われる。
-    //       サテライトモードの変更時に無線機のモード取得が行われるが、
-    //       AutoOn時の無線機へのモード設定と同期が取れず、AutoOn時のモード設定が反映されない場合がある為、
-    //       ここで明示的、同期的にサテライトモードを設定する。
-    const result = await ApiTransceiver.setSatelliteMode(
-      satelliteMode.value === Constant.Transceiver.SatelliteMode.SATELLITE
-    );
-    if (!result) {
-      return false;
-    }
-
-    // サテライトモードのトラッキングモードをアクティブ衛星の設定で更新する
-    // Reverseを明示的に指定している場合以外はNormal
-    if (isSatelliteMode.value && transceiverSetting.satTrackMode === Constant.Transceiver.TrackingMode.REVERSE) {
-      isSatTrackingModeNormal.value = false;
-    } else {
-      isSatTrackingModeNormal.value = true;
-    }
-
-    // 周波数と運用モードを設定、保存する
-    setFrequencyAndOpeModeInModeStart();
-    saveFrequencyAndOpeModeInModeStart();
-
-    // 周波数の基準値を保持する（補正値を加味しない周波数）
-    updatePlainBaseFreq(txFrequency.value, rxFrequency.value);
-
-    // 基準周波数を更新する（逆ヘテロダインの計算用、補正値を反映したもの）
-    calcBaseFreqWithAdjust();
-
-    // ドップラーシフトのフラグを初期化
-    execRxDopplerShiftCorrection.value = false;
-    execTxDopplerShiftCorrection.value = false;
-
-    // Auto開始をメイン側に連携する
-    await ApiTransceiver.transceiverInitAutoOn(
-      TransceiverUtil.parseNumber(txFrequency.value),
-      TransceiverUtil.parseNumber(rxFrequency.value),
-      txOpeMode.value,
-      rxOpeMode.value,
-      transceiverSetting.toneHz
-    );
-
-    // 更新インターバルごとに周波数の更新する
-    timerId = setInterval(async () => {
-      updateFreq();
-    }, autoTrackingIntervalMsec);
-
-    // AutoOn時は受信処理をスキップを解除
-    isRecvProcSkip = false;
-
-    return true;
+    return coordinator.startAutoMode();
   }
 
   /**
    * Autoモードを停止する
    */
   async function stopAutoMode() {
-    // AutoOnでない場合は何もしない
-    if (!autoStore.tranceiverAuto) {
-      return;
-    }
-
-    // Auto終了をメイン側に連携する
-    await ApiTransceiver.transceiverAutoOff();
-
-    // Autoモードの周波数更新を停止する
-    await stopUpdateFreq();
-
-    // Autoモード移行前の周波数を復元する
-    txFrequency.value = savedTxFrequency.value;
-    rxFrequency.value = savedRxFrequency.value;
-  }
-
-  /**
-   * Autoモードの周波数更新を停止する
-   */
-  async function stopUpdateFreq() {
-    if (!timerId) {
-      return false;
-    }
-
-    clearInterval(timerId);
-    timerId = null;
-
-    // 本メソッド呼び出し後に周波数更新が動かいことを保証するため、周波数更新のインターバルと同じ時間だけ待機する
-    await CommonUtil.sleep(autoTrackingIntervalMsec);
-
-    return true;
+    return coordinator.stopAutoMode();
   }
 
   /**
    * ビーコンモードを開始する
    */
   async function startBeaconMode() {
-    // 周波数と運用モードを設定、保存する
-    setFrequencyAndOpeModeInModeStart();
-    saveFrequencyAndOpeModeInModeStart();
+    return coordinator.startBeaconMode();
   }
 
   /**
    * ビーコンモードを停止する
    */
   async function stopBeaconMode() {
-    // アクティブ衛星の周波数/運用モードを取得
-    const transceiverSetting = ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
-
-    // 周波数と運用モードを設定する
-    // Autoモード中じゃない場合は移行前の周波数と運用モードを復元して抜ける
-    if (!autoStore.tranceiverAuto) {
-      txFrequency.value = savedTxFrequency.value;
-      rxFrequency.value = savedRxFrequency.value;
-      txOpeMode.value = savedTxOpeMode.value;
-      rxOpeMode.value = savedRxOpeMode.value;
-      return;
-    }
-
-    // Autoモード中の場合
-    // Autoモードの周波数/運用モードを優先して設定する
-
-    if (transceiverSetting.uplink && transceiverSetting.uplink.uplinkHz) {
-      // アップリンク周波数/運用モードをアクティブ衛星の設定で更新する
-      txFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.uplink.uplinkHz);
-      txOpeMode.value = transceiverSetting.uplink.uplinkMode;
-    }
-    if (transceiverSetting.downlink && transceiverSetting.downlink.downlinkHz) {
-      // ダウンリンク周波数/運用モードをアクティブ衛星の設定で更新する
-      rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.downlink.downlinkHz);
-      rxOpeMode.value = transceiverSetting.downlink.downlinkMode;
-    }
-  }
-
-  /**
-   * ビーコンもしくはAutoのモード開始時に状態に応じて周波数と運用モードを設定する
-   */
-  async function setFrequencyAndOpeModeInModeStart() {
-    // アクティブ衛星の周波数/運用モードを取得
-    const transceiverSetting = ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
-
-    // 周波数と運用モードを設定する
-    // ここにはAutoもしくはBeaconの状態変更後に来る
-    if (isBeaconMode.value) {
-      if (!(transceiverSetting.beacon && transceiverSetting.beacon.beaconHz)) {
-        emitter.emit(Constant.GlobalEvent.NOTICE_INFO, I18nUtil.getMsg(I18nMsgs.CHK_ERR_NO_BEACON_FREQ));
-        return;
-      }
-      // BeaconModeがONということは
-      // - BeaconモードをONにした
-      // - BeaconモードONの状態でAutoモードを開始した
-      // その場合は、ビーコンモードの周波数/運用モードを優先して設定する
-      // ダウンリンクの周波数/運用モードをアクティブ衛星の設定で更新する
-      rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.beacon.beaconHz);
-      rxOpeMode.value = transceiverSetting.beacon.beaconMode;
-      return;
-    }
-
-    // BeaconModeがOFFということは
-    // - BeaconモードOFFの状態でAutoモードを開始した
-    // その場合は、Autoモードの周波数/運用モードを優先して設定する
-
-    // アップリンクもダウンリンクも設定がない場合はトーストを表示して抜ける
-    if (!transceiverSetting?.uplink?.uplinkHz && !transceiverSetting?.downlink?.downlinkHz) {
-      emitter.emit(Constant.GlobalEvent.NOTICE_INFO, I18nUtil.getMsg(I18nMsgs.CHK_ERR_NO_FREQ));
-      return;
-    }
-
-    // アップリンク周波数/運用モードをアクティブ衛星の設定で更新する
-    // 型チェックで引っかかるので説明変数ではなく元のチェックを使う
-    if (transceiverSetting?.uplink?.uplinkHz) {
-      txFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.uplink.uplinkHz);
-      txOpeMode.value = transceiverSetting.uplink.uplinkMode;
-    } else {
-      emitter.emit(Constant.GlobalEvent.NOTICE_INFO, I18nUtil.getMsg(I18nMsgs.CHK_ERR_NO_UPLINK_FREQ));
-    }
-
-    // ダウンリンク周波数/運用モードをアクティブ衛星の設定で更新する
-    // 型チェックで引っかかるので説明変数ではなく元のチェックを使う
-    if (transceiverSetting?.downlink?.downlinkHz) {
-      rxFrequency.value = TransceiverUtil.formatWithDot(transceiverSetting.downlink.downlinkHz);
-      rxOpeMode.value = transceiverSetting.downlink.downlinkMode;
-    } else {
-      emitter.emit(Constant.GlobalEvent.NOTICE_INFO, I18nUtil.getMsg(I18nMsgs.CHK_ERR_NO_DOWNLINK_FREQ));
-    }
-  }
-
-  /**
-   * ビーコンもしくはAutoのモード開始時に現在の周波数と運用モードを保存する
-   */
-  async function saveFrequencyAndOpeModeInModeStart() {
-    // 何もONにしていない状態でここに来たときは周波数と運用モードを保存する
-    // BeaconモードがONの状態でBeaconを開始はできない、Autoも同様、
-    // なので、どちらかがOFFということは事前状態は何もONにしていない状態
-    if (!(isBeaconMode.value && autoStore.tranceiverAuto)) {
-      // 事前状態が何もONにしていない状態であれば、現在の周波数と運用モードを保存する
-      savedTxFrequency.value = txFrequency.value;
-      savedRxFrequency.value = rxFrequency.value;
-      savedTxOpeMode.value = txOpeMode.value;
-      savedRxOpeMode.value = rxOpeMode.value;
-    }
+    return coordinator.stopBeaconMode();
   }
 
   /**
@@ -373,94 +236,43 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   }
 
   /**
-   * 無線機周波数初期化処理
+   * Rx周波数差分変更時の処理
    */
-  async function initFreq() {
-    // AppConfig.transceiverからtxFrequency,rxFrequencyを取得する
-    const config = await ApiAppConfig.getAppConfig();
-    txFrequency.value = config.transceiver.txFrequency;
-    rxFrequency.value = config.transceiver.rxFrequency;
-  }
-
-  /**
-   * アップリンク周波数を無線機に送信する
-   * @param {number} newTxFrequency アップリンク周波数
-   */
-  async function sendTxFreq(newTxFrequency: number) {
-    await ApiTransceiver.setTransceiverFrequency({
-      uplinkHz: newTxFrequency,
-      uplinkMode: "",
-    });
-  }
-
-  /**
-   * ダウンリンク周波数を無線機に送信する
-   * @param {number} newRxFreq ダウンリンク周波数
-   */
-  async function sendRxFreq(newRxFreq: number) {
-    await ApiTransceiver.setTransceiverFrequency({
-      downlinkHz: newRxFreq,
-      downlinkMode: "",
-    });
-  }
-
-  /**
-   * アップリンク周波数をドップラーシフト補正して更新する
-   * @param {number} intervalMs 時間間隔[単位：ミリ秒]
-   */
-  async function updateTxFreqByInvertingHeterodyne(intervalMs: number) {
-    const freqTrackService = ActiveSatServiceHub.getInstance().getFrequencyTrackService();
-    if (!freqTrackService) {
+  function onDiffRxFrequencyChanged(newDiffFrequency: number) {
+    if (newDiffFrequency === 0.0) {
       return;
     }
 
-    // ドップラーファクターを一時アップリンク周波数に適用して、アップリンク周波数とする
-    const txDopplerFactor = await freqTrackService.calcUplinkDopplerFactor(currentDate.value, intervalMs);
-    const txFreq = txBaseFreq.value * txDopplerFactor;
+    rxBaseFreq.value = TransceiverUtil.subtractFrequencies(rxBaseFreq.value, diffRxFrequency.value);
 
-    // 画面のアップリンク周波数を更新する
-    txFrequency.value = TransceiverUtil.formatWithDot(txFreq);
-  }
-
-  /**
-   * ダウンリンク周波数をドップラーシフト補正して更新する
-   * @param {number} intervalMs 時間間隔[単位：ミリ秒]
-   */
-  async function updateRxFreqWithDopplerShift(intervalMs: number) {
-    const freqTrackService = ActiveSatServiceHub.getInstance().getFrequencyTrackService();
-    if (!freqTrackService) {
+    if (!isSatelliteMode.value) {
+      // サテライトモードがOFFの場合は中断する
+      // TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時も何もしない
+      diffRxFrequency.value = 0.0;
       return;
     }
 
-    // ドップラーファクターを計算する
-    const rxDopplerFactor = await freqTrackService.calcDownlinkDopplerFactor(currentDate.value, intervalMs);
-    const rxFreq = rxBaseFreq.value * rxDopplerFactor;
-
-    // 画面のダウンリンク周波数を更新する
-    rxFrequency.value = TransceiverUtil.formatWithDot(rxFreq);
+    if (isSatTrackingModeNormal.value) {
+      // トラッキングモードがNORMALの場合、アップリンク周波数とダウンリンク周波数の変化量を同一方向に同じステップで変化させる
+      txFrequency.value = TransceiverUtil.formatWithDot(
+        TransceiverUtil.subtractFrequencies(TransceiverUtil.parseNumber(txFrequency.value), diffRxFrequency.value)
+      );
+      // ドップラーシフトの基準周波数に画面で操作した変化量を反映する
+      txBaseFreq.value = TransceiverUtil.subtractFrequencies(txBaseFreq.value, diffRxFrequency.value);
+    } else {
+      // トラッキングモードがREVERSEの場合、アップリンク周波数とダウンリンク周波数の変化量を逆方向に同じステップで変化させる
+      txFrequency.value = TransceiverUtil.formatWithDot(
+        TransceiverUtil.addFrequencies(TransceiverUtil.parseNumber(txFrequency.value), diffRxFrequency.value)
+      );
+      // ドップラーシフトの基準周波数に画面で操作した変化量を反映する
+      txBaseFreq.value = TransceiverUtil.addFrequencies(txBaseFreq.value, diffRxFrequency.value);
+    }
+    diffRxFrequency.value = 0.0;
   }
 
-  /**
-   * 人工衛星がドップラーシフトが有効となる範囲にいるか判定する
-   * @returns {boolean}
-   */
-  async function isWithinDopplerShiftActiveRange(): Promise<boolean> {
-    // 指定した日時から最も近いパスを取得する
-    const orbitPass = await ActiveSatServiceHub.getInstance().getOrbitPassAsync(currentDate.value);
-    if (!orbitPass || !orbitPass.aos || !orbitPass.los) {
-      // パスが取得できない場合はfalseで返す
-      return false;
-    }
-
-    // ドップラーシフトが有効な範囲にいるか判定する
-    const passAos = orbitPass.aos.date.getTime() - Constant.Transceiver.DOPPLER_SHIFT_RANGE_SEC * 1000;
-    const passLos = orbitPass.los.date.getTime() + Constant.Transceiver.DOPPLER_SHIFT_RANGE_SEC * 1000;
-    if (currentDate.value.getTime() >= passAos && currentDate.value.getTime() <= passLos) {
-      return true;
-    }
-
-    return false;
-  }
+  // ──────────────────────────────────────────────
+  // モード遷移 watch
+  // ──────────────────────────────────────────────
 
   /**
    * ビーコンモード設定が変更された場合
@@ -481,15 +293,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   watch(
     satelliteMode,
     (newMode, oldMode) => {
-      if (oldMode === undefined) return;
-      saveState(oldMode);
-
-      // UNSETモードに遷移する場合は過去状態をロードする
-      if (newMode === Constant.Transceiver.SatelliteMode.UNSET) {
-        loadState(newMode);
-      }
-
-      isSatelliteMode.value = newMode === Constant.Transceiver.SatelliteMode.SATELLITE;
+      modeStateResolver.onSatelliteModeChanged(newMode, oldMode);
     },
     { immediate: true }
   );
@@ -503,11 +307,15 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     await ApiTransceiver.setSatelliteMode(newIsSatelliteMode);
   });
 
+  // ──────────────────────────────────────────────
+  // Tx I/O送信 watch
+  // ──────────────────────────────────────────────
+
   /**
    * Tx周波数が変更された場合
    */
   watch(txFrequency, async (newFrequency) => {
-    await sendTxFreq(TransceiverUtil.parseNumber(newFrequency));
+    await freqCoordinator.sendTxFreq(TransceiverUtil.parseNumber(newFrequency));
   });
 
   /**
@@ -517,7 +325,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     // 基準周波数を更新する
     calcBaseFreqWithAdjust();
 
-    await sendTxFreq(TransceiverUtil.parseNumber(txFrequency.value));
+    await freqCoordinator.sendTxFreq(TransceiverUtil.parseNumber(txFrequency.value));
   });
 
   /**
@@ -546,6 +354,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     });
   });
 
+  // ──────────────────────────────────────────────
+  // Rx I/O送信 watch
+  // ──────────────────────────────────────────────
+
   /**
    * Rx周波数が変更された場合
    * TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時は何もしない
@@ -556,7 +368,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       return;
     }
 
-    await sendRxFreq(TransceiverUtil.parseNumber(newFreq));
+    await freqCoordinator.sendRxFreq(TransceiverUtil.parseNumber(newFreq));
   });
 
   /**
@@ -571,45 +383,14 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     // 基準周波数を更新する
     calcBaseFreqWithAdjust();
 
-    await sendRxFreq(TransceiverUtil.parseNumber(rxFrequency.value));
+    await freqCoordinator.sendRxFreq(TransceiverUtil.parseNumber(rxFrequency.value));
   });
 
   /**
    * 画面でRx周波数が変更された場合
    */
   watch(diffRxFrequency, async (newDiffFrequency) => {
-    // 変化量が0の場合は何もしない
-    if (newDiffFrequency === 0.0) {
-      return;
-    }
-
-    // ドップラーシフト基準周波数に画面で操作した変化量を反映する
-    rxBaseFreq.value = TransceiverUtil.subtractFrequencies(rxBaseFreq.value, diffRxFrequency.value);
-
-    if (!isSatelliteMode.value) {
-      // サテライトモードがOFFの場合は中断する
-      // TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時も何もしない
-      diffRxFrequency.value = 0.0;
-      return;
-    }
-
-    if (isSatTrackingModeNormal.value) {
-      // トラッキングモードがNORMALの場合、アップリンク周波数とダウンリンク周波数の変化量を同一方向に同じステップで変化させる
-      txFrequency.value = TransceiverUtil.formatWithDot(
-        TransceiverUtil.subtractFrequencies(TransceiverUtil.parseNumber(txFrequency.value), diffRxFrequency.value)
-      );
-      // ドップラーシフトの基準周波数に画面で操作した変化量を反映する
-      txBaseFreq.value = TransceiverUtil.subtractFrequencies(txBaseFreq.value, diffRxFrequency.value);
-    } else {
-      // トラッキングモードがREVERSEの場合、アップリンク周波数とダウンリンク周波数の変化量を逆方向に同じステップで変化させる
-      txFrequency.value = TransceiverUtil.formatWithDot(
-        TransceiverUtil.addFrequencies(TransceiverUtil.parseNumber(txFrequency.value), diffRxFrequency.value)
-      );
-      // ドップラーシフトの基準周波数に画面で操作した変化量を反映する
-      txBaseFreq.value = TransceiverUtil.addFrequencies(txBaseFreq.value, diffRxFrequency.value);
-    }
-    // 周波数の変化量を初期化する
-    diffRxFrequency.value = 0.0;
+    onDiffRxFrequencyChanged(newDiffFrequency);
   });
 
   /**
@@ -629,6 +410,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     });
   });
 
+  // ──────────────────────────────────────────────
+  // Tx/Rx 同期 watch
+  // ──────────────────────────────────────────────
+
   /**
    * Rx周波数を同期する
    * サテライトモードがONの場合はTx周波数を同期しない
@@ -636,16 +421,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * Rxから先に更新する
    */
   watch([satelliteMode, txFrequency] as const, ([newSatelliteMode, newTxFrequency]) => {
-    if (newSatelliteMode === Constant.Transceiver.SatelliteMode.SATELLITE) return;
-    // 無限更新防止
-    if (rxFrequency.value === newTxFrequency) return;
-    rxFrequency.value = newTxFrequency;
+    syncCoordinator.syncRxFrequency(newSatelliteMode, newTxFrequency);
   });
   watch([satelliteMode, rxFrequency] as const, ([newSatelliteMode, newRxFrequency]) => {
-    if (newSatelliteMode === Constant.Transceiver.SatelliteMode.SATELLITE) return;
-    // 無限更新防止
-    if (txFrequency.value === newRxFrequency) return;
-    txFrequency.value = newRxFrequency;
+    syncCoordinator.syncTxFrequency(newSatelliteMode, newRxFrequency);
   });
 
   /**
@@ -655,16 +434,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * Rxから先に更新する
    */
   watch([satelliteMode, txOpeMode] as const, ([newSatelliteMode, newTxOpeMode]) => {
-    if (newSatelliteMode === Constant.Transceiver.SatelliteMode.SATELLITE) return;
-    // 無限更新防止
-    if (rxOpeMode.value === newTxOpeMode) return;
-    rxOpeMode.value = newTxOpeMode;
+    syncCoordinator.syncRxOpeMode(newSatelliteMode, newTxOpeMode);
   });
   watch([satelliteMode, rxOpeMode] as const, ([newSatelliteMode, newRxOpeMode]) => {
-    if (newSatelliteMode === Constant.Transceiver.SatelliteMode.SATELLITE) return;
-    // 無限更新防止
-    if (txOpeMode.value === newRxOpeMode) return;
-    txOpeMode.value = newRxOpeMode;
+    syncCoordinator.syncTxOpeMode(newSatelliteMode, newRxOpeMode);
   });
 
   /**
@@ -677,36 +450,56 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     }
 
     // 人工衛星がドップラーシフトが有効となる範囲外の場合は処理終了
-    if (!(await isWithinDopplerShiftActiveRange())) {
+    if (!(await freqCoordinator.isWithinDopplerShiftActiveRange())) {
       return;
     }
 
     // ドップラーシフト待機フラグが有効の場合は処理を中断する
-    if (isDopplerShiftWaiting.value) {
+    if (dopplerWaitCoordinator.isWaiting) {
       return;
     }
 
-    // ドップラーシフト補正を実行するかどうかを判定する
+    // ドップラーシフト補正を実行するかどうかのフラグを更新
+    updateDopplerShiftCorrectionFlags();
+    // ドップラーシフト補正を実行する
+    await applyDopplerShiftCorrections();
+
+    logDopplerShiftResult();
+  }
+
+  /**
+   * ドップラーシフト補正を実行するかどうかのフラグを更新する
+   */
+  function updateDopplerShiftCorrectionFlags() {
     execTxDopplerShiftCorrection.value =
       dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_SAT ||
       dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_RX;
     execRxDopplerShiftCorrection.value =
       dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_SAT ||
       dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_TX;
+  }
 
+  /**
+   * ドップラーシフト補正を実行する
+   */
+  async function applyDopplerShiftCorrections() {
     // サテライトモードがONの場合、ダウンリンク周波数をドップラーシフト補正して更新する
     // TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時も何もしない
     if (isSatelliteMode.value && execRxDopplerShiftCorrection.value) {
-      await updateRxFreqWithDopplerShift(autoTrackingIntervalMsec);
+      await freqCoordinator.updateRxFreqWithDopplerShift(coordinator.autoTrackingIntervalMsec);
     }
 
     // アップリンク周波数をドップラーシフト補正して更新する
     if (execTxDopplerShiftCorrection.value) {
-      await updateTxFreqByInvertingHeterodyne(autoTrackingIntervalMsec);
+      await freqCoordinator.updateTxFreqByInvertingHeterodyne(coordinator.autoTrackingIntervalMsec);
     }
+  }
 
+  /**
+   * ドップラーシフト補正結果のデバッグログを出力する
+   */
+  function logDopplerShiftResult() {
     // 以下は、コメントアウトしても良い。2025年11月時点ではデバッグログとして出力しておく。
-    // デバッグログ
     const nowRxFreq = TransceiverUtil.parseNumber(rxFrequency.value);
     const nowTxFreq = TransceiverUtil.parseNumber(txFrequency.value);
     const adjustRxFreq = TransceiverUtil.parseNumber(rxFrequencyAdjustment.value);
@@ -721,205 +514,37 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     );
   }
 
-  /**
-   * ドップラーシフトの待機を設定する
-   */
-  async function setupDopplerShiftWaiting(res: ApiResponse<boolean>) {
-    if (!res.data) {
-      return;
-    }
-
-    // Autoモード中でない場合は何もしない
-    // MEMO: 無線機で周波数を変更した直後にAutoOnとした場合に、その周波数を元に一定時間待機後の基準周波数の更新が走ってしまうため、
-    //       AutoOnでない場合は処理を終了する
-    if (!autoStore.tranceiverAuto) {
-      return;
-    }
-
-    // ドップラーシフト待機タイマが既に存在する場合は初期化する
-    if (dopplerTimerId) {
-      clearTimeout(dopplerTimerId);
-    }
-
-    // ドップラーシフト待機フラグを有効にする
-    isDopplerShiftWaiting.value = true;
-
-    // 一定時間待機後にドップラーシフトの基準周波数を変更する
-    dopplerTimerId = setTimeout(async () => {
-      // ドップラーシフト待機フラグを無効に戻す
-      isDopplerShiftWaiting.value = false;
-
-      AppRendererLogger.info(`ダイヤル操作N秒経過したため待機を解除しました`);
-    }, Constant.Transceiver.TRANSCEIVE_WAIT_MS);
-  }
-
-  /**
-   * ドップラーシフトの基準周波数を再算出する（無線機で周波数が変更された場合向け）
-   */
-  async function updateFreqFromTransceiver(res: ApiResponse<UplinkType | DownlinkType>) {
-    if (!res.status) {
-      emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(res.message));
-      return;
-    }
-
-    const freqData = res.data as UplinkType | DownlinkType;
-    if (!freqData) return;
-
-    // Txが変更された場合
-    if ("uplinkHz" in freqData && freqData.uplinkHz != null) {
-      const recvTxFreq = freqData.uplinkHz;
-      AppRendererLogger.debug(`Tx周波数（無線機→RST） ${recvTxFreq}`);
-
-      // 画面のアップリンク周波数と無線機からトランシーブした周波数が同じ場合は処理終了
-      // MEMO: 無線機にて操作対象のバンドの変更などを行うと、周波数を変更せずとも周波数のトランシーブが発生する。
-      //       その場合に基準周波数の更新を行うと意図しない基準周波数の変更が発生するため、同じ場合は処理を終了する。
-      const recvTxFreqNum = TransceiverUtil.formatWithDot(recvTxFreq);
-      if (txFrequency.value === recvTxFreqNum) {
-        AppRendererLogger.debug(`RSTのTx周波数と同一のため基準周波数の更新をスキップします。`);
-        AppRendererLogger.debug(`基準周波数 Rx:${rxBaseFreq.value} Tx:${txBaseFreq.value} Sum:${getBaseFreqSum()}`);
-        return;
-      }
-
-      // 画面に反映
-      txFrequency.value = TransceiverUtil.formatWithDot(recvTxFreq);
-
-      // AutoOff時は処理終了
-      if (!autoStore.tranceiverAuto) {
-        return;
-      }
-      // 以降、AutoOn時の基準周波数更新処理
-
-      // 補正値を加味しない基準周波数を再算出する
-      const adjustTxFreq = TransceiverUtil.parseNumber(txFrequencyAdjustment.value);
-      const { newRxBaseFreq, newTxBaseFreq } = await calcBaseFreqByShiftedTxFreq(
-        plainRxBaseFreq,
-        plainTxBaseFreq,
-        adjustTxFreq,
-        recvTxFreq
-      );
-      plainRxBaseFreq = newRxBaseFreq;
-      plainTxBaseFreq = newTxBaseFreq;
-
-      // 補正値を加算した基準周波数を再算出する
-      calcBaseFreqWithAdjust();
-
-      AppRendererLogger.debug(
-        `基準周波数（更新） Rx:${rxBaseFreq.value} Tx:${txBaseFreq.value} Sum:${getBaseFreqSum()}`
-      );
-      AppRendererLogger.debug(
-        `補正なし Rx:${plainRxBaseFreq} Tx:${plainTxBaseFreq} Sum:${plainRxBaseFreq + plainTxBaseFreq}`
-      );
-    }
-    // Rxが変更された場合
-    else if ("downlinkHz" in freqData && freqData.downlinkHz != null) {
-      const recvRxFreq = freqData.downlinkHz;
-      AppRendererLogger.debug(`Rx周波数（無線機→RST） ${recvRxFreq}`);
-
-      // 画面のダウンリンク周波数と無線機からトランシーブした周波数が同じ場合は処理終了
-      // MEMO: 無線機にて操作対象のバンドの変更などを行うと、周波数を変更せずとも周波数のトランシーブが発生する。
-      //       その場合に基準周波数の更新を行うと意図しない基準周波数の変更が発生するため、同じ場合は処理を終了する。
-      const recvRxFreqNum = TransceiverUtil.formatWithDot(recvRxFreq);
-      if (rxFrequency.value === recvRxFreqNum) {
-        AppRendererLogger.debug(`RSTのRx周波数と同一のため基準周波数の更新をスキップします。`);
-        AppRendererLogger.debug(`基準周波数 Rx:${rxBaseFreq.value} Tx:${txBaseFreq.value} Sum:${getBaseFreqSum()}`);
-        return;
-      }
-
-      // 画面に反映
-      rxFrequency.value = TransceiverUtil.formatWithDot(recvRxFreq);
-
-      // AutoOff時は処理終了
-      if (!autoStore.tranceiverAuto) {
-        return;
-      }
-      // 以降、AutoOn時の基準周波数更新処理
-
-      // 補正値を加味しない基準周波数を再算出する
-      const adjustRxFreq = TransceiverUtil.parseNumber(rxFrequencyAdjustment.value);
-      const { newRxBaseFreq, newTxBaseFreq } = await calcBaseFreqByShiftedRxFreq(
-        plainRxBaseFreq,
-        plainTxBaseFreq,
-        adjustRxFreq,
-        recvRxFreq
-      );
-      plainRxBaseFreq = newRxBaseFreq;
-      plainTxBaseFreq = newTxBaseFreq;
-
-      // 補正値を加算した基準周波数を再算出する
-      calcBaseFreqWithAdjust();
-
-      AppRendererLogger.debug(
-        `基準周波数（更新） Rx:${rxBaseFreq.value} Tx:${txBaseFreq.value} Sum:${getBaseFreqSum()}`
-      );
-      AppRendererLogger.debug(
-        `補正なし Rx:${plainRxBaseFreq} Tx:${plainTxBaseFreq} Sum:${plainRxBaseFreq + plainTxBaseFreq}`
-      );
-    }
-  }
-
   onMounted(async () => {
     // 無線機の設定を初期化する
     await initTransceiver();
 
     // 初期表示時にAppConfigから無線機周波数を取得する
-    await initFreq();
+    await freqCoordinator.initFreq();
 
     // 表示中の衛星グループが変更された場合のコールバックを設定
     await onChangeSatGrp();
     ActiveSatServiceHub.getInstance().addOnChangeActiveSat(onChangeSatGrp);
 
     // 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機する
-    ApiTransceiver.dopplerShiftWaitingCallback(async (res: ApiResponse<boolean>) => {
-      await setupDopplerShiftWaiting(res);
+    ApiTransceiver.dopplerShiftWaitingCallback((res: ApiResponse<boolean>) => {
+      dopplerWaitCoordinator.setupWaiting(res);
     });
 
     // 無線機で周波数が変更された場合
     ApiTransceiver.onChangeTransceiverFrequency(async (res: ApiResponse<UplinkType | DownlinkType>) => {
       // Tx、またはRxの周波数をRST側に反映する
-      await updateFreqFromTransceiver(res);
+      await recvFreqResolver.applyFromTransceiver(res);
     });
 
     // 無線機の運用モードのイベントハンドラ
     // 受信した無線機の運用モードでtxOpeMode,rxOpeModeを更新する
-    ApiTransceiver.onChangeTransceiverMode(async (res: ApiResponse<UplinkType | DownlinkType>) => {
+    ApiTransceiver.onChangeTransceiverMode((res: ApiResponse<UplinkType | DownlinkType>) => {
       // 受信処理スキップ状態の場合は処理を終了する（AutoOn処理中のモード変更などにおける無線機からの不要なデータ受信を無視する）
-      if (isRecvProcSkip) {
+      if (coordinator.isRecvProcSkip) {
         return;
       }
 
-      if (!res.status) {
-        emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(res.message));
-        // 運用モードが取得できない場合はUNSETにする
-        txOpeMode.value = Constant.Transceiver.OpeMode.UNSET;
-        rxOpeMode.value = Constant.Transceiver.OpeMode.UNSET;
-        return;
-      }
-
-      const opeMode = res.data;
-      if (!opeMode) {
-        // 運用モードが取得できない場合はUNSETにする
-        txOpeMode.value = Constant.Transceiver.OpeMode.UNSET;
-        rxOpeMode.value = Constant.Transceiver.OpeMode.UNSET;
-        return;
-      }
-
-      if ("uplinkMode" in opeMode && opeMode.uplinkMode) {
-        if (!CommonUtil.isEmpty(opeMode.uplinkMode)) {
-          // アップリンク運用モードを更新する
-          txOpeMode.value = opeMode.uplinkMode;
-        } else {
-          // 運用モードが取得できない場合はUNSETにする
-          txOpeMode.value = Constant.Transceiver.OpeMode.UNSET;
-        }
-      } else if ("downlinkMode" in opeMode && opeMode.downlinkMode) {
-        if (!CommonUtil.isEmpty(opeMode.downlinkMode)) {
-          // ダウンリンク運用モードを更新する
-          rxOpeMode.value = opeMode.downlinkMode;
-        } else {
-          // 運用モードが取得できない場合はUNSETにする
-          rxOpeMode.value = Constant.Transceiver.OpeMode.UNSET;
-        }
-      }
+      opeModeResolver.applyFromTransceiver(res);
     });
 
     // 無線機周波数保存イベントを受けて設定ファイルに現在の無線機周波数を保存する
@@ -930,127 +555,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       await ApiAppConfig.storeAppConfig(config);
     });
   });
-
-  const { save, load } = useModeStateManager();
-
-  /**
-   * モードごとの状態を保存する
-   * @param mode モード名（サテライトモードやSPLITなど）
-   */
-  function saveState(mode: string) {
-    // Autoモード中は状態を保存しない
-    if (autoStore.tranceiverAuto) return;
-
-    const state = {
-      rxFrequency: rxFrequency.value,
-      rxOpeMode: rxOpeMode.value,
-      isSatTrackingModeNormal: isSatTrackingModeNormal.value,
-    };
-    save(mode, state);
-  }
-
-  /**
-   * モードごとの状態を呼び出す
-   * @param mode モード名（サテライトモードやSPLITなど）
-   */
-  function loadState(mode: string) {
-    // Autoモード中は状態を読み込まない
-    if (autoStore.tranceiverAuto) return;
-
-    const state = load(mode);
-    rxFrequency.value = state.rxFrequency;
-    rxOpeMode.value = state.rxOpeMode;
-    switch (mode) {
-      case Constant.Transceiver.SatelliteMode.SATELLITE:
-        isSatTrackingModeNormal.value = state.isSatTrackingModeNormal;
-        // このモード以外はtx/rxが同期している
-        // モードを切り替えるとsatelliteにしたときにrx設定あり->rxが空欄という挙動になる
-        // tx入力してるのにrxを空欄にしたいというケースはないので、txをrxに合わせる
-        const isRxOpeModeUNSET: boolean = rxOpeMode.value === Constant.Transceiver.OpeMode.UNSET;
-        const isTxOpeModeUNSET: boolean = txOpeMode.value === Constant.Transceiver.OpeMode.UNSET;
-        if (isRxOpeModeUNSET && !isTxOpeModeUNSET) rxOpeMode.value = txOpeMode.value;
-        break;
-      case Constant.Transceiver.SatelliteMode.SPLIT:
-        isSatTrackingModeNormal.value = true; // SPLITモードではトラッキングモードは常にNORMAL
-        break;
-      default:
-        isSatTrackingModeNormal.value = false; // その他のモードではトラッキングモードは無効
-        break;
-    }
-  }
-
-  /**
-   * 無線機のRx周波数を元に、Rx、Tx基準周波数を算出する
-   * @param plainRxBaseFreq Rx基準周波数（補正値なし）
-   * @param plainTxBaseFreq Tx基準周波数（補正値なし）
-   * @param rxAdjustFreq Rx補正値
-   * @param rxFreq 無線機のRx周波数（補正値・ドップラーシフト適用済み）
-   */
-  async function calcBaseFreqByShiftedRxFreq(
-    plainRxBaseFreq: number,
-    plainTxBaseFreq: number,
-    rxAdjustFreq: number,
-    rxFreq: number
-  ): Promise<{ newRxBaseFreq: number; newTxBaseFreq: number }> {
-    const activeSatHubService = ActiveSatServiceHub.getInstance();
-    const frequencyTrackService = activeSatHubService.getFrequencyTrackService();
-    if (!frequencyTrackService) {
-      return { newRxBaseFreq: 0, newTxBaseFreq: 0 };
-    }
-
-    // Rxのドップラーファクターを計算
-    const rxDopplerFactor = await frequencyTrackService.calcDownlinkDopplerFactor(
-      currentDate.value,
-      autoTrackingIntervalMsec
-    );
-
-    // Rx、Txの基準周波数を更新する
-    const { rxBaseFreq, txBaseFreq } = frequencyTrackService.calcInvHeteroBaseFreqByRxFreq(
-      plainRxBaseFreq + plainTxBaseFreq,
-      rxAdjustFreq,
-      rxFreq,
-      rxDopplerFactor
-    );
-
-    return { newRxBaseFreq: rxBaseFreq, newTxBaseFreq: txBaseFreq };
-  }
-
-  /**
-   * 無線機のTx周波数を元に、Rx、Tx基準周波数を算出する
-   * @param plainTxBaseFreq Tx基準周波数（補正値なし）
-   * @param plainRxBaseFreq Rx基準周波数（補正値なし）
-   * @param txAdjustFreq Tx補正値
-   * @param txFreq 無線機のTx周波数（補正値・ドップラーシフト適用済み）
-   */
-  async function calcBaseFreqByShiftedTxFreq(
-    plainRxBaseFreq: number,
-    plainTxBaseFreq: number,
-    txAdjustFreq: number,
-    txFreq: number
-  ): Promise<{ newRxBaseFreq: number; newTxBaseFreq: number }> {
-    const activeSatHubService = ActiveSatServiceHub.getInstance();
-
-    const frequencyTrackService = activeSatHubService.getFrequencyTrackService();
-    if (!frequencyTrackService) {
-      return { newRxBaseFreq: 0, newTxBaseFreq: 0 };
-    }
-
-    // Txのドップラーファクターを計算
-    const txDopplerFactor = await frequencyTrackService.calcUplinkDopplerFactor(
-      currentDate.value,
-      autoTrackingIntervalMsec
-    );
-
-    // Rx、Txの基準周波数を更新する
-    const { rxBaseFreq, txBaseFreq } = frequencyTrackService.calcInvHeteroBaseFreqByTxFreq(
-      plainRxBaseFreq + plainTxBaseFreq,
-      txAdjustFreq,
-      txFreq,
-      txDopplerFactor
-    );
-
-    return { newRxBaseFreq: rxBaseFreq, newTxBaseFreq: txBaseFreq };
-  }
 
   /**
    * 現在の衛星の送受信周波数の和を取得する（逆ヘテロダインの計算用、補正値が反映されたもの）
@@ -1064,40 +568,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    */
   function calcBaseFreqWithAdjust() {
     // 画面で設定された補正値を反映した周波数を基準周波数に設定
-    txBaseFreq.value = plainTxBaseFreq + TransceiverUtil.parseNumber(txFrequencyAdjustment.value);
-    rxBaseFreq.value = plainRxBaseFreq + TransceiverUtil.parseNumber(rxFrequencyAdjustment.value);
-    baseFreqSum.value = txBaseFreq.value + rxBaseFreq.value;
-  }
-
-  /**
-   * 無線機の設定が完了しているか判定する
-   */
-  function isValidTransceiverSetting(appConfig: AppConfigModel): boolean {
-    const invalid =
-      // シリアルポートが未設定の場合
-      CommonUtil.isEmpty(appConfig.transceiver.port) ||
-      // 機種が未設定の場合
-      CommonUtil.isEmpty(appConfig.transceiver.transceiverId) ||
-      // ボーレートが未設定の場合
-      CommonUtil.isEmpty(appConfig.transceiver.baudrateBps);
-
-    return !invalid;
-  }
-
-  /**
-   * ドップラーシフトの自動追尾の更新間隔を取得する
-   */
-  async function getAutoTrackingIntervalMsec() {
-    const appConfig = await ApiAppConfig.getAppConfig();
-    return parseFloat(appConfig.transceiver.autoTrackingIntervalSec) * 1000;
-  }
-
-  /**
-   * 基準周波数を更新する（補正値を加味しない周波数）
-   */
-  function updatePlainBaseFreq(txFreq: string, rxFreq: string) {
-    plainTxBaseFreq = TransceiverUtil.parseNumber(txFreq);
-    plainRxBaseFreq = TransceiverUtil.parseNumber(rxFreq);
+    const calculated = baseFreqMgr.calcBaseFreqWithAdjust(txFrequencyAdjustment.value, rxFrequencyAdjustment.value);
+    txBaseFreq.value = calculated.txBaseFreq;
+    rxBaseFreq.value = calculated.rxBaseFreq;
+    baseFreqSum.value = calculated.baseFreqSum;
   }
 
   /**
@@ -1106,17 +580,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   function resetFreqAdj() {
     txFrequencyAdjustment.value = "+000.000";
     rxFrequencyAdjustment.value = "+000.000";
-  }
-
-  /**
-   * アクティブ衛星のNoradIDを取得する
-   */
-  function getActiveSatNorad() {
-    const satelliteService = ActiveSatServiceHub.getInstance().getSatService();
-    if (!satelliteService) {
-      return "";
-    }
-    return satelliteService.getNoradId();
   }
 
   return {

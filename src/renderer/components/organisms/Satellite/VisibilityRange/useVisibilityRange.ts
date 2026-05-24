@@ -52,7 +52,17 @@ export default function useVisibilityRange(currentDate: Ref<Date>, offsetLongitu
           location.longitude +
           (visibleAngleRad / (lengthOfOneDegree * Math.cos(CoordinateCalcUtil.degreeToRadian(latitude)))) *
             Math.sin(radian);
-        resolve([latitude, longitude]);
+
+        if (latitude > 90) {
+          // 緯度が90度を超える場合は90度に制限する
+          resolve([90, longitude]);
+        } else if (latitude < -90) {
+          // 緯度が-90度を下回る場合は-90度に制限する
+          resolve([-90, longitude]);
+        } else {
+          // 緯度が-90度から90度の範囲内の場合はそのまま使用する
+          resolve([latitude, longitude]);
+        }
       });
     });
 

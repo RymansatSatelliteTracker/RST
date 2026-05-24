@@ -2,7 +2,7 @@
   "name": "rst",
   "productName": "RST",
   "private": true,
-  "version": "v0.1.4d",
+  "version": "v0.1.4e",
   "author": {
     "name": "rsp.",
     "email": "xxx@rymansat.com"
@@ -44,6 +44,10 @@
       {
         "from": "resources/data/init-data",
         "to": "data/init-data"
+      },
+      {
+        "from": "public/tiles",
+        "to": "tiles"
       }
     ],
     "extraMetadata": {
@@ -115,7 +119,7 @@
     "mitt": "^3.0.1",
     "module-alias": "^2.2.3",
     "pinia-plugin-persistedstate": "^4.1.1",
-    "satellite.js": "^6.0.0",
+    "satellite.js": "^6.0.2",
     "serialport": "^12.0.0",
     "tsconfig-paths": "^4.2.0",
     "vue": "^3.4.27",
@@ -127,6 +131,7 @@
     "@mdi/js": "^7.4.47",
     "@types/geojson": "^7946.0.15",
     "@types/jest": "^29.5.12",
+    "@types/leaflet": "^1.9.21",
     "@types/serialport": "^8.0.5",
     "@vitejs/plugin-vue": "^5.2.4",
     "concurrently": "^8.2.2",
