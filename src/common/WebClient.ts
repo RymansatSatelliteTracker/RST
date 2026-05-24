@@ -43,7 +43,7 @@ export default class WebClient {
    */
   public async get(url: string, query?: ParsedUrlQueryInput, config?: AxiosRequestConfig): Promise<AppHttpResponse> {
     try {
-      if(query){
+      if (query) {
         // クエリパラメータをURLに追加
         const queryStr = querystring.stringify(query);
         url = `${url}?${queryStr}`;
