@@ -2,6 +2,7 @@ import { AppConfigModel } from "@/common/model/AppConfigModel";
 import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 import type { PassesCache } from "@/renderer/types/pass-type";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 // テスト用パス生成ヘルパー。AOS/LOSを指定してPassesCacheを生成する
 function makePass(aosDate: Date, losDate: Date): PassesCache {
@@ -21,7 +22,7 @@ function makePass(aosDate: Date, losDate: Date): PassesCache {
 
 describe("AutoTrackingHelper", () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe("isRotatorTrackingTimeRange", () => {
@@ -43,7 +44,7 @@ describe("AutoTrackingHelper", () => {
     it("パスが取得できない場合、falseを返すこと", async () => {
       const appConfig = createAppConfig();
       const hubInstance = ActiveSatServiceHub.getInstance();
-      jest.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(null);
+      vi.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(null);
 
       const result = await AutoTrackingHelper.isRotatorTrackingTimeRange(appConfig, BASE);
 
@@ -53,7 +54,7 @@ describe("AutoTrackingHelper", () => {
     it("AOSがnullの場合、falseを返すこと", async () => {
       const appConfig = createAppConfig();
       const hubInstance = ActiveSatServiceHub.getInstance();
-      jest.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue({
+      vi.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue({
         aos: null,
         maxEl: null,
         los: {
@@ -71,7 +72,7 @@ describe("AutoTrackingHelper", () => {
     it("LOSがnullの場合、falseを返すこと", async () => {
       const appConfig = createAppConfig();
       const hubInstance = ActiveSatServiceHub.getInstance();
-      jest.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue({
+      vi.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue({
         aos: {
           date: AOS,
           lookAngles: { elevation: 30, azimuth: 180 },
@@ -89,7 +90,7 @@ describe("AutoTrackingHelper", () => {
     it("現在時刻がAOS直前（startAgoMinute内）の場合、trueを返すこと", async () => {
       const appConfig = createAppConfig(10);
       const hubInstance = ActiveSatServiceHub.getInstance();
-      jest.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(makePass(AOS, LOS));
+      vi.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(makePass(AOS, LOS));
 
       // AOS - (10分 - 1秒) = 有効範囲内
       const currentDate = new Date(AOS.getTime() - (10 * 60 - 1) * 1000);
@@ -100,7 +101,7 @@ describe("AutoTrackingHelper", () => {
     it("現在時刻がAOS直前（startAgoMinute外）の場合、falseを返すこと", async () => {
       const appConfig = createAppConfig(10);
       const hubInstance = ActiveSatServiceHub.getInstance();
-      jest.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(makePass(AOS, LOS));
+      vi.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(makePass(AOS, LOS));
 
       // AOS - (10分 + 1秒) = 有効範囲外
       const currentDate = new Date(AOS.getTime() - (10 * 60 + 1) * 1000);
@@ -111,7 +112,7 @@ describe("AutoTrackingHelper", () => {
     it("現在時刻がAOS〜LOS間の場合、trueを返すこと", async () => {
       const appConfig = createAppConfig(10);
       const hubInstance = ActiveSatServiceHub.getInstance();
-      jest.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(makePass(AOS, LOS));
+      vi.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(makePass(AOS, LOS));
 
       // AOS + 5分 = パス中
       const currentDate = new Date(AOS.getTime() + 5 * 60 * 1000);
@@ -122,7 +123,7 @@ describe("AutoTrackingHelper", () => {
     it("現在時刻がLOS直後（startAgoMinute内）の場合、trueを返すこと", async () => {
       const appConfig = createAppConfig(10);
       const hubInstance = ActiveSatServiceHub.getInstance();
-      jest.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(makePass(AOS, LOS));
+      vi.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(makePass(AOS, LOS));
 
       // LOS + (10分 - 1秒) = 有効範囲内
       const currentDate = new Date(LOS.getTime() + (10 * 60 - 1) * 1000);
@@ -133,7 +134,7 @@ describe("AutoTrackingHelper", () => {
     it("現在時刻がLOS直後（startAgoMinute外）の場合、falseを返すこと", async () => {
       const appConfig = createAppConfig(10);
       const hubInstance = ActiveSatServiceHub.getInstance();
-      jest.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(makePass(AOS, LOS));
+      vi.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(makePass(AOS, LOS));
 
       // LOS + (10分 + 1秒) = 有効範囲外
       const currentDate = new Date(LOS.getTime() + (10 * 60 + 1) * 1000);
@@ -144,7 +145,7 @@ describe("AutoTrackingHelper", () => {
     it("パス取得時の基準日時はローテータの開始・終了時刻で前倒しすること", async () => {
       const appConfig = createAppConfig(12, "3");
       const hubInstance = ActiveSatServiceHub.getInstance();
-      const getOrbitPassAsyncSpy = jest.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(makePass(AOS, LOS));
+      const getOrbitPassAsyncSpy = vi.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(makePass(AOS, LOS));
 
       const currentDate = new Date(AOS.getTime() - 5 * 60 * 1000);
       await AutoTrackingHelper.isRotatorTrackingTimeRange(appConfig, currentDate);

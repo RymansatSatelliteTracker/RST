@@ -1,5 +1,6 @@
 import { AppConfigModel } from "@/common/model/AppConfigModel";
 import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
+import { describe, expect, it } from "vitest";
 
 describe("AutoTrackingHelper", () => {
   describe("getRotatorOffsetBaseDate", () => {
