@@ -45,7 +45,7 @@ describe("TransceiverDopplerCalc", () => {
       jest.spyOn(ApiAppConfig, "getAppConfig").mockResolvedValue(mockAppConfig());
       jest.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(null);
 
-      const result = await calc.isWithinDopplerShiftActiveRange(BASE);
+      const result = await calc.isWithinDopplerShiftActiveRange(mockAppConfig(), BASE);
 
       expect(result).toBe(false);
     });
@@ -65,7 +65,7 @@ describe("TransceiverDopplerCalc", () => {
         durationMs: null,
       });
 
-      const result = await calc.isWithinDopplerShiftActiveRange(BASE);
+      const result = await calc.isWithinDopplerShiftActiveRange(mockAppConfig(), BASE);
       expect(result).toBe(false);
     });
 
@@ -84,7 +84,7 @@ describe("TransceiverDopplerCalc", () => {
         durationMs: null,
       });
 
-      const result = await calc.isWithinDopplerShiftActiveRange(BASE);
+      const result = await calc.isWithinDopplerShiftActiveRange(mockAppConfig(), BASE);
       expect(result).toBe(false);
     });
 
@@ -96,7 +96,7 @@ describe("TransceiverDopplerCalc", () => {
 
       // AOS - (RANGE_MINUTE * 60 - 1)秒 = 有効範囲内
       const currentDate = new Date(AOS.getTime() - (RANGE_MINUTE * 60 - 1) * 1000);
-      const result = await calc.isWithinDopplerShiftActiveRange(currentDate);
+      const result = await calc.isWithinDopplerShiftActiveRange(mockAppConfig(), currentDate);
       expect(result).toBe(true);
     });
 
@@ -108,7 +108,7 @@ describe("TransceiverDopplerCalc", () => {
 
       // AOS - (RANGE_MINUTE * 60 + 1)秒 = 有効範囲外
       const currentDate = new Date(AOS.getTime() - (RANGE_MINUTE * 60 + 1) * 1000);
-      const result = await calc.isWithinDopplerShiftActiveRange(currentDate);
+      const result = await calc.isWithinDopplerShiftActiveRange(mockAppConfig(), currentDate);
       expect(result).toBe(false);
     });
 
@@ -120,7 +120,7 @@ describe("TransceiverDopplerCalc", () => {
 
       // AOS + 5分 = パス中
       const currentDate = new Date(AOS.getTime() + 5 * 60 * 1000);
-      const result = await calc.isWithinDopplerShiftActiveRange(currentDate);
+      const result = await calc.isWithinDopplerShiftActiveRange(mockAppConfig(), currentDate);
       expect(result).toBe(true);
     });
 
@@ -132,7 +132,7 @@ describe("TransceiverDopplerCalc", () => {
 
       // LOS + (RANGE_MINUTE * 60 - 1)秒 = 有効範囲内
       const currentDate = new Date(LOS.getTime() + (RANGE_MINUTE * 60 - 1) * 1000);
-      const result = await calc.isWithinDopplerShiftActiveRange(currentDate);
+      const result = await calc.isWithinDopplerShiftActiveRange(mockAppConfig(), currentDate);
       expect(result).toBe(true);
     });
 
@@ -144,7 +144,7 @@ describe("TransceiverDopplerCalc", () => {
 
       // LOS + (RANGE_MINUTE * 60 + 1)秒 = 有効範囲外
       const currentDate = new Date(LOS.getTime() + (RANGE_MINUTE * 60 + 1) * 1000);
-      const result = await calc.isWithinDopplerShiftActiveRange(currentDate);
+      const result = await calc.isWithinDopplerShiftActiveRange(mockAppConfig(), currentDate);
       expect(result).toBe(false);
     });
 
@@ -155,7 +155,7 @@ describe("TransceiverDopplerCalc", () => {
       const getOrbitPassAsyncSpy = jest.spyOn(hubInstance, "getOrbitPassAsync").mockResolvedValue(makePass(AOS, LOS));
 
       const currentDate = new Date(AOS.getTime() - 5 * 60 * 1000);
-      await calc.isWithinDopplerShiftActiveRange(currentDate);
+      await calc.isWithinDopplerShiftActiveRange(mockAppConfig(), currentDate);
 
       expect(getOrbitPassAsyncSpy).toHaveBeenCalledWith(new Date(currentDate.getTime() - RANGE_MINUTE * 60 * 1000));
     });

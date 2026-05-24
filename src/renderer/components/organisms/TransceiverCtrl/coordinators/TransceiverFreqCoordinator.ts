@@ -1,3 +1,4 @@
+import { AppConfigModel } from "@/common/model/AppConfigModel";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver";
 import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc";
@@ -90,7 +91,7 @@ export default class TransceiverFreqCoordinator {
   /**
    * 人工衛星がドップラーシフト有効範囲内にいるか判定する
    */
-  public async isWithinDopplerShiftActiveRange(): Promise<boolean> {
-    return this.dopplerCalc.isWithinDopplerShiftActiveRange(this.currentDate.value);
+  public async isWithinDopplerShiftActiveRange(appConfig: AppConfigModel): Promise<boolean> {
+    return await this.dopplerCalc.isWithinDopplerShiftActiveRange(appConfig, this.currentDate.value);
   }
 }

@@ -1,5 +1,5 @@
+import { AppConfigModel } from "@/common/model/AppConfigModel";
 import TransceiverUtil from "@/common/util/TransceiverUtil";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
 import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
 
@@ -14,9 +14,8 @@ export default class TransceiverDopplerCalc {
    * @param currentDate 現在日時
    * @returns 有効範囲内の場合はtrue
    */
-  public async isWithinDopplerShiftActiveRange(currentDate: Date): Promise<boolean> {
-    const appConfig = await ApiAppConfig.getAppConfig();
-    return AutoTrackingHelper.isTransceiverTrackingTimeRange(appConfig, currentDate);
+  public async isWithinDopplerShiftActiveRange(appConfig: AppConfigModel, currentDate: Date): Promise<boolean> {
+    return await AutoTrackingHelper.isTransceiverTrackingTimeRange(appConfig, currentDate);
   }
 
   /**
