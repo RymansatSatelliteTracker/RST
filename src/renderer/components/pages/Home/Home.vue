@@ -46,11 +46,11 @@ import Map from "@/renderer/components/organisms/Map/Map.vue";
 import Menu from "@/renderer/components/organisms/Menu/Menu.vue";
 import NowTime from "@/renderer/components/organisms/NowTime/NowTime.vue";
 import Radar from "@/renderer/components/organisms/Radar/Radar.vue";
+import SatelliteGroupSelectBox from "@/renderer/components/organisms/SatelliteGroupSelectBox/SatelliteGroupSelectBox.vue";
+import SatelliteSelectBox from "@/renderer/components/organisms/SatelliteSelectBox/SatelliteSelectBox.vue";
 import FrequencyEditor from "@/renderer/components/organisms/setting/SatelliteSetting/FrequencyEditor/FrequencyEditor.vue";
 import TransceiverCtrl from "@/renderer/components/organisms/TransceiverCtrl/TransceiverCtrl.vue";
 import { onMounted, ref } from "vue";
-import SatelliteGroupSelectBox from "../../organisms/SatelliteGroupSelectBox/SatelliteGroupSelectBox.vue";
-import SatelliteSelectBox from "../../organisms/SatelliteSelectBox/SatelliteSelectBox.vue";
 import useHome from "./useHome.js";
 
 // データ
