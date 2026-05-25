@@ -16,7 +16,6 @@
     "app:build-mac": "npm run vite:build && tsc && npm run app:import-replace && electron-builder --mac",
     "app:build-linux": "npm run vite:build && tsc && npm run app:import-replace && electron-builder --linux",
     "app:import-replace": "tsc-alias -p tsconfig.json",
-    "app:preview": "npm run vite:build && tsc && npm run app:import-replace && electron .",
     "vite:build": "vue-tsc --noEmit && vite build",
     "vite:dev": "vite",
     "vite:preview": "vite preview",
