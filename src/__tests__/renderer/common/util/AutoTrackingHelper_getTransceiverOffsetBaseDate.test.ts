@@ -1,5 +1,5 @@
-import { AppConfigModel } from "@/common/model/AppConfigModel";
-import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
+import { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper.js";
 import { describe, expect, it } from "vitest";
 
 describe("AutoTrackingHelper", () => {
