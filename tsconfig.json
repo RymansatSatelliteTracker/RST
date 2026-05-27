@@ -54,7 +54,9 @@
     } /* Specify path mapping entries for module names relative to 'baseUrl'. */,
     // "rootDirs": [],                        /* Allow multiple folders to be treated as one virtual root when resolving modules. */
     // "typeRoots": [],                       /* Specify folders that act like './node_modules/@types'. */
-    // "types": [],                           /* Specify which @types packages are included in the global scope; when set, only listed packages are included. */,
+    "types": [
+      "vitest/globals"
+    ] /* Specify which @types packages are included in the global scope; when set, only listed packages are included. */,
     // "allowSyntheticDefaultImports": true,  /* Allow default imports from modules that do not have a default export; this affects type checking only. */
     "esModuleInterop": true /* Improve CommonJS/ES Module interop and enable 'allowSyntheticDefaultImports'. */,
     // "preserveSymlinks": true,              /* Do not resolve symlinks to their real paths. */

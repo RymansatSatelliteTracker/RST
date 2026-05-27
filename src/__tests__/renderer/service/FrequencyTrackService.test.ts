@@ -2,7 +2,6 @@ import { AppConfigModel } from "@/common/model/AppConfigModel.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import FrequencyTrackService from "@/renderer/service/FrequencyTrackService.js";
 import SatelliteService from "@/renderer/service/SatelliteService.js";
-import { beforeAll, describe, expect, it, vi } from "vitest";
 
 /**
  * FrequencyTrackServiceのテスト

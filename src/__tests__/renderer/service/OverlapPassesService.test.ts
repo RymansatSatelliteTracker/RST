@@ -1,6 +1,5 @@
 import TleDataHelper from "@/__tests__/renderer/service/TleDataHelper.js";
 import OverlapPassesService from "@/renderer/service/OverlapPassesService.js";
-import { describe, expect, it } from "vitest";
 import { GROUND2_STATION, GROUND_STATION } from "./GroundStationService.test.js";
 
 /**

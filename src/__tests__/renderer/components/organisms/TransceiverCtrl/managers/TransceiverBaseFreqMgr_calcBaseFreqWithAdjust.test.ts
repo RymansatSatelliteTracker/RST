@@ -1,5 +1,4 @@
 import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
-import { describe, expect, it } from "vitest";
 
 describe("TransceiverBaseFreqMgr.calcBaseFreqWithAdjust", () => {
   it("補正値を反映した値を返しplain値は変更しないこと", () => {

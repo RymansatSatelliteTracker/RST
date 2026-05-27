@@ -2,7 +2,6 @@ import { AppConfigModel } from "@/common/model/AppConfigModel.js";
 import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper.js";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
 import type { PassesCache } from "@/renderer/types/pass-type.js";
-import { afterEach, describe, expect, it, vi } from "vitest";
 
 // テスト用パス生成ヘルパー。AOS/LOSを指定してPassesCacheを生成する
 function makePass(aosDate: Date, losDate: Date): PassesCache {

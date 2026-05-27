@@ -1,6 +1,5 @@
 import CanvasUtil from "@/renderer/util/CanvasUtil.js";
 import { createPinia, setActivePinia } from "pinia";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 describe("[正常系]人工衛星マーカーの色コードを取得を取得できる", () => {
   it("インデックスに対応する色コードを返す", () => {

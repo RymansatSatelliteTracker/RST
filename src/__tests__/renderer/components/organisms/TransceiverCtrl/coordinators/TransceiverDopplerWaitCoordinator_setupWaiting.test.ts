@@ -2,7 +2,6 @@ import Constant from "@/common/Constant.js";
 import type { ApiResponse } from "@/common/types/types.js";
 import TransceiverDopplerWaitCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverDopplerWaitCoordinator.js";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 describe("TransceiverDopplerWaitCoordinator.setupWaiting", () => {
   beforeEach(() => {

@@ -2,7 +2,6 @@ import I18nMsgs from "@/common/I18nMsgs.js";
 import FileUtil from "@/main/util/FileUtil.js";
 import FrequencyValidator from "@/main/validator/FrequencyValidator.js";
 import * as path from "path";
-import { expect, it } from "vitest";
 
 /**
  * 正常データ

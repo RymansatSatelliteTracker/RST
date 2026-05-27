@@ -1,5 +1,4 @@
 import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
-import { describe, expect, it } from "vitest";
 
 describe("TransceiverBaseFreqMgr.updatePlainBaseFreq", () => {
   it("文字列周波数を数値へ反映できること", () => {

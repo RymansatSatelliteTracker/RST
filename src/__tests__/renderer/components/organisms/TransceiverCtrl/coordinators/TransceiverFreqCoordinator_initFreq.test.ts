@@ -2,7 +2,6 @@ import { AppConfigModel } from "@/common/model/AppConfigModel.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import type { FreqCoordinatorState } from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverFreqCoordinator.js";
 import TransceiverFreqCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverFreqCoordinator.js";
-import { afterEach, describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 
 const createState = (): FreqCoordinatorState => ({

@@ -8,7 +8,6 @@ import TransceiverModeCoordinator from "@/renderer/components/organisms/Transcei
 import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
 import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver.js";
 import emitter from "@/renderer/util/EventBus.js";
-import { afterEach, describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 
 const createState = (): ModeCoordinatorState => ({

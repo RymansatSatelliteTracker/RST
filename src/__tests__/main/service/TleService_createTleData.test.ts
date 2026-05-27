@@ -1,6 +1,5 @@
 import type { TleItemMap } from "@/common/model/TleModel.js";
 import TleService from "@/main/service/TleService.js";
-import { describe, expect, it } from "vitest";
 
 /**
  * TleService_createTleData のテスト

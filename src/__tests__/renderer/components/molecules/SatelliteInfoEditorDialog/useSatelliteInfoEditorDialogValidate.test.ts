@@ -3,7 +3,6 @@ import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm.js";
 import { useSatelliteInfoEditorDialogValidate } from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useSatelliteInfoEditorDialogValidate.js";
 import { createPinia, setActivePinia } from "pinia";
-import { beforeEach, describe, expect, it } from "vitest";
 
 describe("useSatelliteInfoEditorDialogValidate", () => {
   beforeEach(() => {

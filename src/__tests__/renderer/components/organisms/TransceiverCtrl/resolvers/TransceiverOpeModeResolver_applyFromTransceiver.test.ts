@@ -5,7 +5,6 @@ import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import type { OpeModeResolverState } from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver.js";
 import TransceiverOpeModeResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver.js";
 import emitter from "@/renderer/util/EventBus.js";
-import { afterEach, describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 
 const createState = (): OpeModeResolverState => ({

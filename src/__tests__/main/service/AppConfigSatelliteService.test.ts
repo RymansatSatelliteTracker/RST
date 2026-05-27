@@ -4,7 +4,6 @@ import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil.js";
 import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService.js";
 import DefaultSatelliteService from "@/main/service/DefaultSatelliteService.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
-import { beforeAll, describe, expect, it, vi } from "vitest";
 
 const DEFAULT_SATELLITE_ID = 0;
 const DEFAULT_NORAD_ID = "00000";

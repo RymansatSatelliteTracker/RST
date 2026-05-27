@@ -2,7 +2,6 @@ import Constant from "@/common/Constant.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
 import type { TransceiverSettingLike } from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver.js";
 import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver.js";
-import { beforeEach, describe, expect, it } from "vitest";
 
 // テスト用の設定データファクトリ
 const makeUplinkSetting = (uplinkHz: number, uplinkMode: string) => ({ uplinkHz, uplinkMode });

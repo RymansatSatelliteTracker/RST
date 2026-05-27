@@ -1,6 +1,5 @@
 import { AppConfigRotator } from "@/common/model/AppConfigModel.js";
 import RotatorHelper from "@/common/util/RotatorHelper.js";
-import { describe, expect, it } from "vitest";
 
 describe("RotatorHelper.isWithinRangeのテスト", () => {
   it("Az,Elの範囲チェック", () => {

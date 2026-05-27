@@ -6,7 +6,6 @@ import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 import FileUtil from "@/main/util/FileUtil.js";
 import * as path from "path";
-import { beforeAll, describe, expect, it, vi } from "vitest";
 
 describe("DefaultSatelliteModel", () => {
   function getLatestTLE(): TleItemMap {

@@ -1,7 +1,6 @@
 import TleDataHelper from "@/__tests__/renderer/service/TleDataHelper.js";
 import { InvalidArgumentError } from "@/common/exceptions.js";
 import SatelliteService from "@/renderer/service/SatelliteService.js";
-import { describe, expect, it } from "vitest";
 
 /**
  * [正常系]

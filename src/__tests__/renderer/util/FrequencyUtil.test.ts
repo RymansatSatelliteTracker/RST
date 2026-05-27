@@ -1,5 +1,4 @@
 import { FrequencyUtil } from "@/renderer/util/FrequencyUtil.js";
-import { describe, expect, it } from "vitest";
 
 describe("FrequencyUtil", () => {
   describe("parseSignedFrequency", () => {
