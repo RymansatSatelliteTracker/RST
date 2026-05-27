@@ -1,4 +1,4 @@
-import { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
 import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc.js";
