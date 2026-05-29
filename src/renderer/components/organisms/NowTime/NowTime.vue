@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import BoxLabel from "@/renderer/components/molecules/BoxLabel/BoxLabel.vue";
-import DateUtil from "@/renderer/util/DateUtil";
+import DateUtil from "@/renderer/util/DateUtil.js";
 import { ref, watch } from "vue";
 
 // propsを取得する
@@ -25,5 +25,5 @@ watch([() => props.currentDate], ([newDate]) => {
 </script>
 
 <style lang="scss" scoped>
-@import "./NowTime.scss";
+@use "./NowTime" as *;
 </style>

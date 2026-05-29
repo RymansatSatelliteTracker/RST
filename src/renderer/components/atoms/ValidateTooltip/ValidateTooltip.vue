@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import CommonUtil from "@/common/CommonUtil";
+import CommonUtil from "@/common/CommonUtil.js";
 
 const props = defineProps({
   target: {
@@ -21,5 +21,5 @@ const props = defineProps({
 </script>
 
 <style lang="scss" scoped>
-@import "./ValidateTooltip.scss";
+@use "./ValidateTooltip" as *;
 </style>

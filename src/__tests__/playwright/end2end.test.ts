@@ -1,6 +1,7 @@
-import Constant from "@/common/Constant";
+import Constant from "@/common/Constant.js";
 import Store from "electron-store";
-import { _electron, ElectronApplication, expect, Page, test } from "playwright/test";
+import type { ElectronApplication, Page } from "playwright/test";
+import { _electron, expect, test } from "playwright/test";
 
 let electronApp: ElectronApplication;
 let page: Page;

@@ -1,4 +1,4 @@
-import DateUtil from "@/renderer/util/DateUtil";
+import DateUtil from "@/renderer/util/DateUtil.js";
 import { createPinia, setActivePinia } from "pinia";
 
 /**

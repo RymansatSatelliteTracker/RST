@@ -1,10 +1,9 @@
-import Constant from "@/common/Constant";
-import ApiTransceiver from "@/renderer/api/ApiTransceiver";
-import TransceiverModeCoordinator, {
-  ModeCoordinatorState,
-} from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator";
-import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
-import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
+import Constant from "@/common/Constant.js";
+import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
+import type { ModeCoordinatorState } from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator.js";
+import TransceiverModeCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator.js";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
+import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver.js";
 import { ref } from "vue";
 
 const createState = (): ModeCoordinatorState => ({
@@ -39,14 +38,14 @@ const createCoordinator = (autoOn: boolean, state: ModeCoordinatorState): Transc
 
 describe("TransceiverModeCoordinator.stopAutoMode", () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("AutoモードOFF時、何もしないこと", async () => {
     const state = createState();
     const coordinator = createCoordinator(false, state);
-    const autoOffSpy = jest.spyOn(ApiTransceiver, "transceiverAutoOff").mockResolvedValue();
-    const stopUpdateSpy = jest.spyOn(coordinator, "stopUpdateFreq").mockResolvedValue(true);
+    const autoOffSpy = vi.spyOn(ApiTransceiver, "transceiverAutoOff").mockResolvedValue();
+    const stopUpdateSpy = vi.spyOn(coordinator, "stopUpdateFreq").mockResolvedValue(true);
 
     await coordinator.stopAutoMode();
 
@@ -62,8 +61,8 @@ describe("TransceiverModeCoordinator.stopAutoMode", () => {
     state.savedRxFrequency.value = "0480.000.000";
 
     const coordinator = createCoordinator(true, state);
-    const autoOffSpy = jest.spyOn(ApiTransceiver, "transceiverAutoOff").mockResolvedValue();
-    const stopUpdateSpy = jest.spyOn(coordinator, "stopUpdateFreq").mockResolvedValue(true);
+    const autoOffSpy = vi.spyOn(ApiTransceiver, "transceiverAutoOff").mockResolvedValue();
+    const stopUpdateSpy = vi.spyOn(coordinator, "stopUpdateFreq").mockResolvedValue(true);
 
     await coordinator.stopAutoMode();
 

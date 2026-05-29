@@ -1,6 +1,6 @@
-import Constant from "@/common/Constant";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil";
+import Constant from "@/common/Constant.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil.js";
 import { onMounted, onUnmounted, ref, watch, type Ref } from "vue";
 
 /**

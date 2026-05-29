@@ -1,6 +1,6 @@
-import CommonUtil from "@/common/CommonUtil";
-import { AppConfigRotatorDevice } from "@/common/model/AppConfigRotatorModel";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
+import CommonUtil from "@/common/CommonUtil.js";
+import type { AppConfigRotatorDevice } from "@/common/model/AppConfigRotatorModel.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 
 // 設定ファイル（JSON）のルートのキー名
 const CONFIG_ROOT_KEY = "param";

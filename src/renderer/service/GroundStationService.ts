@@ -1,5 +1,5 @@
-import Constant from "@/common/Constant";
-import type { EcefLocation, PolarLocation } from "@/renderer/types/location-type";
+import Constant from "@/common/Constant.js";
+import type { EcefLocation, PolarLocation } from "@/renderer/types/location-type.js";
 import type {
   LookAngles,
   PassData,
@@ -7,9 +7,9 @@ import type {
   TempPassCache,
   TempPassData,
   TimeInterval,
-} from "@/renderer/types/pass-type";
-import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil";
-import type SatelliteService from "./SatelliteService";
+} from "@/renderer/types/pass-type.js";
+import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil.js";
+import type SatelliteService from "./SatelliteService.js";
 
 /**
  * 可視時間の探索種別

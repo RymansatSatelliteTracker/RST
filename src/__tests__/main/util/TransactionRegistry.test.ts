@@ -1,4 +1,4 @@
-import TransactionRegistry from "@/main/util/TransactionRegistry";
+import TransactionRegistry from "@/main/util/TransactionRegistry.js";
 
 describe("TransactionRegistry", () => {
   beforeAll(() => {});

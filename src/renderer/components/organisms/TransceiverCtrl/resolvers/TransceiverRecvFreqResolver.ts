@@ -1,14 +1,14 @@
-import Constant from "@/common/Constant";
-import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
-import { ApiResponse } from "@/common/types/types";
-import TransceiverUtil from "@/common/util/TransceiverUtil";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc";
-import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
-import AppRendererLogger from "@/renderer/util/AppRendererLogger";
-import emitter from "@/renderer/util/EventBus";
-import { Ref } from "vue";
+import Constant from "@/common/Constant.js";
+import type { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
+import type { ApiResponse } from "@/common/types/types.js";
+import TransceiverUtil from "@/common/util/TransceiverUtil.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc.js";
+import type TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
+import type { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
+import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
+import emitter from "@/renderer/util/EventBus.js";
+import type { Ref } from "vue";
 
 /**
  * 無線機からの周波数受信時の画面状態

@@ -1,20 +1,22 @@
-import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel";
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import {
+import type { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
+import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import type {
   AppConfigModel,
   AppConfigRotator,
   AppConfigSatellite,
   AppConfigTransceiver,
-} from "@/common/model/AppConfigModel";
-import { AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel";
-import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
-import { AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel";
-import { FrequencyModel } from "@/common/model/FrequencyModel";
-import { MessageModel } from "@/common/model/MessageModel";
-import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
-import { ApiResponse, LangType } from "@/common/types/types";
-import type { TleStrings } from "@/renderer/types/satellite-type";
-import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";
+} from "@/common/model/AppConfigModel.js";
+import type { AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel.js";
+import type { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import type { AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel.js";
+import type { FrequencyModel } from "@/common/model/FrequencyModel.js";
+import type { MessageModel } from "@/common/model/MessageModel.js";
+import type { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
+import type { ApiResponse, LangType } from "@/common/types/types.js";
+import EnvUtil from "@/common/util/EnvUtil.js";
+import type { TleStrings } from "@/renderer/types/satellite-type.js";
+import type { IpcRendererEvent } from "electron";
+import { contextBridge, ipcRenderer } from "electron";
 import path from "path";
 /**
  * ここにレンダラに公開するAPIを定義する
@@ -372,7 +374,7 @@ const apiHandler = {
    */
   getTilesPath: () => {
     // 開発環境かビルド環境かで地図タイルのパスを切り替える
-    if (process.env.npm_lifecycle_event === "app:dev") {
+    if (EnvUtil.isDev()) {
       // 開発環境ではpublicフォルダのtilesを参照する
       return "/tiles";
     } else {

@@ -1,6 +1,6 @@
-import CommonUtil from "@/common/CommonUtil";
-import WebClient from "@/common/WebClient";
-import AppMainLogger from "@/main/util/AppMainLogger";
+import CommonUtil from "@/common/CommonUtil.js";
+import WebClient from "@/common/WebClient.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
 
 /**
  * GeoLocationサービス

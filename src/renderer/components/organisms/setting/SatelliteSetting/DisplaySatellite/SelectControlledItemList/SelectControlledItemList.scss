@@ -1,4 +1,4 @@
-@import "@/renderer/components/styles/global.scss";
+@use "@/renderer/components/styles/global" as *;
 
 .sat__btn__icon {
   width: 45px;

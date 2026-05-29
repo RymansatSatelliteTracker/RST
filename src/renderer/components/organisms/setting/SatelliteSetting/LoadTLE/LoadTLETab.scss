@@ -1,4 +1,4 @@
-@import "@/renderer/components/styles/global.scss";
+@use "@/renderer/components/styles/global" as *;
 
 .selected-item {
   background-color: #333333;

@@ -1,9 +1,9 @@
-import { AppConfigSatellite } from "@/common/model/AppConfigModel";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
+import { AppConfigSatellite } from "@/common/model/AppConfigModel.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 
 describe("AppConfigUtil", () => {
   beforeAll(() => {
-    jest.spyOn(AppConfigUtil, "getConfig").mockImplementation(() => {
+    vi.spyOn(AppConfigUtil, "getConfig").mockImplementation(() => {
       const sat: AppConfigSatellite = new AppConfigSatellite();
       sat.satelliteId = 12345;
       sat.groupId = 1;

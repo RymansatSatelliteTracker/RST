@@ -14,13 +14,13 @@
 </template>
 
 <script setup lang="ts">
-import Constant from "@/common/Constant";
-import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
-import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm";
+import Constant from "@/common/Constant.js";
+import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes.js";
 import SatelliteInfoEditorDialog from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialog.vue";
-import useSatelliteInfoEditorDialog from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useSatelliteInfoEditorDialog";
-import { useSatelliteInfoEditorDialogValidate } from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useSatelliteInfoEditorDialogValidate";
-import emitter from "@/renderer/util/EventBus";
+import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm.js";
+import useSatelliteInfoEditorDialog from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useSatelliteInfoEditorDialog.js";
+import { useSatelliteInfoEditorDialogValidate } from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useSatelliteInfoEditorDialogValidate.js";
+import emitter from "@/renderer/util/EventBus.js";
 import { ref, toRaw, watch } from "vue";
 
 // ダイアログ表示用

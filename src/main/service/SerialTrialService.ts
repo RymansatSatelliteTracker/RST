@@ -1,5 +1,5 @@
-import SerialComm from "@/main/common/SerialComm";
-import AppMainLogger from "@/main/util/AppMainLogger";
+import SerialComm from "@/main/common/SerialComm.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
 
 /**
  * シリアルの試行サービスクラス

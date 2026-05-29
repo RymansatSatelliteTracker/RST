@@ -1,5 +1,7 @@
-import Axios, { AxiosInstance, AxiosRequestConfig } from "axios";
-import querystring, { ParsedUrlQueryInput } from "querystring";
+import type { AxiosInstance, AxiosRequestConfig } from "axios";
+import Axios from "axios";
+import type { ParsedUrlQueryInput } from "querystring";
+import querystring from "querystring";
 
 /**
  * HTTPレスポンス
@@ -39,13 +41,9 @@ export default class WebClient {
    * @param config
    * @returns
    */
-  public async get(
-    url: string,
-    query?: ParsedUrlQueryInput,
-    config?: AxiosRequestConfig | undefined
-  ): Promise<AppHttpResponse> {
+  public async get(url: string, query?: ParsedUrlQueryInput, config?: AxiosRequestConfig): Promise<AppHttpResponse> {
     try {
-      if(query){
+      if (query) {
         // クエリパラメータをURLに追加
         const queryStr = querystring.stringify(query);
         url = `${url}?${queryStr}`;
@@ -70,7 +68,7 @@ export default class WebClient {
    * @param config
    * @returns
    */
-  public async post(url: string, data?: any, config?: AxiosRequestConfig | undefined) {
+  public async post(url: string, data?: any, config?: AxiosRequestConfig) {
     try {
       const response = await this.axios.post(url, data, config);
       return new AppHttpResponse(response.status, response.statusText, response.data);

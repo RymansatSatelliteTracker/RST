@@ -62,5 +62,5 @@ async function btnClick(btnmode: string) {
 </script>
 
 <style lang="scss" scoped>
-@import "./CycleButton.scss";
+@use "./CycleButton" as *;
 </style>

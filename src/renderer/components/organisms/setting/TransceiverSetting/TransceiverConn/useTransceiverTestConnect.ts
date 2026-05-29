@@ -1,12 +1,13 @@
-import CommonUtil from "@/common/CommonUtil";
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import ApiSirial from "@/renderer/api/ApiSirial";
-import ApiTransceiver from "@/renderer/api/ApiTransceiver";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import TransceiverConnForm from "@/renderer/components/organisms/setting/TransceiverSetting/TransceiverConn/TransceiverConnForm";
-import emitter from "@/renderer/util/EventBus";
-import { computed, Ref } from "vue";
+import CommonUtil from "@/common/CommonUtil.js";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import ApiSirial from "@/renderer/api/ApiSirial.js";
+import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import type TransceiverConnForm from "@/renderer/components/organisms/setting/TransceiverSetting/TransceiverConn/TransceiverConnForm.js";
+import emitter from "@/renderer/util/EventBus.js";
+import type { Ref } from "vue";
+import { computed } from "vue";
 
 /**
  * 無線機接続テストのフック

@@ -1,4 +1,4 @@
-import type { TleStrings } from "@/renderer/types/satellite-type";
+import type { TleStrings } from "@/renderer/types/satellite-type.js";
 
 /**
  * TLE関係のレンダラ側API

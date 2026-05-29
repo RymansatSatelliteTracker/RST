@@ -12,9 +12,9 @@
 </template>
 
 <script setup lang="ts">
-import { SelectOption } from "@/renderer/types/vue-types";
+import { SelectOption } from "@/renderer/types/vue-types.js";
 import { ref } from "vue";
-import useSatelliteGroupSelectBox from "./useSatelliteGroupSelectBox";
+import useSatelliteGroupSelectBox from "./useSatelliteGroupSelectBox.js";
 
 // データ
 const items = ref<SelectOption[]>([]);
@@ -23,14 +23,15 @@ const items = ref<SelectOption[]>([]);
 const { selectedSatGroupId, updateAppConfig } = useSatelliteGroupSelectBox(items);
 
 /**
- * indexを親コンポーネントに連携する
+ * indexを親コンポーネントに連携す
+ * @param {number} satGrpupId 選択された衛星ID
  */
-async function updateIndex(satGrpupId: string) {
+async function updateIndex(satGrpupId: number) {
   // アクティブ衛星グループをAppConifgに保存
-  await updateAppConfig(satGrpupId);
+  await updateAppConfig(String(satGrpupId));
 }
 </script>
 
 <style lang="scss" scoped>
-@import "./SatelliteGroupSelectBox.scss";
+@use "./SatelliteGroupSelectBox" as *;
 </style>

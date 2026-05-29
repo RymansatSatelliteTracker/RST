@@ -1,6 +1,6 @@
-import Constant from "@/common/Constant";
-import EnvUtil from "@/common/util/EnvUtil";
-import { BrowserWindow } from "electron";
+import Constant from "@/common/Constant.js";
+import EnvUtil from "@/common/util/EnvUtil.js";
+import type { BrowserWindow } from "electron";
 import Store from "electron-store";
 
 // ウィンドウの位置とサイズを表す型を定義

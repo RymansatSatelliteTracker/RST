@@ -1,4 +1,4 @@
-import { I18nMsgItem } from "@/common/types/types";
+import type { I18nMsgItem } from "@/common/types/types.js";
 
 export default class I18nMsgs {
   // 汎用系エラーメッセージ

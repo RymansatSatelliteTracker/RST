@@ -1,4 +1,8 @@
-import { createDefaultSatellite, initializeDefaultSatellites, normalizeData } from "@/common/util/DefaultSatelliteUtil";
+import {
+  createDefaultSatellite,
+  initializeDefaultSatellites,
+  normalizeData,
+} from "@/common/util/DefaultSatelliteUtil.js";
 
 describe("DefaultSatelliteUtil", () => {
   it("空のデフォルト衛星情報を生成できる", () => {

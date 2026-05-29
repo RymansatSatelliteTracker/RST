@@ -1,5 +1,5 @@
-@import "@/renderer/components/styles/variables.scss";
-@import "@/renderer/components/styles/global.scss";
+@use "@/renderer/components/styles/variables" as *;
+@use "@/renderer/components/styles/global" as *;
 
 $main_left_satellite_height: 60px;
 $main_right_width: 260px;

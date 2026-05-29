@@ -1,5 +1,6 @@
 {
   "editor.formatOnSave": false,
+  "eslint.validate": ["javascript", "typescript", "vue"],
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
@@ -43,9 +44,9 @@
     // "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": false
   },
-  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "js/ts.preferences.importModuleSpecifier": "non-relative",
   // すべてのTypeScriptの静的解析エラーが問題タブに表示されるようにする
-  "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+  "js/ts.tsserver.experimental.enableProjectDiagnostics": true,
   // 最終行の改行はPrettierの設定を優先する
   "files.insertFinalNewline": false,
   // 不要な最終行の改行は削除する
@@ -57,7 +58,8 @@
     "npm run ts *": true,
     "npx prettier": true,
     "/^npx prettier(\\b.*)?$/": true,
-    "npx jest *": true,
-    "/^git (status|show\\b.*)/": true, // git status, git show は自動承認
-  }
+    "npx vitest *": true,
+    "/^git (status|show\\b.*)/": true // git status, git show は自動承認
+  },
+  "js/ts.tsdk.path": "./node_modules/typescript/lib"
 }

@@ -1,26 +1,26 @@
 import App from "@/renderer/App.vue";
-import router from "@/renderer/router/router";
-import AppRendererLogger from "@/renderer/util/AppRendererLogger";
+import router from "@/renderer/router/router.js";
+import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
 import { createApp } from "vue";
 
-import { LangType } from "@/common/types/types";
-import { useStoreDispLang } from "@/renderer/store/useStoreDispLang";
+import type { LangType } from "@/common/types/types.js";
+import { useStoreDispLang } from "@/renderer/store/useStoreDispLang.js";
 import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
 import { aliases, mdi } from "vuetify/iconsets/mdi-svg";
 import "vuetify/styles";
 
-import AppConfigService from "@/renderer/service/AppConfigService";
+import AppConfigService from "@/renderer/service/AppConfigService.js";
 import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
 // 全体SCSSの適用
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import { MessageModel } from "@/common/model/MessageModel";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import emitter from "@/renderer/util/EventBus";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import type { MessageModel } from "@/common/model/MessageModel.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import emitter from "@/renderer/util/EventBus.js";
 import "./components/styles/global.scss";
 
 // レンダラ側全体の例外処理

@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { ButtonColorType, useButton } from "./useButton";
+import { ButtonColorType, useButton } from "./useButton.js";
 
 type Props = {
   // スタイルの指定
@@ -21,5 +21,5 @@ const { btnClass } = useButton(props);
 </script>
 
 <style module lang="scss" scoped>
-@import "./Button.scss";
+@use "./Button" as *;
 </style>

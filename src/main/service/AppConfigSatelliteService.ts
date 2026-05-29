@@ -1,11 +1,11 @@
-import I18nMsgs from "@/common/I18nMsgs";
-import { AppConfigSatellite } from "@/common/model/AppConfigModel";
-import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
-import { ApiResponse } from "@/common/types/types";
-import DefaultSatelliteService from "@/main/service/DefaultSatelliteService";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
-import { FileTransaction } from "@/main/util/FileTransaction";
-import FileUtil from "@/main/util/FileUtil";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { AppConfigSatellite } from "@/common/model/AppConfigModel.js";
+import type { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import { ApiResponse } from "@/common/types/types.js";
+import DefaultSatelliteService from "@/main/service/DefaultSatelliteService.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import { FileTransaction } from "@/main/util/FileTransaction.js";
+import FileUtil from "@/main/util/FileUtil.js";
 
 /**
  * アプリケーション設定衛星サービス

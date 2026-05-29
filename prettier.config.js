@@ -6,5 +6,4 @@ export default {
   printWidth: 120,
   arrowParens: "always",
   endOfLine: "crlf",
-  insertFinalNewline: true,
 };

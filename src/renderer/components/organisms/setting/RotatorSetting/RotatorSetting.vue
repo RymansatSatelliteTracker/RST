@@ -45,17 +45,17 @@
 </template>
 
 <script setup lang="ts">
-import CommonUtil from "@/common/CommonUtil";
-import I18nMsgs from "@/common/I18nMsgs";
-import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import ApiSirial from "@/renderer/api/ApiSirial";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
+import CommonUtil from "@/common/CommonUtil.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ApiSirial from "@/renderer/api/ApiSirial.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
 import { ref, watch } from "vue";
 import RotatorBehavior from "./RotatorBehavior/RotatorBehavior.vue";
 import RotatorConn from "./RotatorConn/RotatorConn.vue";
-import RotatorSettingForm from "./RotatorSettingForm";
+import RotatorSettingForm from "./RotatorSettingForm.js";
 
 // イベント関係
 const emits = defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
@@ -65,7 +65,7 @@ const form = ref<RotatorSettingForm>(new RotatorSettingForm());
 
 // 制御系データ
 // ダイアログの表示可否
-const isShow = defineModel("isShow");
+const isShow = defineModel<boolean>("isShow");
 const loadingTestBtn = ref(false);
 const isSerialOpen = ref(false);
 const refRotatorBehavior = ref();
@@ -219,5 +219,5 @@ async function validateTabContents(): Promise<boolean> {
 </script>
 
 <style lang="scss" scoped>
-@import "./RotatorSetting.scss";
+@use "./RotatorSetting" as *;
 </style>

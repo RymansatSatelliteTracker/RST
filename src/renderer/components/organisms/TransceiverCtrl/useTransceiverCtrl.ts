@@ -1,24 +1,25 @@
-import Constant from "@/common/Constant";
-import { AppConfigModel } from "@/common/model/AppConfigModel";
-import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
-import { ApiResponse } from "@/common/types/types";
-import TransceiverUtil from "@/common/util/TransceiverUtil";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import ApiTransceiver from "@/renderer/api/ApiTransceiver";
-import TransceiverDopplerWaitCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverDopplerWaitCoordinator";
-import TransceiverFreqCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverFreqCoordinator";
-import TransceiverModeCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator";
-import TransceiverSyncCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverSyncCoordinator";
-import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
-import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
-import TransceiverModeStateResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeStateResolver";
-import TransceiverOpeModeResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver";
-import TransceiverRecvFreqResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverRecvFreqResolver";
-import { useModeStateManager } from "@/renderer/components/organisms/TransceiverCtrl/useSatelliteModeStateManager";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
-import AppRendererLogger from "@/renderer/util/AppRendererLogger";
-import { onMounted, ref, Ref, watch } from "vue";
+import Constant from "@/common/Constant.js";
+import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import type { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
+import type { ApiResponse } from "@/common/types/types.js";
+import TransceiverUtil from "@/common/util/TransceiverUtil.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
+import TransceiverDopplerWaitCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverDopplerWaitCoordinator.js";
+import TransceiverFreqCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverFreqCoordinator.js";
+import TransceiverModeCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator.js";
+import TransceiverSyncCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverSyncCoordinator.js";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
+import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver.js";
+import TransceiverModeStateResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeStateResolver.js";
+import TransceiverOpeModeResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver.js";
+import TransceiverRecvFreqResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverRecvFreqResolver.js";
+import { useModeStateManager } from "@/renderer/components/organisms/TransceiverCtrl/useSatelliteModeStateManager.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
+import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
+import type { Ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 
 /**
  * 無線機を制御する
@@ -116,7 +117,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     },
     currentDate
   );
-
   /**
    * 周波数更新インターバルを開始する
    * @param {number} intervalMs 時間間隔[単位：ミリ秒]

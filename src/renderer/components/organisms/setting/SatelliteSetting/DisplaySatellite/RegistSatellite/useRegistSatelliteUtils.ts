@@ -1,9 +1,9 @@
-import { AppConfigModel, AppConfigSatellite } from "@/common/model/AppConfigModel";
-import TleUtil from "@/main/util/TleUtil";
-import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite";
-import ApiDefaultSatellite from "@/renderer/api/ApiDefaultSatellite";
-import RegistSatelliteForm from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/RegistSatellite/RegistSatelliteForm";
-import { parseTle, tleToOrbitalElements } from "./useValidateTle";
+import type { AppConfigModel, AppConfigSatellite } from "@/common/model/AppConfigModel.js";
+import TleUtil from "@/main/util/TleUtil.js";
+import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite.js";
+import ApiDefaultSatellite from "@/renderer/api/ApiDefaultSatellite.js";
+import type RegistSatelliteForm from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/RegistSatellite/RegistSatelliteForm.js";
+import { parseTle, tleToOrbitalElements } from "./useValidateTle.js";
 
 /**
  * アプリケーション設定を画面に反映する

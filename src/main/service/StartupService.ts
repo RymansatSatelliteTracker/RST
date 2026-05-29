@@ -1,8 +1,8 @@
-import DefaultSatelliteService from "@/main/service/DefaultSatelliteService";
-import FrequencyService from "@/main/service/FrequencyService";
-import TleService from "@/main/service/TleService";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
-import AppMainLogger from "@/main/util/AppMainLogger";
+import DefaultSatelliteService from "@/main/service/DefaultSatelliteService.js";
+import FrequencyService from "@/main/service/FrequencyService.js";
+import TleService from "@/main/service/TleService.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
 /**
  * アプリの初期処理クラス
  */

@@ -1,13 +1,13 @@
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import { MessageModel } from "@/common/model/MessageModel";
-import ValidatorResultModel from "@/main/common/model/ValidatorResultModel";
-import { fireIpcEvent, getMainWindow } from "@/main/main";
-import ActiveSatService from "@/main/service/ActiveSatService";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
-import FileUtil from "@/main/util/FileUtil";
-import I18nUtil4Main from "@/main/util/I18nUtil4Main";
-import AppConfigValidator from "@/main/validator/AppConfigValidator";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { MessageModel } from "@/common/model/MessageModel.js";
+import ValidatorResultModel from "@/main/common/model/ValidatorResultModel.js";
+import { fireIpcEvent, getMainWindow } from "@/main/main.js";
+import ActiveSatService from "@/main/service/ActiveSatService.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import FileUtil from "@/main/util/FileUtil.js";
+import I18nUtil4Main from "@/main/util/I18nUtil4Main.js";
+import AppConfigValidator from "@/main/validator/AppConfigValidator.js";
 import { dialog } from "electron";
 
 /**

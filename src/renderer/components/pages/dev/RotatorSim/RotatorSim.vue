@@ -11,9 +11,9 @@
 </template>
 
 <script setup lang="ts">
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import { ApiResponse } from "@/common/types/types";
-import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking";
+import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import { ApiResponse } from "@/common/types/types.js";
+import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking.js";
 import { onMounted, onUnmounted, ref } from "vue";
 
 const az = ref(0);
@@ -35,5 +35,5 @@ function onChangeAntennaPosition(res: ApiResponse<AntennaPositionModel>) {
 </script>
 
 <style lang="scss" scoped>
-@import "@/renderer/components/styles/global.scss";
+@use "@/renderer/components/styles/global" as *;
 </style>

@@ -1,16 +1,17 @@
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import { MessageModel } from "@/common/model/MessageModel";
-import { LangType } from "@/common/types/types";
-import EnvUtil from "@/common/util/EnvUtil";
-import { fireIpcEvent, getMainWindow } from "@/main/main";
-import AppConfigExportSerivce from "@/main/service/AppConfigExportSerivce";
-import AppConfigImportSerivce from "@/main/service/AppConfigImportSerivce";
-import DefaultSatelliteService from "@/main/service/DefaultSatelliteService";
-import I18nService from "@/main/service/I18nService";
-import I18nUtil4Main from "@/main/util/I18nUtil4Main";
-import { app, BaseWindow, BrowserWindow, Menu, MenuItem, shell } from "electron";
-import { MenuItemConstructorOptions } from "electron/main";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { MessageModel } from "@/common/model/MessageModel.js";
+import type { LangType } from "@/common/types/types.js";
+import EnvUtil from "@/common/util/EnvUtil.js";
+import { fireIpcEvent, getMainWindow } from "@/main/main.js";
+import AppConfigExportSerivce from "@/main/service/AppConfigExportSerivce.js";
+import AppConfigImportSerivce from "@/main/service/AppConfigImportSerivce.js";
+import DefaultSatelliteService from "@/main/service/DefaultSatelliteService.js";
+import I18nService from "@/main/service/I18nService.js";
+import I18nUtil4Main from "@/main/util/I18nUtil4Main.js";
+import type { BaseWindow, BrowserWindow, MenuItem } from "electron";
+import { app, Menu, shell } from "electron";
+import type { MenuItemConstructorOptions } from "electron/main";
 
 // Mac用の定義
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {

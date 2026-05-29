@@ -1,8 +1,8 @@
-import { AppConfigRotator } from "@/common/model/AppConfigModel";
-import RotatorHelper from "@/common/util/RotatorHelper";
+import { AppConfigRotator } from "@/common/model/AppConfigModel.js";
+import RotatorHelper from "@/common/util/RotatorHelper.js";
 
 describe("RotatorHelper.isWithinRangeAzのテスト", () => {
-  test("Azの範囲チェック", () => {
+  it("Azの範囲チェック", () => {
     const rotatorConfig = new AppConfigRotator();
     rotatorConfig.rangeAzMin = 0;
     rotatorConfig.rangeAzMax = 10;

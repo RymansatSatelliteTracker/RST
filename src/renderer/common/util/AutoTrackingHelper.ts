@@ -1,6 +1,6 @@
-import { AppConfigModel } from "@/common/model/AppConfigModel";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import DateUtil from "@/renderer/util/DateUtil";
+import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import DateUtil from "@/renderer/util/DateUtil.js";
 
 /**
  * 自動追尾関係のヘルパ

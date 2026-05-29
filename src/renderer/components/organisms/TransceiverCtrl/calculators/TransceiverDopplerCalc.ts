@@ -1,7 +1,7 @@
-import { AppConfigModel } from "@/common/model/AppConfigModel";
-import TransceiverUtil from "@/common/util/TransceiverUtil";
-import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
+import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import TransceiverUtil from "@/common/util/TransceiverUtil.js";
+import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
 
 /**
  * ドップラーシフト補正に関する計算を担うクラス

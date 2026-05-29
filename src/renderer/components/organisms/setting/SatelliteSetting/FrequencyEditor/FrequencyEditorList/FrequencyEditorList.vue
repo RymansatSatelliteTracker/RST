@@ -45,8 +45,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
-import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil";
+import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes.js";
+import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil.js";
 import EditFrequencySatelliteInfo from "@/renderer/components/organisms/setting/SatelliteSetting/FrequencyEditor/EditFrequencySatelliteInfo/EditFrequencySatelliteInfo.vue";
 
 import VirtualScrollList from "@/renderer/components/molecules/VirtualScrollList/VirtualScrollList.vue";
@@ -110,5 +110,5 @@ function onCancelEditSatelliteInfo() {
 }
 </script>
 <style lang="scss" scoped>
-@import "./FrequencyEditorList.scss";
+@use "./FrequencyEditorList" as *;
 </style>

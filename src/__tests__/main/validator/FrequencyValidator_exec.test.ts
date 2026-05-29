@@ -1,14 +1,14 @@
-import I18nMsgs from "@/common/I18nMsgs";
-import FileUtil from "@/main/util/FileUtil";
-import FrequencyValidator from "@/main/validator/FrequencyValidator";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import FileUtil from "@/main/util/FileUtil.js";
+import FrequencyValidator from "@/main/validator/FrequencyValidator.js";
 import * as path from "path";
 
 /**
  * 正常データ
  */
-test("正常データ", () => {
+it("正常データ", () => {
   // テストデータ
-  const dataPath = path.resolve(__dirname, "data_FrequencyValidator_exec", "success.json");
+  const dataPath = path.resolve(import.meta.dirname, "data_FrequencyValidator_exec", "success.json");
   const text = FileUtil.readText(dataPath);
   const freqData = JSON.parse(text);
 
@@ -24,9 +24,9 @@ test("正常データ", () => {
  * 異常系
  * 周波数が文字列
  */
-test("異常系：周波数が文字列", () => {
+it("異常系：周波数が文字列", () => {
   // テストデータ
-  const dataPath = path.resolve(__dirname, "data_FrequencyValidator_exec", "frequency_is_string.json");
+  const dataPath = path.resolve(import.meta.dirname, "data_FrequencyValidator_exec", "frequency_is_string.json");
   const text = FileUtil.readText(dataPath);
   const freqData = JSON.parse(text);
 
@@ -52,9 +52,9 @@ test("異常系：周波数が文字列", () => {
  * 異常系
  * 周波数定義の1がなくて2だけ設定
  */
-test("異常系：周波数定義の1がなくて2だけ設定", () => {
+it("異常系：周波数定義の1がなくて2だけ設定", () => {
   // テストデータ
-  const dataPath = path.resolve(__dirname, "data_FrequencyValidator_exec", "only_2.json");
+  const dataPath = path.resolve(import.meta.dirname, "data_FrequencyValidator_exec", "only_2.json");
   const text = FileUtil.readText(dataPath);
   const freqData = JSON.parse(text);
 
@@ -74,9 +74,9 @@ test("異常系：周波数定義の1がなくて2だけ設定", () => {
  * 異常系
  * 周波数とモード片方のみ定義
  */
-test("異常系：周波数とモード片方のみ定義", () => {
+it("異常系：周波数とモード片方のみ定義", () => {
   // テストデータ
-  const dataPath = path.resolve(__dirname, "data_FrequencyValidator_exec", "frequency_or_mode.json");
+  const dataPath = path.resolve(import.meta.dirname, "data_FrequencyValidator_exec", "frequency_or_mode.json");
   const text = FileUtil.readText(dataPath);
   const freqData = JSON.parse(text);
 

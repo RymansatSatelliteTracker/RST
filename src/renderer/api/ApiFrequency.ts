@@ -1,5 +1,5 @@
-import { FrequencyModel } from "@/common/model/FrequencyModel";
-import { ApiResponse } from "@/common/types/types";
+import type { FrequencyModel } from "@/common/model/FrequencyModel.js";
+import type { ApiResponse } from "@/common/types/types.js";
 
 /**
  * Frequency関係のレンダラ側API

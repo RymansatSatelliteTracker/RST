@@ -1,24 +1,25 @@
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
-import { FileTransaction } from "@/main/util/FileTransaction";
-import FileUtil from "@/main/util/FileUtil";
-import TransactionRegistry from "@/main/util/TransactionRegistry";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import { FileTransaction } from "@/main/util/FileTransaction.js";
+import FileUtil from "@/main/util/FileUtil.js";
+import TransactionRegistry from "@/main/util/TransactionRegistry.js";
+import type { MockInstance } from "vitest";
 
 describe("FileTransaction", () => {
-  let wirteTextSpy: jest.SpyInstance;
+  let wirteTextSpy: MockInstance;
   beforeAll(() => {
-    jest.spyOn(AppConfigUtil, "getConfigPath").mockImplementation(() => {
+    vi.spyOn(AppConfigUtil, "getConfigPath").mockImplementation(() => {
       return "/path/to/config.json";
     });
-    jest.spyOn(FileUtil, "copyFile").mockImplementation((sourcePath, tempFilePath) => {
+    vi.spyOn(FileUtil, "copyFile").mockImplementation((sourcePath, tempFilePath) => {
       return;
     });
-    jest.spyOn(FileUtil, "exists").mockImplementation((tempFilePath) => {
+    vi.spyOn(FileUtil, "exists").mockImplementation((tempFilePath) => {
       return true;
     });
-    wirteTextSpy = jest.spyOn(FileUtil, "writeText").mockImplementation((tempFilePath, text) => {
+    wirteTextSpy = vi.spyOn(FileUtil, "writeText").mockImplementation((tempFilePath, text) => {
       return;
     });
-    jest.spyOn(FileUtil, "deleteFile").mockImplementation((tempFilePath) => {
+    vi.spyOn(FileUtil, "deleteFile").mockImplementation((tempFilePath) => {
       return;
     });
   });

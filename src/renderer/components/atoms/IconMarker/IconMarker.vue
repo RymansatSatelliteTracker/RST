@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import { LIcon, LMarker } from "@vue-leaflet/vue-leaflet";
-import { useIconMarker } from "./useIconMarker";
+import { useIconMarker } from "./useIconMarker.js";
 
 type Props = {
   // プロパティの指定

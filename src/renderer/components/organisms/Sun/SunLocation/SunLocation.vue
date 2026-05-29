@@ -13,7 +13,7 @@
 import sunIcon from "@/renderer/assets/sun.png";
 import IconMarker from "@/renderer/components/atoms/IconMarker/IconMarker.vue";
 import { ref, watch } from "vue";
-import useSunLocation from "./useSunLocation";
+import useSunLocation from "./useSunLocation.js";
 
 // propsを取得する
 const props = defineProps({

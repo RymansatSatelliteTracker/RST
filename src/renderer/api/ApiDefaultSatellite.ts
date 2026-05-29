@@ -1,4 +1,4 @@
-import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
+import type { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes.js";
 
 /**
  * デフォルト衛星設定関係のレンダラ側API

@@ -26,11 +26,11 @@
 </template>
 
 <script setup lang="ts">
-import Constant from "@/common/Constant";
+import Constant from "@/common/Constant.js";
 import { LPolygon } from "@vue-leaflet/vue-leaflet";
 import { ref, watch } from "vue";
-import useVisibilityDashRange from "./useVisibilityDashRange";
-import useVisibilityRange from "./useVisibilityRange";
+import useVisibilityDashRange from "./useVisibilityDashRange.js";
+import useVisibilityRange from "./useVisibilityRange.js";
 
 // propsを取得する
 const props = defineProps({

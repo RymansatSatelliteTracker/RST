@@ -27,18 +27,18 @@
   </v-sheet>
 </template>
 <script setup lang="ts">
-import I18nMsgs from "@/common/I18nMsgs";
-import { AppConfigTleUrl } from "@/common/model/AppConfigModel";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { AppConfigTleUrl } from "@/common/model/AppConfigModel.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import TleUrlEditableCheckbox from "@/renderer/components/molecules/TleUrlEditableCheckbox/TleUrlEditableCheckbox.vue";
 import {
   getUrlofInvalidContents,
   isUpdated,
-} from "@/renderer/components/organisms/setting/SatelliteSetting/LoadTLE/useLoadTLE";
+} from "@/renderer/components/organisms/setting/SatelliteSetting/LoadTLE/useLoadTLE.js";
 import "@mdi/font/css/materialdesignicons.css";
 import { mdiDelete, mdiPlusCircle } from "@mdi/js";
 import { onMounted, ref } from "vue";
-import { useLoadTLETabValidate, validSchemaLoadTLETab } from "./useLoadTLETabValidate";
+import { useLoadTLETabValidate, validSchemaLoadTLETab } from "./useLoadTLETabValidate.js";
 
 // リストに表示するデータ
 const items = defineModel<AppConfigTleUrl[]>("tleUrls", { default: [] });
@@ -143,5 +143,5 @@ async function checkTleUrlAccessibility(): Promise<string> {
 defineExpose({ onOk, isTLEUpdated });
 </script>
 <style lang="scss" scoped>
-@import "./LoadTLETab.scss";
+@use "./LoadTLETab" as *;
 </style>

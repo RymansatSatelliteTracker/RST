@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import * as zod from "zod";
+import type * as zod from "zod";
 
 /**
  * 入力チェックを行うフック

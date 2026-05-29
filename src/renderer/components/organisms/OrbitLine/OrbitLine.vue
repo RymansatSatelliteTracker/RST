@@ -21,10 +21,10 @@
 </template>
 
 <script setup lang="ts">
-import CanvasUtil from "@/renderer/util/CanvasUtil";
+import CanvasUtil from "@/renderer/util/CanvasUtil.js";
 import { LPolyline } from "@vue-leaflet/vue-leaflet";
 import { computed, ref, watch } from "vue";
-import useOrbitLineList from "./useOrbitLineList";
+import useOrbitLineList from "./useOrbitLineList.js";
 
 // propsを取得する
 const props = defineProps({

@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { LCircleMarker } from "@vue-leaflet/vue-leaflet";
-import { useCircleMarker } from "./useCircleMarker";
+import { useCircleMarker } from "./useCircleMarker.js";
 
 type Props = {
   // プロパティの指定

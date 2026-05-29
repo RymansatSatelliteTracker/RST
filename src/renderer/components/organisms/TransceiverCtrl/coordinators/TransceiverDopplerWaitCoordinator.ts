@@ -1,7 +1,7 @@
-import Constant from "@/common/Constant";
-import { ApiResponse } from "@/common/types/types";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
-import AppRendererLogger from "@/renderer/util/AppRendererLogger";
+import Constant from "@/common/Constant.js";
+import type { ApiResponse } from "@/common/types/types.js";
+import type { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
+import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
 
 /**
  * ドップラーシフト待機状態と待機タイマを管理するクラス

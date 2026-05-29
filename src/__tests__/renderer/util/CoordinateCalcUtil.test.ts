@@ -1,6 +1,6 @@
-import { GROUND_STATION } from "@/__tests__/renderer/service/GroundStationService.test";
-import Constant from "@/common/Constant";
-import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil";
+import { GROUND_STATION } from "@/__tests__/renderer/service/GroundStationService.test.js";
+import Constant from "@/common/Constant.js";
+import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil.js";
 
 /**
  * [正常系]

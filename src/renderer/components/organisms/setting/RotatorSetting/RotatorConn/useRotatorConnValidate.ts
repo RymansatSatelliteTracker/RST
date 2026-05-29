@@ -1,9 +1,9 @@
-import I18nMsgs from "@/common/I18nMsgs";
-import ZodUtil from "@/common/util/ZodUtil";
-import { useValidate } from "@/renderer/common/hook/useValidate";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import RotatorConnForm from "@/renderer/components/organisms/setting/RotatorSetting/RotatorConn/RotatorConnForm";
-import { RotatorRage } from "@/renderer/types/rotator-types";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import ZodUtil from "@/common/util/ZodUtil.js";
+import { useValidate } from "@/renderer/common/hook/useValidate.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import type RotatorConnForm from "@/renderer/components/organisms/setting/RotatorSetting/RotatorConn/RotatorConnForm.js";
+import type { RotatorRage } from "@/renderer/types/rotator-types.js";
 import * as zod from "zod";
 
 /**

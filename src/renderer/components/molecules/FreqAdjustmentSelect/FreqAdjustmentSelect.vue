@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import useFrequencySelect from "./useFreqAdjustmentSelect";
+import useFrequencySelect from "./useFreqAdjustmentSelect.js";
 
 // frequencyを取得する
 const frequency = defineModel<string>("frequency", { required: true });
@@ -67,5 +67,5 @@ function handleClick(index: number) {
 </script>
 
 <style lang="scss" scoped>
-@import "./FreqAdjustmentSelect.scss";
+@use "./FreqAdjustmentSelect" as *;
 </style>

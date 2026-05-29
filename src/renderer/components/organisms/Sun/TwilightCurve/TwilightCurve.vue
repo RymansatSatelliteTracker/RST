@@ -14,10 +14,10 @@
 </template>
 
 <script setup lang="ts">
-import Constant from "@/common/Constant";
+import Constant from "@/common/Constant.js";
 import { LGeoJson } from "@vue-leaflet/vue-leaflet";
 import { ref, watch } from "vue";
-import useTwilightCurve from "./useTwilightCurve";
+import useTwilightCurve from "./useTwilightCurve.js";
 
 // propsを取得する
 const props = defineProps({

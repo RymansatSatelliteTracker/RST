@@ -1,6 +1,6 @@
-import { AppConfigTleUrl } from "@/common/model/AppConfigModel";
-import ApiTle from "@/renderer/api/ApiTle";
-import AppRendererLogger from "@/renderer/util/AppRendererLogger";
+import type { AppConfigTleUrl } from "@/common/model/AppConfigModel.js";
+import ApiTle from "@/renderer/api/ApiTle.js";
+import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
 export function isUpdated(oldValue: AppConfigTleUrl[], newValue: AppConfigTleUrl[]) {
   return JSON.stringify(oldValue) !== JSON.stringify(newValue);
 }

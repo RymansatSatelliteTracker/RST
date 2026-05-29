@@ -10,27 +10,58 @@
 
 #### Windows
 
-- nodeのバージョン管理はvoltaを使用した場合の手順を記載する。volta以外を使用する場合は適宜読み替える事。
-- PCにnode, nodistがインストールされている場合、アンインストールする。
+- nodeのバージョン管理はfnmを使用した場合の手順を記載する。fnm以外を使用する場合は適宜読み替える事。
+- PCにnode, nodist, Voltaがインストールされている場合、アンインストールする。
 - 注意）nodistをアンインストールした後、$HOME\.npmrc 内のnodistの記載を手動で削除する。
 
 ```bash
-# voltaのインストール
-winget install Volta.Volta
+# fnmのインストール
+winget install Schniz.fnm
+
+# fnmの初期化（PowerShell）
+## プロファイルを開く
+notepad $PROFILE
+## 以下の1行を追記
+fnm env --use-on-cd | Out-String | Invoke-Expression
+## 保存後に反映
+. $PROFILE
+
 # nodeのインストール
-volta install node@22
+fnm install 22
+fnm use 22
+fnm default 22
 
 # ライブラリなどのインストール
 npm ci
 ```
 
-#### Mac
-- PCにnode, nodebrewがインストールされている場合、アンインストールする
+##### fnmの初期化（Windows Git Bashを使用する場合）
+
+- Windows Git Bashを利用する場合は、以下を設定してください。
+
 ```bash
-# voltaのインストール
-brew install volta
+# .bashrcを開く
+nano ~/.bashrc
+# 以下の1行を追記して保存
+eval "$(fnm env --use-on-cd)"
+```
+
+#### Mac
+
+- PCにnode, nodebrew, Voltaがインストールされている場合、アンインストールする
+
+```bash
+# fnmのインストール
+brew install fnm
+
+# fnmの初期化
+echo 'eval "$(fnm env --use-on-cd)"' >> ~/.zshrc
+source ~/.zshrc
+
 # nodeのインストール
-volta install node@22
+fnm install 22
+fnm use 22
+fnm default 22
 
 # ライブラリなどのインストール
 npm ci
@@ -83,9 +114,9 @@ VsCodeでのデバッグ実行の方法です。
 3. 実行とデバッグ（`Run and Debug (Ctrl+Shift+D)`）にて、`Electron: Renderer`を選択する。
 4. F5でデバッグを開始する。
 
-#### Jest実行でのデバッグ
+#### Vitest実行でのデバッグ
 
-1. 機能拡張「Jest Runner(firsttris.vscode-jest-runner)」をインストールする
+1. 機能拡張「Vitest Runner(firsttris.vscode-jest-runner)」をインストールする
 2. 適宜ブレークポイントを設定する。
 3. テストケースのファイルの各ケース（メソッド）の上部の「Debug」をクリックする
 
@@ -119,14 +150,15 @@ VsCodeでのデバッグ実行の方法です。
 #### アイコン編集
 
 Inkscapeで編集を行う。
+
 - 小さいアイコン向け
-    - public\assets\アイコン\_24.svg
+  - public\assets\アイコン\_24.svg
 - 大きいアイコン向け
-    - public\assets\アイコン\_512.svg
+  - public\assets\アイコン\_512.svg
 
 #### Windows向けのicoの作成
 
-複数pngをicoファイルに格納するため、以下からImageMagicをダウンロード、インストールする。    
+複数pngをicoファイルに格納するため、以下からImageMagicをダウンロード、インストールする。  
 https://www.imagemagick.org/script/download.php
 
 以下をコマンドプロンプトで実行する。
@@ -143,21 +175,25 @@ rst.ico がWindowsのアイコンファイルとなる。
 
 ### 7. 地図データの作成方法
 
-1. [Natural Earth III – Texture Maps]から地図画像データをDL  
-  - [2. Earth without clouds](https://www.shadedrelief.com/natural3/pages/textures.html)の[16,200 x 8,100 JPEG (30 MB)]をDLする。  
-  - [Projection information and world (.tfw) files (4 KB)]をDLする。  
-    ※ 2. Earth without cloudsと同一ページの最下部にDLリンクあり。
+1. [Natural Earth III – Texture Maps]から地図画像データをDL
 
-2. ファイル名変更&ユーザーフォルダ配下への格納  
-  - [16,200 x 8,100 JPEG (30 MB)]のファイル名を[natural_earth.jpg]に変更する。  
-  - [16200x8100.tfw]のファイル名を[natural_earth.tfw]に変更する。  
-  - ユーザーフォルダ配下に[EPSG4326]フォルダを新規作成して、[natural_earth.jpg]、[natural_earth.tfw]を格納する。  
+- [2. Earth without clouds](https://www.shadedrelief.com/natural3/pages/textures.html)の[16,200 x 8,100 JPEG (30 MB)]をDLする。
+- [Projection information and world (.tfw) files (4 KB)]をDLする。  
+  ※ 2. Earth without cloudsと同一ページの最下部にDLリンクあり。
 
-3. 以下からQGISをダウンロード、インストールする。    
-  https://qgis.org/download/
+2. ファイル名変更&ユーザーフォルダ配下への格納
 
-4. OSGeo4W Shellを起動して地図タイルを生成  
-  - 以下をOSGeo4W Shellで実行する。
+- [16,200 x 8,100 JPEG (30 MB)]のファイル名を[natural_earth.jpg]に変更する。
+- [16200x8100.tfw]のファイル名を[natural_earth.tfw]に変更する。
+- ユーザーフォルダ配下に[EPSG4326]フォルダを新規作成して、[natural_earth.jpg]、[natural_earth.tfw]を格納する。
+
+3. 以下からQGISをダウンロード、インストールする。  
+   https://qgis.org/download/
+
+4. OSGeo4W Shellを起動して地図タイルを生成
+
+- 以下をOSGeo4W Shellで実行する。
+
 ```
 cd C:\Users\ユーザーフォルダ\EPSG4326
 gdal_translate -a_srs EPSG:4326 -a_ullr -180 90 180 -90 natural_earth.jpg temp.tif
@@ -174,7 +210,7 @@ for /r "C:\Users\ユーザーフォルダ\EPSG4326\tiles" %f in (*.kml) do del "
 これに対処するため、tsc-aliasにて強制的に相対パスへ置換を行っている。
 
 ```ts
-import AppMainLogger from "@/main/util/AppMainLogger";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
 ```
 
 package.json

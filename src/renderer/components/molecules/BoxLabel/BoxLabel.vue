@@ -5,5 +5,5 @@
 <script setup lang="ts"></script>
 
 <style lang="scss" scoped>
-@import "./BoxLabel.scss";
+@use "./BoxLabel" as *;
 </style>

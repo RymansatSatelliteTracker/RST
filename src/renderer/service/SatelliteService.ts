@@ -1,11 +1,11 @@
-import CommonUtil from "@/common/CommonUtil";
-import Constant from "@/common/Constant";
-import { InvalidArgumentError } from "@/common/exceptions";
-import type { EcefLocation, Location3 } from "@/renderer/types/location-type";
-import type { MeanElements, TargetPolarLocation, TleStrings } from "@/renderer/types/satellite-type";
-import AppRendererLogger from "@/renderer/util/AppRendererLogger";
-import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil";
-import DateUtil from "@/renderer/util/DateUtil";
+import CommonUtil from "@/common/CommonUtil.js";
+import Constant from "@/common/Constant.js";
+import { InvalidArgumentError } from "@/common/exceptions.js";
+import type { EcefLocation, Location3 } from "@/renderer/types/location-type.js";
+import type { MeanElements, TargetPolarLocation, TleStrings } from "@/renderer/types/satellite-type.js";
+import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
+import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil.js";
+import DateUtil from "@/renderer/util/DateUtil.js";
 import type { SatRec } from "satellite.js";
 import * as satellite from "satellite.js";
 

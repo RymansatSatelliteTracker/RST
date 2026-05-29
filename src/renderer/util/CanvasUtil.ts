@@ -1,7 +1,7 @@
-import CommonUtil from "@/common/CommonUtil";
-import I18nMsgs from "@/common/I18nMsgs";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import { SatAzEl } from "@/renderer/types/satellite-type";
+import CommonUtil from "@/common/CommonUtil.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import type { SatAzEl } from "@/renderer/types/satellite-type.js";
 
 type TrackingPosition = {
   azimuth: number;

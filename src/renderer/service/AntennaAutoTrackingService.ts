@@ -1,19 +1,19 @@
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel";
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import { AppConfigModel } from "@/common/model/AppConfigModel";
-import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
-import GroundStationHelper from "@/renderer/common/util/GroundStationHelper";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import RotatorControllerBase from "@/renderer/service/rotator/RotatorControllerBase";
-import RotatorControllerFactory from "@/renderer/service/rotator/RotatorControllerFactory";
-import { AppConfigUtil } from "@/renderer/util/AppConfigUtil";
-import emitter from "@/renderer/util/EventBus";
-import { Ref } from "vue";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import type { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
+import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper.js";
+import GroundStationHelper from "@/renderer/common/util/GroundStationHelper.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import type RotatorControllerBase from "@/renderer/service/rotator/RotatorControllerBase.js";
+import RotatorControllerFactory from "@/renderer/service/rotator/RotatorControllerFactory.js";
+import { AppConfigUtil } from "@/renderer/util/AppConfigUtil.js";
+import emitter from "@/renderer/util/EventBus.js";
+import type { Ref } from "vue";
 
 /**
  * アンテナ（ローテータ）の自動衛星追尾サービス

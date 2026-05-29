@@ -1,8 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+import { defineConfig } from "@playwright/test";
 
-const config = {
-  testDir: "src\\__tests__\\playwright",
+export default defineConfig({
+  testDir: "src/__tests__/playwright",
   timeout: 30 * 1000,
   use: {
     headless: true,
@@ -10,5 +9,4 @@ const config = {
   expect: {
     timeout: 5000,
   },
-};
-exports.default = config;
+});

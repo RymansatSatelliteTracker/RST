@@ -121,21 +121,21 @@
 </template>
 
 <script setup lang="ts">
-import CommonUtil from "@/common/CommonUtil";
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import CommonUtil from "@/common/CommonUtil.js";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
 import BorateSelect from "@/renderer/components/molecules/BorateSelect/BorateSelect.vue";
 import SerialPortSelect from "@/renderer/components/molecules/SerialPortSelect/SerialPortSelect.vue";
 import TransceiverDeviceSelect from "@/renderer/components/molecules/TransceiverDeviceSelect/TransceiverDeviceSelect.vue";
 import TransceiverMakerSelect from "@/renderer/components/molecules/TransceiverMakerSelect/TransceiverMakerSelect.vue";
 import { ref, watch } from "vue";
-import TransceiverConnForm from "./TransceiverConnForm";
-import { useTransceiverConnValidate, valiSchemaTransceiverSetting } from "./useTransceiverConnValidate";
-import useTransceiverCtrl from "./useTransceiverCtrl";
-import useTransceiverTestConnect from "./useTransceiverTestConnect";
+import TransceiverConnForm from "./TransceiverConnForm.js";
+import { useTransceiverConnValidate, valiSchemaTransceiverSetting } from "./useTransceiverConnValidate.js";
+import useTransceiverCtrl from "./useTransceiverCtrl.js";
+import useTransceiverTestConnect from "./useTransceiverTestConnect.js";
 
 // 親との送受信
 const form = defineModel<TransceiverConnForm>("form", { required: true });
@@ -209,5 +209,5 @@ async function validateAll(): Promise<boolean> {
 </script>
 
 <style lang="scss" scoped>
-@import "./TransceiverConn.scss";
+@use "./TransceiverConn" as *;
 </style>

@@ -1,12 +1,12 @@
-import Constant from "@/common/Constant";
-import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import ApiTransceiver from "@/renderer/api/ApiTransceiver";
-import ActiveSatHelper from "@/renderer/common/util/ActiveSatHelper";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import type { TleStrings } from "@/renderer/types/satellite-type";
-import emitter from "@/renderer/util/EventBus";
+import Constant from "@/common/Constant.js";
+import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
+import ActiveSatHelper from "@/renderer/common/util/ActiveSatHelper.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import type { TleStrings } from "@/renderer/types/satellite-type.js";
+import emitter from "@/renderer/util/EventBus.js";
 import { ref } from "vue";
 
 /**

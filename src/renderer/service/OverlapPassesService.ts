@@ -1,7 +1,7 @@
-import Constant from "@/common/Constant";
-import type { PassData, PassesCache, TempPassData } from "@/renderer/types/pass-type";
-import GroundStationService, { VisibilityType } from "./GroundStationService";
-import type SatelliteService from "./SatelliteService";
+import Constant from "@/common/Constant.js";
+import type { PassData, PassesCache, TempPassData } from "@/renderer/types/pass-type.js";
+import GroundStationService, { VisibilityType } from "./GroundStationService.js";
+import type SatelliteService from "./SatelliteService.js";
 
 /**
  * 2か所の地上局から同時に人工衛星が観測できる重複するAOS/LOS/Melを計算する

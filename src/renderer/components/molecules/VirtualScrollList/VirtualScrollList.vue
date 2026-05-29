@@ -204,5 +204,5 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
-@import "./VirtualScrollList.scss";
+@use "./VirtualScrollList" as *;
 </style>

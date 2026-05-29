@@ -1,4 +1,4 @@
-import Constant from "@/common/Constant";
+import Constant from "@/common/Constant.js";
 import log from "electron-log";
 
 const PREFIX = "[main]";

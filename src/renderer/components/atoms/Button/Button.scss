@@ -1,5 +1,6 @@
-@import "@/renderer/components/styles/variables.scss";
-@import "@/renderer/components/styles/global.scss";
+@use "sass:color";
+@use "@/renderer/components/styles/variables" as *;
+@use "@/renderer/components/styles/global" as *;
 
 .buttonPrimary {
   color: $white;
@@ -14,20 +15,20 @@
   letter-spacing: normal !important;
 
   &:hover {
-    background-color: darken($blue, 5%);
-    border: 1px solid darken($blue, 5%);
+    background-color: color.adjust($blue, $lightness: -5%);
+    border: 1px solid color.adjust($blue, $lightness: -5%);
     cursor: pointer;
   }
 
   &:active {
-    background-color: darken($blue, 10%);
-    border: 1px solid darken($blue, 10%);
+    background-color: color.adjust($blue, $lightness: -10%);
+    border: 1px solid color.adjust($blue, $lightness: -10%);
     cursor: pointer;
   }
 
   &:focus {
-    background-color: darken($blue, 10%);
-    border: 1px solid darken($blue, 10%);
+    background-color: color.adjust($blue, $lightness: -10%);
+    border: 1px solid color.adjust($blue, $lightness: -10%);
     cursor: pointer;
 
     &:focus {
