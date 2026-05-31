@@ -6,7 +6,17 @@
       :crs="L.CRS.EPSG4326"
       :use-global-leaflet="true"
       :center="groundStation"
-      :options="{ attributionControl: false, zoomControl: false, maxZoom: 6, minZoom: 1, dragging: true }"
+      :options="{
+        attributionControl: false,
+        zoomControl: false,
+        maxZoom: 6,
+        minZoom: 1,
+        dragging: true,
+        worldCopyJump: false,
+        maxBoundsViscosity: 1.0,
+      }"
+      :max-bounds="currentMaxBounds"
+      @ready="onMapReady"
     >
       <!-- <l-tile-layer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base"></l-tile-layer> -->
       <!-- <l-tile-layer
@@ -18,10 +28,11 @@
 
       <!-- 地図 -->
       <l-tile-layer
+        v-if="tilePath"
         :url="`${tilePath}/{z}/{x}/{y}.jpg`"
         layer-type="base"
         :opacity="0.7"
-        :tileSize="512"
+        :tile-size="512"
         :tms="true"
         :bounds="[
           [-90, -180],
@@ -30,12 +41,12 @@
       />
 
       <!-- 太陽の位置を描画 -->
-      <sun-location :currentDate="currentDate" :offsetLongitude="offsetLongitude"></sun-location>
+      <sun-location :current-date="currentDate" :offset-longitude="offsetLongitude"></sun-location>
       <!-- 薄明曲線を描画 -->
-      <twilight-curve :currentDate="currentDate" :offsetLongitude="offsetLongitude"></twilight-curve>
+      <twilight-curve :current-date="currentDate" :offset-longitude="offsetLongitude"></twilight-curve>
 
       <!-- 月の位置を描画 -->
-      <moon :currentDate="currentDate" :offsetLongitude="offsetLongitude"></moon>
+      <moon :current-date="currentDate" :offset-longitude="offsetLongitude"></moon>
 
       <!-- 地上局のマーカーを描画 -->
       <circle-marker
@@ -55,11 +66,11 @@
       />
 
       <!-- 人工衛星の可視範囲を描画 -->
-      <visibility-range :currentDate="currentDate" :offsetLongitude="offsetLongitude" />
+      <visibility-range :current-date="currentDate" :offset-longitude="offsetLongitude" />
       <!-- 人工衛星の軌道を描画 -->
-      <orbit-line :currentDate="currentDate" :zoom-level="zoom" />
+      <orbit-line :current-date="currentDate" :zoom-level="zoom" />
       <!-- 人工衛星の位置を描画 -->
-      <satellite-location :currentDate="currentDate" :offsetLongitude="offsetLongitude" />
+      <satellite-location :current-date="currentDate" :offset-longitude="offsetLongitude" />
     </l-map>
   </div>
 </template>
@@ -76,7 +87,7 @@ import TwilightCurve from "@/renderer/components/organisms/Sun/TwilightCurve/Twi
 import { LMap, LTileLayer } from "@vue-leaflet/vue-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { ref, watch } from "vue";
+import { computed, ref, shallowRef, watch } from "vue";
 import useMap from "./useMap.js";
 
 // propsを取得する
@@ -91,6 +102,58 @@ const props = defineProps({
 const zoom = ref(2);
 // データ
 const currentDate = ref<Date>(props.currentDate);
+// Mapインスタンス
+const leafletMap = shallowRef<L.Map | null>(null);
+
+// フック
+// 人工衛星のAOSリストを取得する
+const { groundStation, groundStation2, offsetLongitude, isGroundStation2Enable, tilePath } = useMap();
+
+/**
+ * 地図範囲外へのドラッグを制限する
+ */
+const currentMaxBounds = computed<L.LatLngBounds>(() => {
+  return L.latLngBounds(
+    L.latLng(
+      -Constant.Display.LATITUDE_DRAG_RANGE_DEGREES - 90.0,
+      groundStation.value[1] - (Constant.Display.LONGITUDE_DRAG_RANGE_DEGREES + 180.0)
+    ),
+    L.latLng(
+      Constant.Display.LATITUDE_DRAG_RANGE_DEGREES + 90.0,
+      groundStation.value[1] + (Constant.Display.LONGITUDE_DRAG_RANGE_DEGREES + 180.0)
+    )
+  );
+});
+
+/**
+ * Mapのreadyイベント
+ * @param readyMap Mapインスタンス
+ */
+function onMapReady(readyMap?: L.Map) {
+  if (!readyMap) {
+    return;
+  }
+
+  // Mapインスタンスを更新する
+  leafletMap.value = readyMap;
+  // maxBoundsを更新する
+  syncMapBounds();
+  // 地図サイズを再計算する
+  setTimeout(() => {
+    leafletMap.value?.invalidateSize();
+  }, 0);
+}
+
+/**
+ * MapのmaxBoundsを地上局1(自局)位置に合わせて更新する
+ */
+function syncMapBounds() {
+  if (!leafletMap.value) {
+    return;
+  }
+
+  leafletMap.value.setMaxBounds(currentMaxBounds.value);
+}
 
 // propsの変更を監視して最新データを反映する
 watch(
@@ -99,10 +162,14 @@ watch(
     currentDate.value = newDate;
   }
 );
-
-// フック
-// 人工衛星のAOSリストを取得する
-const { groundStation, groundStation2, offsetLongitude, isGroundStation2Enable, tilePath } = useMap();
+// 地上局1(自局)位置の変更を監視してドラッグ可能範囲を再設定する
+watch(
+  () => groundStation.value,
+  () => {
+    syncMapBounds();
+  },
+  { deep: true }
+);
 </script>
 
 <style module lang="scss">
