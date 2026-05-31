@@ -115,11 +115,11 @@ const { groundStation, groundStation2, offsetLongitude, isGroundStation2Enable, 
 const currentMaxBounds = computed<L.LatLngBounds>(() => {
   return L.latLngBounds(
     L.latLng(
-      groundStation.value[0] - (Constant.Display.LATITUDE_DRAG_RANGE_DEGREES + 90.0),
+      -Constant.Display.LATITUDE_DRAG_RANGE_DEGREES - 90.0,
       groundStation.value[1] - (Constant.Display.LONGITUDE_DRAG_RANGE_DEGREES + 180.0)
     ),
     L.latLng(
-      groundStation.value[0] + (Constant.Display.LATITUDE_DRAG_RANGE_DEGREES + 90.0),
+      Constant.Display.LATITUDE_DRAG_RANGE_DEGREES + 90.0,
       groundStation.value[1] + (Constant.Display.LONGITUDE_DRAG_RANGE_DEGREES + 180.0)
     )
   );
