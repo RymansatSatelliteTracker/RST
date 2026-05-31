@@ -218,14 +218,14 @@ package.json
 ```json
 "scripts": {
   "app:build": "npm run vite:build && tsc && npm run app:import-replace && electron-builder",
-  "app:import-replace": "tsc-alias -p tsconfig.json -s ./src",
+  "app:import-replace": "tsc-alias -p tsconfig.json",
 }
 ```
 
 以下箇所で相対パスへ置換を行っている。
 
 ```json
-"tsc-alias -p tsconfig.json -s ./src"
+"tsc-alias -p tsconfig.json"
 ```
 
 #### ログファイル
