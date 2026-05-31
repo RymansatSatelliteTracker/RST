@@ -73,9 +73,6 @@ npm ci
 # 開発モードで起動する
 npm run app:dev
 
-# アプリをビルドし、起動する
-npm run app:preview
-
 # プロダクト向けビルド
 npm run app:build
   ⇒ releaseフォルダ配下にビルドされたファイルが出力されます。

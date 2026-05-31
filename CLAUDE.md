@@ -46,9 +46,6 @@ npm run test:e2e
 ### ビルド
 
 ```bash
-# プレビュー用ビルド（Viteビルド + TypeScriptコンパイル + Electron実行）
-npm run app:preview
-
 # 全プラットフォーム向けプロダクションアプリビルド
 npm run app:build
 
