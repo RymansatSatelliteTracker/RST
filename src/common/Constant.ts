@@ -139,6 +139,10 @@ export default class Constant {
    * 表示設定関係
    */
   public static readonly Display = class {
+    // 地図範囲外へのドラッグ可能範囲(緯度)[単位:度]
+    static readonly LATITUDE_DRAG_RANGE_DEGREES = 210.0;
+    // 地図範囲外へのドラッグ可能範囲(経度)[単位:度]
+    static readonly LONGITUDE_DRAG_RANGE_DEGREES = 120.0;
     // 地上局のマーカーの大きさ(半径)
     static readonly GROUNDSTATION_MARKER_RADIUS = 6;
     // 地上局1のマーカー色
