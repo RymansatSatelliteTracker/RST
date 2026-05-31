@@ -18,6 +18,7 @@ export default [
         ecmaVersion: "es2023",
         sourceType: "module",
         project: "./tsconfig.json",
+        extraFileExtensions: [".vue"],
       },
     },
     rules: {
