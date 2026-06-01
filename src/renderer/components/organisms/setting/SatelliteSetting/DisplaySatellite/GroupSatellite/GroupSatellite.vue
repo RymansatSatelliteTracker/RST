@@ -15,7 +15,7 @@
             </v-col>
             <!-- グループ追加ボタン -->
             <v-col cols="2" class="d-flex flex-column align-center justify-center">
-              <v-btn @click="addItem" variant="outlined" :disabled="!canAdd" size="small">
+              <v-btn variant="outlined" :disabled="!canAdd" size="small" @click="addItem">
                 {{ I18nUtil.getMsg(I18nMsgs.GCOM_ADD) }}
               </v-btn>
             </v-col>
@@ -25,12 +25,12 @@
           <v-row>
             <v-col cols="10">
               <VirtualScrollList
+                ref="listRef"
                 style="overflow-y: auto"
                 :items="satelliteGroupsLocal"
-                :itemName="'groupName'"
-                :itemKey="'groupKey'"
+                :item-name="'groupName'"
+                :item-key="'groupKey'"
                 :height="358"
-                ref="listRef"
               ></VirtualScrollList>
               <!-- グループ名変更用ダイアログ -->
               <v-dialog v-model="isDialogShow" max-width="500">
@@ -48,16 +48,16 @@
             <!-- アイテムを上下に移動、および削除するためのボタン -->
             <v-col cols="2">
               <div class="d-flex flex-column">
-                <v-btn icon @click="listRef?.moveItemUp" :disabled="!listRef?.canMoveUp" variant="plain">
+                <v-btn icon :disabled="!listRef?.canMoveUp" variant="plain" @click="listRef?.moveItemUp">
                   <v-icon size="30" :icon="mdiArrowUpBold"></v-icon>
                 </v-btn>
-                <v-btn icon @click="listRef?.moveItemDown" :disabled="!listRef?.canMoveDown" variant="plain">
+                <v-btn icon :disabled="!listRef?.canMoveDown" variant="plain" @click="listRef?.moveItemDown">
                   <v-icon size="30" :icon="mdiArrowDownBold"></v-icon>
                 </v-btn>
-                <v-btn icon @click="editItems" :disabled="!canEdit" variant="plain">
+                <v-btn icon :disabled="!canEdit" variant="plain" @click="editItems">
                   <v-icon size="30" :icon="mdiPencil"></v-icon>
                 </v-btn>
-                <v-btn icon @click="listRef?.deleteItem" :disabled="!canDelete" variant="plain">
+                <v-btn icon :disabled="!canDelete" variant="plain" @click="listRef?.deleteItem">
                   <v-icon size="30" :icon="mdiDelete"></v-icon>
                 </v-btn>
               </div>
@@ -66,8 +66,8 @@
         </div>
       </v-card-text>
       <v-card-actions>
-        <v-btn @click="onOk" variant="outlined" size="large">{{ I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_OK) }}</v-btn>
-        <v-btn @click="onCancel" variant="outlined" size="large" class="ml-5">{{
+        <v-btn variant="outlined" size="large" @click="onOk">{{ I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_OK) }}</v-btn>
+        <v-btn variant="outlined" size="large" class="ml-5" @click="onCancel">{{
           I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_CANCEL)
         }}</v-btn>
       </v-card-actions>

@@ -13,22 +13,22 @@
     <v-row>
       <v-col>
         <VirtualScrollList
+          ref="listRef"
           style="overflow-y: auto"
           :items="filteredItems"
-          :itemName="'displayText'"
-          :itemKey="'satelliteId'"
+          :item-name="'displayText'"
+          :item-key="'satelliteId'"
           :height="355"
-          :selectMode="'inclusive'"
-          @itemDblClick="showEditSatelliteInfo"
-          ref="listRef"
+          :select-mode="'inclusive'"
+          @item-dbl-click="showEditSatelliteInfo"
         ></VirtualScrollList>
         <!-- ダブルクリックしたら衛星情報を表示 -->
         <EditSatelliteInfo
           v-if="enableEditSatelliteInfo"
-          :isShow="enableEditSatelliteInfo"
-          :selectedItem="selectedEditSatelliteItem"
-          @onOk="onCloseEditSatelliteInfo"
-          @onCancel="onCloseEditSatelliteInfo"
+          :is-show="enableEditSatelliteInfo"
+          :selected-item="selectedEditSatelliteItem"
+          @on-ok="onCloseEditSatelliteInfo"
+          @on-cancel="onCloseEditSatelliteInfo"
         />
       </v-col>
     </v-row>
@@ -36,7 +36,7 @@
 </template>
 <script setup lang="ts">
 import I18nMsgs from "@/common/I18nMsgs.js";
-import { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
+import type { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
 import ApiDefaultSatellite from "@/renderer/api/ApiDefaultSatellite.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import TextField from "@/renderer/components/atoms/TextField/TextField.vue";

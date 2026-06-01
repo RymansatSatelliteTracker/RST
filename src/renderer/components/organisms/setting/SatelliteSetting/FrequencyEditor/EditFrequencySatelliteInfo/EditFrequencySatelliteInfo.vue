@@ -1,12 +1,12 @@
 <template>
   <SatelliteInfoEditorDialog
-    v-model:isShow="isShow"
+    v-model:is-show="isShow"
     v-model:form="form"
     v-model:errors="errors"
     v-model:title="satellite.satelliteName"
-    v-model:manualEditFlg="manualEditFlg"
-    :editableNoradId="editableNoradId"
-    :showReset="true"
+    v-model:manual-edit-flg="manualEditFlg"
+    :editable-norad-id="editableNoradId"
+    :show-reset="true"
     @ok="onOk"
     @cancel="onCancel"
     @reset="onReset"
@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import Constant from "@/common/Constant.js";
-import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes.js";
+import type { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes.js";
 import SatelliteInfoEditorDialog from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialog.vue";
 import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm.js";
 import useSatelliteInfoEditorDialog from "@/renderer/components/molecules/SatelliteInfoEditorDialog/useSatelliteInfoEditorDialog.js";

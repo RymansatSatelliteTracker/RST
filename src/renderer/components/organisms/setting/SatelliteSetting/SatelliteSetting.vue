@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-dialog max-width="900" v-model="isShow" persistent>
+    <v-dialog v-model="isShow" max-width="900" persistent>
       <v-card color="grey-darken-4" class="pa-4 dialog-height">
         <!-- タブ設定 -->
         <v-tabs v-model="tab">
@@ -22,16 +22,16 @@
             <v-tabs-window-item value="displaySatellite">
               <DisplaySatelliteTab
                 v-show="apiConfigData.satelliteGroupsForSatSetting"
-                v-model:satelliteGroups="apiConfigData.satelliteGroupsForSatSetting"
+                v-model:satellite-groups="apiConfigData.satelliteGroupsForSatSetting"
               />
             </v-tabs-window-item>
 
             <!-- TLE読み込み -->
             <v-tabs-window-item value="loadTLE">
               <LoadTLETab
-                ref="loadTLETabRef"
                 v-show="apiConfigData.tle.urls"
-                v-model:tleUrls="apiConfigData.tle.urls"
+                ref="loadTLETabRef"
+                v-model:tle-urls="apiConfigData.tle.urls"
               />
             </v-tabs-window-item>
 
@@ -39,15 +39,15 @@
             <v-tabs-window-item value="otherSetting">
               <OtherSettingTab
                 v-show="apiConfigData.satelliteSetting"
-                v-model:satelliteSetting="apiConfigData.satelliteSetting"
+                v-model:satellite-setting="apiConfigData.satelliteSetting"
               />
             </v-tabs-window-item>
           </v-tabs-window>
         </v-card-text>
 
         <v-card-actions>
-          <v-btn @click="onOk" variant="outlined" size="large">{{ I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_OK) }}</v-btn>
-          <v-btn @click="onCancel" variant="outlined" size="large" class="ml-5">{{
+          <v-btn variant="outlined" size="large" @click="onOk">{{ I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_OK) }}</v-btn>
+          <v-btn variant="outlined" size="large" class="ml-5" @click="onCancel">{{
             I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_CANCEL)
           }}</v-btn>
         </v-card-actions>
@@ -65,7 +65,7 @@ import OtherSettingTab from "@/renderer/components/organisms/setting/SatelliteSe
 import emitter from "@/renderer/util/EventBus.js";
 
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
-import { ApiResponse } from "@/common/types/types.js";
+import type { ApiResponse } from "@/common/types/types.js";
 import ApiActiveSat from "@/renderer/api/ApiActiveSat.js";
 import ApiConfig from "@/renderer/api/ApiAppConfig.js";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";

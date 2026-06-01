@@ -6,7 +6,7 @@
     :lat-lngs="orbitLineListRaw"
     :options="{ color: colorCode, weight: 1.5 }"
     :interactive="false"
-    dashArray="null"
+    dash-array="null"
   ></l-polyline>
 
   <!-- 低高度の軌道（点線） -->
@@ -16,7 +16,7 @@
     :lat-lngs="orbitDashLineListRaw"
     :options="{ color: colorCode, weight: 1.5 }"
     :interactive="false"
-    dashArray="3 5"
+    dash-array="3 5"
   ></l-polyline>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <FrequencyEditor v-model:isShow="showFrequencyEditor" />
+    <FrequencyEditor v-model:is-show="showFrequencyEditor" />
 
     <div class="menu_area">
       <Menu />
@@ -18,18 +18,18 @@
         </span>
 
         <!-- AOS/LOS時刻 -->
-        <Aos v-if="tleStrings.length > 0" class="main_left_aos" :currentDate="currentDate" />
+        <Aos v-if="tleStrings.length > 0" class="main_left_aos" :current-date="currentDate" />
 
         <!-- 時刻 -->
-        <NowTime class="main_left_nowtime" :currentDate="currentDate" />
+        <NowTime class="main_left_nowtime" :current-date="currentDate" />
       </div>
 
       <!-- 地図 -->
-      <Map class="main_left_map" :currentDate="currentDate" />
+      <Map class="main_left_map" :current-date="currentDate" />
 
       <!-- レーダ -->
       <div class="main_left_radar">
-        <Radar :currentDate="currentDate" />
+        <Radar :current-date="currentDate" />
       </div>
     </div>
 

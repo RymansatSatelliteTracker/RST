@@ -1,6 +1,6 @@
 <template>
   <div class="datetime-picker">
-    <Button styleType="primary-transparent" :disabled="autoStore.isAutoMode()" class="now__btn" @click="setNow"
+    <Button style-type="primary-transparent" :disabled="autoStore.isAutoMode()" class="now__btn" @click="setNow"
       >Now</Button
     >
     <div class="controls">

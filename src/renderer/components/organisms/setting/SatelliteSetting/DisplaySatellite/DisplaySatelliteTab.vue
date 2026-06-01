@@ -11,7 +11,7 @@
 
         <!-- アイテムを移動するためのボタン -->
         <v-col cols="1" class="d-flex flex-column align-center justify-center">
-          <v-btn @click="moveSelectedToRight" variant="plain" size="x-large" :disabled="!canMoveRight">
+          <v-btn variant="plain" size="x-large" :disabled="!canMoveRight" @click="moveSelectedToRight">
             <v-icon size="50" :icon="mdiArrowRightBold"></v-icon>
           </v-btn>
         </v-col>
@@ -20,8 +20,8 @@
         <v-col cols="6">
           <SelectControlledItemList
             v-show="satelliteGroups"
-            v-model:selectedSatellites="rightItems"
-            v-model:satelliteGroups="satelliteGroups"
+            v-model:selected-satellites="rightItems"
+            v-model:satellite-groups="satelliteGroups"
           ></SelectControlledItemList>
         </v-col>
       </v-row>
@@ -31,8 +31,8 @@
 <script setup lang="ts">
 import Constant from "@/common/Constant.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
-import { AppConfigSatelliteGroupForSatSetting } from "@/common/model/AppConfigSatelliteSettingModel.js";
-import { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
+import type { AppConfigSatelliteGroupForSatSetting } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import type { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import FilterableItemList from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/FilterableItemList/FilterableItemList.vue";
 import SelectControlledItemList from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/SelectControlledItemList/SelectControlledItemList.vue";

@@ -5,36 +5,36 @@
     <v-row>
       <v-col cols="10">
         <VirtualScrollList
+          ref="listRef"
           style="overflow-y: auto"
           :items="satellites"
-          :itemName="'satelliteName'"
+          :item-name="'satelliteName'"
           :height="355"
-          @itemDblClick="showEditSatelliteInfo"
-          ref="listRef"
+          @item-dbl-click="showEditSatelliteInfo"
         ></VirtualScrollList>
         <!-- ダブルクリックしたら衛星情報を表示 -->
         <EditFrequencySatelliteInfo
           v-if="enableEditSatelliteInfo"
-          v-model:isShow="enableEditSatelliteInfo"
+          v-model:is-show="enableEditSatelliteInfo"
           v-model:satellite="selectedSatelliteItem"
-          @onOk="onOkEditSatelliteInfo"
-          @onCancel="onCancelEditSatelliteInfo"
+          @on-ok="onOkEditSatelliteInfo"
+          @on-cancel="onCancelEditSatelliteInfo"
         />
       </v-col>
 
       <!-- アイテムを上下に移動、および削除するためのボタン -->
       <v-col cols="2">
         <div class="d-flex flex-column">
-          <v-btn icon @click="showAddSatelliteInfo" variant="plain">
+          <v-btn icon variant="plain" @click="showAddSatelliteInfo">
             <v-icon size="30" :icon="mdiPlusCircle"></v-icon>
           </v-btn>
-          <v-btn icon @click="listRef?.moveItemUp" :disabled="!listRef?.canMoveUp" variant="plain">
+          <v-btn icon :disabled="!listRef?.canMoveUp" variant="plain" @click="listRef?.moveItemUp">
             <v-icon size="30" :icon="mdiArrowUpBold"></v-icon>
           </v-btn>
-          <v-btn icon @click="listRef?.moveItemDown" :disabled="!listRef?.canMoveDown" variant="plain">
+          <v-btn icon :disabled="!listRef?.canMoveDown" variant="plain" @click="listRef?.moveItemDown">
             <v-icon size="30" :icon="mdiArrowDownBold"></v-icon>
           </v-btn>
-          <v-btn icon @click="listRef?.deleteItem" :disabled="!listRef?.canDelete" variant="plain">
+          <v-btn icon :disabled="!listRef?.canDelete" variant="plain" @click="listRef?.deleteItem">
             <v-icon size="30" :icon="mdiDelete"></v-icon>
           </v-btn>
         </div>
@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes.js";
+import type { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes.js";
 import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil.js";
 import EditFrequencySatelliteInfo from "@/renderer/components/organisms/setting/SatelliteSetting/FrequencyEditor/EditFrequencySatelliteInfo/EditFrequencySatelliteInfo.vue";
 

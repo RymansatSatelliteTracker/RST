@@ -2,7 +2,7 @@
   <div class="container">
     <!-- Autoモードボタン -->
     <Button
-      styleType="primary-transparent"
+      style-type="primary-transparent"
       :loading="loadingAutoBtn"
       :class="{ auto_btn_on: autoStore.tranceiverAuto, auto_btn_off: !autoStore.tranceiverAuto }"
       @click="autoBtnClick"
@@ -14,33 +14,33 @@
       <legend class="item_group_legend">Frequency</legend>
       <!-- ドップラーシフトモード-->
       <div class="doppler_area">
-        <DopplerShiftModeSelect class="doppler_shift_mode_select" v-model="dopplerShiftMode" />
+        <DopplerShiftModeSelect v-model="dopplerShiftMode" class="doppler_shift_mode_select" />
       </div>
       <!-- 周波数 -->
       <div class="freq_area">
         <div>
           <span :class="isRxActive ? 'freq_label_active' : 'freq_label_inactive'">Rx</span>
-          <FrequencySelect class="freq_box" v-model:frequency="rxFrequency" v-model:diffFrequency="diffRxFrequency">
+          <FrequencySelect v-model:frequency="rxFrequency" v-model:diff-frequency="diffRxFrequency" class="freq_box">
             <span class="freq_unit">Hz</span>
           </FrequencySelect>
         </div>
       </div>
       <div class="freq_area_sub">
         <div>
-          <FreqAdjustmentSelect class="freq_box_sub" v-model:frequency="rxFrequencyAdjustment"></FreqAdjustmentSelect>
+          <FreqAdjustmentSelect v-model:frequency="rxFrequencyAdjustment" class="freq_box_sub"></FreqAdjustmentSelect>
         </div>
       </div>
       <div class="freq_area">
         <div>
           <span :class="isTxActive ? 'freq_label_active' : 'freq_label_inactive'">Tx</span>
-          <FrequencySelect class="freq_box" v-model:frequency="txFrequency" v-model:diffFrequency="diffTxFrequency">
+          <FrequencySelect v-model:frequency="txFrequency" v-model:diff-frequency="diffTxFrequency" class="freq_box">
             <span class="freq_unit">Hz</span>
           </FrequencySelect>
         </div>
       </div>
       <div class="freq_area_sub">
         <div>
-          <FreqAdjustmentSelect class="freq_box_sub" v-model:frequency="txFrequencyAdjustment"></FreqAdjustmentSelect>
+          <FreqAdjustmentSelect v-model:frequency="txFrequencyAdjustment" class="freq_box_sub"></FreqAdjustmentSelect>
         </div>
       </div>
 
@@ -48,10 +48,10 @@
       <div class="beacon_btn_right">
         <Button
           class="beacon_btn"
-          styleType="primary-transparent"
+          style-type="primary-transparent"
           :class="isBeaconMode ? 'mode_btn_on' : 'mode_btn_off'"
-          @click="beaconBtnClick()"
           :disabled="!isBeaconModeAvailable"
+          @click="beaconBtnClick()"
           >Beacon</Button
         >
       </div>
@@ -61,30 +61,30 @@
     <fieldset class="fieldset_area">
       <legend class="item_group_legend">Mode</legend>
       <div class="mode_area">
-        <div>Rx<OpeModeSelect class="mode_select_box" v-model="rxOpeMode" /></div>
+        <div>Rx<OpeModeSelect v-model="rxOpeMode" class="mode_select_box" /></div>
       </div>
       <br class="br_no_select" />
       <div class="mode_area">
-        <div>Tx<OpeModeSelect class="mode_select_box" v-model="txOpeMode" /></div>
+        <div>Tx<OpeModeSelect v-model="txOpeMode" class="mode_select_box" /></div>
       </div>
       <br class="br_no_select" />
 
       <!-- Satelliteモード -->
       <CycleButton
-        class="sat_btn"
         v-model:mode="satelliteMode"
-        :modeRange="[Constant.Transceiver.SatelliteMode.SATELLITE, Constant.Transceiver.SatelliteMode.SPLIT]"
+        class="sat_btn"
+        :mode-range="[Constant.Transceiver.SatelliteMode.SATELLITE, Constant.Transceiver.SatelliteMode.SPLIT]"
       ></CycleButton>
       <br class="br_no_select" />
       <Button
-        styleType="primary-transparent"
+        style-type="primary-transparent"
         :disabled="satelliteMode !== Constant.Transceiver.SatelliteMode.SATELLITE"
         :class="isSatTrackingModeNormal === true ? 'mode_btn_on' : 'mode_btn_off'"
         @click="satTrackingModeBtnClick(true)"
         >Normal</Button
       >
       <Button
-        styleType="primary-transparent"
+        style-type="primary-transparent"
         :disabled="satelliteMode !== Constant.Transceiver.SatelliteMode.SATELLITE"
         :class="isSatTrackingModeNormal === false ? 'mode_btn_on' : 'mode_btn_off'"
         @click="satTrackingModeBtnClick(false)"
@@ -112,7 +112,7 @@
           <tr v-if="overlapPassList === null || overlapPassList.length === 0">
             <td colspan="4">{{ I18nUtil.getMsg(I18nMsgs.ERR_NO_OVERLAP_PASS) }}</td>
           </tr>
-          <tr v-else v-for="item in overlapPassList" :key="item.maxEl?.date.getTime()">
+          <tr v-for="item in overlapPassList" v-else :key="item.maxEl?.date.getTime()">
             <td>
               {{ DateUtil.formatDateTime(item.aos?.date, { hour: "2-digit", minute: "2-digit" }) }}
             </td>
@@ -132,7 +132,7 @@
             <td>{{ I18nUtil.getMsg(I18nMsgs.GCOM_NA) }}</td>
             <td>{{ I18nUtil.getMsg(I18nMsgs.GCOM_NA) }}</td>
           </tr>
-          <tr v-else v-for="item in orbitalPassList" :key="item.maxEl?.date.getTime()">
+          <tr v-for="item in orbitalPassList" v-else :key="item.maxEl?.date.getTime()">
             <td>
               {{ DateUtil.formatDateTime(item.aos?.date, { hour: "2-digit", minute: "2-digit" }) }}
             </td>

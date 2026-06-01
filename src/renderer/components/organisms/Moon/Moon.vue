@@ -1,16 +1,16 @@
 <template>
   <icon-marker
-    :iconUrl="moonImg"
+    :icon-url="moonImg"
     :latlng="moonLocation"
-    :iconSize="18"
+    :icon-size="18"
     :options="{
       interactive: false,
     }"
   ></icon-marker>
   <icon-marker
-    :iconUrl="moonAgeMaskImgs[moonAgeIdx]"
+    :icon-url="moonAgeMaskImgs[moonAgeIdx]"
     :latlng="moonLocation"
-    :iconSize="18"
+    :icon-size="18"
     :options="{
       interactive: false,
     }"

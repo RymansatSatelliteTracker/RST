@@ -8,10 +8,10 @@
         {{ message }}
       </v-card-text>
       <v-card-actions>
-        <v-btn @click="handleConfirm(true)" variant="outlined" size="large">{{
+        <v-btn variant="outlined" size="large" @click="handleConfirm(true)">{{
           I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_OK)
         }}</v-btn>
-        <v-btn @click="handleConfirm(false)" variant="outlined" size="large" class="ml-5">{{
+        <v-btn variant="outlined" size="large" class="ml-5" @click="handleConfirm(false)">{{
           I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_CANCEL)
         }}</v-btn>
       </v-card-actions>

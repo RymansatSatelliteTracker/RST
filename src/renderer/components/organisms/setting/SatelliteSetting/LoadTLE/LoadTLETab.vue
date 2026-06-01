@@ -8,18 +8,18 @@
             <TleUrlEditableCheckbox
               v-model:enable="item.enable"
               v-model:url="item.url"
+              v-model:valid-schema="validSchemaLoadTLETab"
+              v-model:errors-tle-url="errorsList[index]"
               @click="selectItem(index)"
-              v-model:validSchema="validSchemaLoadTLETab"
-              v-model:errorsTleUrl="errorsList[index]"
             ></TleUrlEditableCheckbox>
           </v-list-item>
         </v-list>
       </v-col>
       <v-col cols="1">
-        <v-btn @click="addItem" variant="plain">
+        <v-btn variant="plain" @click="addItem">
           <v-icon size="30" :icon="mdiPlusCircle"></v-icon>
         </v-btn>
-        <v-btn @click="removeSelectedItem" :disabled="selectedItem === null" variant="plain">
+        <v-btn :disabled="selectedItem === null" variant="plain" @click="removeSelectedItem">
           <v-icon size="30" :icon="mdiDelete"></v-icon>
         </v-btn>
       </v-col>
@@ -28,7 +28,7 @@
 </template>
 <script setup lang="ts">
 import I18nMsgs from "@/common/I18nMsgs.js";
-import { AppConfigTleUrl } from "@/common/model/AppConfigModel.js";
+import type { AppConfigTleUrl } from "@/common/model/AppConfigModel.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import TleUrlEditableCheckbox from "@/renderer/components/molecules/TleUrlEditableCheckbox/TleUrlEditableCheckbox.vue";
 import {

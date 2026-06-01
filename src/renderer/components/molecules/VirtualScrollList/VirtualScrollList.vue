@@ -1,16 +1,16 @@
 <template>
   <v-list border elevation="2" bg-color="#121212">
     <v-virtual-scroll :height="height" :items="items">
-      <template v-slot:default="{ item, index }">
+      <template #default="{ item, index }">
         <span v-if="index === items.length - 1" v-intersect.once="onIntersect"></span>
         <v-list-item
           :key="getItemKey(item, index)"
-          @click="selectItem(index)"
-          @dblclick="emitItemDblClick(item)"
+          ref="listItemRef"
           :class="{ 'v-list-item--active': isSelected(index) }"
           class="listitem"
           density="compact"
-          ref="listItemRef"
+          @click="selectItem(index)"
+          @dblclick="emitItemDblClick(item)"
           >{{ item[itemName] }}
         </v-list-item>
       </template>

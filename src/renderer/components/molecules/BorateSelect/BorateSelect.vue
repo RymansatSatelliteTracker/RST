@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { SelectOption } from "@/renderer/types/vue-types.js";
+import type { SelectOption } from "@/renderer/types/vue-types.js";
 
 // 選択可能なボーレート
 const BORATES = ["1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200"];

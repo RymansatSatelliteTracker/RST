@@ -22,8 +22,8 @@
                       <TextField
                         v-model="groundStationSettingForm.groundStationSetting.lon"
                         maxlength="10"
-                        :valiSchema="validSchemaGroundStationSettingForm"
-                        valiSchemaFieldPath="lon"
+                        :vali-schema="validSchemaGroundStationSettingForm"
+                        vali-schema-field-path="lon"
                       />
                     </div>
                   </v-col>
@@ -37,8 +37,8 @@
                       <TextField
                         v-model="groundStationSettingForm.groundStationSetting.lat"
                         maxlength="10"
-                        :valiSchema="validSchemaGroundStationSettingForm"
-                        valiSchemaFieldPath="lat"
+                        :vali-schema="validSchemaGroundStationSettingForm"
+                        vali-schema-field-path="lat"
                       />
                     </div>
                   </v-col>
@@ -52,8 +52,8 @@
                       <TextField
                         v-model="groundStationSettingForm.groundStationSetting.height"
                         maxlength="5"
-                        :valiSchema="validSchemaGroundStationSettingForm"
-                        valiSchemaFieldPath="height"
+                        :vali-schema="validSchemaGroundStationSettingForm"
+                        vali-schema-field-path="height"
                       />
                     </div>
                   </v-col>
@@ -68,8 +68,8 @@
                       <TextField
                         v-model="groundStationSettingForm.groundStationSetting.gridLocator"
                         maxlength="6"
-                        :valiSchema="validSchemaGroundStationSettingForm"
-                        valiSchemaFieldPath="gridLocator"
+                        :vali-schema="validSchemaGroundStationSettingForm"
+                        vali-schema-field-path="gridLocator"
                       />
                       <v-btn
                         variant="outlined"
@@ -102,11 +102,11 @@
               <div class="font-weight-bold d-inline">{{ I18nUtil.getMsg(I18nMsgs.G61_GROUND_STATION2) }}</div>
               <div class="ml-10 d-inline">
                 <input
+                  id="local_station2_enabled"
+                  v-model="groundStationSettingForm.groundStation2Setting.enable"
                   class="form__checkbox"
                   type="checkbox"
                   name="local_station2_enabled"
-                  id="local_station2_enabled"
-                  v-model="groundStationSettingForm.groundStation2Setting.enable"
                 />
                 <label class="ml-3" for="local_station2_enabled">{{
                   I18nUtil.getMsg(I18nMsgs.G61_GROUND_STATION2_ENABLED)
@@ -124,8 +124,8 @@
                       <TextField
                         v-model="groundStationSettingForm.groundStation2Setting.lon"
                         maxlength="10"
-                        :valiSchema="validSchemaGroundStationSettingForm"
-                        valiSchemaFieldPath="lon"
+                        :vali-schema="validSchemaGroundStationSettingForm"
+                        vali-schema-field-path="lon"
                       />
                     </div>
                   </v-col>
@@ -139,8 +139,8 @@
                       <TextField
                         v-model="groundStationSettingForm.groundStation2Setting.lat"
                         maxlength="10"
-                        :valiSchema="validSchemaGroundStationSettingForm"
-                        valiSchemaFieldPath="lat"
+                        :vali-schema="validSchemaGroundStationSettingForm"
+                        vali-schema-field-path="lat"
                       />
                     </div>
                   </v-col>
@@ -154,8 +154,8 @@
                       <TextField
                         v-model="groundStationSettingForm.groundStation2Setting.height"
                         maxlength="5"
-                        :valiSchema="validSchemaGroundStationSettingForm"
-                        valiSchemaFieldPath="height"
+                        :vali-schema="validSchemaGroundStationSettingForm"
+                        vali-schema-field-path="height"
                       />
                     </div>
                   </v-col>
@@ -170,8 +170,8 @@
                       <TextField
                         v-model="groundStationSettingForm.groundStation2Setting.gridLocator"
                         maxlength="6"
-                        :valiSchema="validSchemaGroundStationSettingForm"
-                        valiSchemaFieldPath="gridLocator"
+                        :vali-schema="validSchemaGroundStationSettingForm"
+                        vali-schema-field-path="gridLocator"
                       />
                       <v-btn
                         variant="outlined"

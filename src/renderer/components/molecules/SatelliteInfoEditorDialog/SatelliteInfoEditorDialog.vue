@@ -17,7 +17,7 @@
             </v-btn>
           </v-col>
 
-          <v-col cols="2" v-if="showReset">
+          <v-col v-if="showReset" cols="2">
             <v-btn variant="outlined" size="small" class="mr-0" @click="emits('reset')">
               {{ I18nUtil.getMsg(I18nMsgs.GCOM_RESET) }}
             </v-btn>
@@ -39,10 +39,10 @@
             <TextField
               v-if="props.editableNoradId"
               v-model="form.noradId"
-              maxlength="5"
-              :valiSchema="valiSchemaSatelliteInfoEditorDialog"
-              valiSchemaFieldPath="noradId"
               v-model:error-text="errors.noradId"
+              maxlength="5"
+              :vali-schema="valiSchemaSatelliteInfoEditorDialog"
+              vali-schema-field-path="noradId"
             />
             <label v-else class="label form__label">{{ form.noradId }}</label>
           </v-col>
@@ -55,10 +55,10 @@
           <v-col cols="4">
             <TextField
               v-model="form.editSatelliteName"
-              maxlength="24"
-              :valiSchema="valiSchemaSatelliteInfoEditorDialog"
-              valiSchemaFieldPath="editSatelliteName"
               v-model:error-text="errors.editSatelliteName"
+              maxlength="24"
+              :vali-schema="valiSchemaSatelliteInfoEditorDialog"
+              vali-schema-field-path="editSatelliteName"
             />
           </v-col>
         </v-row>
@@ -71,11 +71,11 @@
           <v-col cols="4">
             <DigitTextField
               v-model="form.uplink1Hz"
-              suffix="Hz"
-              :valiSchema="valiSchemaSatelliteInfoEditorDialog"
-              valiSchemaFieldPath="uplink1Hz"
               v-model:error-text="errors.uplink1Hz"
-              :padEndDigit="9"
+              suffix="Hz"
+              :vali-schema="valiSchemaSatelliteInfoEditorDialog"
+              vali-schema-field-path="uplink1Hz"
+              :pad-end-digit="9"
               maxlength="10"
             />
           </v-col>
@@ -90,12 +90,12 @@
           <v-col cols="4">
             <DigitTextField
               v-model="form.uplink2Hz"
-              suffix="Hz"
-              :valiSchema="valiSchemaSatelliteInfoEditorDialog"
-              valiSchemaFieldPath="uplink2Hz"
               v-model:error-text="errors.uplink2Hz"
+              suffix="Hz"
+              :vali-schema="valiSchemaSatelliteInfoEditorDialog"
+              vali-schema-field-path="uplink2Hz"
               :disabled="!(form.uplink1Hz && form.uplink1Mode)"
-              :padEndDigit="9"
+              :pad-end-digit="9"
               maxlength="10"
             />
           </v-col>
@@ -112,12 +112,12 @@
           <v-col cols="4">
             <DigitTextField
               v-model="form.uplink3Hz"
-              suffix="Hz"
-              :valiSchema="valiSchemaSatelliteInfoEditorDialog"
-              valiSchemaFieldPath="uplink3Hz"
               v-model:error-text="errors.uplink3Hz"
+              suffix="Hz"
+              :vali-schema="valiSchemaSatelliteInfoEditorDialog"
+              vali-schema-field-path="uplink3Hz"
               :disabled="!(form.uplink2Hz && form.uplink2Mode)"
-              :padEndDigit="9"
+              :pad-end-digit="9"
               maxlength="10"
             />
           </v-col>
@@ -148,11 +148,11 @@
           <v-col cols="4">
             <DigitTextField
               v-model="form.downlink1Hz"
-              suffix="Hz"
-              :valiSchema="valiSchemaSatelliteInfoEditorDialog"
-              valiSchemaFieldPath="downlink1Hz"
               v-model:error-text="errors.downlink1Hz"
-              :padEndDigit="9"
+              suffix="Hz"
+              :vali-schema="valiSchemaSatelliteInfoEditorDialog"
+              vali-schema-field-path="downlink1Hz"
+              :pad-end-digit="9"
               maxlength="10"
             />
           </v-col>
@@ -167,12 +167,12 @@
           <v-col cols="4">
             <DigitTextField
               v-model="form.downlink2Hz"
-              suffix="Hz"
-              :valiSchema="valiSchemaSatelliteInfoEditorDialog"
-              valiSchemaFieldPath="downlink2Hz"
               v-model:error-text="errors.downlink2Hz"
+              suffix="Hz"
+              :vali-schema="valiSchemaSatelliteInfoEditorDialog"
+              vali-schema-field-path="downlink2Hz"
               :disabled="!(form.downlink1Hz && form.downlink1Mode)"
-              :padEndDigit="9"
+              :pad-end-digit="9"
               maxlength="10"
             />
           </v-col>
@@ -189,12 +189,12 @@
           <v-col cols="4">
             <DigitTextField
               v-model="form.downlink3Hz"
-              suffix="Hz"
-              :valiSchema="valiSchemaSatelliteInfoEditorDialog"
-              valiSchemaFieldPath="downlink3Hz"
               v-model:error-text="errors.downlink3Hz"
+              suffix="Hz"
+              :vali-schema="valiSchemaSatelliteInfoEditorDialog"
+              vali-schema-field-path="downlink3Hz"
               :disabled="!(form.downlink2Hz && form.downlink2Mode)"
-              :padEndDigit="9"
+              :pad-end-digit="9"
               maxlength="10"
             />
           </v-col>
@@ -215,11 +215,11 @@
           <v-col cols="4">
             <DigitTextField
               v-model="form.beaconHz"
-              suffix="Hz"
-              :valiSchema="valiSchemaSatelliteInfoEditorDialog"
-              valiSchemaFieldPath="beaconHz"
               v-model:error-text="errors.beaconHz"
-              :padEndDigit="9"
+              suffix="Hz"
+              :vali-schema="valiSchemaSatelliteInfoEditorDialog"
+              vali-schema-field-path="beaconHz"
+              :pad-end-digit="9"
               maxlength="10"
             />
           </v-col>
@@ -240,7 +240,7 @@
             ></v-checkbox-btn>
           </v-col>
           <v-col cols="6">
-            <v-radio-group row v-model="form.satelliteMode" hide-details density="compact">
+            <v-radio-group v-model="form.satelliteMode" row hide-details density="compact">
               <v-radio
                 :value="Constant.Transceiver.TrackingMode.NORMAL"
                 :disabled="!form.enableSatelliteMode"
@@ -277,10 +277,10 @@
         </v-row>
       </v-card-text>
       <v-card-actions>
-        <v-btn @click="emits('ok')" variant="outlined" size="large">{{
+        <v-btn variant="outlined" size="large" @click="emits('ok')">{{
           I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_OK)
         }}</v-btn>
-        <v-btn @click="emits('cancel')" variant="outlined" size="large" class="ml-5">{{
+        <v-btn variant="outlined" size="large" class="ml-5" @click="emits('cancel')">{{
           I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_CANCEL)
         }}</v-btn>
       </v-card-actions>

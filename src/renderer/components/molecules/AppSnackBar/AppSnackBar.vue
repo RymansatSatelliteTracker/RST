@@ -2,7 +2,7 @@
   <v-snackbar v-model="isShow" :timeout="timeout" :color="color" vertical close-on-content-click>
     <span class="text-pre-wrap" style="user-select: none">{{ text }}</span>
 
-    <template v-slot:actions>
+    <template #actions>
       <v-btn color="white" variant="text" @click="close">Close</v-btn>
     </template>
   </v-snackbar>
