@@ -6,10 +6,10 @@
       hide-details
       :error="!CommonUtil.isEmpty(errorText)"
       class="textarea"
-      @blur="onInput(model)"
       :rows="rows"
       :flat="true"
       no-resize
+      @blur="onInput(model)"
     >
     </v-textarea>
     <ValidateTooltip :target="errorText" />

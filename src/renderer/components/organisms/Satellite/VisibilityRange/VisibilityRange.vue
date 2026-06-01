@@ -9,7 +9,7 @@
       weight: 1,
     }"
     :interactive="false"
-    dashArray="false"
+    dash-array="false"
   ></l-polygon>
 
   <!-- その他の衛星（点線表示） -->
@@ -21,7 +21,7 @@
       weight: 1,
     }"
     :interactive="false"
-    dashArray="2 3"
+    dash-array="2 3"
   ></l-polygon>
 </template>
 

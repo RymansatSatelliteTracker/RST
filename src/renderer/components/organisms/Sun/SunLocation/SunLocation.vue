@@ -1,8 +1,8 @@
 <template>
   <icon-marker
-    :iconUrl="sunIcon"
+    :icon-url="sunIcon"
     :latlng="sunLocation"
-    :iconSize="22"
+    :icon-size="22"
     :options="{
       interactive: false,
     }"

@@ -1,6 +1,6 @@
 <!-- サイクルボタン -->
 <template>
-  <Button styleType="primary-transparent" :class="btnClass" @click="btnClick(mode)">
+  <Button style-type="primary-transparent" :class="btnClass" @click="btnClick(mode)">
     {{ mainText }}<span :class="subTextClass">{{ subText }}</span>
   </Button>
 </template>

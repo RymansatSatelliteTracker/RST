@@ -4,58 +4,58 @@
     <div class="menu__item" @mouseleave="onLeftSatellite" @click="showSatSetting">
       <img src="/src/renderer/assets/sat.png" class="menu__item__icon" @mouseover="onHoveredSatellite" />
       <Transition name="fade">
-        <span class="menu__item__text" v-show="hoveredSatellite">{{ I18nUtil.getMsg(I18nMsgs.GCOM_SATELLITE) }}</span>
+        <span v-show="hoveredSatellite" class="menu__item__text">{{ I18nUtil.getMsg(I18nMsgs.GCOM_SATELLITE) }}</span>
       </Transition>
     </div>
     <SatelliteSetting
       v-if="enableSatelliteSetting"
-      v-model:isShow="enableSatelliteSetting"
-      @onOk="onCloseSatelliteSetting"
-      @onCancel="onCloseSatelliteSetting"
+      v-model:is-show="enableSatelliteSetting"
+      @on-ok="onCloseSatelliteSetting"
+      @on-cancel="onCloseSatelliteSetting"
     />
 
     <!-- 無線機設定 -->
     <div class="menu__item" @mouseleave="onLeftTransceiver" @click="showTransceiverSetting">
       <img src="/src/renderer/assets/radio.png" class="menu__item__icon" @mouseover="onHoveredTransceiver" />
       <transition name="fade">
-        <span class="menu__item__text" v-show="hoveredTransceiver">{{ I18nUtil.getMsg(I18nMsgs.GCOM_RADIO) }}</span>
+        <span v-show="hoveredTransceiver" class="menu__item__text">{{ I18nUtil.getMsg(I18nMsgs.GCOM_RADIO) }}</span>
       </transition>
     </div>
     <TransceiverSetting
-      v-model:isShow="enableTransceiverSetting"
-      @onOk="onCloseTransceiverSetting"
-      @onCancel="onCloseTransceiverSetting"
+      v-model:is-show="enableTransceiverSetting"
       persistent
+      @on-ok="onCloseTransceiverSetting"
+      @on-cancel="onCloseTransceiverSetting"
     />
 
     <!-- ローテータ設定 -->
     <div class="menu__item" @mouseleave="onLeftRotator" @click="showRotatorSetting">
       <img src="/src/renderer/assets/antenna.png" class="menu__item__icon" @mouseover="onHoveredRotator" />
       <transition name="fade">
-        <span class="menu__item__text" v-show="hoveredRotator">{{ I18nUtil.getMsg(I18nMsgs.GCOM_ROTATOR) }}</span>
+        <span v-show="hoveredRotator" class="menu__item__text">{{ I18nUtil.getMsg(I18nMsgs.GCOM_ROTATOR) }}</span>
       </transition>
     </div>
     <RotatorSetting
-      v-model:isShow="enableRotatorSetting"
-      @onOk="onCloseRotatorSetting"
-      @onCancel="onCloseRotatorSetting"
+      v-model:is-show="enableRotatorSetting"
       persistent
+      @on-ok="onCloseRotatorSetting"
+      @on-cancel="onCloseRotatorSetting"
     />
 
     <!-- 地上局設定 -->
     <div class="menu__item" @mouseleave="onLeftGroundStation" @click="showGroundStationSetting">
       <img src="/src/renderer/assets/earth.png" class="menu__item__icon" @mouseover="onHoveredGroundStation" />
       <transition name="fade">
-        <span class="menu__item__text" v-show="hoveredGroundStation">{{
+        <span v-show="hoveredGroundStation" class="menu__item__text">{{
           I18nUtil.getMsg(I18nMsgs.GCOM_GROUND_STATION)
         }}</span>
       </transition>
     </div>
     <GroundStationSetting
-      v-model:isShow="enableGroundStationSetting"
-      @onOk="onGroundStationSetting"
-      @onCancel="onGroundStationSetting"
+      v-model:is-show="enableGroundStationSetting"
       persistent
+      @on-ok="onGroundStationSetting"
+      @on-cancel="onGroundStationSetting"
     />
   </div>
 </template>

@@ -13,12 +13,12 @@
           <div class="d-flex">
             <TextField
               v-model="form.rangeAzMin"
+              v-model:error-text="errors.rangeAzMin"
               suffix="°"
               class="g_right"
               maxlength="4"
-              :valiSchema="valiSchemaRotatorBehavior"
-              valiSchemaFieldPath="rangeAzMin"
-              v-model:error-text="errors.rangeAzMin"
+              :vali-schema="valiSchemaRotatorBehavior"
+              vali-schema-field-path="rangeAzMin"
             />
 
             <!-- 最大 -->
@@ -27,12 +27,12 @@
             >
             <TextField
               v-model="form.rangeAzMax"
+              v-model:error-text="errors.rangeAzMax"
               suffix="°"
               class="g_right ml-2"
               maxlength="3"
-              :valiSchema="valiSchemaRotatorBehavior"
-              valiSchemaFieldPath="rangeAzMax"
-              v-model:error-text="errors.rangeAzMax"
+              :vali-schema="valiSchemaRotatorBehavior"
+              vali-schema-field-path="rangeAzMax"
             />
           </div>
         </div>
@@ -44,12 +44,12 @@
           >
           <TextField
             v-model="form.basePositionDegree"
+            v-model:error-text="errors.basePositionDegree"
             suffix="°"
             class="g_right"
             maxlength="3"
-            :valiSchema="valiSchemaRotatorBehavior"
-            valiSchemaFieldPath="basePositionDegree"
-            v-model:error-text="errors.basePositionDegree"
+            :vali-schema="valiSchemaRotatorBehavior"
+            vali-schema-field-path="basePositionDegree"
             disabled
           />
         </div>
@@ -90,12 +90,12 @@
           <label class="label form_label">{{ I18nUtil.getMsg(I18nMsgs.G51_START_AGO_MINUTE) }}</label>
           <TextField
             v-model="form.startAgoMinute"
+            v-model:error-text="errors.startAgoMinute"
             :suffix="I18nUtil.getMsg(I18nMsgs.G51_START_AGO_MINUTE_SUFIX)"
             class="g_right"
             maxlength="2"
-            :valiSchema="valiSchemaRotatorBehavior"
-            valiSchemaFieldPath="startAgoMinute"
-            v-model:error-text="errors.startAgoMinute"
+            :vali-schema="valiSchemaRotatorBehavior"
+            vali-schema-field-path="startAgoMinute"
           />
         </div>
 
@@ -105,23 +105,23 @@
           <label class="label">Az:</label>
           <TextField
             v-model="form.parkPosAz"
+            v-model:error-text="errors.parkPosAz"
             suffix="°"
             class="g_right ml-2"
             maxlength="3"
-            :valiSchema="valiSchemaRotatorBehavior"
-            valiSchemaFieldPath="parkPosAz"
-            v-model:error-text="errors.parkPosAz"
+            :vali-schema="valiSchemaRotatorBehavior"
+            vali-schema-field-path="parkPosAz"
           />
 
           <label class="label ml-4">El:</label>
           <TextField
             v-model="form.parkPosEl"
+            v-model:error-text="errors.parkPosEl"
             suffix="°"
             class="g_right ml-2"
             maxlength="3"
-            :valiSchema="valiSchemaRotatorBehavior"
-            valiSchemaFieldPath="parkPosEl"
-            v-model:error-text="errors.parkPosEl"
+            :vali-schema="valiSchemaRotatorBehavior"
+            vali-schema-field-path="parkPosEl"
           />
         </div>
       </div>
@@ -140,12 +140,12 @@
           <div class="d-flex">
             <TextField
               v-model="form.rangeElMin"
+              v-model:error-text="errors.rangeElMin"
               suffix="°"
               class="g_right"
               maxlength="4"
-              :valiSchema="valiSchemaRotatorBehavior"
-              valiSchemaFieldPath="rangeElMin"
-              v-model:error-text="errors.rangeElMin"
+              :vali-schema="valiSchemaRotatorBehavior"
+              vali-schema-field-path="rangeElMin"
             />
 
             <!-- 最大 -->
@@ -154,12 +154,12 @@
             >
             <TextField
               v-model="form.rangeElMax"
+              v-model:error-text="errors.rangeElMax"
               suffix="°"
               class="g_right ml-2"
               maxlength="3"
-              :valiSchema="valiSchemaRotatorBehavior"
-              valiSchemaFieldPath="rangeElMax"
-              v-model:error-text="errors.rangeElMax"
+              :vali-schema="valiSchemaRotatorBehavior"
+              vali-schema-field-path="rangeElMax"
             />
           </div>
         </div>
@@ -172,7 +172,7 @@
 import I18nMsgs from "@/common/I18nMsgs.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
-import RotatorBehaviorForm from "./RotatorBehaviorForm.js";
+import type RotatorBehaviorForm from "./RotatorBehaviorForm.js";
 import { useRotatorBehaviorValidate, valiSchemaRotatorBehavior } from "./useRotatorBehaviorValidate.js";
 
 // 親との送受信

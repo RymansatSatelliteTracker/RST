@@ -17,10 +17,10 @@
           <v-col cols="3">
             <TextField
               v-model="form.satelliteName"
-              maxlength="24"
-              :valiSchema="valiSchemaRegistSatellite"
-              valiSchemaFieldPath="satelliteName"
               v-model:error-text="errors.satelliteName"
+              maxlength="24"
+              :vali-schema="valiSchemaRegistSatellite"
+              vali-schema-field-path="satelliteName"
             />
           </v-col>
         </v-row>
@@ -31,10 +31,10 @@
             <v-col cols="12">
               <TextArea
                 v-model="form.tle"
-                maxlength="1024"
-                :valiSchema="valiSchemaRegistSatellite"
-                valiSchemaFieldPath="tle"
                 v-model:error-text="errors.tle"
+                maxlength="1024"
+                :vali-schema="valiSchemaRegistSatellite"
+                vali-schema-field-path="tle"
               ></TextArea>
             </v-col>
           </v-row>
@@ -54,11 +54,11 @@
               <v-col cols="4">
                 <TextField
                   v-model="form.epochUtcDate"
+                  v-model:error-text="errors.epochUtcDate"
                   maxlength="16"
                   label="YYYY/MM/DD hh:mm"
-                  :valiSchema="valiSchemaRegistSatellite"
-                  valiSchemaFieldPath="epochUtcDate"
-                  v-model:error-text="errors.epochUtcDate"
+                  :vali-schema="valiSchemaRegistSatellite"
+                  vali-schema-field-path="epochUtcDate"
                 />
               </v-col>
             </v-row>
@@ -70,10 +70,10 @@
               <v-col cols="3">
                 <TextField
                   v-model="form.semiMajorAxisKm"
-                  maxlength="11"
-                  :valiSchema="valiSchemaRegistSatellite"
-                  valiSchemaFieldPath="semiMajorAxisKm"
                   v-model:error-text="errors.semiMajorAxisKm"
+                  maxlength="11"
+                  :vali-schema="valiSchemaRegistSatellite"
+                  vali-schema-field-path="semiMajorAxisKm"
                 />
               </v-col>
               <!-- R.A.A.N -->
@@ -83,10 +83,10 @@
               <v-col cols="3">
                 <TextField
                   v-model="form.raanDeg"
-                  maxlength="8"
-                  :valiSchema="valiSchemaRegistSatellite"
-                  valiSchemaFieldPath="raanDeg"
                   v-model:error-text="errors.raanDeg"
+                  maxlength="8"
+                  :vali-schema="valiSchemaRegistSatellite"
+                  vali-schema-field-path="raanDeg"
                 />
               </v-col>
             </v-row>
@@ -98,10 +98,10 @@
               <v-col cols="3">
                 <TextField
                   v-model="form.eccentricity"
-                  maxlength="9"
-                  :valiSchema="valiSchemaRegistSatellite"
-                  valiSchemaFieldPath="eccentricity"
                   v-model:error-text="errors.eccentricity"
+                  maxlength="9"
+                  :vali-schema="valiSchemaRegistSatellite"
+                  vali-schema-field-path="eccentricity"
                 />
               </v-col>
               <!-- Argument of Perigee -->
@@ -111,10 +111,10 @@
               <v-col cols="3">
                 <TextField
                   v-model="form.argumentOfPerigeeDeg"
-                  maxlength="8"
-                  :valiSchema="valiSchemaRegistSatellite"
-                  valiSchemaFieldPath="argumentOfPerigeeDeg"
                   v-model:error-text="errors.argumentOfPerigeeDeg"
+                  maxlength="8"
+                  :vali-schema="valiSchemaRegistSatellite"
+                  vali-schema-field-path="argumentOfPerigeeDeg"
                 />
               </v-col>
             </v-row>
@@ -126,10 +126,10 @@
               <v-col cols="3">
                 <TextField
                   v-model="form.inclinationDeg"
-                  maxlength="8"
-                  :valiSchema="valiSchemaRegistSatellite"
-                  valiSchemaFieldPath="inclinationDeg"
                   v-model:error-text="errors.inclinationDeg"
+                  maxlength="8"
+                  :vali-schema="valiSchemaRegistSatellite"
+                  vali-schema-field-path="inclinationDeg"
                 />
               </v-col>
               <!-- Mean Anomaly -->
@@ -139,10 +139,10 @@
               <v-col cols="3">
                 <TextField
                   v-model="form.meanAnomalyDeg"
-                  maxlength="8"
-                  :valiSchema="valiSchemaRegistSatellite"
-                  valiSchemaFieldPath="meanAnomalyDeg"
                   v-model:error-text="errors.meanAnomalyDeg"
+                  maxlength="8"
+                  :vali-schema="valiSchemaRegistSatellite"
+                  vali-schema-field-path="meanAnomalyDeg"
                 />
               </v-col>
             </v-row>
@@ -150,8 +150,8 @@
         </div>
       </v-card-text>
       <v-card-actions>
-        <v-btn @click="onOk" variant="outlined" size="large">{{ I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_OK) }}</v-btn>
-        <v-btn @click="onCancel" variant="outlined" size="large" class="ml-5">{{
+        <v-btn variant="outlined" size="large" @click="onOk">{{ I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_OK) }}</v-btn>
+        <v-btn variant="outlined" size="large" class="ml-5" @click="onCancel">{{
           I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_CANCEL)
         }}</v-btn>
       </v-card-actions>
@@ -161,7 +161,7 @@
 <script setup lang="ts">
 import Constant from "@/common/Constant.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
-import { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
+import type { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";

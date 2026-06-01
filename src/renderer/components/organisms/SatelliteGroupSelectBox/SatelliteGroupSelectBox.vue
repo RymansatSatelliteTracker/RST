@@ -7,12 +7,12 @@
     variant="outlined"
     hide-details
     class="sat_group_select"
-    @update:modelValue="updateIndex"
+    @update:model-value="updateIndex"
   />
 </template>
 
 <script setup lang="ts">
-import { SelectOption } from "@/renderer/types/vue-types.js";
+import type { SelectOption } from "@/renderer/types/vue-types.js";
 import { ref } from "vue";
 import useSatelliteGroupSelectBox from "./useSatelliteGroupSelectBox.js";
 

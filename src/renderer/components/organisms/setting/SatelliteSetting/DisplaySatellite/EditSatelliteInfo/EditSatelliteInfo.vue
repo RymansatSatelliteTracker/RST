@@ -1,13 +1,13 @@
 <!-- 衛星情報編集 -->
 <template>
   <SatelliteInfoEditorDialog
-    v-model:isShow="isShow"
+    v-model:is-show="isShow"
     v-model:form="form"
     v-model:errors="errors"
     v-model:title="selectedItem.satelliteName"
-    v-model:manualEditFlg="manualEditFlg"
-    :editableNoradId="editableNoradId"
-    :showReset="true"
+    v-model:manual-edit-flg="manualEditFlg"
+    :editable-norad-id="editableNoradId"
+    :show-reset="true"
     @ok="onOk"
     @cancel="onCancel"
     @reset="onReset"
@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import Constant from "@/common/Constant.js";
 import { AppConfigSatellite } from "@/common/model/AppConfigModel.js";
-import { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
+import type { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite.js";
 import ApiDefaultSatellite from "@/renderer/api/ApiDefaultSatellite.js";

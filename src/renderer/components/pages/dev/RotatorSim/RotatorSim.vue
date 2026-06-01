@@ -11,8 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
-import { ApiResponse } from "@/common/types/types.js";
+import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import type { ApiResponse } from "@/common/types/types.js";
 import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking.js";
 import { onMounted, onUnmounted, ref } from "vue";
 

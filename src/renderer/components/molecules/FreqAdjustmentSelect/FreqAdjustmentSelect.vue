@@ -4,12 +4,12 @@
     <span
       v-for="(digit, index) in kHzDigits"
       :key="index"
+      :class="{ hovered: hoverIndex === index, grayed: isGrayed(index) }"
       @wheel.passive="(event) => handleWheel(event, index)"
       @contextmenu.prevent="() => handleRightClick(index)"
       @click="handleClick(index)"
       @mouseover="hoverIndex = index"
       @mouseleave="hoverIndex = null"
-      :class="{ hovered: hoverIndex === index, grayed: isGrayed(index) }"
     >
       {{ digit }}
     </span>
@@ -17,12 +17,12 @@
     <span
       v-for="(digit, index) in hzDigits"
       :key="index + kHzDigits.length"
+      :class="{ hovered: hoverIndex === index + kHzDigits.length, grayed: isGrayed(index + kHzDigits.length) }"
       @wheel.passive="(event) => handleWheel(event, index + kHzDigits.length)"
       @contextmenu.prevent="() => handleRightClick(index + kHzDigits.length)"
       @click="handleClick(index + kHzDigits.length)"
       @mouseover="hoverIndex = index + kHzDigits.length"
       @mouseleave="hoverIndex = null"
-      :class="{ hovered: hoverIndex === index + kHzDigits.length, grayed: isGrayed(index + kHzDigits.length) }"
     >
       {{ digit }}
     </span>

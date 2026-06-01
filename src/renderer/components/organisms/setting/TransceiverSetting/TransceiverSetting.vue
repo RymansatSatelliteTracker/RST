@@ -4,7 +4,7 @@
       {{ I18nUtil.getMsg(I18nMsgs.GCOM_RADIO) }}
 
       <!-- タブ -->
-      <v-tabs v-model="tab" @update:modelValue="onTabChange">
+      <v-tabs v-model="tab" @update:model-value="onTabChange">
         <v-tab value="device" class="g_solid_border px-16 font-weight-bold"
           >{{ I18nUtil.getMsg(I18nMsgs.G41_TAB_CONNECTION) }}
         </v-tab>

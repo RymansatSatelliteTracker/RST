@@ -6,7 +6,7 @@
         <!-- Manual/Auto -->
         <div>
           <Button
-            styleType="primary-transparent"
+            style-type="primary-transparent"
             :loading="loadingAutoBtn"
             :class="{
               auto_btn_on: autoStore.rotatorAuto,
@@ -62,8 +62,8 @@
 
 <script setup lang="ts">
 import Constant from "@/common/Constant.js";
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
-import { ApiResponse } from "@/common/types/types.js";
+import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import type { ApiResponse } from "@/common/types/types.js";
 import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import Button from "@/renderer/components/atoms/Button/Button.vue";
@@ -71,9 +71,10 @@ import useDrawAntennaPosition from "@/renderer/components/organisms/Radar/useDra
 import useDrawRadar from "@/renderer/components/organisms/Radar/useDrawRadar.js";
 import useDrawSat from "@/renderer/components/organisms/Radar/useDrawSat.js";
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
-import { RotatorAzEl, SatAzEl } from "@/renderer/types/satellite-type.js";
+import type { RotatorAzEl, SatAzEl } from "@/renderer/types/satellite-type.js";
 import emitter from "@/renderer/util/EventBus.js";
-import { onMounted, Ref, ref, watch } from "vue";
+import type { Ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import useAutoTracking from "./useAutoTracking.js";
 import useCanvasPosToAntennaPos from "./useCanvasPosToAntennaPos.js";
 import useDrawSatPass from "./useDrawSatPass.js";
