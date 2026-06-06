@@ -274,7 +274,9 @@ export default class Constant {
 
     // ドップラーシフトが有効となるパス前後の追加時間範囲[単位:秒]
     static readonly DOPPLER_SHIFT_RANGE_SEC = 60;
-    // 周波数データ(トランシーブ)受信時の待機時間[単位:ミリ秒]
+    // 無線機操作後のドップラーシフト再開時間[単位:ミリ秒]
+    static readonly DEFAULT_DOPPLER_SHIFT_RESUME_MS = 2000;
+    // 周波数データ(トランシーブ)受信時のデフォルト待機時間[単位:ミリ秒]
     static readonly TRANSCEIVE_WAIT_MS = 2000;
     // 運用モード(トランシーブ)受信時の待機時間[単位:ミリ秒]
     static readonly TRANSCEIVE_MODE_WAIT_MS = 5000;

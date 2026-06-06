@@ -125,6 +125,7 @@ async function reloadConfig() {
   form.value.ipPort = transceiverConfig.transceiver.ipPort.toString();
   form.value.autoTrackingIntervalSec = transceiverConfig.transceiver.autoTrackingIntervalSec;
   form.value.autoTrackingStartEndTime = transceiverConfig.transceiver.autoTrackingStartEndTime;
+  form.value.dopplerResumeDelaySec = transceiverConfig.transceiver.dopplerResumeDelaySec;
 }
 
 /**
@@ -153,6 +154,7 @@ async function onOk() {
   transceiverConfig.transceiver.ipPort = form.value.ipPort;
   transceiverConfig.transceiver.autoTrackingIntervalSec = form.value.autoTrackingIntervalSec;
   transceiverConfig.transceiver.autoTrackingStartEndTime = form.value.autoTrackingStartEndTime;
+  transceiverConfig.transceiver.dopplerResumeDelaySec = form.value.dopplerResumeDelaySec;
 
   // 保存
   await ApiAppConfig.storeAppConfig(transceiverConfig);
@@ -168,7 +170,7 @@ async function onOk() {
 /**
  * キャンセルクリック
  */
-async function cancelClick() {
+function cancelClick() {
   // シリアル接続、無線機の状態監視開始
   // memo: キャンセルクリック時に待たさせるのを避けるためawaitは敢えて付けてない。
   refTravsceiverConn.value.startNewConnect();

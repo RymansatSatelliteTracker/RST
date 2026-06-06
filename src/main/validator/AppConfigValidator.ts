@@ -136,6 +136,7 @@ const schemaTransceiver = zod.object({
   ipPort: zod.string(),
   autoTrackingIntervalSec: zod.string(),
   autoTrackingStartEndTime: zod.string(),
+  dopplerResumeDelaySec: zod.string(),
   txFrequency: zod.string(),
   rxFrequency: zod.string(),
 });
