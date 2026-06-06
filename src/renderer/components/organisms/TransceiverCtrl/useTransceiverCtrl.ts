@@ -183,7 +183,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       resetFreqAdj();
     }
 
-    isBeaconModeAvailable.value = await confirmBeaconModeAvailable();
+    isBeaconModeAvailable.value = confirmBeaconModeAvailable();
 
     // Autoモード中の場合は、新しい衛星であらためてAutoモードを開始する
     if (autoStore.tranceiverAuto) {
@@ -193,9 +193,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
   /**
    * ビーコンモードが利用可能かどうかを確認する
-   * @returns {Promise<boolean>} ビーコンモードが利用可能かどうか
+   * @returns {boolean} ビーコンモードが利用可能かどうか
    */
-  async function confirmBeaconModeAvailable(): Promise<boolean> {
+  function confirmBeaconModeAvailable(): boolean {
     // アクティブ衛星の周波数/運用モードを取得
     const transceiverSetting = ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
 
@@ -529,19 +529,21 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     ActiveSatServiceHub.getInstance().addOnChangeActiveSat(onChangeSatGrp);
 
     // 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機する
-    ApiTransceiver.dopplerShiftWaitingCallback((res: ApiResponse<boolean>) => {
-      dopplerWaitCoordinator.setupWaiting(res);
+    void ApiTransceiver.dopplerShiftWaitingCallback((res: ApiResponse<boolean>) => {
+      dopplerWaitCoordinator.setupWaiting(res).catch((error: unknown) => {
+        AppRendererLogger.error(`ドップラーシフト待機設定に失敗しました。${String(error)}`);
+      });
     });
 
     // 無線機で周波数が変更された場合
-    ApiTransceiver.onChangeTransceiverFrequency(async (res: ApiResponse<UplinkType | DownlinkType>) => {
+    void ApiTransceiver.onChangeTransceiverFrequency(async (res: ApiResponse<UplinkType | DownlinkType>) => {
       // Tx、またはRxの周波数をRST側に反映する
       await recvFreqResolver.applyFromTransceiver(res);
     });
 
     // 無線機の運用モードのイベントハンドラ
     // 受信した無線機の運用モードでtxOpeMode,rxOpeModeを更新する
-    ApiTransceiver.onChangeTransceiverMode((res: ApiResponse<UplinkType | DownlinkType>) => {
+    void ApiTransceiver.onChangeTransceiverMode((res: ApiResponse<UplinkType | DownlinkType>) => {
       // 受信処理スキップ状態の場合は処理を終了する（AutoOn処理中のモード変更などにおける無線機からの不要なデータ受信を無視する）
       if (coordinator.isRecvProcSkip) {
         return;
@@ -551,7 +553,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     });
 
     // 無線機周波数保存イベントを受けて設定ファイルに現在の無線機周波数を保存する
-    ApiTransceiver.onSaveTransceiverFrequency(async () => {
+    void ApiTransceiver.onSaveTransceiverFrequency(async () => {
       const config = await ApiAppConfig.getAppConfig();
       config.transceiver.txFrequency = txFrequency.value;
       config.transceiver.rxFrequency = rxFrequency.value;
