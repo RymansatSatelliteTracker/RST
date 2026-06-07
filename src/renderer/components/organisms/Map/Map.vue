@@ -18,14 +18,6 @@
       :max-bounds="currentMaxBounds"
       @ready="onMapReady"
     >
-      <!-- <l-tile-layer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base"></l-tile-layer> -->
-      <!-- <l-tile-layer
-        url="http://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer/WMTS/tile/1.0.0/World_Topo_Map/default/default028mm/{z}/{y}/{x}.png"
-        layer-type="base"
-        style="default"
-        tilematrixSet="default028mm"
-      ></l-tile-layer> -->
-
       <!-- 地図 -->
       <l-tile-layer
         v-if="tilePath"
