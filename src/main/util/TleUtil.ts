@@ -54,7 +54,7 @@ class TleUtil {
   /**
    * TLEの1行目からNoradIDを取得する
    * @param {string} line1 TLE1行目
-   * @returns {number} NoradID
+   * @returns {string} NoradID
    */
   public static getNoradId(line1: string): string {
     return line1.slice(2, 7);
