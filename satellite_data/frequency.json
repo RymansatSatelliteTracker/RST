@@ -1,6 +1,6 @@
 {
   "frequency": {
-    "lastUpdateTime": 1777704357246,
+    "lastUpdateTime": 1781390008265,
     "satellites": [
       {
         "noradId": "43017",
@@ -780,6 +780,510 @@
         "downlink2": {
           "downlinkHz": 436830000,
           "downlinkMode": "FM"
+        },
+        "downlink3": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "beacon": {
+          "beaconHz": null,
+          "beaconMode": ""
+        },
+        "enableSatelliteMode": false,
+        "satelliteMode": "NORMAL",
+        "toneHz": null,
+        "outline": ""
+      },
+      {
+        "noradId": "63217",
+        "satelliteName": "TEVEL2-1",
+        "uplink1": {
+          "uplinkHz": 145970000,
+          "uplinkMode": "FM"
+        },
+        "uplink2": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "uplink3": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "downlink1": {
+          "downlinkHz": 436400000,
+          "downlinkMode": "FM"
+        },
+        "downlink2": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "downlink3": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "beacon": {
+          "beaconHz": 436400000,
+          "beaconMode": "FM-D"
+        },
+        "enableSatelliteMode": false,
+        "satelliteMode": "NORMAL",
+        "toneHz": null,
+        "outline": ""
+      },
+      {
+        "noradId": "63219",
+        "satelliteName": "TEVEL2-2",
+        "uplink1": {
+          "uplinkHz": 145970000,
+          "uplinkMode": "FM"
+        },
+        "uplink2": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "uplink3": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "downlink1": {
+          "downlinkHz": 436400000,
+          "downlinkMode": "FM"
+        },
+        "downlink2": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "downlink3": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "beacon": {
+          "beaconHz": 436400000,
+          "beaconMode": "FM-D"
+        },
+        "enableSatelliteMode": false,
+        "satelliteMode": "NORMAL",
+        "toneHz": null,
+        "outline": ""
+      },
+      {
+        "noradId": "63218",
+        "satelliteName": "TEVEL2-3",
+        "uplink1": {
+          "uplinkHz": 145970000,
+          "uplinkMode": "FM"
+        },
+        "uplink2": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "uplink3": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "downlink1": {
+          "downlinkHz": 436400000,
+          "downlinkMode": "FM"
+        },
+        "downlink2": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "downlink3": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "beacon": {
+          "beaconHz": 436400000,
+          "beaconMode": "FM-D"
+        },
+        "enableSatelliteMode": false,
+        "satelliteMode": "NORMAL",
+        "toneHz": null,
+        "outline": ""
+      },
+      {
+        "noradId": "63213",
+        "satelliteName": "TEVEL2-4",
+        "uplink1": {
+          "uplinkHz": 145970000,
+          "uplinkMode": "FM"
+        },
+        "uplink2": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "uplink3": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "downlink1": {
+          "downlinkHz": 436400000,
+          "downlinkMode": "FM"
+        },
+        "downlink2": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "downlink3": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "beacon": {
+          "beaconHz": 436400000,
+          "beaconMode": "FM-D"
+        },
+        "enableSatelliteMode": false,
+        "satelliteMode": "NORMAL",
+        "toneHz": null,
+        "outline": ""
+      },
+      {
+        "noradId": "63214",
+        "satelliteName": "TEVEL2-5",
+        "uplink1": {
+          "uplinkHz": 145970000,
+          "uplinkMode": "FM"
+        },
+        "uplink2": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "uplink3": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "downlink1": {
+          "downlinkHz": 436400000,
+          "downlinkMode": "FM"
+        },
+        "downlink2": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "downlink3": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "beacon": {
+          "beaconHz": 436400000,
+          "beaconMode": "FM-D"
+        },
+        "enableSatelliteMode": false,
+        "satelliteMode": "NORMAL",
+        "toneHz": null,
+        "outline": ""
+      },
+      {
+        "noradId": "63215",
+        "satelliteName": "TEVEL2-6",
+        "uplink1": {
+          "uplinkHz": 145970000,
+          "uplinkMode": "FM"
+        },
+        "uplink2": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "uplink3": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "downlink1": {
+          "downlinkHz": 436400000,
+          "downlinkMode": "FM"
+        },
+        "downlink2": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "downlink3": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "beacon": {
+          "beaconHz": 436400000,
+          "beaconMode": "FM-D"
+        },
+        "enableSatelliteMode": false,
+        "satelliteMode": "NORMAL",
+        "toneHz": null,
+        "outline": ""
+      },
+      {
+        "noradId": "63238",
+        "satelliteName": "TEVEL2-7",
+        "uplink1": {
+          "uplinkHz": 145970000,
+          "uplinkMode": "FM"
+        },
+        "uplink2": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "uplink3": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "downlink1": {
+          "downlinkHz": 436400000,
+          "downlinkMode": "FM"
+        },
+        "downlink2": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "downlink3": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "beacon": {
+          "beaconHz": 436400000,
+          "beaconMode": "FM-D"
+        },
+        "enableSatelliteMode": false,
+        "satelliteMode": "NORMAL",
+        "toneHz": null,
+        "outline": ""
+      },
+      {
+        "noradId": "63239",
+        "satelliteName": "TEVEL2-8",
+        "uplink1": {
+          "uplinkHz": 145970000,
+          "uplinkMode": "FM"
+        },
+        "uplink2": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "uplink3": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "downlink1": {
+          "downlinkHz": 436400000,
+          "downlinkMode": "FM"
+        },
+        "downlink2": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "downlink3": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "beacon": {
+          "beaconHz": 436400000,
+          "beaconMode": "FM-D"
+        },
+        "enableSatelliteMode": false,
+        "satelliteMode": "NORMAL",
+        "toneHz": null,
+        "outline": ""
+      },
+      {
+        "noradId": "63237",
+        "satelliteName": "TEVEL2-9",
+        "uplink1": {
+          "uplinkHz": 145970000,
+          "uplinkMode": "FM"
+        },
+        "uplink2": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "uplink3": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "downlink1": {
+          "downlinkHz": 436400000,
+          "downlinkMode": "FM"
+        },
+        "downlink2": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "downlink3": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "beacon": {
+          "beaconHz": 436400000,
+          "beaconMode": "FM-D"
+        },
+        "enableSatelliteMode": false,
+        "satelliteMode": "NORMAL",
+        "toneHz": null,
+        "outline": ""
+      },
+      {
+        "noradId": "67282",
+        "satelliteName": "RS83S",
+        "uplink1": {
+          "uplinkHz": 435500000,
+          "uplinkMode": "FM"
+        },
+        "uplink2": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "uplink3": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "downlink1": {
+          "downlinkHz": 145910000,
+          "downlinkMode": "FM"
+        },
+        "downlink2": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "downlink3": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "beacon": {
+          "beaconHz": null,
+          "beaconMode": ""
+        },
+        "enableSatelliteMode": false,
+        "satelliteMode": "NORMAL",
+        "toneHz": null,
+        "outline": ""
+      },
+      {
+        "noradId": "68446",
+        "satelliteName": "HADES-SA",
+        "uplink1": {
+          "uplinkHz": 145875000,
+          "uplinkMode": "USB-D"
+        },
+        "uplink2": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "uplink3": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "downlink1": {
+          "downlinkHz": 436875000,
+          "downlinkMode": "USB-D"
+        },
+        "downlink2": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "downlink3": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "beacon": {
+          "beaconHz": null,
+          "beaconMode": ""
+        },
+        "enableSatelliteMode": false,
+        "satelliteMode": "NORMAL",
+        "toneHz": null,
+        "outline": ""
+      },
+      {
+        "noradId": "68422",
+        "satelliteName": "Lilium-4",
+        "uplink1": {
+          "uplinkHz": 145825000,
+          "uplinkMode": "FM-D"
+        },
+        "uplink2": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "uplink3": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "downlink1": {
+          "downlinkHz": 145825000,
+          "downlinkMode": "FM-D"
+        },
+        "downlink2": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "downlink3": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "beacon": {
+          "beaconHz": null,
+          "beaconMode": ""
+        },
+        "enableSatelliteMode": false,
+        "satelliteMode": "NORMAL",
+        "toneHz": null,
+        "outline": ""
+      },
+      {
+        "noradId": "68456",
+        "satelliteName": "PARUS-6U1",
+        "uplink1": {
+          "uplinkHz": 145825000,
+          "uplinkMode": "FM-D"
+        },
+        "uplink2": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "uplink3": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "downlink1": {
+          "downlinkHz": 145825000,
+          "downlinkMode": "FM-D"
+        },
+        "downlink2": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "downlink3": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "beacon": {
+          "beaconHz": null,
+          "beaconMode": ""
+        },
+        "enableSatelliteMode": false,
+        "satelliteMode": "NORMAL",
+        "toneHz": null,
+        "outline": ""
+      },
+      {
+        "noradId": "68635",
+        "satelliteName": "CANVAS",
+        "uplink1": {
+          "uplinkHz": 437250000,
+          "uplinkMode": "FM-D"
+        },
+        "uplink2": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "uplink3": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "downlink1": {
+          "downlinkHz": 437250000,
+          "downlinkMode": "FM-D"
+        },
+        "downlink2": {
+          "downlinkHz": null,
+          "downlinkMode": ""
         },
         "downlink3": {
           "downlinkHz": null,
