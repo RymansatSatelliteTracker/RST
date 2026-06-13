@@ -6,7 +6,7 @@
 }
 
 .fieldset_area {
-  margin-top: 10px;
+  margin-top: 5px;
   border-radius: 4px;
 }
 
@@ -66,7 +66,7 @@
   width: 100%;
   height: 30px !important;
   font-size: 1rem !important;
-  margin-top: 5px;
+  margin-top: 2px;
 }
 
 // Modeボタン
@@ -90,10 +90,10 @@
   display: inline-block;
   vertical-align: middle;
   margin-left: 7px;
-  margin-bottom: 7px;
+  margin-bottom: 3px;
 }
 .mode_select_box {
-  margin-top: 5px;
+  margin-top: 2px;
   display: inline-block;
   vertical-align: middle;
   margin-left: 8px;
@@ -148,18 +148,18 @@
   user-select: none;
   margin-right: 7px;
   margin-left: 7px;
-  margin-bottom: 7px;
+  margin-bottom: 3px;
 }
 
 .freq_area {
   user-select: none;
   display: inline-block;
   margin-left: 7px;
-  margin-bottom: 7px;
+  margin-bottom: 3px;
 }
 
 .freq_box {
-  margin-top: 5px;
+  margin-top: 2px;
   display: inline-block;
   margin-left: 8px;
   font-size: 1.4rem;
@@ -173,11 +173,11 @@
   user-select: none;
   display: flex;
   margin-right: 35px;
-  margin-bottom: 7px;
+  margin-bottom: 3px;
   justify-content: flex-end;
 }
 .freq_box_sub {
-  margin-top: 5px;
+  margin-top: 2px;
   margin-left: auto;
   font-size: 1.2rem;
   text-align: right;
