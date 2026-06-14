@@ -1159,7 +1159,7 @@
         "satelliteName": "HADES-SA",
         "uplink1": {
           "uplinkHz": 145875000,
-          "uplinkMode": "USB-D"
+          "uplinkMode": "FM"
         },
         "uplink2": {
           "uplinkHz": null,
@@ -1171,7 +1171,7 @@
         },
         "downlink1": {
           "downlinkHz": 436875000,
-          "downlinkMode": "USB-D"
+          "downlinkMode": "FM"
         },
         "downlink2": {
           "downlinkHz": null,
