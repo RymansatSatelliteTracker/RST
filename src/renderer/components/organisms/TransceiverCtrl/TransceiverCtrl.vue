@@ -61,11 +61,11 @@
     <fieldset class="fieldset_area">
       <legend class="item_group_legend">Mode</legend>
       <div class="mode_area">
-        <div>Rx<OpeModeSelect v-model="rxOpeMode" class="mode_select_box" /></div>
+        <div><span class="mode_label">Rx</span><OpeModeSelect v-model="rxOpeMode" class="mode_select_box" /></div>
       </div>
       <br class="br_no_select" />
       <div class="mode_area">
-        <div>Tx<OpeModeSelect v-model="txOpeMode" class="mode_select_box" /></div>
+        <div><span class="mode_label">Tx</span><OpeModeSelect v-model="txOpeMode" class="mode_select_box" /></div>
       </div>
       <br class="br_no_select" />
 
