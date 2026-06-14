@@ -27,7 +27,7 @@ $main_right_width: 260px;
 // 右側
 .main_right {
   position: absolute;
-  margin: 10px;
+  margin: 2px 10px;
   top: 0px;
   left: calc(100vw - $main_right_width);
   width: calc($main_right_width - 40px);
