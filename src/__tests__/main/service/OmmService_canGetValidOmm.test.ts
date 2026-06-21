@@ -46,6 +46,22 @@ describe("OmmService - canGetValidOmm", () => {
   });
 
   /**
+   * サーバがContent-Type: application/jsonで応答し、axiosがレスポンスを自動的にJSONへパースした場合でもtrue
+   * memo: res.dataが文字列でなくオブジェクト(配列)になっているケースの回帰テスト
+   */
+  it("axiosがJSONを自動パースしオブジェクトとなった場合でもtrue", async () => {
+    // Arrange
+    const parsedJson = [{ OBJECT_NAME: "ISS (ZARYA)", NORAD_CAT_ID: 25544, EPOCH: "2026-06-20T09:57:02.757600" }];
+    vi.spyOn(WebClient.prototype, "get").mockResolvedValue(new AppHttpResponse(200, "", parsedJson as unknown as string));
+    const url = "https://example.com/gp.php?FORMAT=JSON";
+    const sut = new OmmService();
+    // Act
+    const result = await sut.canGetValidOmm(url, new WebClient());
+    // Assert
+    expect(result).toBe(true);
+  });
+
+  /**
    * 取得した軌道要素データが読み込み不可の場合false
    */
   it("取得した軌道要素データが読み込み不可の場合false", async () => {

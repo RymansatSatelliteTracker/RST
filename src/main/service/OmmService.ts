@@ -1,7 +1,7 @@
 import CommonUtil from "@/common/CommonUtil.js";
 import Constant from "@/common/Constant.js";
-import { OmmJsonModel } from "@/common/model/OmmModel.js";
 import type { OmmItem, OmmItemMap } from "@/common/model/OmmModel.js";
+import { OmmJsonModel } from "@/common/model/OmmModel.js";
 import type { TleJsonModel } from "@/common/model/TleModel.js";
 import type { StringMap } from "@/common/types/types.js";
 import WebClient from "@/common/WebClient.js";
@@ -114,11 +114,11 @@ export default class OmmService {
     // memo: サーバのレスポンスがContent-Type: application/jsonの場合、axiosが自動的にJSONをオブジェクトへパースするため、
     //       res.dataが文字列でない場合はテキストに戻す
     const text = typeof res.data === "string" ? res.data : JSON.stringify(res.data);
-    if (!CommonUtil.isEmpty(text.trim())) {
-      return text.trim();
-    } else {
+    if (CommonUtil.isEmpty(text.trim())) {
       return "";
     }
+
+    return text.trim();
   }
 
   /**
@@ -188,13 +188,13 @@ export default class OmmService {
    * @param {string} noradIds Norad ID(JSON配列の文字列)
    * @returns {Promise<TleStrings[]>} TLE文字列
    */
-  public async getOmmsByNoradIds(noradIds: string): Promise<TleStrings[]> {
+  public getOmmsByNoradIds(noradIds: string): Promise<TleStrings[]> {
     // OMM JSONファイルの内容を取得する
     const ommData: OmmJsonModel = this.readOmmJson();
     const ommItemMap: OmmItemMap = ommData.ommItemMap;
 
     // noradIdsをパースして配列に変換する
-    const noradIdArray: string[] = JSON.parse(noradIds);
+    const noradIdArray: string[] = JSON.parse(noradIds) as string[];
 
     const results: TleStrings[] = [];
     for (let ii = 0; ii < noradIdArray.length; ii++) {
@@ -205,7 +205,7 @@ export default class OmmService {
 
       // 見つからなかったNorad IDを警告ログに出力する
       if (!tleStrings) {
-        AppMainLogger.warn(`The following Norad ID were not found: ${noradId}`);
+        // AppMainLogger.warn(`The following Norad ID were not found: ${noradId}`);
         continue;
       }
 
@@ -245,7 +245,7 @@ export default class OmmService {
 
     // 見つからなかったNorad IDを警告ログに出力する
     if (!(noradId in ommItemMap)) {
-      AppMainLogger.warn(`The following Norad ID were not found: ${noradId}`);
+      // AppMainLogger.warn(`The following Norad ID were not found: ${noradId}`);
       return null;
     }
 
