@@ -1,80 +1,76 @@
 // https://www.typescriptlang.org/tsconfig/
 {
-  "include": ["./src/**/*"] /* Specify files and patterns to include in the TypeScript program. */,
+  "include": ["./src/**/*"] /* TypeScriptのコンパイル対象に含めるファイルやパターンを指定する */,
+
   "compilerOptions": {
-    /* Visit https://www.typescriptlang.org/tsconfig/ to read more about this file */
+    /* この設定ファイルの詳細は公式ドキュメントを参照 */
 
-    /* Basic Options */
-    // "incremental": true,                   /* Save .tsbuildinfo files to allow faster subsequent builds. */
-    "target": "es2023" /* Specify the ECMAScript version for emitted JavaScript; default library declarations can be overridden by 'lib'. */,
-    "module": "esnext" /* Specify what module code is generated. */,
-    "lib": [
-      "es2023",
-      "dom"
-    ] /* Specify a set of bundled library declaration files that describe the target runtime environment. */,
-    // "allowJs": true,                       /* Allow JavaScript files to be a part of the TypeScript program. */
-    // "checkJs": true,                       /* Enable error reporting in type-checked JavaScript files. */
-    // "jsx": "preserve",                     /* Specify how JSX code is emitted. */
-    // "declaration": true,                   /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
-    // "declarationMap": true,                /* Create sourcemaps for .d.ts files. */
-    // "sourceMap": true,                     /* Create source map files for emitted JavaScript files. */
-    // "outFile": "./",                       /* Specify a file that bundles all outputs into one JavaScript file. */
-    "outDir": "dist/electron" /* Specify an output folder for all emitted files. */,
-    // "rootDir": "./",                       /* Specify the root folder within your source files. */
-    // "composite": true,                     /* Enable constraints that allow this project to be used with project references. */
-    // "tsBuildInfoFile": "./",               /* Specify the path to the .tsbuildinfo incremental build information file. */
-    // "removeComments": true,                /* Disable emitting comments. */
-    // "noEmit": true,                        /* Disable emitting files from a compilation. */
-    // "importHelpers": true,                 /* Allow importing helper functions from tslib instead of including them per-file. */
-    // "downlevelIteration": true,            /* Emit more compliant JavaScript for iteration when targeting older ECMAScript versions. */
-    "isolatedModules": true /* Ensure each file can be safely transpiled without relying on type information from other files. */,
-    "useDefineForClassFields": true /* Emit class fields using ECMAScript-standard define semantics. */,
+    /* 基本設定 */
+    // "incremental": true,                   /* ビルド情報（.tsbuildinfo）を保存し、次回以降のビルドを高速化する */
+    "target": "es2023" /* 出力するJavaScriptのECMAScriptバージョンを指定する（lib指定で標準ライブラリも調整可能） */,
+    "module": "esnext" /* 生成するモジュール形式（ES Modulesなど）を指定する */,
+    "lib": ["es2023", "dom"] /* 実行環境（ES機能やDOMなど）を表す型定義ライブラリを指定する */,
+    // "allowJs": true,                       /* JavaScriptファイルもコンパイル対象に含める */
+    // "checkJs": true,                       /* JavaScriptファイルも型チェック対象にする */
+    // "jsx": "preserve",                     /* JSXコードの出力方法を指定する */
+    // "declaration": true,                   /* .d.ts（型定義ファイル）を生成する */
+    // "declarationMap": true,                /* .d.ts用のソースマップを生成する */
+    // "sourceMap": true,                     /* JavaScriptファイル用のソースマップを生成する */
+    // "outFile": "./",                       /* 出力を1つのJavaScriptファイルにまとめる */
+    "outDir": "dist/electron" /* コンパイル後のファイルの出力先ディレクトリを指定する */,
+    // "rootDir": "./",                       /* ソースコードのルートディレクトリを指定する */
+    // "composite": true,                     /* プロジェクト参照で使うための制約を有効化する */
+    // "tsBuildInfoFile": "./",               /* incrementalビルド情報ファイルの出力先を指定する */
+    // "removeComments": true,                /* 出力時にコメントを削除する */
+    // "noEmit": true,                        /* コンパイル結果のファイル出力を行わない */
+    // "importHelpers": true,                 /* ヘルパー関数をtslibからインポートして使用する */
+    // "downlevelIteration": true,            /* 古いJS向けにfor-ofなどの処理を互換性の高い形で出力する */
+    "isolatedModules": true /* 各ファイルを独立してトランスパイル可能にし、Babel や esbuild など型情報を使わないツールでも安全に変換できるようにする */,
+    "useDefineForClassFields": true /* クラスフィールドをECMAScript標準（define semantics）で初期化する。従来の代入方式と挙動が異なる場合がある */,
 
-    /* Strict Type-Checking Options */
-    "strict": true /* Enable all strict type-checking options. */,
-    // "noImplicitAny": true,                 /* Report an error when TypeScript infers an 'any' type. */
-    // "strictNullChecks": true,              /* Treat 'null' and 'undefined' as distinct types. */
-    // "strictFunctionTypes": true,           /* Check function parameter types more strictly. */
-    // "strictBindCallApply": true,           /* Check that 'bind', 'call', and 'apply' are invoked with correct arguments. */
-    // "strictPropertyInitialization": true,  /* Check that class properties are initialized in the constructor. */
-    // "noImplicitThis": true,                /* Report an error when 'this' implicitly has type 'any'. */
-    // "alwaysStrict": true,                  /* Ensure files are parsed in ECMAScript strict mode and emit "use strict". */
+    /* 厳格な型チェック設定 */
+    "strict": true /* すべての厳格な型チェックオプションを有効にする */,
+    // "noImplicitAny": true,                 /* 暗黙的にany型になる場合にエラーにする */
+    // "strictNullChecks": true,              /* nullとundefinedを別の型として厳密に扱う */
+    // "strictFunctionTypes": true,           /* 関数の引数型をより厳密にチェックする */
+    // "strictBindCallApply": true,           /* bind/call/applyの引数をチェックする */
+    // "strictPropertyInitialization": true,  /* クラスプロパティの初期化を必須にする */
+    // "noImplicitThis": true,                /* thisが暗黙的にanyになる場合にエラーにする */
+    // "alwaysStrict": true,                  /* 常にstrictモードとして解析し、"use strict"を出力する */
 
-    /* Additional Checks */
-    // "noUnusedLocals": true,                /* Report errors on unused local variables. */
-    // "noUnusedParameters": true,            /* Report errors on unused function parameters. */
-    // "noImplicitReturns": true,             /* Report an error when not all code paths in a function return a value. */
-    // "noFallthroughCasesInSwitch": true,    /* Report errors for fallthrough cases in switch statements. */
+    /* 追加チェック */
+    // "noUnusedLocals": true,                /* 未使用のローカル変数をエラーにする */
+    // "noUnusedParameters": true,            /* 未使用の引数をエラーにする */
+    // "noImplicitReturns": true,             /* すべての分岐でreturnされない場合にエラーにする */
+    // "noFallthroughCasesInSwitch": true,    /* switch文のfallthroughをエラーにする */
 
-    /* Module Resolution Options */
-    "moduleResolution": "bundler" /* Resolve modules using bundler-like rules; supports package.json imports/exports and does not require file extensions on relative imports. */,
-    "baseUrl": "." /* Specify the base directory for resolving non-relative module names. */,
+    /* モジュール解決設定 */
+    "moduleResolution": "bundler" /* ViteやWebpackなどのバンドラと同様のモジュール解決戦略を使用する */,
+    "baseUrl": "." /* 非相対パスの解決時の基準ディレクトリを指定する */,
     "paths": {
       "@/*": ["./src/*"]
-    } /* Specify path mapping entries for module names relative to 'baseUrl'. */,
-    // "rootDirs": [],                        /* Allow multiple folders to be treated as one virtual root when resolving modules. */
-    // "typeRoots": [],                       /* Specify folders that act like './node_modules/@types'. */
-    "types": [
-      "vitest/globals"
-    ] /* Specify which @types packages are included in the global scope; when set, only listed packages are included. */,
-    // "allowSyntheticDefaultImports": true,  /* Allow default imports from modules that do not have a default export; this affects type checking only. */
-    "esModuleInterop": true /* Improve CommonJS/ES Module interop and enable 'allowSyntheticDefaultImports'. */,
-    // "preserveSymlinks": true,              /* Do not resolve symlinks to their real paths. */
-    // "allowUmdGlobalAccess": true,          /* Allow accessing UMD globals from module files. */
-    "resolveJsonModule": true /* Allow importing .json files as modules. */,
+    } /* importパスのエイリアスを定義する（baseUrl基準） */,
+    // "rootDirs": [],                        /* 複数ディレクトリを仮想的に1つのルートとして扱う */
+    // "typeRoots": [],                       /* 型定義の検索先ディレクトリを指定する（@types代替） */
+    "types": ["vitest/globals"] /* グローバルに読み込む型定義パッケージを限定する（指定したもののみ有効） */,
+    // "allowSyntheticDefaultImports": true,  /* default exportがないモジュールのdefault importを型上許可 */
+    "esModuleInterop": true /* CommonJSとES Modulesの相互運用を改善し、default importを型的・実行時ともに扱いやすくする */,
+    // "preserveSymlinks": true,              /* シンボリックリンクを実パスに解決しない */
+    // "allowUmdGlobalAccess": true,          /* モジュールからUMDグローバルへアクセス可能にする */
+    "resolveJsonModule": true /* JSONファイルをモジュールとしてimportできるようにする */,
 
-    /* Source Map Options */
-    // "sourceRoot": "",                      /* Specify the root path for debuggers to find the original source files. */
-    // "mapRoot": "",                         /* Specify the location where debuggers should find source map files. */
-    "inlineSourceMap": true /* Include sourcemap data inside the emitted JavaScript files. */,
-    "inlineSources": true /* Include original source code in the sourcemaps; requires 'inlineSourceMap' or 'sourceMap'. */,
+    /* ソースマップ設定 */
+    // "sourceRoot": "",                      /* デバッガが元ソースを見つけるためのルートパス */
+    // "mapRoot": "",                         /* ソースマップの配置場所を指定する */
+    "inlineSourceMap": true /* ソースマップ情報をJSファイル内に埋め込む */,
+    "inlineSources": true /* ソースマップ内に元のTypeScriptコードも含める（inlineSourceMapまたはsourceMapが必要） */,
 
-    /* Experimental Options */
-    "experimentalDecorators": true /* Enable experimental support for legacy decorators. */,
-    "emitDecoratorMetadata": true /* Emit design-type metadata for decorated declarations; commonly used with reflect-metadata-based libraries. */,
+    /* 実験的機能 */
+    "experimentalDecorators": true /* デコレータ（旧仕様）の実験的サポートを有効化する */,
+    "emitDecoratorMetadata": true /* デコレータ対象の型情報メタデータを出力する（reflect-metadata系で利用） */,
 
-    /* Advanced Options */
-    "skipLibCheck": true /* Skip type checking of declaration files. */
-    // "forceConsistentCasingInFileNames": true, /* Ensure imports use file name casing that is consistent with the file system. */
+    /* 高度な設定 */
+    "skipLibCheck": true /* 外部ライブラリ（.d.ts）の型チェックをスキップしてビルドを高速化する */
+    // "forceConsistentCasingInFileNames": true, /* import時のファイル名の大文字小文字を厳密に一致させる */
   }
 }
