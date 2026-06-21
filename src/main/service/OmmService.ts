@@ -186,9 +186,9 @@ export default class OmmService {
   /**
    * 指定のNorad IDの軌道要素データをTLE文字列で取得する
    * @param {string} noradIds Norad ID(JSON配列の文字列)
-   * @returns {Promise<TleStrings[]>} TLE文字列
+   * @returns {TleStrings[]} TLE文字列
    */
-  public getOmmsByNoradIds(noradIds: string): Promise<TleStrings[]> {
+  public getOmmsByNoradIds(noradIds: string): TleStrings[] {
     // OMM JSONファイルの内容を取得する
     const ommData: OmmJsonModel = this.readOmmJson();
     const ommItemMap: OmmItemMap = ommData.ommItemMap;
