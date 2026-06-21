@@ -1,9 +1,12 @@
+import CommonUtil from "@/common/CommonUtil.js";
 import { ActiveSatelliteModel } from "@/common/model/ActiveSatModel.js";
 import type { AppConfigSatellite } from "@/common/model/AppConfigModel.js";
+import { OmmItem } from "@/common/model/OmmModel.js";
+import OmmUtil from "@/main/util/OmmUtil.js";
 import TleUtil from "@/main/util/TleUtil.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite.js";
-import ApiTle from "@/renderer/api/ApiTle.js";
+import ApiOmm from "@/renderer/api/ApiOmm.js";
 
 /**
  * アクティブ衛星グループ、アクティブ衛星関係のヘルパ
@@ -61,9 +64,16 @@ export default class ActiveSatHelper {
     satModel.satelliteName = sat.userRegisteredSatelliteName;
 
     // TLE
-    // ユーザが登録した衛星のTLEは２行なので、ユーザー登録衛星名とTLEを結合してTLE文字列を生成
-    const tleText = `${sat.userRegisteredSatelliteName}\n${sat.userRegisteredTle}`;
-    satModel.tle = TleUtil.toTleStrings(tleText);
+    if (!CommonUtil.isEmpty(sat.userRegisteredOmm)) {
+      // ユーザが登録した衛星のOMMからTLE文字列を生成
+      const ommItem: OmmItem = JSON.parse(sat.userRegisteredOmm);
+      satModel.tle = OmmUtil.ommItemToTleStrings(ommItem);
+    } else {
+      // memo: userRegisteredOmmへの移行が未済の場合のフォールバック
+      // ユーザが登録した衛星のTLEは２行なので、ユーザー登録衛星名とTLEを結合してTLE文字列を生成
+      const tleText = `${sat.userRegisteredSatelliteName}\n${sat.userRegisteredTle}`;
+      satModel.tle = TleUtil.toTleStrings(tleText);
+    }
 
     return satModel;
   }
@@ -81,7 +91,7 @@ export default class ActiveSatHelper {
     satModel.satelliteName = sat.userRegisteredSatelliteName;
 
     // TLEはNorad IDから取得
-    const tles = await ApiTle.getTlesByNoradIds([sat.noradId]);
+    const tles = await ApiOmm.getOmmsByNoradIds([sat.noradId]);
     satModel.tle = tles[0];
 
     return satModel;

@@ -1,0 +1,44 @@
+{
+  "ommItemMap": {
+    "43879": {
+      "objectName": "ISAT",
+      "objectId": "18111D",
+      "noradCatId": "43879",
+      "epoch": "2024-11-20T13:04:32.589Z",
+      "meanMotion": 15.18321619,
+      "eccentricity": 0.0011072,
+      "inclination": 97.6057,
+      "raOfAscNode": 231.11,
+      "argOfPericenter": 166.1154,
+      "meanAnomaly": 194.0386,
+      "bstar": 0.001211,
+      "meanMotionDot": 0.00024884,
+      "meanMotionDdot": 0,
+      "ephemerisType": 0,
+      "classificationType": "U",
+      "elementSetNo": 999,
+      "revAtEpoch": 32307,
+      "isInLatestOmm": true
+    },
+    "04793": {
+      "objectName": "NOAA 1",
+      "objectId": "70106A",
+      "noradCatId": "04793",
+      "epoch": "2024-11-20T15:15:33.456Z",
+      "meanMotion": 12.54036317,
+      "eccentricity": 0.0031587,
+      "inclination": 101.4251,
+      "raOfAscNode": 12.2886,
+      "argOfPericenter": 31.6003,
+      "meanAnomaly": 123.0557,
+      "bstar": 0.000075999,
+      "meanMotionDot": -0.00000031,
+      "meanMotionDdot": 0,
+      "ephemerisType": 0,
+      "classificationType": "U",
+      "elementSetNo": 999,
+      "revAtEpoch": 46879,
+      "isInLatestOmm": true
+    }
+  }
+}

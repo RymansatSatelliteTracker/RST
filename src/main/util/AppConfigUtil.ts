@@ -1,3 +1,4 @@
+import CommonUtil from "@/common/CommonUtil.js";
 import Constant from "@/common/Constant.js";
 import type { AppConfigMainDisplay, AppConfigSatellite } from "@/common/model/AppConfigModel.js";
 import { AppConfigModel, AppConfigSatelliteGroup } from "@/common/model/AppConfigModel.js";
@@ -10,6 +11,7 @@ import type {
 import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService.js";
 import AppMainLogger from "@/main/util/AppMainLogger.js";
 import FileUtil from "@/main/util/FileUtil.js";
+import OmmUtil from "@/main/util/OmmUtil.js";
 import TransactionRegistry from "@/main/util/TransactionRegistry.js";
 import Store from "electron-store";
 import * as path from "path";
@@ -17,6 +19,8 @@ import * as path from "path";
 // 設定ファイル（JSON）のルートのキー名
 const CONFIG_ROOT_KEY = "param";
 
+// memo: AMSATはTLE形式のみ提供のためTLEのまま維持し、OmmUtilの形式自動判別でパースする
+// celestrakはOMM JSON形式（FORMAT=JSON）で取得する
 const DEFAULT_TLE_URL = [
   {
     enable: true,
@@ -24,31 +28,31 @@ const DEFAULT_TLE_URL = [
   },
   {
     enable: true,
-    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=amateur&FORMAT=TLE",
+    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=amateur&FORMAT=JSON",
   },
   {
     enable: true,
-    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=cubesat&FORMAT=TLE",
+    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=cubesat&FORMAT=JSON",
   },
   {
     enable: false,
-    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=geo&FORMAT=tle",
+    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=geo&FORMAT=JSON",
   },
   {
     enable: true,
-    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=stations&FORMAT=tle",
+    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=stations&FORMAT=JSON",
   },
   {
     enable: true,
-    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=last-30-days&FORMAT=tle",
+    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=last-30-days&FORMAT=JSON",
   },
   {
     enable: false,
-    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=visual&FORMAT=tle",
+    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=visual&FORMAT=JSON",
   },
   {
     enable: false,
-    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=weather&FORMAT=tle",
+    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=weather&FORMAT=JSON",
   },
 ];
 /**
@@ -73,17 +77,33 @@ export class AppConfigUtil {
       AppConfigUtil.storeConfig(config);
     }
 
-    // 現アプリバージョンとアプリケーション設定のバージョンが同一の場合は、そのまま返す
+    // 現アプリバージョンとアプリケーション設定のバージョンが異なる場合は、新定義に移行する
     const config = AppConfigUtil.store.get(CONFIG_ROOT_KEY) as AppConfigModel;
-    if (config.appVersion === Constant.appVersion) {
-      return config;
+    const resultConfig = config.appVersion === Constant.appVersion ? config : this.migrationConfig(config);
+
+    // ユーザ登録衛星のTLE→OMM移行(バージョンの異同に関わらず都度確認し、未移行分のみ反映する)
+    resultConfig.satellites = resultConfig.satellites.map((sat) => this.migrateSatelliteTleToOmm(sat));
+    this.storeConfig(resultConfig);
+
+    return resultConfig;
+  }
+
+  /**
+   * ユーザ登録衛星のTLE(userRegisteredTle)をOMM(userRegisteredOmm)に変換する
+   * 既にuserRegisteredOmmが設定されている場合は何もしない
+   */
+  private static migrateSatelliteTleToOmm(sat: AppConfigSatellite): AppConfigSatellite {
+    if (!sat.userRegistered || CommonUtil.isEmpty(sat.userRegisteredTle) || !CommonUtil.isEmpty(sat.userRegisteredOmm)) {
+      return sat;
     }
 
-    // バージョンが異なる場合は、新定義に移行して保存する
-    const mergedConfig = this.migrationConfig(config);
-    this.storeConfig(mergedConfig);
+    const text = `${sat.userRegisteredSatelliteName}\n${sat.userRegisteredTle}`;
+    const items = OmmUtil.parseToOmmItems(text);
+    if (items.length > 0) {
+      sat.userRegisteredOmm = JSON.stringify(items[0]);
+    }
 
-    return mergedConfig;
+    return sat;
   }
 
   /**
@@ -374,9 +394,17 @@ export class AppConfigUtil {
 
   /**
    * TLEファイルの保存先をフルパスで返す
+   * memo: omm.json移行のため新規書き込みはしないが、移行処理での読み込みに使用する
    */
   public static getTlePath() {
     return path.join(AppConfigUtil.getConfigDir(), Constant.Tle.TLE_FILENAME);
+  }
+
+  /**
+   * OMMファイルの保存先をフルパスで返す
+   */
+  public static getOmmPath() {
+    return path.join(AppConfigUtil.getConfigDir(), Constant.Omm.OMM_FILENAME);
   }
 
   /**

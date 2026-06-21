@@ -1,4 +1,4 @@
-import type { TleItemMap } from "@/common/model/TleModel.js";
+import type { OmmItemMap } from "@/common/model/OmmModel.js";
 import type { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
 import {
   createDefaultSatellite,
@@ -53,20 +53,20 @@ export class DefaultSatelliteModel {
   }
 
   /**
-   * TLEが存在するデフォルト衛星情報を衛星識別情報に変換して返却する
-   * @param tleItemMap TLE情報
+   * OMMが存在するデフォルト衛星情報を衛星識別情報に変換して返却する
+   * @param ommItemMap OMM情報
    * @returns 衛星識別情報
    */
-  public getSatelliteIdentifer(tleItemMap: TleItemMap): SatelliteIdentiferType[] {
-    // TLEに存在するNORADIDを取得する
+  public getSatelliteIdentifer(ommItemMap: OmmItemMap): SatelliteIdentiferType[] {
+    // OMMに存在するNORADIDを取得する
     const noradIds = this.registeredNoradIds.reduce((direcotry: { [key: string]: number }, value, index) => {
       direcotry[value] = index;
       return direcotry;
     }, {});
-    // TLEに一致するデフォルト衛星情報を取得する
+    // OMMに一致するデフォルト衛星情報を取得する
     const satIdTypes: SatelliteIdentiferType[] = [];
-    Object.values(tleItemMap).forEach((tleItem) => {
-      const index: number = noradIds[tleItem.id];
+    Object.values(ommItemMap).forEach((ommItem) => {
+      const index: number = noradIds[ommItem.noradCatId];
       const defsat = this.defaultSatellites[index];
       satIdTypes.push({
         satelliteId: defsat.satelliteId,

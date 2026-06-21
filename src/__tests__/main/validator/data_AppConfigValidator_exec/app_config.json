@@ -12,6 +12,7 @@
         "userRegistered": false,
         "userRegisteredSatelliteName": "1998-067XC",
         "userRegisteredTle": "",
+        "userRegisteredOmm": "",
         "noradId": "62296",
         "autoModeUplinkFreq": 1,
         "uplink1": {

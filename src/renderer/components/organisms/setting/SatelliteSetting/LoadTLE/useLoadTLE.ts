@@ -1,5 +1,5 @@
 import type { AppConfigTleUrl } from "@/common/model/AppConfigModel.js";
-import ApiTle from "@/renderer/api/ApiTle.js";
+import ApiOmm from "@/renderer/api/ApiOmm.js";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
 export function isUpdated(oldValue: AppConfigTleUrl[], newValue: AppConfigTleUrl[]) {
   return JSON.stringify(oldValue) !== JSON.stringify(newValue);
@@ -18,9 +18,9 @@ export async function getUrlofInvalidContents(
   }
   const invalidUrls: AppConfigTleUrl[] = [];
   for await (const item of newlyEnabledUrls) {
-    const canGet = await ApiTle.canGetValidTle(item.url);
+    const canGet = await ApiOmm.canGetValidOmm(item.url);
     if (!canGet) {
-      AppRendererLogger.warn(`指定のURLでTLEが取得できませんでした。 ${item.url} `);
+      AppRendererLogger.warn(`指定のURLで軌道要素データが取得できませんでした。 ${item.url} `);
       invalidUrls.push(item);
     }
   }

@@ -1,6 +1,6 @@
 import Constant from "@/common/Constant.js";
 import { DefaultSatelliteModel } from "@/common/model/DefaultSatelliteModel.js";
-import type { TleItemMap } from "@/common/model/TleModel.js";
+import type { OmmItemMap } from "@/common/model/OmmModel.js";
 import type { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes.js";
 import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
@@ -8,25 +8,25 @@ import FileUtil from "@/main/util/FileUtil.js";
 import * as path from "path";
 
 describe("DefaultSatelliteModel", () => {
-  function getLatestTLE(): TleItemMap {
-    const savePathTle = AppConfigUtil.getTlePath();
-    const tleData = FileUtil.readJson(savePathTle);
+  function getLatestOmm(): OmmItemMap {
+    const savePathOmm = AppConfigUtil.getOmmPath();
+    const ommData = FileUtil.readJson(savePathOmm);
 
-    const tleItemMap: TleItemMap = tleData.tleItemMap;
-    const retTleItemMap: TleItemMap = {};
-    Object.values(tleItemMap).forEach((tleItem) => {
-      if (tleItem.isInLatestTLE) {
-        retTleItemMap[tleItem.id] = tleItem;
+    const ommItemMap: OmmItemMap = ommData.ommItemMap;
+    const retOmmItemMap: OmmItemMap = {};
+    Object.values(ommItemMap).forEach((ommItem) => {
+      if (ommItem.isInLatestOmm) {
+        retOmmItemMap[ommItem.noradCatId] = ommItem;
       }
     });
-    return retTleItemMap;
+    return retOmmItemMap;
   }
 
   beforeAll(() => {
     const TEST_HOME_DIR = path.resolve(import.meta.dirname, "data_DefaultSatelliteModel");
     // 設定ファイルが扱えないため
-    vi.spyOn(AppConfigUtil, "getTlePath").mockImplementation(() => {
-      return path.join(TEST_HOME_DIR, Constant.Tle.TLE_FILENAME);
+    vi.spyOn(AppConfigUtil, "getOmmPath").mockImplementation(() => {
+      return path.join(TEST_HOME_DIR, Constant.Omm.OMM_FILENAME);
     });
   });
   /**
@@ -88,11 +88,11 @@ describe("DefaultSatelliteModel", () => {
    */
   it("SatelliteIdenfierの取得", () => {
     // Arrange
-    const tle = getLatestTLE();
+    const omm = getLatestOmm();
     const defSatModel = new DefaultSatelliteModel();
     defSatModel.addSatellite("test", "00001");
     // Act
-    const satId = defSatModel.getSatelliteIdentifer(tle);
+    const satId = defSatModel.getSatelliteIdentifer(omm);
     // Assert
     expect(satId.length).toBe(1);
     expect(satId[0]).toHaveProperty("satelliteId");

@@ -1,6 +1,6 @@
 import DefaultSatelliteService from "@/main/service/DefaultSatelliteService.js";
 import FrequencyService from "@/main/service/FrequencyService.js";
-import TleService from "@/main/service/TleService.js";
+import OmmService from "@/main/service/OmmService.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 import AppMainLogger from "@/main/util/AppMainLogger.js";
 /**
@@ -14,9 +14,12 @@ export default class StartupService {
     // 設定ファイルの初期化
     AppConfigUtil.init();
 
-    // TLEの取得
-    await new TleService().getTleAndSave();
-    AppMainLogger.info("TLE取得処理完了");
+    // tle.json -> omm.json への移行(一度限り)
+    new OmmService().migrateFromTleJsonIfNeeded();
+
+    // OMMの取得
+    await new OmmService().getOmmAndSave();
+    AppMainLogger.info("OMM取得処理完了");
 
     const isFrequencyUpdated = await new FrequencyService().saveFrequency();
     AppMainLogger.info(`衛星周波数設定取得処理完了(更新=${isFrequencyUpdated})`);
