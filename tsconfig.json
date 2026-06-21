@@ -18,7 +18,7 @@
     // "sourceMap": true,                     /* JavaScriptファイル用のソースマップを生成する */
     // "outFile": "./",                       /* 出力を1つのJavaScriptファイルにまとめる */
     "outDir": "dist/electron" /* コンパイル後のファイルの出力先ディレクトリを指定する */,
-    // "rootDir": "./",                       /* ソースコードのルートディレクトリを指定する */
+    "rootDir": "./src" /* ソースコードのルートディレクトリを指定する */,
     // "composite": true,                     /* プロジェクト参照で使うための制約を有効化する */
     // "tsBuildInfoFile": "./",               /* incrementalビルド情報ファイルの出力先を指定する */
     // "removeComments": true,                /* 出力時にコメントを削除する */
@@ -46,7 +46,6 @@
 
     /* モジュール解決設定 */
     "moduleResolution": "bundler" /* ViteやWebpackなどのバンドラと同様のモジュール解決戦略を使用する */,
-    "baseUrl": "." /* 非相対パスの解決時の基準ディレクトリを指定する */,
     "paths": {
       "@/*": ["./src/*"]
     } /* importパスのエイリアスを定義する（baseUrl基準） */,
