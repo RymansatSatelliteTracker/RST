@@ -1,0 +1,24 @@
+{
+  "ommItemMap": {
+    "00001": {
+      "objectName": "TEST",
+      "objectId": "83058B",
+      "noradCatId": "00001",
+      "epoch": "2025-03-14T22:05:04.560Z",
+      "meanMotion": 2.05871245,
+      "eccentricity": 0.6048443,
+      "inclination": 27.0142,
+      "raOfAscNode": 296.3641,
+      "argOfPericenter": 349.0057,
+      "meanAnomaly": 2.29,
+      "bstar": 0,
+      "meanMotionDot": 0.0000002,
+      "meanMotionDdot": 0,
+      "ephemerisType": 0,
+      "classificationType": "U",
+      "elementSetNo": 999,
+      "revAtEpoch": 28603,
+      "isInLatestOmm": true
+    }
+  }
+}

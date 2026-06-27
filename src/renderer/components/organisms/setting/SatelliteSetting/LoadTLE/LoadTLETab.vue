@@ -1,4 +1,4 @@
-<!-- TLE読み込みタブ -->
+<!-- 軌道要素(OMM)読み込みタブ -->
 <template>
   <v-sheet color="grey-darken-4" outlined width="100%" height="100%" class="pa-3">
     <v-row no-gutters>

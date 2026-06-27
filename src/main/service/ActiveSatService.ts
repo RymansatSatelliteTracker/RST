@@ -1,9 +1,12 @@
+import CommonUtil from "@/common/CommonUtil.js";
 import { ActiveSatelliteGroupModel, ActiveSatelliteModel } from "@/common/model/ActiveSatModel.js";
 import type { AppConfigMainDisplay } from "@/common/model/AppConfigModel.js";
+import { OmmItem } from "@/common/model/OmmModel.js";
 import { getMainWindow } from "@/main/main.js";
 import DefaultSatelliteCacheService from "@/main/service/DefaultSatelliteCacheService.js";
-import TleService from "@/main/service/TleService.js";
+import OmmService from "@/main/service/OmmService.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import OmmUtil from "@/main/util/OmmUtil.js";
 import TleUtil from "@/main/util/TleUtil.js";
 import type { TleStrings } from "@/renderer/types/satellite-type.js";
 
@@ -14,7 +17,7 @@ import type { TleStrings } from "@/renderer/types/satellite-type.js";
 export default class ActiveSatService {
   // シングルトンインスタンス
   private static instance: ActiveSatService = new ActiveSatService();
-  private static tleServie = new TleService();
+  private static ommService = new OmmService();
 
   /**
    * シングルトンのため、コンストラクタは隠蔽
@@ -67,7 +70,7 @@ export default class ActiveSatService {
 
     let tleString: TleStrings | null = null;
     if (defSat) {
-      tleString = ActiveSatService.tleServie.getTlesByNoradId(defSat.noradId);
+      tleString = ActiveSatService.ommService.getOmmByNoradId(defSat.noradId);
     }
 
     // 手動追加された衛星の場合（デフォルト衛星設定から取得出来なかった場合）
@@ -75,7 +78,12 @@ export default class ActiveSatService {
     if (!tleString) {
       const appConfig = AppConfigUtil.getConfig();
       const sat = appConfig.satellites.find((sat) => sat.satelliteId === satId);
-      if (sat) {
+      if (sat && !CommonUtil.isEmpty(sat.userRegisteredOmm)) {
+        // ユーザが登録した衛星のOMMからTLE文字列を生成
+        const ommItem: OmmItem = JSON.parse(sat.userRegisteredOmm);
+        tleString = OmmUtil.ommItemToTleStrings(ommItem);
+      } else if (sat && !CommonUtil.isEmpty(sat.userRegisteredTle)) {
+        // memo: userRegisteredOmmへの移行が未済の場合のフォールバック
         // ユーザが登録した衛星のTLEは２行なので、ユーザー登録衛星名とTLEを結合してTLE文字列を生成
         const tleText = `${sat.userRegisteredSatelliteName}\n${sat.userRegisteredTle}`;
         tleString = TleUtil.toTleStrings(tleText);

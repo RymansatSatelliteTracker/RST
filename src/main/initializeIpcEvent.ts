@@ -12,9 +12,9 @@ import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService.
 import DefaultSatelliteService from "@/main/service/DefaultSatelliteService.js";
 import GeoLocationService from "@/main/service/GeoLocationService.js";
 import RepoFrequencyService from "@/main/service/RepoFrequencyService.js";
+import OmmService from "@/main/service/OmmService.js";
 import RotatorService from "@/main/service/RotatorService.js";
 import SerialTrialService from "@/main/service/SerialTrialService.js";
-import TleService from "@/main/service/TleService.js";
 import TransceiverService from "@/main/service/TransceiverSerivice.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 import { ipcMain } from "electron";
@@ -92,10 +92,10 @@ export function initializeIpcEvents() {
   });
 
   /**
-   * 指定のNORAD IDのTLEを返す
+   * 指定のNORAD IDの軌道要素データをTLE文字列で返す
    */
-  ipcMain.handle("getTlesByNoradIds", (event, noradIds: string) => {
-    return new TleService().getTlesByNoradIds(noradIds);
+  ipcMain.handle("getOmmsByNoradIds", (event, noradIds: string) => {
+    return new OmmService().getOmmsByNoradIds(noradIds);
   });
 
   /**
@@ -304,10 +304,10 @@ export function initializeIpcEvents() {
   ipcMain.handle("onSaveTransceiverFrequency", async (evnet) => {});
 
   /**
-   * URLから読み込み可能なTLEが取得できるか確認する
+   * URLから読み込み可能な軌道要素データが取得できるか確認する
    */
-  ipcMain.handle("canGetValidTle", async (event, url: string): Promise<boolean> => {
-    return new TleService().canGetValidTle(url, new WebClient());
+  ipcMain.handle("canGetValidOmm", async (event, url: string): Promise<boolean> => {
+    return new OmmService().canGetValidOmm(url, new WebClient());
   });
 
   /**
@@ -334,7 +334,7 @@ export function releaseIpcEvents() {
   ipcMain.removeHandler("storeAppConfigSatSetting");
   ipcMain.removeHandler("getRotatorConfig");
   ipcMain.removeHandler("getTransceiverConfig");
-  ipcMain.removeHandler("getTlesByNoradIds");
+  ipcMain.removeHandler("getOmmsByNoradIds");
   ipcMain.removeHandler("getGeoLocation");
   ipcMain.removeHandler("getSavedSatelliteIdentifer");
   ipcMain.removeHandler("getDefaultSatelliteBySatelliteId");
@@ -363,7 +363,7 @@ export function releaseIpcEvents() {
   ipcMain.removeHandler("setSatelliteMode");
   ipcMain.removeHandler("dopplerShiftWaitingCallback");
   ipcMain.removeHandler("onSaveTransceiverFrequency");
-  ipcMain.removeHandler("canGetValidTle");
+  ipcMain.removeHandler("canGetValidOmm");
   ipcMain.removeHandler("onNoticeMessage");
 
   initialized = false;

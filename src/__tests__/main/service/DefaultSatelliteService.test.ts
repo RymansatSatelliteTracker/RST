@@ -1,7 +1,7 @@
 import Constant from "@/common/Constant.js";
 import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
 import DefaultSatelliteService from "@/main/service/DefaultSatelliteService.js";
-import TleService from "@/main/service/TleService.js";
+import OmmService from "@/main/service/OmmService.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 import ElectronUtil from "@/main/util/ElectronUtil.js";
 import FileUtil from "@/main/util/FileUtil.js";
@@ -13,7 +13,7 @@ describe("DefaultSatelliteService", () => {
   const TEST_WORK_DIR = path.resolve(import.meta.dirname, "data_DefaultSatelliteService", "temp");
   const TARGET_FILES = [
     Constant.Config.DEFAULT_SATELLITE_FILENAME,
-    Constant.Tle.TLE_FILENAME,
+    Constant.Omm.OMM_FILENAME,
     Constant.Config.FREQUENCY_FILENAME,
     Constant.Config.CONFIG_FILENAME + ".json",
   ];
@@ -58,7 +58,7 @@ describe("DefaultSatelliteService", () => {
       return TEST_WORK_DIR;
     });
     // 今回の試験対象外のため
-    vi.spyOn(TleService.prototype, "getTleAndSave").mockImplementation(async () => {});
+    vi.spyOn(OmmService.prototype, "getOmmAndSave").mockImplementation(async () => {});
     vi.spyOn(AppConfigUtil, "saveTleLastRetrievedDate").mockImplementation(() => {});
   });
 
@@ -80,10 +80,10 @@ describe("DefaultSatelliteService", () => {
     // 試験条件の妥当性検証
     // 試験前はデフォルト衛星定義が存在する
     expect(beforeDefSat?.noradId).toBe("43879");
-    // TLEあり
-    const tleService = new TleService();
-    const afterTle = tleService.getTlesByNoradId("43879");
-    expect(afterTle).not.toBe(null);
+    // OMMあり
+    const ommService = new OmmService();
+    const afterOmm = ommService.getOmmByNoradId("43879");
+    expect(afterOmm).not.toBe(null);
 
     // 実行結果の検証
     expect(isSuccess).toBe(true);
@@ -118,10 +118,10 @@ describe("DefaultSatelliteService", () => {
     expect(beforeSatellites?.noradId).toBe("43879");
     // ユーザ定義TLEあり
     expect(beforeSatellites?.userRegistered).toBe(true);
-    // TLEなし
-    const tleService = new TleService();
-    const afterTle = tleService.getTlesByNoradId("43879");
-    expect(afterTle).toBe(null);
+    // OMMなし
+    const ommService = new OmmService();
+    const afterOmm = ommService.getOmmByNoradId("43879");
+    expect(afterOmm).toBe(null);
 
     // 実行結果の検証
     expect(isSuccess).toBe(true);
@@ -155,10 +155,10 @@ describe("DefaultSatelliteService", () => {
     expect(beforeSatellites?.noradId).toBe("43879");
     // ユーザ定義TLEなし
     expect(beforeSatellites?.userRegistered).toBe(false);
-    // TLEなし
-    const tleService = new TleService();
-    const afterTle = tleService.getTlesByNoradId("43879");
-    expect(afterTle).toBe(null);
+    // OMMなし
+    const ommService = new OmmService();
+    const afterOmm = ommService.getOmmByNoradId("43879");
+    expect(afterOmm).toBe(null);
 
     // 実行結果の検証
     expect(isSuccess).toBe(true);
@@ -190,10 +190,10 @@ describe("DefaultSatelliteService", () => {
     expect(beforeSatelliteGroups.length).toBe(0);
     expect(beforeSatellites.length).toBe(0);
     expect(beforeDefSat?.noradId).toBe("43879");
-    // TLEなし
-    const tleService = new TleService();
-    const afterTle = tleService.getTlesByNoradId("43879");
-    expect(afterTle).toBe(null);
+    // OMMなし
+    const ommService = new OmmService();
+    const afterOmm = ommService.getOmmByNoradId("43879");
+    expect(afterOmm).toBe(null);
 
     // 実行結果の検証
     expect(isSuccess).toBe(true);

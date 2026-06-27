@@ -86,6 +86,8 @@ const schemaSatellite = zod.object({
   userRegisteredSatelliteName: zod.string(),
   // ユーザ登録衛星TLE
   userRegisteredTle: zod.string(),
+  // ユーザ登録衛星OMM
+  userRegisteredOmm: zod.string(),
   // 対象衛星NORAD ID
   noradId: zod.string(),
   // 自動モード時アップリンク設定

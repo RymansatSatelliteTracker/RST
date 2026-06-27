@@ -145,11 +145,11 @@ const apiHandler = {
   },
 
   /**
-   * 指定のNORAD IDのTLEを返す
-   * 呼び出し例）const ret = await window.rstApi.getTlesByNoradIds(["xxx", "yyy"]);
+   * 指定のNORAD IDの軌道要素データをTLE文字列で返す
+   * 呼び出し例）const ret = await window.rstApi.getOmmsByNoradIds(["xxx", "yyy"]);
    */
-  getTlesByNoradIds: function (noradIds: string): Promise<TleStrings[]> {
-    return ipcRenderer.invoke("getTlesByNoradIds", noradIds);
+  getOmmsByNoradIds: function (noradIds: string): Promise<TleStrings[]> {
+    return ipcRenderer.invoke("getOmmsByNoradIds", noradIds);
   },
 
   /**
@@ -351,11 +351,11 @@ const apiHandler = {
     });
   },
   /**
-   * URLから読み込み可能なTLEが取得できるか確認する
-   * 呼び出し例）const canGet = await window.rstApi.canGetValidTle(url);
+   * URLから読み込み可能な軌道要素データが取得できるか確認する
+   * 呼び出し例）const canGet = await window.rstApi.canGetValidOmm(url);
    */
-  canGetValidTle: function (url: string): Promise<boolean> {
-    return ipcRenderer.invoke("canGetValidTle", url);
+  canGetValidOmm: function (url: string): Promise<boolean> {
+    return ipcRenderer.invoke("canGetValidOmm", url);
   },
   /**
    * 通知メッセージイベント

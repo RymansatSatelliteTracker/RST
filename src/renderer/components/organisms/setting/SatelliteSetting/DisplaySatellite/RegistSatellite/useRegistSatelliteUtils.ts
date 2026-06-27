@@ -1,4 +1,5 @@
 import type { AppConfigModel, AppConfigSatellite } from "@/common/model/AppConfigModel.js";
+import OmmUtil from "@/main/util/OmmUtil.js";
 import TleUtil from "@/main/util/TleUtil.js";
 import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite.js";
 import ApiDefaultSatellite from "@/renderer/api/ApiDefaultSatellite.js";
@@ -80,6 +81,12 @@ export async function setAppConfig(
   const lines = tle.split("\n");
   const parsedTle = parseTle(lines[0], lines[1]);
   apiSat.noradId = parsedTle.line1.satNum;
+
+  // TLEをOMMに変換してuserRegisteredOmmにも保存する
+  const ommItems = OmmUtil.parseToOmmItems(`${srcFrom.satelliteName}\n${tle}`);
+  if (ommItems.length > 0) {
+    apiSat.userRegisteredOmm = JSON.stringify(ommItems[0]);
+  }
 
   if (isNewItem) {
     // 新規登録の場合ユーザ登録のリストとグループへの追加をする

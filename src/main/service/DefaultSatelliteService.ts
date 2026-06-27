@@ -2,10 +2,10 @@ import Constant from "@/common/Constant.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
 import { DefaultSatelliteModel } from "@/common/model/DefaultSatelliteModel.js";
 import { FrequencyModel } from "@/common/model/FrequencyModel.js";
-import type { TleItemMap } from "@/common/model/TleModel.js";
+import type { OmmItemMap } from "@/common/model/OmmModel.js";
 import type { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
 import { ApiResponse } from "@/common/types/types.js";
-import TleService from "@/main/service/TleService.js";
+import OmmService from "@/main/service/OmmService.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 import AppMainLogger from "@/main/util/AppMainLogger.js";
 import ElectronUtil from "@/main/util/ElectronUtil.js";
@@ -40,8 +40,8 @@ export default class DefaultSatelliteService {
    * @returns
    */
   public async updateDefaultSatelliteService(isFrequencyUpdated = true): Promise<string> {
-    // TLEを取得
-    const tleItemMap: TleItemMap = this.getLatestTLE();
+    // OMMを取得
+    const ommItemMap: OmmItemMap = this.getLatestOmm();
 
     // デフォルト衛星定義が保存されたパスを取得する
     const savePathSat = path.join(ElectronUtil.getUserDir(), Constant.Config.DEFAULT_SATELLITE_FILENAME);
@@ -55,9 +55,9 @@ export default class DefaultSatelliteService {
     const defaultSatData = FileUtil.readJson(savePathSat);
     this.defSatJson = DefaultSatelliteModel.getInitializedModelFromData(defaultSatData.defaultSatellite);
 
-    // TLEから情報を取得してデフォルト衛星定義を更新する
-    for (const tleItem of Object.values(tleItemMap)) {
-      this.defSatJson.addSatellite(tleItem.name, tleItem.id);
+    // OMMから情報を取得してデフォルト衛星定義を更新する
+    for (const ommItem of Object.values(ommItemMap)) {
+      this.defSatJson.addSatellite(ommItem.objectName, ommItem.noradCatId);
     }
 
     // 衛星周波数設定で更新する
@@ -82,9 +82,9 @@ export default class DefaultSatelliteService {
    * @returns 衛星識別情報
    */
   public async getSavedSatelliteIdentifer(): Promise<SatelliteIdentiferType[]> {
-    const tleItemMap: TleItemMap = this.getLatestTLE();
+    const ommItemMap: OmmItemMap = this.getLatestOmm();
     // デフォルト衛星定義から衛星識別情報を取得
-    const satIdentifer: SatelliteIdentiferType[] = this.defSatJson.getSatelliteIdentifer(tleItemMap);
+    const satIdentifer: SatelliteIdentiferType[] = this.defSatJson.getSatelliteIdentifer(ommItemMap);
 
     return satIdentifer;
   }
@@ -175,18 +175,18 @@ export default class DefaultSatelliteService {
     }
     AppMainLogger.info("デフォルト衛星定義のリフレッシュ 完了");
 
-    // TLE最終取得日時を更新する
+    // 軌道要素データ最終取得日時を更新する
     AppConfigUtil.saveTleLastRetrievedDate(Date.now() - Constant.Time.MILLISECONDS_IN_DAY);
 
-    // TLEの取得
-    AppMainLogger.info("TLEの取得 開始");
+    // 軌道要素データ(OMM)の取得
+    AppMainLogger.info("OMMの取得 開始");
     try {
-      await new TleService().getTleAndSave();
+      await new OmmService().getOmmAndSave();
     } catch (e) {
       AppMainLogger.error(e);
       return new ApiResponse(false, I18nMsgs.ERR_FAIL_TO_UPDATE_TLE_URL);
     }
-    AppMainLogger.info("TLEの取得 完了");
+    AppMainLogger.info("OMMの取得 完了");
 
     // デフォルト衛星定義の更新
     AppMainLogger.info("デフォルト衛星定義の更新 開始");
@@ -219,20 +219,20 @@ export default class DefaultSatelliteService {
   }
 
   /**
-   * tle.jsonに存在するTLEを取得する
-   * @returns TleItemMap
+   * omm.jsonに存在する最新のOMMを取得する
+   * @returns OmmItemMap
    */
-  private getLatestTLE(): TleItemMap {
-    const savePathTle = AppConfigUtil.getTlePath();
-    const tleData = FileUtil.readJson(savePathTle);
+  private getLatestOmm(): OmmItemMap {
+    const savePathOmm = AppConfigUtil.getOmmPath();
+    const ommData = FileUtil.readJson(savePathOmm);
 
-    const tleItemMap: TleItemMap = tleData.tleItemMap;
-    const retTleItemMap: TleItemMap = {};
-    Object.values(tleItemMap).forEach((tleItem) => {
-      if (tleItem.isInLatestTLE) {
-        retTleItemMap[tleItem.id] = tleItem;
+    const ommItemMap: OmmItemMap = ommData.ommItemMap;
+    const retOmmItemMap: OmmItemMap = {};
+    Object.values(ommItemMap).forEach((ommItem) => {
+      if (ommItem.isInLatestOmm) {
+        retOmmItemMap[ommItem.noradCatId] = ommItem;
       }
     });
-    return retTleItemMap;
+    return retOmmItemMap;
   }
 }

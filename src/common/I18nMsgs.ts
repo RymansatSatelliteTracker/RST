@@ -100,8 +100,8 @@ export default class I18nMsgs {
   };
   public static readonly CHK_ERR_TLE: I18nMsgItem = { en: "TLE format is invalid", ja: "TLEのフォーマットが不正です" };
   public static readonly CHK_ERR_GET_TLE: I18nMsgItem = {
-    en: "Cannot retrieve TLE from the specified URL ({0})",
-    ja: "指定のURLからTLEを取得できません ({0})",
+    en: "Cannot retrieve orbital data (OMM) from the specified URL ({0})",
+    ja: "指定のURLから軌道要素データ(OMM)を取得できません ({0})",
   };
   public static readonly CHK_ERR_TLE_2LINE: I18nMsgItem = {
     en: "Please enter TLE on two lines",
@@ -332,7 +332,7 @@ export default class I18nMsgs {
   public static readonly G51_PARK_POS: I18nMsgItem = { en: "Park position", ja: "パークポジション" };
   // 画面項目系／衛星設定画面
   public static readonly G31_DISPLAY_SATELLITE: I18nMsgItem = { en: "Display Satellite", ja: "表示衛星" };
-  public static readonly G32_TLE_LOAD: I18nMsgItem = { en: "TLE Load", ja: "TLE読み込み" };
+  public static readonly G32_TLE_LOAD: I18nMsgItem = { en: "Orbital Data (OMM) Load", ja: "軌道要素(OMM)読み込み" };
   public static readonly G33_OTHER_SETTING: I18nMsgItem = { en: "Others", ja: "その他設定" };
   // 画面項目系／衛星設定画面 表示衛星
   public static readonly G31_SATELLITE_GROUP: I18nMsgItem = { en: "Satellite Group", ja: "衛星グループ" };
