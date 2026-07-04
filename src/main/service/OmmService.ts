@@ -1,5 +1,4 @@
 import CommonUtil from "@/common/CommonUtil.js";
-import Constant from "@/common/Constant.js";
 import type { OmmItem, OmmItemMap } from "@/common/model/OmmModel.js";
 import { OmmJsonModel } from "@/common/model/OmmModel.js";
 import type { TleJsonModel } from "@/common/model/TleModel.js";
@@ -19,6 +18,9 @@ export default class OmmService {
   // omm.jsonデータのキャッシュ
   private static cachedOmmJsonModel: OmmJsonModel | null = null;
 
+  /**
+   * OMM JSONを読み込む
+   */
   private readOmmJson(): OmmJsonModel {
     const savePath = AppConfigUtil.getOmmPath();
     if (!FileUtil.exists(savePath)) {
@@ -125,10 +127,10 @@ export default class OmmService {
   private canTakeOmm(): boolean {
     // 最終取得日時からTLE_GET_INTERVAL_MS経過しているか
     // memo: celestrak.orgに連続アクセスすると403を返すため、以下時間をおいて取得を行う
-    const param = AppConfigUtil.getConfig();
-    if (Date.now() - param.tle.lastRetrievedDate > Constant.Tle.TLE_GET_INTERVAL_MS) {
-      return true;
-    }
+    // const param = AppConfigUtil.getConfig();
+    // if (Date.now() - param.tle.lastRetrievedDate > Constant.Tle.TLE_GET_INTERVAL_MS) {
+    //   return true;
+    // }
 
     return false;
   }
@@ -142,7 +144,7 @@ export default class OmmService {
    */
   private mergeOmmData(ommItemsPerUrl: OmmItem[][], baseOmmItemMap: OmmItemMap): OmmItemMap {
     // 引数のbaseOmmItemMapからコピーして、返却用のOmmItemMapを作成
-    const ommItemMap: OmmItemMap = { ...JSON.parse(JSON.stringify(baseOmmItemMap)) };
+    const ommItemMap: OmmItemMap = { ...(JSON.parse(JSON.stringify(baseOmmItemMap)) as OmmItemMap) };
 
     // 既存のフラグは一旦落とす
     Object.values(ommItemMap).forEach((ommItem) => {

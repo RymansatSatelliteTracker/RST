@@ -2,7 +2,7 @@ import Constant from "@/common/Constant.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
 import { DefaultSatelliteModel } from "@/common/model/DefaultSatelliteModel.js";
 import { FrequencyModel } from "@/common/model/FrequencyModel.js";
-import type { OmmItemMap } from "@/common/model/OmmModel.js";
+import type { OmmItemMap, OmmJsonModel } from "@/common/model/OmmModel.js";
 import type { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
 import { ApiResponse } from "@/common/types/types.js";
 import OmmService from "@/main/service/OmmService.js";
@@ -224,11 +224,12 @@ export default class DefaultSatelliteService {
    */
   private getLatestOmm(): OmmItemMap {
     const savePathOmm = AppConfigUtil.getOmmPath();
-    const ommData = FileUtil.readJson(savePathOmm);
+    const ommData = FileUtil.readJson(savePathOmm) as OmmJsonModel;
 
     const ommItemMap: OmmItemMap = ommData.ommItemMap;
     const retOmmItemMap: OmmItemMap = {};
     Object.values(ommItemMap).forEach((ommItem) => {
+      // 最新のOMM取得で取得、更新された衛星のみを返却する
       if (ommItem.isInLatestOmm) {
         retOmmItemMap[ommItem.noradCatId] = ommItem;
       }

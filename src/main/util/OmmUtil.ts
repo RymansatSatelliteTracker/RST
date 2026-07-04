@@ -119,8 +119,7 @@ class OmmUtil {
       .padStart(5, "0")
       .slice(-5);
 
-    let line2 =
-      `2 ${noradId} ${inclination} ${raan} ${eccentricity} ${argPerigee} ${meanAnomaly} ${meanMotion}${revAtEpoch}`;
+    let line2 = `2 ${noradId} ${inclination} ${raan} ${eccentricity} ${argPerigee} ${meanAnomaly} ${meanMotion}${revAtEpoch}`;
     line2 = line2 + TleUtil.calculateChecksum(line2);
 
     return {
@@ -156,8 +155,7 @@ class OmmUtil {
       if (lines[ii].substring(0, 2) === "1 " && lines[ii + 1].substring(0, 2) === "2 ") {
         // 直前行が"1 "/"2 "で始まっていなければ衛星名行とみなす(2LEの場合は衛星名なし)
         const prevLine = ii > 0 ? lines[ii - 1] : "";
-        const hasName =
-          ii > 0 && prevLine.substring(0, 2) !== "1 " && prevLine.substring(0, 2) !== "2 ";
+        const hasName = ii > 0 && prevLine.substring(0, 2) !== "1 " && prevLine.substring(0, 2) !== "2 ";
         const line0 = hasName ? prevLine : "";
         items.push(this.tleLinesToOmmItem(line0, lines[ii], lines[ii + 1]));
         ii += 2;
@@ -204,14 +202,16 @@ class OmmUtil {
    * JSON/JSON-PRETTY形式のテキストをOmmItemのリストに変換する
    */
   private static parseJsonFormat(text: string): OmmItem[] {
-    let parsed: any;
+    let parsed: unknown;
     try {
-      parsed = JSON.parse(text);
+      parsed = JSON.parse(text) as unknown;
     } catch {
       return [];
     }
-    const arr = Array.isArray(parsed) ? parsed : [parsed];
-    return arr.filter((o) => o && !CommonUtil.isEmpty(CommonUtil.toString(o.NORAD_CAT_ID))).map((o) => this.fieldsToOmmItem(o));
+    const arr: unknown[] = Array.isArray(parsed) ? parsed : [parsed];
+    return arr
+      .filter((o) => o && !CommonUtil.isEmpty(CommonUtil.toString((o as Record<string, unknown>).NORAD_CAT_ID)))
+      .map((o) => this.fieldsToOmmItem(o as Record<string, unknown>));
   }
 
   /**

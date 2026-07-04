@@ -1,7 +1,7 @@
 import CommonUtil from "@/common/CommonUtil.js";
 import { ActiveSatelliteModel } from "@/common/model/ActiveSatModel.js";
 import type { AppConfigSatellite } from "@/common/model/AppConfigModel.js";
-import { OmmItem } from "@/common/model/OmmModel.js";
+import type { OmmItem } from "@/common/model/OmmModel.js";
 import OmmUtil from "@/main/util/OmmUtil.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite.js";
@@ -65,7 +65,7 @@ export default class ActiveSatHelper {
     // OMM
     if (!CommonUtil.isEmpty(sat.userRegisteredOmm)) {
       // ユーザが登録した衛星のOMMを使用
-      const ommItem: OmmItem = JSON.parse(sat.userRegisteredOmm);
+      const ommItem: OmmItem = JSON.parse(sat.userRegisteredOmm) as OmmItem;
       satModel.omm = ommItem;
     } else {
       // memo: userRegisteredOmmへの移行が未済の場合のフォールバック
