@@ -11,10 +11,10 @@ import type { AppConfigSatSettingModel } from "@/common/model/AppConfigSatellite
 import type { AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel.js";
 import type { FrequencyModel } from "@/common/model/FrequencyModel.js";
 import type { MessageModel } from "@/common/model/MessageModel.js";
+import type { OmmItem } from "@/common/model/OmmModel.js";
 import type { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
 import type { ApiResponse, LangType } from "@/common/types/types.js";
 import EnvUtil from "@/common/util/EnvUtil.js";
-import type { TleStrings } from "@/renderer/types/satellite-type.js";
 import type { IpcRendererEvent } from "electron";
 import { contextBridge, ipcRenderer } from "electron";
 import path from "path";
@@ -145,10 +145,10 @@ const apiHandler = {
   },
 
   /**
-   * 指定のNORAD IDの軌道要素データをTLE文字列で返す
+   * 指定のNORAD IDの軌道要素データをOMMで返す
    * 呼び出し例）const ret = await window.rstApi.getOmmsByNoradIds(["xxx", "yyy"]);
    */
-  getOmmsByNoradIds: function (noradIds: string): Promise<TleStrings[]> {
+  getOmmsByNoradIds: function (noradIds: string): Promise<OmmItem[]> {
     return ipcRenderer.invoke("getOmmsByNoradIds", noradIds);
   },
 

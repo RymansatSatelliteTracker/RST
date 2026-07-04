@@ -88,3 +88,107 @@ OMM JSON → TLE 変換は `OmmUtil.ommItemToTleStrings()` が担う。
 
 Celestrak URL の `FORMAT=TLE` を `FORMAT=JSON` に変更する。
 AMSAT の URL は TLE 形式しか提供していないため TLE のまま維持し、形式自動判別でパースする。
+
+## 追加設計：SatelliteService の OMM 対応（TLE 文字列経由の廃止）
+
+### 背景・決定事項
+
+当初設計では「`SatelliteService` は `TleStrings` を入力とする構造を維持する」としていたが、これは
+`OmmItem → TleStrings`（`OmmUtil.ommItemToTleStrings()`、TLE固定精度フォーマットへの変換）という
+精度劣化を伴う変換を経由する設計だった。
+
+`satellite.js`（v6.0.2、本プロジェクトの既存依存）は `json2satrec(jsonobj: OMMJsonObject, opsmode?)` を提供しており、
+OMM JSONから直接 `SatRec` を生成できる（TLE文字列化を経由しないため、エポックや軌道要素の精度劣化が無い）。
+ライブラリのコメントにも "the epoch date in OMM format is more accurate than TLE format!" と明記されている。
+
+この機能を使い、`SatelliteService` のコンストラクタ引数を `TleStrings` → `OmmItem` に変更し、
+データ受け渡し経路全体を `OmmItem` に統一する。
+
+### 変更後のデータフロー（アクティブ衛星 → SatelliteService）
+
+```
+omm.json (OmmItemMap)
+  ↓
+OmmService.getOmmByNoradId/getOmmsByNoradIds → OmmItem（変換なし、そのまま返却）
+  ↓
+ActiveSatService.getActiveSatOmmBySatId → OmmItem
+  ↓
+ActiveSatModel.mainSatelliteOmm / ActiveSatelliteModel.omm: OmmItem
+  ↓（IPC: getOmmsByNoradIds の戻り値も OmmItem[] に変更）
+ApiOmm.getOmmsByNoradIds → OmmItem[]
+  ↓
+ActiveSatHelper.fetchActiveSats → ActiveSatelliteModel.omm: OmmItem
+  ↓
+SatelliteServiceFactory.createByActiveSat/createBySatGroup
+  ↓
+new SatelliteService(OmmItem) → satellite.json2satrec(OMMJsonObject) → SatRec
+```
+
+### 命名方針
+
+OMMデータを保持するフィールド/変数は、プロジェクトの既存命名規則（`OmmService`/`OmmModel`/`ApiOmm`等）に合わせ、
+「Tle」ではなく「Omm」を用いる名前にリネームする。
+
+| 旧 | 新 |
+|---|---|
+| `ActiveSatModel.mainSattelliteTle` | `mainSatelliteOmm` |
+| `ActiveSatelliteModel.tle` | `omm` |
+| `ActiveSatService.getActiveSatTleBySatId()` | `getActiveSatOmmBySatId()` |
+| `useHome.ts` の `tleStrings` (ref) | `ommItems` |
+
+### 修正ファイル一覧
+
+| ファイル | 変更内容 |
+|---|---|
+| `src/renderer/service/SatelliteService.ts` | コンストラクタ引数を `OmmItem` に変更。`satellite.json2satrec()` で `SatRec` を生成。入力チェックも `tleLine1/2` の空判定 → `noradCatId`/`epoch` の空判定に変更 |
+| `src/common/model/ActiveSatModel.ts` | `mainSattelliteTle`→`mainSatelliteOmm`、`tle`→`omm`。型を `OmmItem` に変更 |
+| `src/main/service/OmmService.ts` | `getOmmByNoradId`/`getOmmsByNoradIds`/`findOmmByNoradId` の戻り値を `OmmItem`/`OmmItem[]` に変更（`ommItemToTleStrings()` 呼び出しを削除）。`cachedTleStringMap` は変換不要になるため削除（`ommItemMap` から直接返却） |
+| `src/main/service/ActiveSatService.ts` | `getActiveSatTleBySatId`→`getActiveSatOmmBySatId` にリネームし `OmmItem` を返却。`userRegisteredOmm` は `JSON.parse` のみ、`userRegisteredTle` フォールバックは `OmmUtil.parseToOmmItems()` で `OmmItem` 化 |
+| `src/main/preload.ts` | `getOmmsByNoradIds` の戻り値型を `Promise<OmmItem[]>` に変更 |
+| `src/renderer/api/ApiOmm.ts` | `getOmmsByNoradIds` の戻り値型を `Promise<OmmItem[]>` に変更 |
+| `src/renderer/common/util/ActiveSatHelper.ts` | `satModel.tle`→`satModel.omm`。`ommItemToTleStrings()` 呼び出しを削除し `OmmItem` を直接設定 |
+| `src/renderer/components/pages/Home/useHome.ts` | `tleStrings`→`ommItems`（型は `OmmItem[]`） |
+| `src/renderer/common/util/SatelliteServiceFactory.ts` | `mainSatelliteOmm`/`activeSat.omm` を `OmmItem` のまま `SatelliteService` に渡す |
+
+変更不要（対象外）：`TleUtil.ts`、`OmmUtil.ommItemToTleStrings()`、`userRegisteredTle`/`RegistSatelliteForm` 関連（`useRegistSatelliteUtils.ts`等）。
+これらはユーザーのTLEテキスト直接入力・保存機能で使用しており、本対応とは独立した既存機能のため変更しない。
+
+### json2satrec へのマッピング
+
+`OmmItem` のフィールドは Celestrak OMM キーワードに対応しているため、`SatelliteService` 内で以下のように
+`satellite.js` の `OMMJsonObject` 型へ直接マッピングする（新規ユーティリティは不要、`SatelliteService` 内に
+プライベートメソッドとして実装する）。
+
+```ts
+{
+  OBJECT_NAME: item.objectName,
+  OBJECT_ID: item.objectId,
+  EPOCH: item.epoch,
+  MEAN_MOTION: item.meanMotion,
+  ECCENTRICITY: item.eccentricity,
+  INCLINATION: item.inclination,
+  RA_OF_ASC_NODE: item.raOfAscNode,
+  ARG_OF_PERICENTER: item.argOfPericenter,
+  MEAN_ANOMALY: item.meanAnomaly,
+  EPHEMERIS_TYPE: item.ephemerisType,
+  CLASSIFICATION_TYPE: item.classificationType,
+  NORAD_CAT_ID: item.noradCatId,
+  ELEMENT_SET_NO: item.elementSetNo,
+  REV_AT_EPOCH: item.revAtEpoch,
+  BSTAR: item.bstar,
+  MEAN_MOTION_DOT: item.meanMotionDot,
+  MEAN_MOTION_DDOT: item.meanMotionDdot,
+}
+```
+
+### テストへの影響・リスク
+
+- `src/__tests__/renderer/service/TleDataHelper.ts` は実際のTLE文字列を使ったテストフィクスチャ（ISS, DAICHI等）を保持しており、
+  多数のテストファイルから参照されている。`OmmUtil.parseToOmmItems()` で既存のTLE文字列から `OmmItem` を生成し、
+  `new SatelliteService(OmmItem)` を構築する形に変更する（TLE文字列定数自体は変更しない）。
+- TLE文字列 → `OmmItem`（ISO日時文字列のEPOCH）→ `json2satrec` 内で再度エポック日数を算出、という変換を経由するため、
+  従来の `twoline2satrec` 直接変換とはエポック計算の浮動小数点誤差レベルでわずかに異なる可能性がある。
+  既存テストの期待値が厳密一致（`toBe`等）の場合は影響が出る可能性があるため、`npm run test` 実行時に確認し、
+  必要であれば許容誤差（`toBeCloseTo`等）の調整を行う。
+- `FrequencyTrackService_calcInvHeteroBaseFreqBy{Rx,Tx}Freq.test.ts` 等の `{ tleLine1: "dummy", ... }` ダミーデータは、
+  `OmmItem` のダミーデータ（`noradCatId`/`epoch`等に有効な最小値を設定したもの）に置き換える。

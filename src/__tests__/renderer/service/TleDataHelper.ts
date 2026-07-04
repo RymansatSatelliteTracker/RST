@@ -1,7 +1,16 @@
+import type { OmmItem } from "@/common/model/OmmModel.js";
+import OmmUtil from "@/main/util/OmmUtil.js";
 import TleUtil from "@/main/util/TleUtil.js";
 import SatelliteService from "@/renderer/service/SatelliteService.js";
 
 class TleDataHelper {
+  /**
+   * TLE文字列(satelliteName/tleLine1/tleLine2)からOmmItemを生成する
+   */
+  private static toOmmItem(tle: { satelliteName: string; tleLine1: string; tleLine2: string }): OmmItem {
+    return OmmUtil.parseToOmmItems(`${tle.satelliteName}\n${tle.tleLine1}\n${tle.tleLine2}`)[0];
+  }
+
   /**
    * TLE
    */
@@ -89,29 +98,27 @@ class TleDataHelper {
    */
   public static readonly Satellite = class {
     // ISS (ZARYA)
-    static readonly ISS = new SatelliteService(TleDataHelper.Tle.ISS);
+    static readonly ISS = new SatelliteService(TleDataHelper.toOmmItem(TleDataHelper.Tle.ISS));
     // （太陽同期軌道）だいち4号機
-    static readonly DAICHI = new SatelliteService(TleDataHelper.Tle.DAICHI);
+    static readonly DAICHI = new SatelliteService(TleDataHelper.toOmmItem(TleDataHelper.Tle.DAICHI));
     // （静止軌道）ひまわり8号機
-    static readonly HIMAWARI8_20241001 = new SatelliteService(TleDataHelper.Tle.HIMAWARI8_20241001);
+    static readonly HIMAWARI8_20241001 = new SatelliteService(
+      TleDataHelper.toOmmItem(TleDataHelper.Tle.HIMAWARI8_20241001)
+    );
     // // （静止軌道）ひまわり8号機
-    // static readonly HIMAWARI8_20250906 = new SatelliteService(TleDataHelper.Tle.HIMAWARI8_20250906);
+    // static readonly HIMAWARI8_20250906 = new SatelliteService(TleDataHelper.toOmmItem(TleDataHelper.Tle.HIMAWARI8_20250906));
     // （準天頂軌道）みちびき
-    static readonly MICHIBIKI = new SatelliteService(TleDataHelper.Tle.MICHIBIKI);
+    static readonly MICHIBIKI = new SatelliteService(TleDataHelper.toOmmItem(TleDataHelper.Tle.MICHIBIKI));
     // （常に不可視）静止軌道（GOES 17）
-    static readonly GOES = new SatelliteService(TleDataHelper.Tle.GOES);
+    static readonly GOES = new SatelliteService(TleDataHelper.toOmmItem(TleDataHelper.Tle.GOES));
     // （常に不可視）AEHF-1 (USA 214)
-    static readonly AEHF = new SatelliteService(TleDataHelper.Tle.AEHF);
+    static readonly AEHF = new SatelliteService(TleDataHelper.toOmmItem(TleDataHelper.Tle.AEHF));
     // （モルニア軌道）
-    static readonly MOLNIYA = new SatelliteService(TleDataHelper.Tle.MOLNIYA);
+    static readonly MOLNIYA = new SatelliteService(TleDataHelper.toOmmItem(TleDataHelper.Tle.MOLNIYA));
     // （高軌道衛星）TESS
-    static readonly HEO = new SatelliteService(TleDataHelper.Tle.HEO);
+    static readonly HEO = new SatelliteService(TleDataHelper.toOmmItem(TleDataHelper.Tle.HEO));
     // ISS (ZARYA)の軌道要素
-    static readonly ISS_ORBIT = new SatelliteService({
-      satelliteName: TleDataHelper.Tle.ISS_ORBIT.satelliteName,
-      tleLine1: TleDataHelper.Tle.ISS_ORBIT.tleLine1,
-      tleLine2: TleDataHelper.Tle.ISS_ORBIT.tleLine2,
-    });
+    static readonly ISS_ORBIT = new SatelliteService(TleDataHelper.toOmmItem(TleDataHelper.Tle.ISS_ORBIT));
   };
 
   /**

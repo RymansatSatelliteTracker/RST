@@ -1,12 +1,13 @@
 import CommonUtil from "@/common/CommonUtil.js";
 import Constant from "@/common/Constant.js";
 import { InvalidArgumentError } from "@/common/exceptions.js";
+import type { OmmItem } from "@/common/model/OmmModel.js";
 import type { EcefLocation, Location3 } from "@/renderer/types/location-type.js";
-import type { MeanElements, TargetPolarLocation, TleStrings } from "@/renderer/types/satellite-type.js";
+import type { MeanElements, TargetPolarLocation } from "@/renderer/types/satellite-type.js";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
 import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil.js";
 import DateUtil from "@/renderer/util/DateUtil.js";
-import type { SatRec } from "satellite.js";
+import type { OMMJsonObject, SatRec } from "satellite.js";
 import * as satellite from "satellite.js";
 
 /**
@@ -30,24 +31,24 @@ class SatelliteService {
   /**
    * コンストラクタ
    * @constructor
-   * @param {TleStrings} tleStrings TLE文字列
+   * @param {OmmItem} ommItem OMM（軌道要素）
    */
-  constructor(tleStrings: TleStrings) {
-    // コンストラクタに渡すTLE行がnullまたは空白の場合は例外をスローする
-    if (CommonUtil.isEmpty(tleStrings.tleLine1) || CommonUtil.isEmpty(tleStrings.tleLine2)) {
-      AppRendererLogger.error("InvalidArgumentError: tleline is null or empty.");
-      throw new InvalidArgumentError("tleline is null or empty.");
+  constructor(ommItem: OmmItem) {
+    // コンストラクタに渡すNoradIDまたはエポックがnullまたは空白の場合は例外をスローする
+    if (CommonUtil.isEmpty(ommItem.noradCatId) || CommonUtil.isEmpty(ommItem.epoch)) {
+      AppRendererLogger.error("InvalidArgumentError: ommItem.noradCatId or epoch is null or empty.");
+      throw new InvalidArgumentError("ommItem.noradCatId or epoch is null or empty.");
     }
-    this._satelliteName = tleStrings.satelliteName;
-    this._satRec = satellite.twoline2satrec(tleStrings.tleLine1, tleStrings.tleLine2);
+    this._satelliteName = ommItem.objectName;
+    this._satRec = satellite.json2satrec(SatelliteService._toOmmJsonObject(ommItem));
     this._noradId = Number(this._satRec.satnum);
 
-    // 人工衛星のTLE文字列が有効期限切れの場合は警告メッセージを表示する
+    // 人工衛星の軌道要素データが有効期限切れの場合は警告メッセージを表示する
     const expirationDate = new Date();
     expirationDate.setDate(new Date().getDate() - Constant.Tle.TLE_EXPIRATION_DAYS);
     if (this.getSgp4Epoc() < expirationDate) {
       AppRendererLogger.warn(
-        "TLE(ID:" +
+        "OMM(ID:" +
           this.getNoradId() +
           ") data has expired. EpocDate: " +
           DateUtil.formatDateTime(this.getSgp4Epoc(), { year: "numeric", month: "2-digit", day: "2-digit" })
@@ -68,6 +69,32 @@ class SatelliteService {
     // 遠地点距離を計算する
     this._apogee = this.getApogee();
   }
+
+  /**
+   * OmmItemをsatellite.jsのjson2satrecが要求するOMMJsonObject形式に変換する
+   * @param {OmmItem} ommItem OMM（軌道要素）
+   * @returns {OMMJsonObject} satellite.js用OMM JSONオブジェクト
+   */
+  private static _toOmmJsonObject = (ommItem: OmmItem): OMMJsonObject => {
+    return {
+      OBJECT_NAME: ommItem.objectName,
+      OBJECT_ID: ommItem.objectId,
+      EPOCH: ommItem.epoch,
+      MEAN_MOTION: ommItem.meanMotion,
+      ECCENTRICITY: ommItem.eccentricity,
+      INCLINATION: ommItem.inclination,
+      RA_OF_ASC_NODE: ommItem.raOfAscNode,
+      ARG_OF_PERICENTER: ommItem.argOfPericenter,
+      MEAN_ANOMALY: ommItem.meanAnomaly,
+      CLASSIFICATION_TYPE: ommItem.classificationType as "U" | "C",
+      NORAD_CAT_ID: ommItem.noradCatId,
+      ELEMENT_SET_NO: ommItem.elementSetNo,
+      REV_AT_EPOCH: ommItem.revAtEpoch,
+      BSTAR: ommItem.bstar,
+      MEAN_MOTION_DOT: ommItem.meanMotionDot,
+      MEAN_MOTION_DDOT: ommItem.meanMotionDdot,
+    };
+  };
 
   /**
    * 人工衛星のTLEオブジェクトを取得する

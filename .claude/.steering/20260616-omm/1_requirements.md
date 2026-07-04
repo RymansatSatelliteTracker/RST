@@ -34,3 +34,11 @@
 
 - データ移行について
   - 既存のapp_config.jsonのTLE形式のデータはJSONに自動変換する。
+
+## 追加要求（SatelliteServiceのOMM対応）
+
+- `SatelliteService`（`src/renderer/service/SatelliteService.ts`）のコンストラクタ引数を、現状の`TleStrings`（TLE文字列）から`OmmItem`（OMM JSON相当）に変更する。
+- 現状は「OmmService → ActiveSatService → ActiveSatModel → IPC → ApiOmm → ActiveSatHelper/SatelliteServiceFactory」の経路で、内部的に`OmmUtil.ommItemToTleStrings()`によりOMMデータをTLE文字列（指数表記5桁、角度4桁などの固定精度フォーマット）に変換した上で`SatelliteService`に渡し、`satellite.twoline2satrec()`でSatRecを生成している。この変換により、OMMが持つ本来の精度が失われている。
+- `satellite.js`は`json2satrec(OMMJsonObject)`によりOMM JSONから直接SatRecを生成する機能を備えており（v6.0.2で利用可能）、TLE文字列化を経由しないため精度劣化を回避できる。
+- 上記の経路全体を`OmmItem`で受け渡す形に統一し、`SatelliteService`内で`satellite.json2satrec()`を使用するように変更する。
+- なお、ユーザが画面からTLEテキストを直接入力・保存する機能（`userRegisteredTle`、`RegistSatelliteForm`、`TleUtil.orbitElementsToTLE`/`toTleStrings`）は本対応の対象外とし、変更しない。

@@ -92,7 +92,7 @@ export function initializeIpcEvents() {
   });
 
   /**
-   * 指定のNORAD IDの軌道要素データをTLE文字列で返す
+   * 指定のNORAD IDの軌道要素データをOMMで返す
    */
   ipcMain.handle("getOmmsByNoradIds", (event, noradIds: string) => {
     return new OmmService().getOmmsByNoradIds(noradIds);

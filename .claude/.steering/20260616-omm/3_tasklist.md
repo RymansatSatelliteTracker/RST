@@ -50,3 +50,18 @@
 - [ ] 衛星追跡動作確認（Electronアプリの実機/手動確認は未実施）
 - [ ] ユーザ登録衛星の動作確認（Electronアプリの実機/手動確認は未実施）
 - [x] データ移行（tle.json → omm.json）動作確認（`OmmService_migrateFromTleJsonIfNeeded.test.ts` で確認）
+
+## Phase 9: SatelliteService の OMM 対応（TLE文字列経由の廃止）
+
+- [x] `src/renderer/service/SatelliteService.ts`：コンストラクタ引数を `OmmItem` に変更し、`satellite.json2satrec()` で `SatRec` を生成するように変更（`OmmItem` → `OMMJsonObject` マッピングを内部に実装）
+- [x] `src/common/model/ActiveSatModel.ts`：`mainSattelliteTle`→`mainSatelliteOmm`、`ActiveSatelliteModel.tle`→`omm` にリネームし型を `OmmItem` に変更
+- [x] `src/main/service/OmmService.ts`：`getOmmByNoradId`/`getOmmsByNoradIds`/`findOmmByNoradId` の戻り値を `OmmItem`/`OmmItem[]` に変更（`ommItemToTleStrings()` 呼び出し・`cachedTleStringMap` を削除）
+- [x] `src/main/service/ActiveSatService.ts`：`getActiveSatTleBySatId`→`getActiveSatOmmBySatId` にリネームし `OmmItem` を返却するように変更
+- [x] `src/main/preload.ts`：`getOmmsByNoradIds` の戻り値型を `Promise<OmmItem[]>` に変更
+- [x] `src/renderer/api/ApiOmm.ts`：`getOmmsByNoradIds` の戻り値型を `Promise<OmmItem[]>` に変更
+- [x] `src/renderer/common/util/ActiveSatHelper.ts`：`satModel.tle`→`satModel.omm` に変更し `ommItemToTleStrings()` 呼び出しを削除
+- [x] `src/renderer/components/pages/Home/useHome.ts`：`tleStrings`→`ommItems`（型を `OmmItem[]` に変更）
+- [x] `src/renderer/common/util/SatelliteServiceFactory.ts`：`OmmItem` を `SatelliteService` にそのまま渡すように変更
+- [x] テストファイル更新：`TleDataHelper.ts`（`OmmUtil.parseToOmmItems()` で既存TLEフィクスチャから `OmmItem` を生成）、`SatelliteService.test.ts`、`FrequencyTrackService.test.ts`、`FrequencyTrackService_calcInvHeteroBaseFreqByRxFreq.test.ts`、`FrequencyTrackService_calcInvHeteroBaseFreqByTxFreq.test.ts`
+- [x] `npm run test` 実行・型チェック実行し、全テスト成功を確認（72ファイル/772テスト成功、TLE→OmmItem→json2satrecの二重変換による数値精度差異の影響なし）
+- [ ] Electronアプリでの動作確認（衛星追跡表示、ユーザ登録衛星の表示）

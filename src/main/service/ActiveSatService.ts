@@ -7,8 +7,6 @@ import DefaultSatelliteCacheService from "@/main/service/DefaultSatelliteCacheSe
 import OmmService from "@/main/service/OmmService.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 import OmmUtil from "@/main/util/OmmUtil.js";
-import TleUtil from "@/main/util/TleUtil.js";
-import type { TleStrings } from "@/renderer/types/satellite-type.js";
 
 /**
  * アクティブ衛星サービス
@@ -54,43 +52,43 @@ export default class ActiveSatService {
     // グループ内の衛星データをリストで取得
     grpModel.activeSatellites = this.createActiveSatModel(mainDisp);
 
-    // メイン表示衛星のTLEを取得
-    grpModel.mainSattelliteTle = this.getActiveSatTleBySatId(mainDisp.activeSatelliteId);
+    // メイン表示衛星のOMMを取得
+    grpModel.mainSatelliteOmm = this.getActiveSatOmmBySatId(mainDisp.activeSatelliteId);
 
     return grpModel;
   }
 
   /**
-   * 衛星IDからTLEを返す
+   * 衛星IDからOMMを返す
    */
-  public getActiveSatTleBySatId(satId: number): TleStrings | null {
-    // デフォルト衛星設定経由でTLEを取得
+  public getActiveSatOmmBySatId(satId: number): OmmItem | null {
+    // デフォルト衛星設定経由でOMMを取得
     const cacheService = new DefaultSatelliteCacheService();
     const defSat = cacheService.getDefaultSatelliteBySatelliteIdSync(satId);
 
-    let tleString: TleStrings | null = null;
+    let ommItem: OmmItem | null = null;
     if (defSat) {
-      tleString = ActiveSatService.ommService.getOmmByNoradId(defSat.noradId);
+      ommItem = ActiveSatService.ommService.getOmmByNoradId(defSat.noradId);
     }
 
     // 手動追加された衛星の場合（デフォルト衛星設定から取得出来なかった場合）
-    // AppConfif.satellites 経由でTLEを取得する
-    if (!tleString) {
+    // AppConfif.satellites 経由でOMMを取得する
+    if (!ommItem) {
       const appConfig = AppConfigUtil.getConfig();
       const sat = appConfig.satellites.find((sat) => sat.satelliteId === satId);
       if (sat && !CommonUtil.isEmpty(sat.userRegisteredOmm)) {
-        // ユーザが登録した衛星のOMMからTLE文字列を生成
-        const ommItem: OmmItem = JSON.parse(sat.userRegisteredOmm);
-        tleString = OmmUtil.ommItemToTleStrings(ommItem);
+        // ユーザが登録した衛星のOMMを使用
+        ommItem = JSON.parse(sat.userRegisteredOmm);
       } else if (sat && !CommonUtil.isEmpty(sat.userRegisteredTle)) {
         // memo: userRegisteredOmmへの移行が未済の場合のフォールバック
-        // ユーザが登録した衛星のTLEは２行なので、ユーザー登録衛星名とTLEを結合してTLE文字列を生成
+        // ユーザが登録した衛星のTLEは２行なので、ユーザー登録衛星名とTLEを結合してOMMに変換する
         const tleText = `${sat.userRegisteredSatelliteName}\n${sat.userRegisteredTle}`;
-        tleString = TleUtil.toTleStrings(tleText);
+        const ommItems = OmmUtil.parseToOmmItems(tleText);
+        ommItem = ommItems.length > 0 ? ommItems[0] : null;
       }
     }
 
-    return tleString;
+    return ommItem;
   }
 
   /**
@@ -121,7 +119,7 @@ export default class ActiveSatService {
       // 衛星リストに格納
       const activeSat = new ActiveSatelliteModel();
       activeSat.satelliteId = satId;
-      activeSat.tle = this.getActiveSatTleBySatId(satId);
+      activeSat.omm = this.getActiveSatOmmBySatId(satId);
       activeSats.push(activeSat);
     }
 

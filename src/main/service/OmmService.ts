@@ -3,13 +3,11 @@ import Constant from "@/common/Constant.js";
 import type { OmmItem, OmmItemMap } from "@/common/model/OmmModel.js";
 import { OmmJsonModel } from "@/common/model/OmmModel.js";
 import type { TleJsonModel } from "@/common/model/TleModel.js";
-import type { StringMap } from "@/common/types/types.js";
 import WebClient from "@/common/WebClient.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 import AppMainLogger from "@/main/util/AppMainLogger.js";
 import FileUtil from "@/main/util/FileUtil.js";
 import OmmUtil from "@/main/util/OmmUtil.js";
-import type { TleStrings } from "@/renderer/types/satellite-type.js";
 
 /**
  * OMM(Orbit Mean-elements Message)サービス
@@ -20,8 +18,6 @@ export default class OmmService {
   private static ommFileUpdateDate: number = 0;
   // omm.jsonデータのキャッシュ
   private static cachedOmmJsonModel: OmmJsonModel | null = null;
-  // NoradIDからTleStringsを引くためのキャッシュ
-  private static cachedTleStringMap: StringMap<TleStrings> = {};
 
   private readOmmJson(): OmmJsonModel {
     const savePath = AppConfigUtil.getOmmPath();
@@ -184,11 +180,11 @@ export default class OmmService {
   }
 
   /**
-   * 指定のNorad IDの軌道要素データをTLE文字列で取得する
+   * 指定のNorad IDの軌道要素データをOMMで取得する
    * @param {string} noradIds Norad ID(JSON配列の文字列)
-   * @returns {TleStrings[]} TLE文字列
+   * @returns {OmmItem[]} OMM
    */
-  public getOmmsByNoradIds(noradIds: string): TleStrings[] {
+  public getOmmsByNoradIds(noradIds: string): OmmItem[] {
     // OMM JSONファイルの内容を取得する
     const ommData: OmmJsonModel = this.readOmmJson();
     const ommItemMap: OmmItemMap = ommData.ommItemMap;
@@ -196,31 +192,31 @@ export default class OmmService {
     // noradIdsをパースして配列に変換する
     const noradIdArray: string[] = JSON.parse(noradIds) as string[];
 
-    const results: TleStrings[] = [];
+    const results: OmmItem[] = [];
     for (let ii = 0; ii < noradIdArray.length; ii++) {
       const noradId = noradIdArray[ii];
 
-      // NoradIDからTleStringを取得する
-      const tleStrings = this.findOmmByNoradId(ommItemMap, noradId);
+      // NoradIDからOMMを取得する
+      const ommItem = this.findOmmByNoradId(ommItemMap, noradId);
 
       // 見つからなかったNorad IDを警告ログに出力する
-      if (!tleStrings) {
+      if (!ommItem) {
         // AppMainLogger.warn(`The following Norad ID were not found: ${noradId}`);
         continue;
       }
 
-      results.push(tleStrings);
+      results.push(ommItem);
     }
 
     return results;
   }
 
   /**
-   * 指定のNorad IDの軌道要素データをTLE文字列で取得する
+   * 指定のNorad IDの軌道要素データをOMMで取得する
    * @param {string} noradId Norad ID
-   * @returns {TleStrings} TLE文字列
+   * @returns {OmmItem} OMM
    */
-  public getOmmByNoradId(noradId: string): TleStrings | null {
+  public getOmmByNoradId(noradId: string): OmmItem | null {
     // OMM JSONをロード
     const savePath = AppConfigUtil.getOmmPath();
 
@@ -235,26 +231,16 @@ export default class OmmService {
   }
 
   /**
-   * 指定のNorad IDの軌道要素データをTLE文字列で取得する
+   * 指定のNorad IDの軌道要素データをOMMで取得する
    */
-  private findOmmByNoradId(ommItemMap: OmmItemMap, noradId: string): TleStrings | null {
-    // キャッシュにあればそれを返す
-    if (noradId in OmmService.cachedTleStringMap) {
-      return OmmService.cachedTleStringMap[noradId];
-    }
-
+  private findOmmByNoradId(ommItemMap: OmmItemMap, noradId: string): OmmItem | null {
     // 見つからなかったNorad IDを警告ログに出力する
     if (!(noradId in ommItemMap)) {
       // AppMainLogger.warn(`The following Norad ID were not found: ${noradId}`);
       return null;
     }
 
-    const tleStrings = OmmUtil.ommItemToTleStrings(ommItemMap[noradId]);
-
-    // キャッシュに保存
-    OmmService.cachedTleStringMap[noradId] = tleStrings;
-
-    return tleStrings;
+    return ommItemMap[noradId];
   }
 
   /**
@@ -278,9 +264,6 @@ export default class OmmService {
     ommJsonModel = this.readOmmJson();
     OmmService.cachedOmmJsonModel = ommJsonModel;
     OmmService.ommFileUpdateDate = updateAt;
-
-    // TleStringMapをクリア
-    OmmService.cachedTleStringMap = {};
 
     return ommJsonModel;
   }

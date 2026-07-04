@@ -198,7 +198,7 @@ export default class ActiveSatServiceHub {
   private async getSatIndex() {
     // 衛星グループを取得
     const satGrp = await ApiActiveSat.getActiveSatelliteGroup();
-    if (!satGrp || !satGrp.mainSattelliteTle) {
+    if (!satGrp || !satGrp.mainSatelliteOmm) {
       return 0;
     }
 
@@ -219,7 +219,7 @@ export default class ActiveSatServiceHub {
   private async getTransceiverSetting(): Promise<void> {
     // 衛星グループを取得
     const satGrp = await ApiActiveSat.getActiveSatelliteGroup();
-    if (!satGrp || !satGrp.mainSattelliteTle) {
+    if (!satGrp || !satGrp.mainSatelliteOmm) {
       return;
     }
 
