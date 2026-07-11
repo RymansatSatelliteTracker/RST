@@ -93,58 +93,7 @@
     </fieldset>
 
     <!-- AOSリスト -->
-    <fieldset class="fieldset_area">
-      <legend v-if="isGroundStation2Enable" class="item_2ground_mode">AOS List (2 Ground mode)</legend>
-
-      <legend v-else class="item_group_legend">AOS List</legend>
-      <table class="aos_table">
-        <thead class="aos_header">
-          <tr>
-            <th>AOS</th>
-            <th>MAXEL</th>
-            <th>LOS</th>
-            <th>Duration</th>
-          </tr>
-        </thead>
-
-        <!-- 複数地上局の場合のAOSリスト -->
-        <tbody v-if="isGroundStation2Enable" class="aos_body">
-          <tr v-if="overlapPassList === null || overlapPassList.length === 0">
-            <td colspan="4">{{ I18nUtil.getMsg(I18nMsgs.ERR_NO_OVERLAP_PASS) }}</td>
-          </tr>
-          <tr v-for="item in overlapPassList" v-else :key="item.maxEl?.date.getTime()">
-            <td>
-              {{ DateUtil.formatDateTime(item.aos?.date, { hour: "2-digit", minute: "2-digit" }) }}
-            </td>
-            <td>{{ CanvasUtil.formatAngle(item.maxEl?.lookAngles.elevation) }}</td>
-            <td>
-              {{ DateUtil.formatDateTime(item.los?.date, { hour: "2-digit", minute: "2-digit" }) }}
-            </td>
-            <td>{{ DateUtil.formatMsToHHMMSS(item.durationMs) }}</td>
-          </tr>
-        </tbody>
-
-        <!-- 単一地上局の場合のAOSリスト -->
-        <tbody v-else class="aos_body">
-          <tr v-if="orbitalPassList === null || orbitalPassList.length === 0">
-            <td>{{ I18nUtil.getMsg(I18nMsgs.GCOM_NA) }}</td>
-            <td>{{ I18nUtil.getMsg(I18nMsgs.GCOM_NA) }}</td>
-            <td>{{ I18nUtil.getMsg(I18nMsgs.GCOM_NA) }}</td>
-            <td>{{ I18nUtil.getMsg(I18nMsgs.GCOM_NA) }}</td>
-          </tr>
-          <tr v-for="item in orbitalPassList" v-else :key="item.maxEl?.date.getTime()">
-            <td>
-              {{ DateUtil.formatDateTime(item.aos?.date, { hour: "2-digit", minute: "2-digit" }) }}
-            </td>
-            <td>{{ CanvasUtil.formatAngle(item.maxEl?.lookAngles.elevation) }}</td>
-            <td>
-              {{ DateUtil.formatDateTime(item.los?.date, { hour: "2-digit", minute: "2-digit" }) }}
-            </td>
-            <td>{{ DateUtil.formatMsToHHMMSS(item.durationMs) }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </fieldset>
+    <AosList :current-date="currentDate" />
 
     <!-- 日時設定 -->
     <fieldset class="fieldset_area">
@@ -164,14 +113,11 @@ import DopplerShiftModeSelect from "@/renderer/components/molecules/DopplerShift
 import FreqAdjustmentSelect from "@/renderer/components/molecules/FreqAdjustmentSelect/FreqAdjustmentSelect.vue";
 import FrequencySelect from "@/renderer/components/molecules/FrequencySelect/FrequencySelect.vue";
 import OpeModeSelect from "@/renderer/components/molecules/OpeModeSelect/OpeModeSelect.vue";
+import AosList from "@/renderer/components/organisms/AosList/AosList.vue";
 import DateTimePicker from "@/renderer/components/organisms/DateTimePicker/DateTimePicker.vue";
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
-import CanvasUtil from "@/renderer/util/CanvasUtil.js";
-import DateUtil from "@/renderer/util/DateUtil.js";
 import emitter from "@/renderer/util/EventBus.js";
 import { computed, ref, watch } from "vue";
-import useOrbitalPassList from "./useOrbitalPassList.js";
-import useOverlapPassList from "./useOverlapPassList.js";
 import useTransceiverCtrl from "./useTransceiverCtrl.js";
 
 // DateTimePickerからの設定日時を受け取る
@@ -182,10 +128,6 @@ const emit = defineEmits(["date-update"]);
 const loadingAutoBtn = ref<boolean>(false);
 
 // フック
-// 人工衛星のAOSリストを取得する
-const { orbitalPassList } = useOrbitalPassList(currentDate);
-// 重複する地上局から観測できるAOSリストを取得する
-const { overlapPassList, isGroundStation2Enable } = useOverlapPassList(currentDate);
 // 無線機周波数を取得する
 const {
   startAutoMode,
