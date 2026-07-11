@@ -76,3 +76,14 @@ $main_right_width: 260px;
   bottom: 100px;
   z-index: 100;
 }
+
+// 左側・AOSList
+.main_left_aoslist {
+  position: absolute;
+  top: calc(100vh - $header_height - $footer_height - $main_left_satellite_height - 20px);
+  left: 0px;
+  width: calc(100vw - $main_right_width);
+  bottom: 100px;
+  height: 100px;
+  z-index: 100;
+}

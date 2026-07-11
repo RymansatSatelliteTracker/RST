@@ -92,9 +92,6 @@
       >
     </fieldset>
 
-    <!-- AOSリスト -->
-    <AosList :current-date="currentDate" />
-
     <!-- 日時設定 -->
     <fieldset class="fieldset_area">
       <legend class="item_group_legend">Date Time</legend>
@@ -113,7 +110,6 @@ import DopplerShiftModeSelect from "@/renderer/components/molecules/DopplerShift
 import FreqAdjustmentSelect from "@/renderer/components/molecules/FreqAdjustmentSelect/FreqAdjustmentSelect.vue";
 import FrequencySelect from "@/renderer/components/molecules/FrequencySelect/FrequencySelect.vue";
 import OpeModeSelect from "@/renderer/components/molecules/OpeModeSelect/OpeModeSelect.vue";
-import AosList from "@/renderer/components/organisms/AosList/AosList.vue";
 import DateTimePicker from "@/renderer/components/organisms/DateTimePicker/DateTimePicker.vue";
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
 import emitter from "@/renderer/util/EventBus.js";
