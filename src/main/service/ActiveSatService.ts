@@ -1,7 +1,7 @@
 import CommonUtil from "@/common/CommonUtil.js";
 import { ActiveSatelliteGroupModel, ActiveSatelliteModel } from "@/common/model/ActiveSatModel.js";
 import type { AppConfigMainDisplay } from "@/common/model/AppConfigModel.js";
-import { OmmItem } from "@/common/model/OmmModel.js";
+import type { OmmItem } from "@/common/model/OmmModel.js";
 import { getMainWindow } from "@/main/main.js";
 import DefaultSatelliteCacheService from "@/main/service/DefaultSatelliteCacheService.js";
 import OmmService from "@/main/service/OmmService.js";
@@ -76,15 +76,21 @@ export default class ActiveSatService {
     if (!ommItem) {
       const appConfig = AppConfigUtil.getConfig();
       const sat = appConfig.satellites.find((sat) => sat.satelliteId === satId);
-      if (sat && !CommonUtil.isEmpty(sat.userRegisteredOmm)) {
+      if (!sat) {
+        return null;
+      }
+
+      if (!CommonUtil.isEmpty(sat.userRegisteredOmm)) {
         // ユーザが登録した衛星のOMMを使用
-        ommItem = JSON.parse(sat.userRegisteredOmm);
-      } else if (sat && !CommonUtil.isEmpty(sat.userRegisteredTle)) {
+        return JSON.parse(sat.userRegisteredOmm) as OmmItem;
+      }
+
+      if (!CommonUtil.isEmpty(sat.userRegisteredTle)) {
         // memo: userRegisteredOmmへの移行が未済の場合のフォールバック
         // ユーザが登録した衛星のTLEは２行なので、ユーザー登録衛星名とTLEを結合してOMMに変換する
         const tleText = `${sat.userRegisteredSatelliteName}\n${sat.userRegisteredTle}`;
         const ommItems = OmmUtil.parseToOmmItems(tleText);
-        ommItem = ommItems.length > 0 ? ommItems[0] : null;
+        return ommItems.length > 0 ? ommItems[0] : null;
       }
     }
 

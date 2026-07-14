@@ -1,4 +1,5 @@
 import CommonUtil from "@/common/CommonUtil.js";
+import Constant from "@/common/Constant.js";
 import type { OmmItem, OmmItemMap } from "@/common/model/OmmModel.js";
 import { OmmJsonModel } from "@/common/model/OmmModel.js";
 import type { TleJsonModel } from "@/common/model/TleModel.js";
@@ -70,7 +71,7 @@ export default class OmmService {
     }
 
     const webClient = new WebClient();
-    const config = AppConfigUtil.getConfigTransaction();
+    const config = AppConfigUtil.getConfigTransaction("appConfigSatSet");
     const results: OmmItem[][] = [];
 
     for (const tleUrl of config.tle.urls) {
@@ -79,6 +80,7 @@ export default class OmmService {
         continue;
       }
 
+      AppMainLogger.info(`OMMを取得します。 ${tleUrl.url}`);
       const text = await this.getTextByUrl(tleUrl.url, webClient);
       if (CommonUtil.isEmpty(text)) {
         continue;
@@ -127,12 +129,14 @@ export default class OmmService {
   private canTakeOmm(): boolean {
     // 最終取得日時からTLE_GET_INTERVAL_MS経過しているか
     // memo: celestrak.orgに連続アクセスすると403を返すため、以下時間をおいて取得を行う
-    // const param = AppConfigUtil.getConfig();
-    // if (Date.now() - param.tle.lastRetrievedDate > Constant.Tle.TLE_GET_INTERVAL_MS) {
-    //   return true;
-    // }
+    const param = AppConfigUtil.getConfig();
+    if (Date.now() - param.tle.lastRetrievedDate > Constant.Tle.TLE_GET_INTERVAL_MS) {
+      return true;
+    }
 
-    return false;
+    AppMainLogger.info("前回OMM取得からの取得間隔が短いため、OMM取得処理をスキップします");
+    // return false;
+    return true;
   }
 
   /**

@@ -65,3 +65,9 @@
 - [x] テストファイル更新：`TleDataHelper.ts`（`OmmUtil.parseToOmmItems()` で既存TLEフィクスチャから `OmmItem` を生成）、`SatelliteService.test.ts`、`FrequencyTrackService.test.ts`、`FrequencyTrackService_calcInvHeteroBaseFreqByRxFreq.test.ts`、`FrequencyTrackService_calcInvHeteroBaseFreqByTxFreq.test.ts`
 - [x] `npm run test` 実行・型チェック実行し、全テスト成功を確認（72ファイル/772テスト成功、TLE→OmmItem→json2satrecの二重変換による数値精度差異の影響なし）
 - [ ] Electronアプリでの動作確認（衛星追跡表示、ユーザ登録衛星の表示）
+
+## Phase 10: 2LE形式のobjectNameフォールバック（追加要求２）
+
+- [x] `src/main/util/OmmUtil.ts`：`tleLinesToOmmItem()` で `noradCatId` を先に算出し、2LE（`line0`が空）の場合は `objectName` に `noradCatId` を設定するよう変更
+- [x] `src/__tests__/main/util/OmmUtil.test.ts`：「2LE形式(衛星名なし)からOmmItemに変換できる」テストの期待値を `objectName === noradCatId` に修正
+- [x] `npm run test` 実行・全テスト成功を確認（72ファイル/772テスト成功）、`npm run ts` 型チェックも0エラー

@@ -192,3 +192,45 @@ OMMデータを保持するフィールド/変数は、プロジェクトの既�
   必要であれば許容誤差（`toBeCloseTo`等）の調整を行う。
 - `FrequencyTrackService_calcInvHeteroBaseFreqBy{Rx,Tx}Freq.test.ts` 等の `{ tleLine1: "dummy", ... }` ダミーデータは、
   `OmmItem` のダミーデータ（`noradCatId`/`epoch`等に有効な最小値を設定したもの）に置き換える。
+
+## 追加設計：2LE形式のobjectNameフォールバック
+
+### 背景・決定事項
+
+`OmmUtil.parseToOmmItems()` はTLE/3LE/2LEを自動判別して `OmmItem` に変換する（`detectFormat()`は3LE/2LEをまとめて`"TLE"`と判定し、`parseTleFormat()`内で衛星名行の有無により3LE/2LEを区別している）。
+現状、2LE（衛星名行なし）の場合は `tleLinesToOmmItem()` 内で `item.objectName = line0 ? TleUtil.getName(line0) : ""` となり、`objectName` が空文字のまま保存される。
+
+`objectName` が空文字だと、一覧表示など衛星名を表示する箇所で空欄になり視認性が悪い。2LEの場合のフォールバック値として `noradCatId`（NORAD ID）を `objectName` に設定する。
+
+### 変更内容
+
+`src/main/util/OmmUtil.ts` の `tleLinesToOmmItem()`（151行目〜201行目付近）を以下のように変更する。
+
+- `item.noradCatId = line1.substring(2, 7).trim();` を `item.objectName` の代入より先に行う（値の算出順序の入れ替え）。
+- `item.objectName` の算出を `line0 ? TleUtil.getName(line0) : item.noradCatId` に変更する（2LEの場合のみ `noradCatId` をフォールバックとして使用）。
+
+3LE（衛星名行あり）の挙動・他形式（JSON/XML/KVN/CSV）の挙動は変更しない。
+
+```ts
+private static tleLinesToOmmItem(line0: string, line1: string, line2: string): OmmItem {
+  const item = new OmmItem();
+  item.noradCatId = line1.substring(2, 7).trim();
+  item.objectName = line0 ? TleUtil.getName(line0) : item.noradCatId;
+  item.classificationType = line1.substring(7, 8).trim() || "U";
+  item.objectId = line1.substring(9, 17).trim();
+  // ...以下変更なし
+}
+```
+
+### 修正ファイル一覧
+
+| ファイル | 変更内容 |
+|---|---|
+| `src/main/util/OmmUtil.ts` | `tleLinesToOmmItem()` の `objectName` 算出ロジックを変更（2LEの場合は `noradCatId` をフォールバックとして設定） |
+| `src/__tests__/main/util/OmmUtil.test.ts` | 「2LE形式(衛星名なし)からOmmItemに変換できる(衛星名は空)」テスト（167〜173行目）のテスト名・期待値を修正。`objectName` が `""` ではなく `noradCatId`（`"25544"`）と一致することを検証するように変更 |
+
+### 影響範囲・リスク
+
+- `omm.json` に保存される2LE由来のデータの `objectName` が、従来の `""` から `noradCatId` の値に変わる。既存の `omm.json` に保存済みの2LEデータ（`objectName: ""`）は本変更では遡って更新されない（再ダウンロード・再パース時にのみ新しいロジックが適用される）。
+- `ommItemToTleStrings()` は `item.objectName || noradId` というフォールバックを既に持っているため、この変更後は `objectName` が空になるケース自体がTLE起源のデータでは無くなる（動作への影響なし、むしろ一貫性が向上する）。
+- JSON/XML/KVN/CSV形式の `fieldsToOmmItem()` 経由のデータは対象外（`OBJECT_NAME` フィールドが提供される前提のため変更しない）。

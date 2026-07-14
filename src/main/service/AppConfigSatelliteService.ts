@@ -60,6 +60,7 @@ export default class AppConfigSatelliteService {
     // default衛星更新中にエラーになると衛星設定だけが更新された状態になるため一時保存しておく
     transaction.update(config);
 
+    // デフォルト衛星定義を一度リフレッシュして作り直す
     const res = await new DefaultSatelliteService().reCreateDefaultSatellite();
     if (!res.status) {
       transaction.rollback();

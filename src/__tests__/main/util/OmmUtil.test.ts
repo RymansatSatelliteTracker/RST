@@ -164,12 +164,12 @@ describe("[正常系]parseToOmmItemsで各形式からOmmItemに変換できる"
     expect(items[0].objectId).toBe("98067A");
   });
 
-  it("2LE形式(衛星名なし)からOmmItemに変換できる(衛星名は空)", () => {
+  it("2LE形式(衛星名なし)からOmmItemに変換できる(衛星名はnoradCatId)", () => {
     const text = `${ISS_TLE_LINE1}\n${ISS_TLE_LINE2}`;
     const items = OmmUtil.parseToOmmItems(text);
     expect(items.length).toBe(1);
-    expect(items[0].objectName).toBe("");
     expect(items[0].noradCatId).toBe("25544");
+    expect(items[0].objectName).toBe("25544");
   });
 
   it("複数衛星分のTLEからOmmItemのリストに変換できる", () => {

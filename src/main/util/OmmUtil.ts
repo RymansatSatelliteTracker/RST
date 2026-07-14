@@ -2,6 +2,7 @@ import CommonUtil from "@/common/CommonUtil.js";
 import Constant from "@/common/Constant.js";
 import { OmmItem } from "@/common/model/OmmModel.js";
 import type { StringMap } from "@/common/types/types.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
 import TleUtil from "@/main/util/TleUtil.js";
 import type { TleStrings } from "@/renderer/types/satellite-type.js";
 
@@ -66,6 +67,7 @@ class OmmUtil {
    * @returns {OmmItem[]} OmmItemのリスト
    */
   public static parseToOmmItems(text: string): OmmItem[] {
+    AppMainLogger.debug(`text: ${text.substring(0, 200)}...`);
     const format = this.detectFormat(text);
     switch (format) {
       case "TLE":
@@ -171,8 +173,9 @@ class OmmUtil {
    */
   private static tleLinesToOmmItem(line0: string, line1: string, line2: string): OmmItem {
     const item = new OmmItem();
-    item.objectName = line0 ? TleUtil.getName(line0) : "";
     item.noradCatId = line1.substring(2, 7).trim();
+    // 2LEの場合はOBJECT_NAMEがないので、line0が空文字の場合はnoradCatIdを代わりに使用する
+    item.objectName = line0 ? TleUtil.getName(line0) : item.noradCatId;
     item.classificationType = line1.substring(7, 8).trim() || "U";
     item.objectId = line1.substring(9, 17).trim();
 

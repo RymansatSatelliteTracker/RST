@@ -30,6 +30,7 @@ RST (Rymansat Satellite Tracker) は、衛星追跡およびアンテナ制御�
 ## 開発コマンド
 
 ### 開発
+- npmコマンドはPowerShellで実行する。
 
 ```bash
 # 開発モード起動（TypeScriptビルド + Vite開発サーバー実行 + Electron起動）

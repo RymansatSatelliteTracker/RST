@@ -93,12 +93,22 @@ export class AppConfigUtil {
    * 既にuserRegisteredOmmが設定されている場合は何もしない
    */
   private static migrateSatelliteTleToOmm(sat: AppConfigSatellite): AppConfigSatellite {
-    if (!sat.userRegistered || CommonUtil.isEmpty(sat.userRegisteredTle) || !CommonUtil.isEmpty(sat.userRegisteredOmm)) {
+    // ユーザ登録衛星でない場合は何もしない
+    if (!sat.userRegistered) {
+      return sat;
+    }
+    // ユーザ設定TLEが空の場合は何もしない
+    if (CommonUtil.isEmpty(sat.userRegisteredTle)) {
+      return sat;
+    }
+    // 既にユーザ設定OMMが設定されている場合は何もしない
+    if (!CommonUtil.isEmpty(sat.userRegisteredOmm)) {
       return sat;
     }
 
-    const text = `${sat.userRegisteredSatelliteName}\n${sat.userRegisteredTle}`;
-    const items = OmmUtil.parseToOmmItems(text);
+    // ユーザ登録のTLEをOMMに変換する
+    const tleText = `${sat.userRegisteredSatelliteName}\n${sat.userRegisteredTle}`;
+    const items = OmmUtil.parseToOmmItems(tleText);
     if (items.length > 0) {
       sat.userRegisteredOmm = JSON.stringify(items[0]);
     }
@@ -153,12 +163,14 @@ export class AppConfigUtil {
   /**
    * トランザクション中なら一時ファイルを優先して返す
    */
-  public static getConfigTransaction(): AppConfigModel {
-    const tempPath = TransactionRegistry.getActiveTempFilePath("appConfig");
+  public static getConfigTransaction(fileType: string = "appConfig"): AppConfigModel {
+    const tempPath = TransactionRegistry.getActiveTempFilePath(fileType);
     if (tempPath && FileUtil.exists(tempPath)) {
+      AppMainLogger.debug(`ファイル更新トランザクション中のため、一時ファイルを返します。 ${tempPath}`);
+
       const text = FileUtil.readText(tempPath);
-      const parsed = JSON.parse(text);
-      const appConfig = (parsed as any)[CONFIG_ROOT_KEY] as AppConfigModel;
+      const parsed = JSON.parse(text) as Record<string, unknown>;
+      const appConfig = parsed[CONFIG_ROOT_KEY] as AppConfigModel;
       if (!appConfig) {
         throw new Error("一時設定ファイルの内容が不正です。");
       }
