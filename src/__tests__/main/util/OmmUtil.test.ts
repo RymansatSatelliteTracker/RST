@@ -172,6 +172,24 @@ describe("[正常系]parseToOmmItemsで各形式からOmmItemに変換できる"
     expect(items[0].objectName).toBe("25544");
   });
 
+  it("TLEの2桁年が57以上の場合は1900年代として解釈できる", () => {
+    const line1 = "1 25544U 98067A   57123.50000000  .00008813  00000+0  16600-3 0  9990";
+    const text = `${line1}\n${ISS_TLE_LINE2}`;
+    const items = OmmUtil.parseToOmmItems(text);
+
+    expect(items.length).toBe(1);
+    expect(items[0].epoch).toBe("1957-05-03T12:00:00.000Z");
+  });
+
+  it("TLEの2桁年が56以下の場合は2000年代として解釈できる", () => {
+    const line1 = "1 25544U 98067A   56001.00000000  .00008813  00000+0  16600-3 0  9990";
+    const text = `${line1}\n${ISS_TLE_LINE2}`;
+    const items = OmmUtil.parseToOmmItems(text);
+
+    expect(items.length).toBe(1);
+    expect(items[0].epoch).toBe("2056-01-01T00:00:00.000Z");
+  });
+
   it("複数衛星分のTLEからOmmItemのリストに変換できる", () => {
     const text = `${ISS_TLE_TEXT}\n${ISS_TLE_LINE0}\n${ISS_TLE_LINE1}\n${ISS_TLE_LINE2}`;
     const items = OmmUtil.parseToOmmItems(text);
@@ -186,7 +204,10 @@ describe("[正常系]parseToOmmItemsで各形式からOmmItemに変換できる"
   });
 
   it("XML形式のOBJECT_NAMEにXMLエスケープが含まれる場合、アンエスケープしてOmmItemに変換できる", () => {
-    const text = ISS_XML_TEXT.replace("<OBJECT_NAME>ISS (ZARYA)</OBJECT_NAME>", "<OBJECT_NAME>AMSAT &amp; ISS</OBJECT_NAME>");
+    const text = ISS_XML_TEXT.replace(
+      "<OBJECT_NAME>ISS (ZARYA)</OBJECT_NAME>",
+      "<OBJECT_NAME>AMSAT &amp; ISS</OBJECT_NAME>"
+    );
     const items = OmmUtil.parseToOmmItems(text);
     expect(items.length).toBe(1);
     expect(items[0].objectName).toBe("AMSAT & ISS");

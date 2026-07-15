@@ -409,7 +409,7 @@ class OmmUtil {
    * TLEのEpoch(年/日)からDateに変換する(UTC)
    */
   private static tleEpochToDate(epochYear: number, epochDays: number): Date {
-    const fullYear = 2000 + epochYear;
+    const fullYear = epochYear >= 57 ? 1900 + epochYear : 2000 + epochYear;
     const startOfYearMs = Date.UTC(fullYear, 0, 1, 0, 0, 0, 0);
     const elapsedMs = (epochDays - 1) * Constant.Time.MILLISECONDS_IN_DAY;
     return new Date(startOfYearMs + elapsedMs);
