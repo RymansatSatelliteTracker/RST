@@ -82,7 +82,11 @@ export default class ActiveSatService {
 
       if (!CommonUtil.isEmpty(sat.userRegisteredOmm)) {
         // ユーザが登録した衛星のOMMを使用
-        return JSON.parse(sat.userRegisteredOmm) as OmmItem;
+        try {
+          return JSON.parse(sat.userRegisteredOmm) as OmmItem;
+        } catch {
+          // memo: 不正なJSON（設定ファイルの破損・手編集等）の場合はTLEへフォールバック
+        }
       }
 
       if (!CommonUtil.isEmpty(sat.userRegisteredTle)) {

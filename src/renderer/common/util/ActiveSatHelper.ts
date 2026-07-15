@@ -63,17 +63,24 @@ export default class ActiveSatHelper {
     satModel.satelliteName = sat.userRegisteredSatelliteName;
 
     // OMM
+    let ommItem: OmmItem | null = null;
     if (!CommonUtil.isEmpty(sat.userRegisteredOmm)) {
       // ユーザが登録した衛星のOMMを使用
-      const ommItem: OmmItem = JSON.parse(sat.userRegisteredOmm) as OmmItem;
-      satModel.omm = ommItem;
-    } else {
-      // memo: userRegisteredOmmへの移行が未済の場合のフォールバック
+      try {
+        ommItem = JSON.parse(sat.userRegisteredOmm) as OmmItem;
+      } catch {
+        // memo: 不正なJSON（設定ファイルの破損・手編集等）の場合はTLEへフォールバック
+        ommItem = null;
+      }
+    }
+    if (!ommItem) {
+      // memo: userRegisteredOmmへの移行が未済、またはパースに失敗した場合のフォールバック
       // ユーザが登録した衛星のTLEは２行なので、ユーザー登録衛星名とTLEを結合してOMMに変換する
       const tleText = `${sat.userRegisteredSatelliteName}\n${sat.userRegisteredTle}`;
       const ommItems = OmmUtil.parseToOmmItems(tleText);
-      satModel.omm = ommItems.length > 0 ? ommItems[0] : null;
+      ommItem = ommItems.length > 0 ? ommItems[0] : null;
     }
+    satModel.omm = ommItem;
 
     return satModel;
   }
@@ -92,7 +99,7 @@ export default class ActiveSatHelper {
 
     // OMMはNorad IDから取得
     const omms = await ApiOmm.getOmmsByNoradIds([sat.noradId]);
-    satModel.omm = omms[0];
+    satModel.omm = omms.length > 0 ? omms[0] : null;
 
     return satModel;
   }
