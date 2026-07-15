@@ -185,6 +185,13 @@ describe("[正常系]parseToOmmItemsで各形式からOmmItemに変換できる"
     expect(items[0].objectId).toBe("1998-067A");
   });
 
+  it("XML形式のOBJECT_NAMEにXMLエスケープが含まれる場合、アンエスケープしてOmmItemに変換できる", () => {
+    const text = ISS_XML_TEXT.replace("<OBJECT_NAME>ISS (ZARYA)</OBJECT_NAME>", "<OBJECT_NAME>AMSAT &amp; ISS</OBJECT_NAME>");
+    const items = OmmUtil.parseToOmmItems(text);
+    expect(items.length).toBe(1);
+    expect(items[0].objectName).toBe("AMSAT & ISS");
+  });
+
   it("KVN形式からOmmItemに変換できる", () => {
     const items = OmmUtil.parseToOmmItems(ISS_KVN_TEXT);
     expect(items.length).toBe(1);

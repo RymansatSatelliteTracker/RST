@@ -234,3 +234,34 @@ private static tleLinesToOmmItem(line0: string, line1: string, line2: string): O
 - `omm.json` に保存される2LE由来のデータの `objectName` が、従来の `""` から `noradCatId` の値に変わる。既存の `omm.json` に保存済みの2LEデータ（`objectName: ""`）は本変更では遡って更新されない（再ダウンロード・再パース時にのみ新しいロジックが適用される）。
 - `ommItemToTleStrings()` は `item.objectName || noradId` というフォールバックを既に持っているため、この変更後は `objectName` が空になるケース自体がTLE起源のデータでは無くなる（動作への影響なし、むしろ一貫性が向上する）。
 - JSON/XML/KVN/CSV形式の `fieldsToOmmItem()` 経由のデータは対象外（`OBJECT_NAME` フィールドが提供される前提のため変更しない）。
+
+## 追加設計：XML形式のobjectNameのXMLエスケープ解除
+
+### 背景・決定事項
+
+`OmmUtil.parseXmlFormat()` はCCSDS OMM XML形式のテキストを `extractXmlTag()` でタグごとに正規表現抽出し、`fieldsToOmmItem()` に渡している。
+`extractXmlTag()` は抽出した文字列をそのまま返しており、XMLエスケープ（`&amp;`/`&lt;`/`&gt;`/`&apos;`/`&quot;`や数値文字参照`&#38;`/`&#x26;`など）の解除を行っていない。
+このため、衛星名に `&` を含む場合（例: `AMSAT-OSCAR &amp; ...`）、`objectName` にエスケープされた文字列 `&amp;` がそのまま保存されてしまう。
+
+### 変更内容
+
+`src/main/util/OmmUtil.ts` に、XMLエスケープを解除する共通処理を追加し、`extractXmlTag()` の戻り値に適用する。
+
+- 新規プライベートメソッド `unescapeXml(text: string): string` を追加する。
+  - 対応するエスケープ：`&lt;` → `<`、`&gt;` → `>`、`&apos;` → `'`、`&quot;` → `"`、数値文字参照 `&#NN;`/`&#xHH;`、および `&amp;` → `&`（`&amp;` は他のエスケープ解除後の二重アンエスケープを避けるため最後に処理する）。
+- `extractXmlTag()` の `return match ? match[1].trim() : "";` を `return match ? this.unescapeXml(match[1].trim()) : "";` に変更する。
+  - `extractXmlTag()` はXML形式の全フィールド抽出で共通利用されている（`OBJECT_NAME`だけでなく`OBJECT_ID`等の文字列フィールドにも同様に適用され、数値フィールドはエスケープを含まないため影響なし）。この共通化により要求の対象である`objectName`はもちろん、他の文字列フィールドも一貫してアンエスケープされる。
+
+XML以外の形式（TLE/JSON/KVN/CSV）は本対応の対象外（変更しない）。KVN/CSVはXMLエスケープの対象ではなく、JSONは`JSON.parse()`が自身でエスケープ解除を行うため。
+
+### 修正ファイル一覧
+
+| ファイル | 変更内容 |
+|---|---|
+| `src/main/util/OmmUtil.ts` | `unescapeXml()` プライベートメソッドを新規追加。`extractXmlTag()` の戻り値にこれを適用 |
+| `src/__tests__/main/util/OmmUtil.test.ts` | XMLエスケープ（`&amp;`等）を含む`OBJECT_NAME`のテストケースを追加し、`objectName`がアンエスケープされることを検証 |
+
+### 影響範囲・リスク
+
+- `extractXmlTag()` は `parseXmlFormat()` 内の全フィールド抽出で共通利用されているため、`OBJECT_NAME`以外のフィールド（`OBJECT_ID`等）にもアンエスケープが適用されるが、通常これらの値にXMLエスケープ対象文字は含まれないため実害はない。
+- 既存の`omm.json`に保存済みのXML由来データでエスケープが残っているものは、本変更では遡って更新されない（再ダウンロード・再パース時にのみ新しいロジックが適用される）。

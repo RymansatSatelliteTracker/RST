@@ -70,4 +70,10 @@
 
 - [x] `src/main/util/OmmUtil.ts`：`tleLinesToOmmItem()` で `noradCatId` を先に算出し、2LE（`line0`が空）の場合は `objectName` に `noradCatId` を設定するよう変更
 - [x] `src/__tests__/main/util/OmmUtil.test.ts`：「2LE形式(衛星名なし)からOmmItemに変換できる」テストの期待値を `objectName === noradCatId` に修正
-- [x] `npm run test` 実行・全テスト成功を確認（72ファイル/772テスト成功）、`npm run ts` 型チェックも0エラー
+- [x] `npm run test` 実行・全テスト成功を確認
+
+## Phase 11: XML形式のobjectNameのXMLエスケープ解除（追加要求３）
+
+- [x] `src/main/util/OmmUtil.ts`：`unescapeXml()` プライベートメソッドを新規追加し、`extractXmlTag()` の戻り値に適用
+- [x] `src/__tests__/main/util/OmmUtil.test.ts`：XMLエスケープ（`&amp;`等）を含む`OBJECT_NAME`のテストケースを追加
+- [x] `npm run test` 実行・全テスト成功を確認（72ファイル/773テスト成功）、`npm run ts` 型チェックも0エラー（72ファイル/772テスト成功）、`npm run ts` 型チェックも0エラー

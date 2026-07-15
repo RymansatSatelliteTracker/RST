@@ -351,7 +351,22 @@ class OmmUtil {
    */
   private static extractXmlTag(text: string, tagName: string): string {
     const match = text.match(new RegExp(`<${tagName}(?:\\s[^>]*)?>([\\s\\S]*?)</${tagName}>`, "i"));
-    return match ? match[1].trim() : "";
+    return match ? this.unescapeXml(match[1].trim()) : "";
+  }
+
+  /**
+   * XMLエスケープを解除する(&amp;/&lt;/&gt;/&apos;/&quot;、数値文字参照に対応)
+   * &amp;は他のエスケープ解除後の二重アンエスケープを避けるため最後に処理する
+   */
+  private static unescapeXml(text: string): string {
+    return text
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&apos;/g, "'")
+      .replace(/&quot;/g, '"')
+      .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+      .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
+      .replace(/&amp;/g, "&");
   }
 
   /**
