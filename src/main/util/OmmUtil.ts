@@ -11,7 +11,7 @@ export type OmmFormat = "TLE" | "XML" | "KVN" | "JSON" | "CSV" | "UNKNOWN";
 
 /**
  * OMM(Orbit Mean-elements Message)関係のユーティリティ
- * TLE/3LE/2LE/XML/KVN/JSON/JSON-PRETTY/CSV形式の自動判別、OmmItemへの変換、
+ * TLE/2LE/XML/KVN/JSON/JSON-PRETTY/CSV形式の自動判別、OmmItemへの変換、
  * OmmItemからTLE文字列への変換を行う
  * @class OmmUtil
  */
