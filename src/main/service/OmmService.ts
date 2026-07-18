@@ -135,8 +135,7 @@ export default class OmmService {
     }
 
     AppMainLogger.info("前回OMM取得からの取得間隔が短いため、OMM取得処理をスキップします");
-    // return false;
-    return true;
+    return false;
   }
 
   /**

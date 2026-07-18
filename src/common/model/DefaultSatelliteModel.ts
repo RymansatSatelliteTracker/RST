@@ -95,10 +95,10 @@ export class DefaultSatelliteModel {
 
   /**
    * 対象衛星を追加する
-   * 　衛星が新規追加の場合のみ追加する
-   * 　衛星追加時は衛星IDを採番する
-   *   noradId指定がない場合は仮のIDを採番する
-   * 　追加した衛星は登録済みNORAIDのリストに追加する
+   * ・衛星が新規追加の場合のみ追加する
+   * ・衛星追加時は衛星IDを採番する
+   * ・noradId指定がない場合は仮のIDを採番する
+   * ・追加した衛星は登録済みNORAIDのリストに追加する
    * @param satelliteName
    * @param noradId
    * @returns number 追加:追加時の衛星ID、更新:-1
