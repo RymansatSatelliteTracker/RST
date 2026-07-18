@@ -155,7 +155,7 @@ async function onCancel() {
  */
 async function onReset() {
   // デフォルト衛星情報を取得
-  const defsat: DefaultSatelliteType = await ApiDefaultSatellite.getDefaultSatelliteBySatelliteId(
+  const defsat: DefaultSatelliteType | null = await ApiDefaultSatellite.getDefaultSatelliteBySatelliteId(
     selectedItem.value.satelliteId,
     false
   );

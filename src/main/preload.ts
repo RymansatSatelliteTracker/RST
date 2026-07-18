@@ -13,7 +13,12 @@ import type { AppConfigTransceiverModel } from "@/common/model/AppConfigTranscei
 import type { FrequencyModel } from "@/common/model/FrequencyModel.js";
 import type { MessageModel } from "@/common/model/MessageModel.js";
 import type { OmmItem } from "@/common/model/OmmModel.js";
-import type { DefaultSatelliteType, DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
+import type {
+  DefaultSatelliteType,
+  DownlinkType,
+  SatelliteIdentiferType,
+  UplinkType,
+} from "@/common/types/satelliteSettingTypes.js";
 import type { ApiResponse, LangType } from "@/common/types/types.js";
 import EnvUtil from "@/common/util/EnvUtil.js";
 import type { IpcRendererEvent } from "electron";
@@ -105,7 +110,7 @@ const apiHandler = {
    * 衛星識別情報を返す
    * 呼び出し例）const ret = await window.rstApi.getSavedSatelliteIdentifer();
    */
-  getSavedSatelliteIdentifer: function (): Promise<string> {
+  getSavedSatelliteIdentifer: function (): Promise<SatelliteIdentiferType[]> {
     return ipcRenderer.invoke("getSavedSatelliteIdentifer");
   },
 
