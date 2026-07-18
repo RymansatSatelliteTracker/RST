@@ -40,7 +40,7 @@ export default class AntennaAutoTrackingService {
     }
 
     // 表示中の衛星グループが変更された場合のコールバックを設定
-    ActiveSatServiceHub.getInstance().addOnChangeActiveSat(this.onChangeActiveSat);
+    ActiveSatServiceHub.getInstance().addOnChangeActiveSat(this.onChangeActiveSat.bind(this));
 
     const controller = await RotatorControllerFactory.getController(rotDevice);
 
