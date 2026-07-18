@@ -151,7 +151,10 @@ async function getAppConfig() {
  */
 async function updateAppConfig(isTleUpdated: boolean) {
   // 次のgetAppConfigすると値が変わってしまうのでdeepcopyする
-  const outputData: AppConfigSatSettingModel = JSON.parse(JSON.stringify(toRaw(apiConfigData.value)));
+  const outputData: AppConfigSatSettingModel = JSON.parse(
+    JSON.stringify(toRaw(apiConfigData.value))
+  ) as AppConfigSatSettingModel;
+
   // satellites配下が変わることがあるので最新のアプリケーション設定を取得
   const appConfig = await ApiConfig.getAppConfigSatSetting();
   // 表示衛星画面用

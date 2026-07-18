@@ -64,7 +64,7 @@ export default function useOrbitLineList(
   async function onChangeSatGrp() {
     // 更新された衛星グループ情報を取得
     const satGrp = await ApiActiveSat.getActiveSatelliteGroup();
-    if (!satGrp || !satGrp.mainSattelliteTle) {
+    if (!satGrp || !satGrp.mainSatelliteOmm) {
       orbitLineList.value = [[]];
       orbitDashLineList.value = [[]];
       return;

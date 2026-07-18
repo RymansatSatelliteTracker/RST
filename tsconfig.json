@@ -1,6 +1,7 @@
 // https://www.typescriptlang.org/tsconfig/
 {
   "include": ["./src/**/*"] /* TypeScriptのコンパイル対象に含めるファイルやパターンを指定する */,
+  "exclude": ["./src/__tests__/**/*"] /* テストファイルはVitestが直接変換するため、tscのコンパイル対象から除外する */,
 
   "compilerOptions": {
     /* この設定ファイルの詳細は公式ドキュメントを参照 */

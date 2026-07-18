@@ -1,22 +1,22 @@
 import Constant from "@/common/Constant.js";
+import type { OmmItem } from "@/common/model/OmmModel.js";
 import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
 import ActiveSatHelper from "@/renderer/common/util/ActiveSatHelper.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
-import type { TleStrings } from "@/renderer/types/satellite-type.js";
 import emitter from "@/renderer/util/EventBus.js";
 import { ref } from "vue";
 
 /**
- * 人工衛星のTLE文字列配列を取得する
- * @returns {{ tleStrings; index; }} TLE文字列配列
+ * 人工衛星のOMM配列を取得する
+ * @returns {{ ommItems; index; }} OMM配列
  */
 const useHome = () => {
-  // TLE文字列配列
-  const tleStrings = ref<TleStrings[]>([]);
-  // アクティブなTLE文字列の添字
+  // OMM配列
+  const ommItems = ref<OmmItem[]>([]);
+  // アクティブなOMMの添字
   const selectedAciveSatIndex = ref<number>(0);
 
   /**
@@ -29,8 +29,8 @@ const useHome = () => {
     // 表示中の衛星グループが変更された場合のコールバックを設定
     ActiveSatServiceHub.getInstance().addOnChangeActiveSat(onChangeSatGrp);
 
-    // 現在のアクティブ衛星IDを元にTLEリストを更新する
-    refreshTles();
+    // 現在のアクティブ衛星IDを元にOMMリストを更新する
+    await refreshOmms();
 
     // ローテータの監視を開始する
     const apiRotatorRes = await ApiAntennaTracking.startCtrl();
@@ -48,30 +48,30 @@ const useHome = () => {
    * 表示中の衛星グループが変更された場合のイベントハンドラ
    */
   async function onChangeSatGrp() {
-    // 現在のアクティブ衛星IDを元にTLEリストを更新する
-    refreshTles();
+    // 現在のアクティブ衛星IDを元にOMMリストを更新する
+    await refreshOmms();
   }
 
   /**
-   * TLEリストを更新する
+   * OMMリストを更新する
    */
-  async function refreshTles() {
+  async function refreshOmms() {
     // 現在のアクティブ衛星IDを取得する
     const appConfig = await ApiAppConfig.getAppConfig();
     const activeSatId = appConfig.mainDisplay.activeSatelliteId;
 
-    // レンダラ全体で参照されるTLEリストを初期化する
+    // レンダラ全体で参照されるOMMリストを初期化する
     // 現在の衛星グループの衛星リストを取得する
     const sats = await ActiveSatHelper.fetchActiveSats();
-    // 衛星リストのTLEをtleStringリストに追加する
+    // 衛星リストのOMMをommItemsリストに追加する
     for (let ii = 0; ii < sats.length; ii++) {
       const sat = sats[ii];
-      // TLEがない衛星はスキップ
-      if (!sat.tle) {
+      // OMMがない衛星はスキップ
+      if (!sat.omm) {
         continue;
       }
 
-      tleStrings.value.push(sat.tle);
+      ommItems.value.push(sat.omm);
 
       // TODO レンダラ全体が衛星IDで管理されるようになったら、削除する
       if (sat.satelliteId === activeSatId) {
@@ -80,7 +80,7 @@ const useHome = () => {
     }
   }
 
-  return { init, tleStrings, selectedAciveSatIndex };
+  return { init, ommItems, selectedAciveSatIndex };
 };
 
 export default useHome;

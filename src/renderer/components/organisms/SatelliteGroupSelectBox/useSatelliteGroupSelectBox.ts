@@ -25,7 +25,7 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
   async function onChangeAppConfig() {
     // 表示対象の衛星グループを取得
     const satGrp = await ApiActiveSat.getActiveSatelliteGroup();
-    if (!satGrp || !satGrp.mainSattelliteTle) {
+    if (!satGrp || !satGrp.mainSatelliteOmm) {
       return;
     }
 

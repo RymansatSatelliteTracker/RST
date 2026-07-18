@@ -65,12 +65,21 @@ export default class Constant {
    */
   public static readonly Tle = class {
     // TLEファイル名
+    // memo: omm.json移行のため新規書き込みはしないが、移行処理での読み込みに使用する
     static readonly TLE_FILENAME = "tle.json";
     // TLE取得を許可する時間差
     // memo: celestrak.orgに連続アクセスすると403を返すため、以下時間をおいて取得を行う
     static readonly TLE_GET_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6時間
     // TLEの有効期限日数
     static readonly TLE_EXPIRATION_DAYS = 7;
+  };
+
+  /**
+   * OMM関係
+   */
+  public static readonly Omm = class {
+    // OMMファイル名
+    static readonly OMM_FILENAME = "omm.json";
   };
 
   /**

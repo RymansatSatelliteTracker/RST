@@ -10,7 +10,7 @@
   },
   "main": "dist/electron/main/main.js",
   "scripts": {
-    "app:dev": "concurrently \"vite\" \"tsc -w\" \"tsc-alias -w\" \"wait-on dist/electron/main/main.js && electron .\"",
+    "app:dev": "npm run ts && npm run app:import-replace && concurrently \"vite\" \"tsc -w\" \"tsc-alias -w\" \"electron .\"",
     "app:build": "npm run vite:build && tsc && npm run app:import-replace && electron-builder",
     "app:build-win": "npm run vite:build && tsc && npm run app:import-replace && electron-builder --win",
     "app:build-mac": "npm run vite:build && tsc && npm run app:import-replace && electron-builder --mac",

@@ -69,7 +69,7 @@ npm ci
 
 ## 2. 実行方法
 
-```bash
+```powershell
 # 開発モードで起動する
 npm run app:dev
 
@@ -80,7 +80,7 @@ npm run app:build
 
 ## 3. UT実行
 
-```bash
+```powershell
 # すべてのUTを実行
 npm run test
 

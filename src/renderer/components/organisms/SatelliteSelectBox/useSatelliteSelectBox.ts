@@ -42,7 +42,7 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
   async function updateSatItems() {
     // 更新された衛星グループ情報を取得
     const satGrp = await ApiActiveSat.getActiveSatelliteGroup();
-    if (!satGrp || !satGrp.mainSattelliteTle) {
+    if (!satGrp || !satGrp.mainSatelliteOmm) {
       return;
     }
 

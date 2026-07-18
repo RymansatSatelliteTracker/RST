@@ -18,7 +18,7 @@
         </span>
 
         <!-- AOS/LOS時刻 -->
-        <Aos v-if="tleStrings.length > 0" class="main_left_aos" :current-date="currentDate" />
+        <Aos v-if="ommItems.length > 0" class="main_left_aos" :current-date="currentDate" />
 
         <!-- 時刻 -->
         <NowTime class="main_left_nowtime" :current-date="currentDate" />
@@ -59,8 +59,8 @@ const currentDate = ref(new Date());
 const showFrequencyEditor = ref(false);
 
 // フック
-// 人工衛星のTLE文字列配列を取得する
-const { init, tleStrings } = useHome();
+// 人工衛星のOMM配列を取得する
+const { init, ommItems } = useHome();
 
 onMounted(async () => {
   window.rstApi.onOpenFrequencyEditor(() => {

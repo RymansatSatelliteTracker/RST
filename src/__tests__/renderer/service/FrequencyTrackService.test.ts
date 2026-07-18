@@ -1,4 +1,5 @@
 import { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import OmmUtil from "@/main/util/OmmUtil.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import FrequencyTrackService from "@/renderer/service/FrequencyTrackService.js";
 import SatelliteService from "@/renderer/service/SatelliteService.js";
@@ -31,9 +32,9 @@ describe("FrequencyTrackService", () => {
     // AO-40のTLE
     const tleLine1 = "1 26609U 00072B   00328.20006944  .00000001  00000-0  12451-4 0    45";
     const tleLine2 = "2 26609   6.4214 245.2971 7351666 180.5141 180.0042  2.03021569   166";
-    const tleStrings = { tleLine1: tleLine1, tleLine2: tleLine2, satelliteName: "AO-40" };
+    const ommItem = OmmUtil.parseToOmmItems(`AO-40\n${tleLine1}\n${tleLine2}`)[0];
 
-    const satelliteService = new SatelliteService(tleStrings);
+    const satelliteService = new SatelliteService(ommItem);
     return satelliteService;
   }
 
