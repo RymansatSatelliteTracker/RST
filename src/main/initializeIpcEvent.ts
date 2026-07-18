@@ -68,6 +68,13 @@ export function initializeIpcEvents() {
   });
 
   /**
+   * メイン表示する衛星グループ、衛星ID情報を返す
+   */
+  ipcMain.handle("getAppConfigMainDisplay", (event) => {
+    return AppConfigUtil.getAppConfigMainDisplay();
+  });
+
+  /**
    * 衛星設定画面用のアプリケーション設定を保存する
    */
   ipcMain.handle(

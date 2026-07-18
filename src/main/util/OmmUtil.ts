@@ -4,7 +4,6 @@ import { OmmItem } from "@/common/model/OmmModel.js";
 import type { StringMap } from "@/common/types/types.js";
 import AppMainLogger from "@/main/util/AppMainLogger.js";
 import TleUtil from "@/main/util/TleUtil.js";
-import type { TleStrings } from "@/renderer/types/satellite-type.js";
 
 // 軌道要素データの形式
 export type OmmFormat = "TLE" | "XML" | "KVN" | "JSON" | "CSV" | "UNKNOWN";
@@ -13,7 +12,6 @@ export type OmmFormat = "TLE" | "XML" | "KVN" | "JSON" | "CSV" | "UNKNOWN";
  * OMM(Orbit Mean-elements Message)関係のユーティリティ
  * TLE/2LE/XML/KVN/JSON/JSON-PRETTY/CSV形式の自動判別、OmmItemへの変換、
  * OmmItemからTLE文字列への変換を行う
- * @class OmmUtil
  */
 class OmmUtil {
   /**
@@ -83,52 +81,6 @@ class OmmUtil {
       default:
         return [];
     }
-  }
-
-  /**
-   * OmmItemをTLE文字列(TleStrings)に変換する
-   * @param {OmmItem} item OmmItem
-   * @returns {TleStrings} TLE文字列
-   */
-  public static ommItemToTleStrings(item: OmmItem): TleStrings {
-    const noradId = (item.noradCatId ?? "").padStart(5, "0").slice(-5);
-    const classification = (item.classificationType || "U").charAt(0);
-    const designator = this.toTleDesignator(item.objectId);
-    const epochDate = this.epochToDate(item.epoch);
-    const epochStr = this.formatEpochUtc(epochDate);
-    const ndotStr = this.formatSignedDecimal(item.meanMotionDot);
-    const nddotStr = this.formatExpField(item.meanMotionDdot);
-    const bstarStr = this.formatExpField(item.bstar);
-    const ephemerisType = CommonUtil.toString(item.ephemerisType ?? 0).charAt(0) || "0";
-    const elementSetNo = Math.abs(item.elementSetNo || 999)
-      .toString()
-      .padStart(4, " ")
-      .slice(-4);
-
-    let line1 =
-      `1 ${noradId}${classification} ${designator} ${epochStr}` +
-      ` ${ndotStr} ${nddotStr} ${bstarStr} ${ephemerisType} ${elementSetNo}`;
-    line1 = line1 + TleUtil.calculateChecksum(line1);
-
-    const inclination = item.inclination.toFixed(4).padStart(8, " ");
-    const raan = item.raOfAscNode.toFixed(4).padStart(8, " ");
-    const eccentricity = item.eccentricity.toFixed(7).substring(2).padStart(7, "0");
-    const argPerigee = item.argOfPericenter.toFixed(4).padStart(8, " ");
-    const meanAnomaly = item.meanAnomaly.toFixed(4).padStart(8, " ");
-    const meanMotion = item.meanMotion.toFixed(8).padStart(11, " ");
-    const revAtEpoch = Math.abs(item.revAtEpoch || 0)
-      .toString()
-      .padStart(5, "0")
-      .slice(-5);
-
-    let line2 = `2 ${noradId} ${inclination} ${raan} ${eccentricity} ${argPerigee} ${meanAnomaly} ${meanMotion}${revAtEpoch}`;
-    line2 = line2 + TleUtil.calculateChecksum(line2);
-
-    return {
-      satelliteName: item.objectName || noradId,
-      tleLine1: line1,
-      tleLine2: line2,
-    };
   }
 
   /**
@@ -211,6 +163,7 @@ class OmmUtil {
     } catch {
       return [];
     }
+
     const arr: unknown[] = Array.isArray(parsed) ? parsed : [parsed];
     return arr
       .filter((o) => o && !CommonUtil.isEmpty(CommonUtil.toString((o as Record<string, unknown>).NORAD_CAT_ID)))
@@ -224,6 +177,7 @@ class OmmUtil {
     const segments = this.extractXmlBlocks(text, "segment");
     const blocks = segments.length > 0 ? segments : [text];
     const items: OmmItem[] = [];
+
     for (const block of blocks) {
       const fields: StringMap<string> = {
         OBJECT_NAME: this.extractXmlTag(block, "OBJECT_NAME"),
@@ -244,9 +198,13 @@ class OmmUtil {
         MEAN_MOTION_DOT: this.extractXmlTag(block, "MEAN_MOTION_DOT"),
         MEAN_MOTION_DDOT: this.extractXmlTag(block, "MEAN_MOTION_DDOT"),
       };
+
+      // NORAD_CAT_IDが空文字の場合は無効なデータとしてスキップする
       if (CommonUtil.isEmpty(fields.NORAD_CAT_ID)) continue;
+
       items.push(this.fieldsToOmmItem(fields));
     }
+
     return items;
   }
 
@@ -264,13 +222,18 @@ class OmmUtil {
       record.split(/\r\n|\r|\n/).forEach((line) => {
         const idx = line.indexOf("=");
         if (idx < 0) return;
+
         const key = line.substring(0, idx).trim();
         const value = line.substring(idx + 1).trim();
         if (key) fields[key] = value;
       });
+
+      // NORAD_CAT_IDが空文字の場合は無効なデータとしてスキップする
       if (CommonUtil.isEmpty(fields.NORAD_CAT_ID)) continue;
+
       items.push(this.fieldsToOmmItem(fields));
     }
+
     return items;
   }
 
@@ -279,19 +242,27 @@ class OmmUtil {
    */
   private static parseCsvFormat(text: string): OmmItem[] {
     const lines = text.split(/\r\n|\r|\n/).filter((line) => !CommonUtil.isEmpty(line.trim()));
+
+    // ヘッダー行がない場合は無効なデータとして空リストを返す
     if (lines.length < 2) return [];
 
     const headers = this.splitCsvLine(lines[0]).map((header) => header.trim());
     const items: OmmItem[] = [];
     for (let ii = 1; ii < lines.length; ii++) {
       const cols = this.splitCsvLine(lines[ii]);
+
+      // ヘッダー行より列数が少ない場合は無効なデータとしてスキップする
       if (cols.length < headers.length) continue;
 
       const fields: StringMap<string> = {};
       headers.forEach((header, idx) => (fields[header] = cols[idx]));
+
+      // NORAD_CAT_IDが空文字の場合は無効なデータとしてスキップする
       if (CommonUtil.isEmpty(fields.NORAD_CAT_ID)) continue;
+
       items.push(this.fieldsToOmmItem(fields));
     }
+
     return items;
   }
 
@@ -302,20 +273,25 @@ class OmmUtil {
     const result: string[] = [];
     let current = "";
     let inQuotes = false;
+
     for (let ii = 0; ii < line.length; ii++) {
       const ch = line.charAt(ii);
+
       if (ch === '"') {
         inQuotes = !inQuotes;
         continue;
       }
+
       if (ch === "," && !inQuotes) {
         result.push(current);
         current = "";
         continue;
       }
+
       current += ch;
     }
     result.push(current);
+
     return result;
   }
 
@@ -343,6 +319,7 @@ class OmmUtil {
     item.meanMotionDot = this.toNum(fields.MEAN_MOTION_DOT);
     item.meanMotionDdot = this.toNum(fields.MEAN_MOTION_DDOT);
     item.isInLatestOmm = true;
+
     return item;
   }
 
@@ -385,6 +362,7 @@ class OmmUtil {
   /**
    * 文字列または数値を数値に変換する
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private static toNum(value: any): number {
     if (typeof value === "number") return value;
     if (value === undefined || value === null || value === "") return 0;

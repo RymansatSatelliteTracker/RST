@@ -30,7 +30,7 @@ const useHome = () => {
     ActiveSatServiceHub.getInstance().addOnChangeActiveSat(onChangeSatGrp);
 
     // 現在のアクティブ衛星IDを元にOMMリストを更新する
-    refreshOmms();
+    await refreshOmms();
 
     // ローテータの監視を開始する
     const apiRotatorRes = await ApiAntennaTracking.startCtrl();
@@ -49,7 +49,7 @@ const useHome = () => {
    */
   async function onChangeSatGrp() {
     // 現在のアクティブ衛星IDを元にOMMリストを更新する
-    refreshOmms();
+    await refreshOmms();
   }
 
   /**

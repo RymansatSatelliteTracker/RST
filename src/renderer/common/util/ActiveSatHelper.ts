@@ -19,7 +19,6 @@ export default class ActiveSatHelper {
     const appConfig = await ApiAppConfig.getAppConfig();
 
     // アクティブ衛星グループIDから衛星グループを取得
-    appConfig.mainDisplay.activeSatelliteGroupId;
     const gr = appConfig.satelliteGroups.find((group) => {
       return group.groupId === appConfig.mainDisplay.activeSatelliteGroupId;
     });
@@ -73,6 +72,7 @@ export default class ActiveSatHelper {
         ommItem = null;
       }
     }
+
     if (!ommItem) {
       // memo: userRegisteredOmmへの移行が未済、またはパースに失敗した場合のフォールバック
       // ユーザが登録した衛星のTLEは２行なので、ユーザー登録衛星名とTLEを結合してOMMに変換する

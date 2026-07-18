@@ -250,42 +250,6 @@ describe("[正常系]parseToOmmItemsで各形式からOmmItemに変換できる"
 });
 
 /**
- * [正常系] OmmItem -> TLE文字列への変換(実データとのラウンドトリップ)
- * celestrak.org から取得した実際のTLEと完全に一致することを確認する
- */
-describe("[正常系]ommItemToTleStringsで実データのTLEと一致するTLE文字列に変換できる", () => {
-  it("JSON由来のOmmItemから実TLEと同一の文字列を生成できる", () => {
-    const items = OmmUtil.parseToOmmItems(ISS_JSON_TEXT);
-    const tle = OmmUtil.ommItemToTleStrings(items[0]);
-
-    expect(tle.satelliteName).toBe("ISS (ZARYA)");
-    expect(tle.tleLine1).toBe(ISS_TLE_LINE1);
-    expect(tle.tleLine2).toBe(ISS_TLE_LINE2);
-  });
-
-  it("TLE由来のOmmItemから同一のTLE文字列を再現できる(ラウンドトリップ)", () => {
-    // memo: TLE -> Date -> TLE の変換ではDateのミリ秒精度に丸められるため、
-    //       epoch日時(cols19-32)とチェックサム(col69)のみ僅かな誤差が生じうる
-    const items = OmmUtil.parseToOmmItems(ISS_TLE_TEXT);
-    const tle = OmmUtil.ommItemToTleStrings(items[0]);
-
-    // epoch、チェックサムを除いて完全一致することを確認する
-    expect(tle.tleLine1.substring(0, 18)).toBe(ISS_TLE_LINE1.substring(0, 18));
-    expect(tle.tleLine1.substring(32, 68)).toBe(ISS_TLE_LINE1.substring(32, 68));
-    expect(parseFloat(tle.tleLine1.substring(18, 32))).toBeCloseTo(parseFloat(ISS_TLE_LINE1.substring(18, 32)), 6);
-    expect(tle.tleLine2).toBe(ISS_TLE_LINE2);
-  });
-
-  it("各行が69文字(チェックサム含む)になる", () => {
-    const items = OmmUtil.parseToOmmItems(ISS_JSON_TEXT);
-    const tle = OmmUtil.ommItemToTleStrings(items[0]);
-
-    expect(tle.tleLine1.length).toBe(69);
-    expect(tle.tleLine2.length).toBe(69);
-  });
-});
-
-/**
  * [正常系] epochToDate
  */
 describe("[正常系]epochToDateでOMMのEPOCH文字列をDateに変換できる", () => {

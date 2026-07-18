@@ -71,31 +71,35 @@ export default class ActiveSatService {
       ommItem = ActiveSatService.ommService.getOmmByNoradId(defSat.noradId);
     }
 
+    // 取得できた場合はそのデータを返す
+    if (ommItem) {
+      return ommItem;
+    }
+
     // 手動追加された衛星の場合（デフォルト衛星設定から取得出来なかった場合）
     // AppConfif.satellites 経由でOMMを取得する
-    if (!ommItem) {
-      const appConfig = AppConfigUtil.getConfig();
-      const sat = appConfig.satellites.find((sat) => sat.satelliteId === satId);
-      if (!sat) {
-        return null;
-      }
+    const appConfig = AppConfigUtil.getConfig();
+    const sat = appConfig.satellites.find((sat) => sat.satelliteId === satId);
+    if (!sat) {
+      return null;
+    }
 
-      if (!CommonUtil.isEmpty(sat.userRegisteredOmm)) {
-        // ユーザが登録した衛星のOMMを使用
-        try {
-          return JSON.parse(sat.userRegisteredOmm) as OmmItem;
-        } catch {
-          // memo: 不正なJSON（設定ファイルの破損・手編集等）の場合はTLEへフォールバック
-        }
+    if (!CommonUtil.isEmpty(sat.userRegisteredOmm)) {
+      // ユーザが登録した衛星のOMMを使用
+      try {
+        return JSON.parse(sat.userRegisteredOmm) as OmmItem;
+      } catch {
+        // memo: 不正なJSON（設定ファイルの破損・手編集等）の場合はTLEへフォールバック
+        // 次の処理を進める
       }
+    }
 
-      if (!CommonUtil.isEmpty(sat.userRegisteredTle)) {
-        // memo: userRegisteredOmmへの移行が未済の場合のフォールバック
-        // ユーザが登録した衛星のTLEは２行なので、ユーザー登録衛星名とTLEを結合してOMMに変換する
-        const tleText = `${sat.userRegisteredSatelliteName}\n${sat.userRegisteredTle}`;
-        const ommItems = OmmUtil.parseToOmmItems(tleText);
-        return ommItems.length > 0 ? ommItems[0] : null;
-      }
+    if (!CommonUtil.isEmpty(sat.userRegisteredTle)) {
+      // memo: userRegisteredOmmへの移行が未済の場合のフォールバック
+      // ユーザが登録した衛星のTLEは２行なので、ユーザー登録衛星名とTLEを結合してOMMに変換する
+      const tleText = `${sat.userRegisteredSatelliteName}\n${sat.userRegisteredTle}`;
+      const ommItems = OmmUtil.parseToOmmItems(tleText);
+      return ommItems.length > 0 ? ommItems[0] : null;
     }
 
     return ommItem;

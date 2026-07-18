@@ -43,7 +43,7 @@ export default class AppConfigSatelliteService {
   /**
    * 衛星設定を保存する
    * @param config
-   * @param isTLEUpdate TLE更新の場合はtrue
+   * @param isTleUpdate TLE更新の場合はtrue
    */
   public async store(config: AppConfigSatSettingModel, isTleUpdate: boolean = false): Promise<ApiResponse<void>> {
     // アプリケーション設定ファイルはユーザが直接編集する可能性があるため、ロックされている場合は更新しない

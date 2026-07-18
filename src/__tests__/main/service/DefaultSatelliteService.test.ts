@@ -71,7 +71,7 @@ describe("DefaultSatelliteService", () => {
     copyFiles(path.join(TEST_HOME_DIR, "refresh1"), TEST_WORK_DIR);
     const defSatService = new DefaultSatelliteService();
     // 試験条件確認用の準備
-    const beforeDefSat = await defSatService.getDefaultSatelliteBySatelliteId(100);
+    const beforeDefSat = defSatService.getDefaultSatelliteBySatelliteId(100);
 
     // 実行
     const isSuccess = (await defSatService.reCreateDefaultSatellite()).status;
@@ -88,7 +88,7 @@ describe("DefaultSatelliteService", () => {
     // 実行結果の検証
     expect(isSuccess).toBe(true);
     // デフォルト衛星定義は残す
-    const afterDefSat = await defSatService.getDefaultSatelliteBySatelliteId(100);
+    const afterDefSat = defSatService.getDefaultSatelliteBySatelliteId(100);
     expect(afterDefSat?.noradId).toBe("43879");
   });
 
@@ -105,7 +105,7 @@ describe("DefaultSatelliteService", () => {
     const beforeSatellites = appConfig.satellites.find((sat) => {
       return sat.noradId === "43879";
     });
-    const beforeDefSat = await defSatService.getDefaultSatelliteBySatelliteId(100);
+    const beforeDefSat = defSatService.getDefaultSatelliteBySatelliteId(100);
 
     // 実行
     const isSuccess = (await defSatService.reCreateDefaultSatellite()).status;
@@ -126,7 +126,7 @@ describe("DefaultSatelliteService", () => {
     // 実行結果の検証
     expect(isSuccess).toBe(true);
     // デフォルト衛星定義は残す
-    const afterDefSat = await defSatService.getDefaultSatelliteBySatelliteId(100);
+    const afterDefSat = defSatService.getDefaultSatelliteBySatelliteId(100);
     expect(afterDefSat?.noradId).toBe("43879");
   });
 
@@ -143,7 +143,7 @@ describe("DefaultSatelliteService", () => {
     const beforeSatellites = appConfig.satellites.find((sat) => {
       return sat.noradId === "43879";
     });
-    const beforeDefSat = await defSatService.getDefaultSatelliteBySatelliteId(100);
+    const beforeDefSat = defSatService.getDefaultSatelliteBySatelliteId(100);
 
     // 実行
     const isSuccess = (await defSatService.reCreateDefaultSatellite()).status;
@@ -163,7 +163,7 @@ describe("DefaultSatelliteService", () => {
     // 実行結果の検証
     expect(isSuccess).toBe(true);
     // デフォルト衛星定義は残す
-    const afterDefSat = await defSatService.getDefaultSatelliteBySatelliteId(100);
+    const afterDefSat = defSatService.getDefaultSatelliteBySatelliteId(100);
     expect(afterDefSat?.noradId).toBe("43879");
   });
 
@@ -179,7 +179,7 @@ describe("DefaultSatelliteService", () => {
     // 試験条件確認用の準備
     const beforeSatelliteGroups = appConfig.satelliteGroups;
     const beforeSatellites = appConfig.satellites;
-    const beforeDefSat = await defSatService.getDefaultSatelliteBySatelliteId(100);
+    const beforeDefSat = defSatService.getDefaultSatelliteBySatelliteId(100);
 
     // 実行
     const isSuccess = (await defSatService.reCreateDefaultSatellite()).status;
@@ -198,7 +198,7 @@ describe("DefaultSatelliteService", () => {
     // 実行結果の検証
     expect(isSuccess).toBe(true);
     // デフォルト衛星定義は消す
-    const afterDefSat = await defSatService.getDefaultSatelliteBySatelliteId(100);
+    const afterDefSat = defSatService.getDefaultSatelliteBySatelliteId(100);
     expect(afterDefSat).toBe(null);
   });
 

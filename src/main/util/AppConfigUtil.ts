@@ -19,8 +19,7 @@ import * as path from "path";
 // 設定ファイル（JSON）のルートのキー名
 const CONFIG_ROOT_KEY = "param";
 
-// memo: AMSATはTLE形式のみ提供のためTLEのまま維持し、OmmUtilの形式自動判別でパースする
-// celestrakはOMM JSON形式（FORMAT=JSON）で取得する
+// 軌道要素取得先のURLの初期値
 const DEFAULT_TLE_URL = [
   {
     enable: true,
@@ -69,7 +68,7 @@ export class AppConfigUtil {
     // 初期データファイルの配置
     AppConfigUtil.initTransceiverJson();
     AppConfigUtil.initRotatorJson();
-    AppConfigUtil.initDefautSatJson();
+    AppConfigUtil.initDefaultSatJson();
 
     // 設定ファイルが未作成の場合、初期値の設定を行う
     if (!FileUtil.exists(AppConfigUtil.store.path)) {
@@ -77,15 +76,21 @@ export class AppConfigUtil {
       AppConfigUtil.storeConfig(config);
     }
 
-    // 現アプリバージョンとアプリケーション設定のバージョンが異なる場合は、新定義に移行する
+    // 現アプリバージョンとアプリケーション設定のバージョンが同一の場合は、そのまま返す
     const config = AppConfigUtil.store.get(CONFIG_ROOT_KEY) as AppConfigModel;
-    const resultConfig = config.appVersion === Constant.appVersion ? config : this.migrationConfig(config);
+    if (config.appVersion === Constant.appVersion) {
+      return config;
+    }
 
-    // ユーザ登録衛星のTLE→OMM移行(バージョンの異同に関わらず都度確認し、未移行分のみ反映する)
-    resultConfig.satellites = resultConfig.satellites.map((sat) => this.migrateSatelliteTleToOmm(sat));
-    this.storeConfig(resultConfig);
+    // 現アプリバージョンとアプリケーション設定のバージョンが異なる場合は、新定義に移行する
+    // バージョンが異なる場合は、新定義に移行して保存する
+    const mergedConfig = this.migrationConfig(config);
 
-    return resultConfig;
+    // ユーザ登録衛星のTLE→OMM移行(未移行分のみ反映する)
+    mergedConfig.satellites = mergedConfig.satellites.map((sat) => this.migrateSatelliteTleToOmm(sat));
+    this.storeConfig(mergedConfig);
+
+    return mergedConfig;
   }
 
   /**
@@ -348,7 +353,7 @@ export class AppConfigUtil {
   /**
    * デフォルト衛星定義の初期データファイルの配置を行う
    */
-  public static initDefautSatJson() {
+  public static initDefaultSatJson() {
     // 既にデフォルト衛星定義ファイルが存在する場合は処理終了
     const configPath = AppConfigUtil.getDefaultSatConfigPath();
     if (FileUtil.exists(configPath)) {

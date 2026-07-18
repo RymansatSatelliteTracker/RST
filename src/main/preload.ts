@@ -1,6 +1,7 @@
 import type { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
 import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
 import type {
+  AppConfigMainDisplay,
   AppConfigModel,
   AppConfigRotator,
   AppConfigSatellite,
@@ -12,7 +13,7 @@ import type { AppConfigTransceiverModel } from "@/common/model/AppConfigTranscei
 import type { FrequencyModel } from "@/common/model/FrequencyModel.js";
 import type { MessageModel } from "@/common/model/MessageModel.js";
 import type { OmmItem } from "@/common/model/OmmModel.js";
-import type { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
+import type { DefaultSatelliteType, DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
 import type { ApiResponse, LangType } from "@/common/types/types.js";
 import EnvUtil from "@/common/util/EnvUtil.js";
 import type { IpcRendererEvent } from "electron";
@@ -41,6 +42,13 @@ const apiHandler = {
    */
   getAppConfigSatSetting: function (): Promise<AppConfigSatSettingModel> {
     return ipcRenderer.invoke("getAppConfigSatSetting");
+  },
+
+  /**
+   * メイン表示する衛星グループ、衛星ID情報を返す
+   */
+  getAppConfigMainDisplay: function (): Promise<AppConfigMainDisplay> {
+    return ipcRenderer.invoke("getAppConfigMainDisplay");
   },
 
   /**
@@ -124,7 +132,7 @@ const apiHandler = {
   getDefaultSatelliteBySatelliteId: function (
     satelliteId: number,
     useDefaultAppConfigIfExists: boolean
-  ): Promise<string> {
+  ): Promise<DefaultSatelliteType | null> {
     return ipcRenderer.invoke("getDefaultSatelliteBySatelliteId", satelliteId, useDefaultAppConfigIfExists);
   },
 
@@ -383,6 +391,9 @@ const apiHandler = {
     }
   },
 };
+
+// レンダラ側で呼び出すAPIの型定義
+export type ApiHandler = typeof apiHandler;
 
 // rendererプロセスに公開（アプリ関係）
 contextBridge.exposeInMainWorld("rstApi", apiHandler);

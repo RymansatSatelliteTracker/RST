@@ -14,7 +14,7 @@ export default class StartupService {
     // 設定ファイルの初期化
     AppConfigUtil.init();
 
-    // tle.json -> omm.json への移行(一度限り)
+    // tle.json から omm.json への移行(OMM移行Verの初回起動時の一度限り)
     new OmmService().migrateFromTleJsonIfNeeded();
 
     // OMMの取得
@@ -24,7 +24,7 @@ export default class StartupService {
     const isFrequencyUpdated = await new FrequencyService().saveFrequency();
     AppMainLogger.info(`衛星周波数設定取得処理完了(更新=${isFrequencyUpdated})`);
 
-    await new DefaultSatelliteService().updateDefaultSatelliteService(isFrequencyUpdated);
+    new DefaultSatelliteService().updateDefaultSatelliteService(isFrequencyUpdated);
     AppMainLogger.info("デフォルト衛星定義更新処理完了");
   }
 }

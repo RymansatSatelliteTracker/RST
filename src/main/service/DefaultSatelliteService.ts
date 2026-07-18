@@ -39,7 +39,7 @@ export default class DefaultSatelliteService {
    * @param isFrequencyUpdated
    * @returns
    */
-  public async updateDefaultSatelliteService(isFrequencyUpdated = true): Promise<string> {
+  public updateDefaultSatelliteService(isFrequencyUpdated = true): string {
     // OMMを取得
     const ommItemMap: OmmItemMap = this.getLatestOmm();
 
@@ -49,10 +49,10 @@ export default class DefaultSatelliteService {
     // memo: デフォルト衛星定義ファイルはアプリ起動時に、存在しなければ自動作成されるが、
     //       ユーザ操作での削除を考慮して、ファイルが存在しない場合は初期データを作成する
     if (!fs.existsSync(savePathSat)) {
-      AppConfigUtil.initDefautSatJson();
+      AppConfigUtil.initDefaultSatJson();
     }
 
-    const defaultSatData = FileUtil.readJson(savePathSat);
+    const defaultSatData = FileUtil.readJson(savePathSat) as unknown as { defaultSatellite: DefaultSatelliteModel };
     this.defSatJson = DefaultSatelliteModel.getInitializedModelFromData(defaultSatData.defaultSatellite);
 
     // OMMから情報を取得してデフォルト衛星定義を更新する
@@ -66,7 +66,7 @@ export default class DefaultSatelliteService {
       const savePathFrq = path.join(ElectronUtil.getUserDir(), Constant.Config.FREQUENCY_FILENAME);
       if (fs.existsSync(savePathFrq)) {
         const fileContentFrq = fs.readFileSync(savePathFrq, "utf-8");
-        freqModel = JSON.parse(fileContentFrq);
+        freqModel = JSON.parse(fileContentFrq) as FrequencyModel;
       }
 
       this.defSatJson.updateSatellites(freqModel.frequency.satellites);
@@ -81,7 +81,7 @@ export default class DefaultSatelliteService {
    * 保存済みの衛星識別情報を返却する
    * @returns 衛星識別情報
    */
-  public async getSavedSatelliteIdentifer(): Promise<SatelliteIdentiferType[]> {
+  public getSavedSatelliteIdentifer(): SatelliteIdentiferType[] {
     const ommItemMap: OmmItemMap = this.getLatestOmm();
     // デフォルト衛星定義から衛星識別情報を取得
     const satIdentifer: SatelliteIdentiferType[] = this.defSatJson.getSatelliteIdentifer(ommItemMap);
@@ -95,10 +95,10 @@ export default class DefaultSatelliteService {
    * @param useAppConfigIfExists true:アプリケーション設定にデフォルト設定があれば使用する/false:アプリケーション設定を無視してデフォルト衛星情報を取得する
    * @returns
    */
-  public async getDefaultSatelliteBySatelliteId(
+  public getDefaultSatelliteBySatelliteId(
     satelliteId: number,
     useAppConfigIfExists = true
-  ): Promise<DefaultSatelliteType | null> {
+  ): DefaultSatelliteType | null {
     // デフォルト衛星定義を取得
 
     const defSat: DefaultSatelliteType | null = this.defSatJson.getDefaultSatelliteBySatelliteId(satelliteId);
@@ -154,7 +154,7 @@ export default class DefaultSatelliteService {
    * @param satelliteName
    * @returns satelliteId(更新時は-1)
    */
-  public async addDefaultSatellite(satelliteName: string): Promise<number> {
+  public addDefaultSatellite(satelliteName: string): number {
     const savePathSat = path.join(ElectronUtil.getUserDir(), Constant.Config.DEFAULT_SATELLITE_FILENAME);
     const satelliteId: number = this.defSatJson.addSatellite(satelliteName);
     fs.writeFileSync(savePathSat, this.defSatJson.getJsonString());
@@ -169,7 +169,7 @@ export default class DefaultSatelliteService {
   public async reCreateDefaultSatellite(): Promise<ApiResponse<void>> {
     // デフォルト衛星定義のリフレッシュ
     AppMainLogger.info("デフォルト衛星定義のリフレッシュ 開始");
-    const ret1 = await this.refreshDefaultSatellite();
+    const ret1 = this.refreshDefaultSatellite();
     if (!ret1) {
       return new ApiResponse(false, I18nMsgs.ERR_REFRESH_DEFAULT_SATELLITE);
     }
@@ -190,7 +190,7 @@ export default class DefaultSatelliteService {
 
     // デフォルト衛星定義の更新
     AppMainLogger.info("デフォルト衛星定義の更新 開始");
-    const ret3 = await this.updateDefaultSatelliteService();
+    const ret3 = this.updateDefaultSatelliteService();
     if (!ret3) {
       return new ApiResponse(false, I18nMsgs.ERR_UPDATE_DEFAULT_SATELLITE);
     }
@@ -202,7 +202,7 @@ export default class DefaultSatelliteService {
    * デフォルト衛星定義をリフレッシュする
    * @returns boolean
    */
-  private async refreshDefaultSatellite(): Promise<boolean> {
+  private refreshDefaultSatellite(): boolean {
     // 保持するリストを作成
     const userRegistSatelliteIds = AppConfigUtil.getConfig().satellites.map((sat) => sat.satelliteId);
     const groupRegistSatelliteIds = AppConfigUtil.getConfig()
