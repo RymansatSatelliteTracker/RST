@@ -1,7 +1,8 @@
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import { ApiResponse } from "@/common/types/types";
-import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking";
-import { onMounted, Ref } from "vue";
+import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import type { ApiResponse } from "@/common/types/types.js";
+import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking.js";
+import type { Ref } from "vue";
+import { onMounted } from "vue";
 
 /**
  * ローテーター監視関係のフック

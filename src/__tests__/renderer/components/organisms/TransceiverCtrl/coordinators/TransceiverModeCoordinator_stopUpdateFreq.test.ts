@@ -1,10 +1,9 @@
-import CommonUtil from "@/common/CommonUtil";
-import Constant from "@/common/Constant";
-import TransceiverModeCoordinator, {
-  ModeCoordinatorState,
-} from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator";
-import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
-import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
+import CommonUtil from "@/common/CommonUtil.js";
+import Constant from "@/common/Constant.js";
+import type { ModeCoordinatorState } from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator.js";
+import TransceiverModeCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator.js";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
+import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver.js";
 import { ref } from "vue";
 
 const createState = (): ModeCoordinatorState => ({
@@ -39,12 +38,12 @@ const createCoordinator = (): TransceiverModeCoordinator => {
 
 describe("TransceiverModeCoordinator.stopUpdateFreq", () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("タイマID未設定の場合、falseを返すこと", async () => {
     const coordinator = createCoordinator();
-    const sleepSpy = jest.spyOn(CommonUtil, "sleep").mockResolvedValue();
+    const sleepSpy = vi.spyOn(CommonUtil, "sleep").mockResolvedValue();
 
     const result = await coordinator.stopUpdateFreq();
 
@@ -54,8 +53,8 @@ describe("TransceiverModeCoordinator.stopUpdateFreq", () => {
 
   it("タイマID設定済みの場合、停止してtrueを返すこと", async () => {
     const coordinator = createCoordinator();
-    const sleepSpy = jest.spyOn(CommonUtil, "sleep").mockResolvedValue();
-    const clearIntervalSpy = jest.spyOn(global, "clearInterval");
+    const sleepSpy = vi.spyOn(CommonUtil, "sleep").mockResolvedValue();
+    const clearIntervalSpy = vi.spyOn(global, "clearInterval");
     const timerId = setInterval(() => {}, 1000);
     coordinator.setTimerId(timerId);
 

@@ -3,12 +3,12 @@
     <span
       v-for="(digit, index) in mHzDigits"
       :key="index"
+      :class="{ hovered: hoverIndex === index, grayed: isGrayed(index) }"
       @wheel.passive="(event) => handleWheel(event, index)"
       @contextmenu.prevent="() => handleRightClick(index)"
       @click="handleClick(index)"
       @mouseover="hoverIndex = index"
       @mouseleave="hoverIndex = null"
-      :class="{ hovered: hoverIndex === index, grayed: isGrayed(index) }"
     >
       {{ digit }}
     </span>
@@ -16,12 +16,12 @@
     <span
       v-for="(digit, index) in kHzDigits"
       :key="index + mHzDigits.length"
+      :class="{ hovered: hoverIndex === index + mHzDigits.length, grayed: isGrayed(index + mHzDigits.length) }"
       @wheel.passive="(event) => handleWheel(event, index + mHzDigits.length)"
       @contextmenu.prevent="() => handleRightClick(index + mHzDigits.length)"
       @click="handleClick(index + mHzDigits.length)"
       @mouseover="hoverIndex = index + mHzDigits.length"
       @mouseleave="hoverIndex = null"
-      :class="{ hovered: hoverIndex === index + mHzDigits.length, grayed: isGrayed(index + mHzDigits.length) }"
     >
       {{ digit }}
     </span>
@@ -29,15 +29,15 @@
     <span
       v-for="(digit, index) in hzDigits"
       :key="index + mHzDigits.length + kHzDigits.length"
+      :class="{
+        hovered: hoverIndex === index + mHzDigits.length + kHzDigits.length,
+        grayed: isGrayed(index + mHzDigits.length + kHzDigits.length),
+      }"
       @wheel.passive="(event) => handleWheel(event, index + mHzDigits.length + kHzDigits.length)"
       @contextmenu.prevent="() => handleRightClick(index + mHzDigits.length + kHzDigits.length)"
       @click="handleClick(index + mHzDigits.length + kHzDigits.length)"
       @mouseover="hoverIndex = index + mHzDigits.length + kHzDigits.length"
       @mouseleave="hoverIndex = null"
-      :class="{
-        hovered: hoverIndex === index + mHzDigits.length + kHzDigits.length,
-        grayed: isGrayed(index + mHzDigits.length + kHzDigits.length),
-      }"
     >
       {{ digit }}
     </span>
@@ -47,8 +47,8 @@
 </template>
 
 <script setup lang="ts">
-import TransceiverUtil from "@/common/util/TransceiverUtil";
-import useFrequencySelect from "./useFrequencySelect";
+import TransceiverUtil from "@/common/util/TransceiverUtil.js";
+import useFrequencySelect from "./useFrequencySelect.js";
 
 // frequencyを取得する
 const frequency = defineModel<string>("frequency", { required: true });
@@ -91,5 +91,5 @@ function handleClick(index: number) {
 </script>
 
 <style lang="scss" scoped>
-@import "./FrequencySelect.scss";
+@use "./FrequencySelect" as *;
 </style>

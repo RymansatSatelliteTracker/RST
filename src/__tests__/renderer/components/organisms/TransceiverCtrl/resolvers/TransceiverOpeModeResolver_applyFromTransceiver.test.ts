@@ -1,11 +1,10 @@
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import { ApiResponse } from "@/common/types/types";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import TransceiverOpeModeResolver, {
-  OpeModeResolverState,
-} from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver";
-import emitter from "@/renderer/util/EventBus";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import type { ApiResponse } from "@/common/types/types.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import type { OpeModeResolverState } from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver.js";
+import TransceiverOpeModeResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver.js";
+import emitter from "@/renderer/util/EventBus.js";
 import { ref } from "vue";
 
 const createState = (): OpeModeResolverState => ({
@@ -15,7 +14,7 @@ const createState = (): OpeModeResolverState => ({
 
 describe("TransceiverOpeModeResolver.applyFromTransceiver", () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("受信失敗時は通知してTx/Rx運用モードをUNSETに戻すこと", () => {
@@ -23,8 +22,8 @@ describe("TransceiverOpeModeResolver.applyFromTransceiver", () => {
     state.txOpeMode.value = Constant.Transceiver.OpeMode.FM;
     state.rxOpeMode.value = Constant.Transceiver.OpeMode.FM;
     const resolver = new TransceiverOpeModeResolver(state);
-    jest.spyOn(I18nUtil, "getMsg").mockReturnValue("mocked notice");
-    const emitSpy = jest.spyOn(emitter, "emit").mockImplementation(() => {});
+    vi.spyOn(I18nUtil, "getMsg").mockReturnValue("mocked notice");
+    const emitSpy = vi.spyOn(emitter, "emit").mockImplementation(() => {});
     const res = {
       status: false,
       message: I18nMsgs.SERIAL_NOT_CONNECTED_TRANSCEIVER,

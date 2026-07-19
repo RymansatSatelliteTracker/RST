@@ -2,7 +2,7 @@
  * 定数
  */
 export default class Constant {
-  public static readonly appVersion = "v0.1.4e";
+  public static readonly appVersion = "v0.1.4f";
 
   /**
    * ロガー関係
@@ -65,12 +65,21 @@ export default class Constant {
    */
   public static readonly Tle = class {
     // TLEファイル名
+    // memo: omm.json移行のため新規書き込みはしないが、移行処理での読み込みに使用する
     static readonly TLE_FILENAME = "tle.json";
     // TLE取得を許可する時間差
     // memo: celestrak.orgに連続アクセスすると403を返すため、以下時間をおいて取得を行う
     static readonly TLE_GET_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6時間
     // TLEの有効期限日数
     static readonly TLE_EXPIRATION_DAYS = 7;
+  };
+
+  /**
+   * OMM関係
+   */
+  public static readonly Omm = class {
+    // OMMファイル名
+    static readonly OMM_FILENAME = "omm.json";
   };
 
   /**
@@ -139,6 +148,10 @@ export default class Constant {
    * 表示設定関係
    */
   public static readonly Display = class {
+    // 地図範囲外へのドラッグ可能範囲(緯度)[単位:度]
+    static readonly LATITUDE_DRAG_RANGE_DEGREES = 120.0;
+    // 地図範囲外へのドラッグ可能範囲(経度)[単位:度]
+    static readonly LONGITUDE_DRAG_RANGE_DEGREES = 120.0;
     // 地上局のマーカーの大きさ(半径)
     static readonly GROUNDSTATION_MARKER_RADIUS = 6;
     // 地上局1のマーカー色
@@ -270,7 +283,9 @@ export default class Constant {
 
     // ドップラーシフトが有効となるパス前後の追加時間範囲[単位:秒]
     static readonly DOPPLER_SHIFT_RANGE_SEC = 60;
-    // 周波数データ(トランシーブ)受信時の待機時間[単位:ミリ秒]
+    // 無線機操作後のドップラーシフト再開時間[単位:ミリ秒]
+    static readonly DEFAULT_DOPPLER_SHIFT_RESUME_MS = 2000;
+    // 周波数データ(トランシーブ)受信時のデフォルト待機時間[単位:ミリ秒]
     static readonly TRANSCEIVE_WAIT_MS = 2000;
     // 運用モード(トランシーブ)受信時の待機時間[単位:ミリ秒]
     static readonly TRANSCEIVE_MODE_WAIT_MS = 5000;

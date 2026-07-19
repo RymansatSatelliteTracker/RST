@@ -1,7 +1,7 @@
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import GroundStationService from "@/renderer/service/GroundStationService";
-import OverlapPassesService from "@/renderer/service/OverlapPassesService";
-import SatelliteService from "@/renderer/service/SatelliteService";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import GroundStationService from "@/renderer/service/GroundStationService.js";
+import OverlapPassesService from "@/renderer/service/OverlapPassesService.js";
+import type SatelliteService from "@/renderer/service/SatelliteService.js";
 
 /**
  * 地上局サービスファクトリ

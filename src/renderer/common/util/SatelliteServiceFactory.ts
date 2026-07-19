@@ -1,5 +1,5 @@
-import ApiActiveSat from "@/renderer/api/ApiActiveSat";
-import SatelliteService from "@/renderer/service/SatelliteService";
+import ApiActiveSat from "@/renderer/api/ApiActiveSat.js";
+import SatelliteService from "@/renderer/service/SatelliteService.js";
 
 /**
  * 衛星サービスファクトリ
@@ -11,11 +11,11 @@ export default class SatelliteServiceFactory {
    */
   public static async createByActiveSat(): Promise<SatelliteService | null> {
     const satGrp = await ApiActiveSat.getActiveSatelliteGroup();
-    if (!satGrp || !satGrp.mainSattelliteTle) {
+    if (!satGrp || !satGrp.mainSatelliteOmm) {
       return null;
     }
 
-    return new SatelliteService(satGrp.mainSattelliteTle);
+    return new SatelliteService(satGrp.mainSatelliteOmm);
   }
 
   /**
@@ -25,15 +25,15 @@ export default class SatelliteServiceFactory {
   public static async createBySatGroup(withActiveSat: boolean = true): Promise<SatelliteService[]> {
     // 更新された衛星グループ情報を取得
     const satGrp = await ApiActiveSat.getActiveSatelliteGroup();
-    if (!satGrp || !satGrp.mainSattelliteTle) {
+    if (!satGrp || !satGrp.mainSatelliteOmm) {
       return [];
     }
 
-    // 衛星グループ内の衛星のTLEを元に人工衛星クラスを生成する
+    // 衛星グループ内の衛星のOMMを元に人工衛星クラスを生成する
     const satServices: SatelliteService[] = [];
     for (let ii = 0; ii < satGrp.activeSatellites.length; ii++) {
       const activeSat = satGrp.activeSatellites[ii];
-      if (!activeSat.tle) {
+      if (!activeSat.omm) {
         continue;
       }
 
@@ -42,7 +42,7 @@ export default class SatelliteServiceFactory {
         continue;
       }
 
-      satServices.push(new SatelliteService(activeSat.tle));
+      satServices.push(new SatelliteService(activeSat.omm));
     }
 
     return satServices;

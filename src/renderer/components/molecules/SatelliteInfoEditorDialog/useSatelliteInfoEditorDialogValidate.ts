@@ -1,7 +1,7 @@
-import I18nMsgs from "@/common/I18nMsgs";
-import { useValidate } from "@/renderer/common/hook/useValidate";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { useValidate } from "@/renderer/common/hook/useValidate.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import type SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm.js";
 import * as zod from "zod";
 
 // 最大周波数

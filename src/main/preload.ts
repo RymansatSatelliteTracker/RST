@@ -1,20 +1,28 @@
-import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel";
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import {
+import type { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
+import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import type {
+  AppConfigMainDisplay,
   AppConfigModel,
   AppConfigRotator,
   AppConfigSatellite,
   AppConfigTransceiver,
-} from "@/common/model/AppConfigModel";
-import { AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel";
-import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
-import { AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel";
-import { FrequencyModel } from "@/common/model/FrequencyModel";
-import { MessageModel } from "@/common/model/MessageModel";
-import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
-import { ApiResponse, LangType } from "@/common/types/types";
-import type { TleStrings } from "@/renderer/types/satellite-type";
-import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";
+} from "@/common/model/AppConfigModel.js";
+import type { AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel.js";
+import type { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import type { AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel.js";
+import type { FrequencyModel } from "@/common/model/FrequencyModel.js";
+import type { MessageModel } from "@/common/model/MessageModel.js";
+import type { OmmItem } from "@/common/model/OmmModel.js";
+import type {
+  DefaultSatelliteType,
+  DownlinkType,
+  SatelliteIdentiferType,
+  UplinkType,
+} from "@/common/types/satelliteSettingTypes.js";
+import type { ApiResponse, LangType } from "@/common/types/types.js";
+import EnvUtil from "@/common/util/EnvUtil.js";
+import type { IpcRendererEvent } from "electron";
+import { contextBridge, ipcRenderer } from "electron";
 import path from "path";
 /**
  * ここにレンダラに公開するAPIを定義する
@@ -39,6 +47,13 @@ const apiHandler = {
    */
   getAppConfigSatSetting: function (): Promise<AppConfigSatSettingModel> {
     return ipcRenderer.invoke("getAppConfigSatSetting");
+  },
+
+  /**
+   * メイン表示する衛星グループ、衛星ID情報を返す
+   */
+  getAppConfigMainDisplay: function (): Promise<AppConfigMainDisplay> {
+    return ipcRenderer.invoke("getAppConfigMainDisplay");
   },
 
   /**
@@ -95,7 +110,7 @@ const apiHandler = {
    * 衛星識別情報を返す
    * 呼び出し例）const ret = await window.rstApi.getSavedSatelliteIdentifer();
    */
-  getSavedSatelliteIdentifer: function (): Promise<string> {
+  getSavedSatelliteIdentifer: function (): Promise<SatelliteIdentiferType[]> {
     return ipcRenderer.invoke("getSavedSatelliteIdentifer");
   },
 
@@ -122,7 +137,7 @@ const apiHandler = {
   getDefaultSatelliteBySatelliteId: function (
     satelliteId: number,
     useDefaultAppConfigIfExists: boolean
-  ): Promise<string> {
+  ): Promise<DefaultSatelliteType | null> {
     return ipcRenderer.invoke("getDefaultSatelliteBySatelliteId", satelliteId, useDefaultAppConfigIfExists);
   },
 
@@ -143,11 +158,11 @@ const apiHandler = {
   },
 
   /**
-   * 指定のNORAD IDのTLEを返す
-   * 呼び出し例）const ret = await window.rstApi.getTlesByNoradIds(["xxx", "yyy"]);
+   * 指定のNORAD IDの軌道要素データをOMMで返す
+   * 呼び出し例）const ret = await window.rstApi.getOmmsByNoradIds(["xxx", "yyy"]);
    */
-  getTlesByNoradIds: function (noradIds: string): Promise<TleStrings[]> {
-    return ipcRenderer.invoke("getTlesByNoradIds", noradIds);
+  getOmmsByNoradIds: function (noradIds: string): Promise<OmmItem[]> {
+    return ipcRenderer.invoke("getOmmsByNoradIds", noradIds);
   },
 
   /**
@@ -349,11 +364,11 @@ const apiHandler = {
     });
   },
   /**
-   * URLから読み込み可能なTLEが取得できるか確認する
-   * 呼び出し例）const canGet = await window.rstApi.canGetValidTle(url);
+   * URLから読み込み可能な軌道要素データが取得できるか確認する
+   * 呼び出し例）const canGet = await window.rstApi.canGetValidOmm(url);
    */
-  canGetValidTle: function (url: string): Promise<boolean> {
-    return ipcRenderer.invoke("canGetValidTle", url);
+  canGetValidOmm: function (url: string): Promise<boolean> {
+    return ipcRenderer.invoke("canGetValidOmm", url);
   },
   /**
    * 通知メッセージイベント
@@ -372,7 +387,7 @@ const apiHandler = {
    */
   getTilesPath: () => {
     // 開発環境かビルド環境かで地図タイルのパスを切り替える
-    if (process.env.npm_lifecycle_event === "app:dev") {
+    if (EnvUtil.isDev()) {
       // 開発環境ではpublicフォルダのtilesを参照する
       return "/tiles";
     } else {
@@ -381,6 +396,9 @@ const apiHandler = {
     }
   },
 };
+
+// レンダラ側で呼び出すAPIの型定義
+export type ApiHandler = typeof apiHandler;
 
 // rendererプロセスに公開（アプリ関係）
 contextBridge.exposeInMainWorld("rstApi", apiHandler);

@@ -1,5 +1,5 @@
-import AstronomyUtil from "@/renderer/util/AstronomyUtil";
-import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil";
+import AstronomyUtil from "@/renderer/util/AstronomyUtil.js";
+import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil.js";
 import { onMounted, onUnmounted, ref, watch, type Ref } from "vue";
 
 /**

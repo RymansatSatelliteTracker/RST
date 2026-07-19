@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-dialog max-width="900" v-model="isShow" persistent>
+    <v-dialog v-model="isShow" max-width="900" persistent>
       <v-card color="grey-darken-4" class="pa-4 dialog-height">
         <!-- タブ設定 -->
         <v-tabs v-model="tab">
@@ -22,16 +22,16 @@
             <v-tabs-window-item value="displaySatellite">
               <DisplaySatelliteTab
                 v-show="apiConfigData.satelliteGroupsForSatSetting"
-                v-model:satelliteGroups="apiConfigData.satelliteGroupsForSatSetting"
+                v-model:satellite-groups="apiConfigData.satelliteGroupsForSatSetting"
               />
             </v-tabs-window-item>
 
             <!-- TLE読み込み -->
             <v-tabs-window-item value="loadTLE">
               <LoadTLETab
-                ref="loadTLETabRef"
                 v-show="apiConfigData.tle.urls"
-                v-model:tleUrls="apiConfigData.tle.urls"
+                ref="loadTLETabRef"
+                v-model:tle-urls="apiConfigData.tle.urls"
               />
             </v-tabs-window-item>
 
@@ -39,15 +39,15 @@
             <v-tabs-window-item value="otherSetting">
               <OtherSettingTab
                 v-show="apiConfigData.satelliteSetting"
-                v-model:satelliteSetting="apiConfigData.satelliteSetting"
+                v-model:satellite-setting="apiConfigData.satelliteSetting"
               />
             </v-tabs-window-item>
           </v-tabs-window>
         </v-card-text>
 
         <v-card-actions>
-          <v-btn @click="onOk" variant="outlined" size="large">{{ I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_OK) }}</v-btn>
-          <v-btn @click="onCancel" variant="outlined" size="large" class="ml-5">{{
+          <v-btn variant="outlined" size="large" @click="onOk">{{ I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_OK) }}</v-btn>
+          <v-btn variant="outlined" size="large" class="ml-5" @click="onCancel">{{
             I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_CANCEL)
           }}</v-btn>
         </v-card-actions>
@@ -56,20 +56,20 @@
   </div>
 </template>
 <script setup lang="ts">
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import DisplaySatelliteTab from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/DisplaySatelliteTab.vue";
 import LoadTLETab from "@/renderer/components/organisms/setting/SatelliteSetting/LoadTLE/LoadTLETab.vue";
 import OtherSettingTab from "@/renderer/components/organisms/setting/SatelliteSetting/OtherSetting/OtherSettingTab.vue";
-import emitter from "@/renderer/util/EventBus";
+import emitter from "@/renderer/util/EventBus.js";
 
-import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
-import { ApiResponse } from "@/common/types/types";
-import ApiActiveSat from "@/renderer/api/ApiActiveSat";
-import ApiConfig from "@/renderer/api/ApiAppConfig";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import AppRendererLogger from "@/renderer/util/AppRendererLogger";
+import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import type { ApiResponse } from "@/common/types/types.js";
+import ApiActiveSat from "@/renderer/api/ApiActiveSat.js";
+import ApiConfig from "@/renderer/api/ApiAppConfig.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
 import { nextTick, onMounted, ref, toRaw } from "vue";
 
 // タブの状態を管理するref
@@ -151,7 +151,10 @@ async function getAppConfig() {
  */
 async function updateAppConfig(isTleUpdated: boolean) {
   // 次のgetAppConfigすると値が変わってしまうのでdeepcopyする
-  const outputData: AppConfigSatSettingModel = JSON.parse(JSON.stringify(toRaw(apiConfigData.value)));
+  const outputData: AppConfigSatSettingModel = JSON.parse(
+    JSON.stringify(toRaw(apiConfigData.value))
+  ) as AppConfigSatSettingModel;
+
   // satellites配下が変わることがあるので最新のアプリケーション設定を取得
   const appConfig = await ApiConfig.getAppConfigSatSetting();
   // 表示衛星画面用
@@ -181,5 +184,5 @@ async function updateAppConfig(isTleUpdated: boolean) {
 }
 </script>
 <style lang="scss" scoped>
-@import "./SatelliteSetting.scss";
+@use "./SatelliteSetting" as *;
 </style>

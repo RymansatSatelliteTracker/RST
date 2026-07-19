@@ -1,4 +1,4 @@
-import CommonUtil from "@/common/CommonUtil";
+import CommonUtil from "@/common/CommonUtil.js";
 
 /**
  * CommonUtil.isNumberのテスト
@@ -7,7 +7,7 @@ describe("CommonUtil.isNumber", () => {
   /**
    * ブランク
    */
-  test("empty", () => {
+  it("empty", () => {
     const result = CommonUtil.isNumber("");
     expect(result).toBe(false);
   });
@@ -15,7 +15,7 @@ describe("CommonUtil.isNumber", () => {
   /**
    * null
    */
-  test("null", () => {
+  it("null", () => {
     const result = CommonUtil.isNumber(null);
     expect(result).toBe(false);
   });
@@ -23,7 +23,7 @@ describe("CommonUtil.isNumber", () => {
   /**
    * undefined
    */
-  test("undefined", () => {
+  it("undefined", () => {
     const result = CommonUtil.isNumber(undefined);
     expect(result).toBe(false);
   });
@@ -31,7 +31,7 @@ describe("CommonUtil.isNumber", () => {
   /**
    * テキスト
    */
-  test("text", () => {
+  it("text", () => {
     const result = CommonUtil.isNumber("テキスト");
     expect(result).toBe(false);
   });
@@ -39,32 +39,32 @@ describe("CommonUtil.isNumber", () => {
   /**
    * 数値
    */
-  test("number0", () => {
+  it("number0", () => {
     const result = CommonUtil.isNumber(0);
     expect(result).toBe(true);
   });
 
-  test("number1", () => {
+  it("number1", () => {
     const result = CommonUtil.isNumber(1);
     expect(result).toBe(true);
   });
 
-  test("number1_1", () => {
+  it("number1_1", () => {
     const result = CommonUtil.isNumber(1.1);
     expect(result).toBe(true);
   });
 
-  test("numberMinus1_1", () => {
+  it("numberMinus1_1", () => {
     const result = CommonUtil.isNumber(1.1);
     expect(result).toBe(true);
   });
 
-  test("numberMinus1", () => {
+  it("numberMinus1", () => {
     const result = CommonUtil.isNumber(-1);
     expect(result).toBe(true);
   });
 
-  test("numberMinus0", () => {
+  it("numberMinus0", () => {
     const result = CommonUtil.isNumber(-0);
     expect(result).toBe(true);
   });

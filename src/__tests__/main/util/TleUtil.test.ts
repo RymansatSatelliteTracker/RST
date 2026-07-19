@@ -1,4 +1,4 @@
-import TleUtil from "@/main/util/TleUtil";
+import TleUtil from "@/main/util/TleUtil.js";
 
 /**
  * [正常系]

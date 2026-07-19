@@ -1,4 +1,4 @@
-import RotatorConnForm from "@/renderer/components/organisms/setting/RotatorSetting/RotatorConn/RotatorConnForm";
+import RotatorConnForm from "@/renderer/components/organisms/setting/RotatorSetting/RotatorConn/RotatorConnForm.js";
 
 /**
  * ローテーター設定フォーム

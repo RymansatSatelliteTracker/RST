@@ -1,10 +1,10 @@
-import CommonUtil from "@/common/CommonUtil";
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import { ApiResponse } from "@/common/types/types";
-import SerialComm from "@/main/common/SerialComm";
-import RotatorControllerBase from "@/main/service/rotator/controller/RotatorControllerBase";
-import RspUsbAntennaIoConverter from "@/main/service/rotator/controller/RspUsbAntennaIoConverter";
-import AppMainLogger from "@/main/util/AppMainLogger";
+import CommonUtil from "@/common/CommonUtil.js";
+import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import { ApiResponse } from "@/common/types/types.js";
+import SerialComm from "@/main/common/SerialComm.js";
+import RotatorControllerBase from "@/main/service/rotator/controller/RotatorControllerBase.js";
+import RspUsbAntennaIoConverter from "@/main/service/rotator/controller/RspUsbAntennaIoConverter.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
 
 // アンテナを動かす間隔（ミリ秒）
 const ANTENNA_MOVE_INTERVAL = 2000;

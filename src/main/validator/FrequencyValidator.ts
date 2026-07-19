@@ -1,5 +1,5 @@
-import I18nMsgs from "@/common/I18nMsgs";
-import ValidatorResultModel from "@/main/common/model/ValidatorResultModel";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import ValidatorResultModel from "@/main/common/model/ValidatorResultModel.js";
 import * as zod from "zod";
 
 /**

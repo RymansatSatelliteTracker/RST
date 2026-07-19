@@ -1,4 +1,4 @@
-import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
 
 describe("TransceiverBaseFreqMgr.getPlainBaseFreqs", () => {
   it("初期状態ではTx/Rx基準周波数が0であること", () => {

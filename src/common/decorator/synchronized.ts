@@ -1,4 +1,4 @@
-import { Mutex } from "@/common/util/Mutex";
+import { Mutex } from "@/common/util/Mutex.js";
 
 /**
  * デコレータ／function、メソッドの排他制御

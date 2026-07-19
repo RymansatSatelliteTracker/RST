@@ -1,4 +1,4 @@
-import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
 
 describe("TransceiverBaseFreqMgr.updatePlainBaseFreq", () => {
   it("文字列周波数を数値へ反映できること", () => {

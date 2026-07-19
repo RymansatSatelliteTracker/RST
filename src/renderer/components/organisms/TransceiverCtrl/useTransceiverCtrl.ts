@@ -1,23 +1,25 @@
-import Constant from "@/common/Constant";
-import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
-import { ApiResponse } from "@/common/types/types";
-import TransceiverUtil from "@/common/util/TransceiverUtil";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import ApiTransceiver from "@/renderer/api/ApiTransceiver";
-import TransceiverDopplerWaitCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverDopplerWaitCoordinator";
-import TransceiverFreqCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverFreqCoordinator";
-import TransceiverModeCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator";
-import TransceiverSyncCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverSyncCoordinator";
-import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
-import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
-import TransceiverModeStateResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeStateResolver";
-import TransceiverOpeModeResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver";
-import TransceiverRecvFreqResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverRecvFreqResolver";
-import { useModeStateManager } from "@/renderer/components/organisms/TransceiverCtrl/useSatelliteModeStateManager";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
-import AppRendererLogger from "@/renderer/util/AppRendererLogger";
-import { onMounted, ref, Ref, watch } from "vue";
+import Constant from "@/common/Constant.js";
+import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import type { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
+import type { ApiResponse } from "@/common/types/types.js";
+import TransceiverUtil from "@/common/util/TransceiverUtil.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
+import TransceiverDopplerWaitCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverDopplerWaitCoordinator.js";
+import TransceiverFreqCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverFreqCoordinator.js";
+import TransceiverModeCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator.js";
+import TransceiverSyncCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverSyncCoordinator.js";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
+import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver.js";
+import TransceiverModeStateResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeStateResolver.js";
+import TransceiverOpeModeResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver.js";
+import TransceiverRecvFreqResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverRecvFreqResolver.js";
+import { useModeStateManager } from "@/renderer/components/organisms/TransceiverCtrl/useSatelliteModeStateManager.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
+import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
+import type { Ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 
 /**
  * 無線機を制御する
@@ -119,10 +121,11 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * 周波数更新インターバルを開始する
    * @param {number} intervalMs 時間間隔[単位：ミリ秒]
    */
-  function startUpdateFreqInterval(intervalMs: number) {
+  async function startUpdateFreqInterval(intervalMs: number) {
+    const appConfig = await ApiAppConfig.getAppConfig();
     coordinator.setTimerId(
       setInterval(async () => {
-        await updateFreq();
+        await updateFreq(appConfig);
       }, intervalMs)
     );
   }
@@ -180,7 +183,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       resetFreqAdj();
     }
 
-    isBeaconModeAvailable.value = await confirmBeaconModeAvailable();
+    isBeaconModeAvailable.value = confirmBeaconModeAvailable();
 
     // Autoモード中の場合は、新しい衛星であらためてAutoモードを開始する
     if (autoStore.tranceiverAuto) {
@@ -190,9 +193,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
   /**
    * ビーコンモードが利用可能かどうかを確認する
-   * @returns {Promise<boolean>} ビーコンモードが利用可能かどうか
+   * @returns {boolean} ビーコンモードが利用可能かどうか
    */
-  async function confirmBeaconModeAvailable(): Promise<boolean> {
+  function confirmBeaconModeAvailable(): boolean {
     // アクティブ衛星の周波数/運用モードを取得
     const transceiverSetting = ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
 
@@ -443,14 +446,14 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   /**
    * 周波数の更新を行う
    */
-  async function updateFreq() {
+  async function updateFreq(appConfig: AppConfigModel) {
     // Autoモード中でない場合は何もしない
     if (!autoStore.tranceiverAuto) {
       return;
     }
 
     // 人工衛星がドップラーシフトが有効となる範囲外の場合は処理終了
-    if (!(await freqCoordinator.isWithinDopplerShiftActiveRange())) {
+    if (!(await freqCoordinator.isWithinDopplerShiftActiveRange(appConfig))) {
       return;
     }
 
@@ -526,19 +529,21 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     ActiveSatServiceHub.getInstance().addOnChangeActiveSat(onChangeSatGrp);
 
     // 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機する
-    ApiTransceiver.dopplerShiftWaitingCallback((res: ApiResponse<boolean>) => {
-      dopplerWaitCoordinator.setupWaiting(res);
+    void ApiTransceiver.dopplerShiftWaitingCallback((res: ApiResponse<boolean>) => {
+      dopplerWaitCoordinator.setupWaiting(res).catch((error: unknown) => {
+        AppRendererLogger.error(`ドップラーシフト待機設定に失敗しました。${String(error)}`);
+      });
     });
 
     // 無線機で周波数が変更された場合
-    ApiTransceiver.onChangeTransceiverFrequency(async (res: ApiResponse<UplinkType | DownlinkType>) => {
+    void ApiTransceiver.onChangeTransceiverFrequency(async (res: ApiResponse<UplinkType | DownlinkType>) => {
       // Tx、またはRxの周波数をRST側に反映する
       await recvFreqResolver.applyFromTransceiver(res);
     });
 
     // 無線機の運用モードのイベントハンドラ
     // 受信した無線機の運用モードでtxOpeMode,rxOpeModeを更新する
-    ApiTransceiver.onChangeTransceiverMode((res: ApiResponse<UplinkType | DownlinkType>) => {
+    void ApiTransceiver.onChangeTransceiverMode((res: ApiResponse<UplinkType | DownlinkType>) => {
       // 受信処理スキップ状態の場合は処理を終了する（AutoOn処理中のモード変更などにおける無線機からの不要なデータ受信を無視する）
       if (coordinator.isRecvProcSkip) {
         return;
@@ -548,7 +553,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     });
 
     // 無線機周波数保存イベントを受けて設定ファイルに現在の無線機周波数を保存する
-    ApiTransceiver.onSaveTransceiverFrequency(async () => {
+    void ApiTransceiver.onSaveTransceiverFrequency(async () => {
       const config = await ApiAppConfig.getAppConfig();
       config.transceiver.txFrequency = txFrequency.value;
       config.transceiver.rxFrequency = rxFrequency.value;

@@ -1,10 +1,9 @@
-import Constant from "@/common/Constant";
-import TransceiverModeCoordinator, {
-  ModeCoordinatorState,
-} from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator";
-import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
-import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
+import Constant from "@/common/Constant.js";
+import type { ModeCoordinatorState } from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator.js";
+import TransceiverModeCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator.js";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
+import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
 import { ref } from "vue";
 
 const createState = (): ModeCoordinatorState => ({
@@ -39,12 +38,12 @@ const createCoordinator = (): TransceiverModeCoordinator => {
 
 describe("TransceiverModeCoordinator.syncCurrentNoradIdFromActiveSat", () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("アクティブ衛星がある場合、初回true、同一NoradIdでfalseを返すこと", () => {
     const coordinator = createCoordinator();
-    jest.spyOn(ActiveSatServiceHub, "getInstance").mockReturnValue({
+    vi.spyOn(ActiveSatServiceHub, "getInstance").mockReturnValue({
       getSatService: () => ({ getNoradId: () => "25544" }),
     } as never);
 
@@ -58,7 +57,7 @@ describe("TransceiverModeCoordinator.syncCurrentNoradIdFromActiveSat", () => {
   it("アクティブ衛星ありから未設定へ遷移した場合、trueを返すこと", () => {
     const coordinator = createCoordinator();
     let satService: { getNoradId: () => string } | null = { getNoradId: () => "25544" };
-    jest.spyOn(ActiveSatServiceHub, "getInstance").mockReturnValue({
+    vi.spyOn(ActiveSatServiceHub, "getInstance").mockReturnValue({
       getSatService: () => satService,
     } as never);
 

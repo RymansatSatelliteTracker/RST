@@ -1,4 +1,4 @@
-import { TleStrings } from "@/renderer/types/satellite-type";
+import type { OmmItem } from "@/common/model/OmmModel.js";
 
 /**
  * アクティブ衛星グループモデル
@@ -13,8 +13,8 @@ export class ActiveSatelliteGroupModel {
   // メイン表示中の衛星ID
   public mainSatelliteId = -1;
 
-  // メイン表示中の衛星のTLE
-  public mainSattelliteTle: TleStrings | null = null;
+  // メイン表示中の衛星のOMM
+  public mainSatelliteOmm: OmmItem | null = null;
 }
 
 /**
@@ -27,6 +27,6 @@ export class ActiveSatelliteModel {
   // 衛星名
   public satelliteName = "";
 
-  // TLE設定
-  public tle: TleStrings | null = null;
+  // OMM設定
+  public omm: OmmItem | null = null;
 }

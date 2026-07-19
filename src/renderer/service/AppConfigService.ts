@@ -1,5 +1,5 @@
-import { AppConfigModel } from "@/common/model/AppConfigModel";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
+import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 
 /**
  * アプリケーション設定サービス

@@ -1,4 +1,4 @@
-import { getMainWindow } from "@/main/main";
+import { getMainWindow } from "@/main/main.js";
 
 /**
  * ローテータのシリアルヘルパー

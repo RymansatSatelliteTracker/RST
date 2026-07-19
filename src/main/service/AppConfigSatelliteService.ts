@@ -1,11 +1,11 @@
-import I18nMsgs from "@/common/I18nMsgs";
-import { AppConfigSatellite } from "@/common/model/AppConfigModel";
-import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
-import { ApiResponse } from "@/common/types/types";
-import DefaultSatelliteService from "@/main/service/DefaultSatelliteService";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
-import { FileTransaction } from "@/main/util/FileTransaction";
-import FileUtil from "@/main/util/FileUtil";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { AppConfigSatellite } from "@/common/model/AppConfigModel.js";
+import type { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import { ApiResponse } from "@/common/types/types.js";
+import DefaultSatelliteService from "@/main/service/DefaultSatelliteService.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import { FileTransaction } from "@/main/util/FileTransaction.js";
+import FileUtil from "@/main/util/FileUtil.js";
 
 /**
  * アプリケーション設定衛星サービス
@@ -43,7 +43,7 @@ export default class AppConfigSatelliteService {
   /**
    * 衛星設定を保存する
    * @param config
-   * @param isTLEUpdate TLE更新の場合はtrue
+   * @param isTleUpdate TLE更新の場合はtrue
    */
   public async store(config: AppConfigSatSettingModel, isTleUpdate: boolean = false): Promise<ApiResponse<void>> {
     // アプリケーション設定ファイルはユーザが直接編集する可能性があるため、ロックされている場合は更新しない
@@ -60,6 +60,7 @@ export default class AppConfigSatelliteService {
     // default衛星更新中にエラーになると衛星設定だけが更新された状態になるため一時保存しておく
     transaction.update(config);
 
+    // デフォルト衛星定義を一度リフレッシュして作り直す
     const res = await new DefaultSatelliteService().reCreateDefaultSatellite();
     if (!res.status) {
       transaction.rollback();

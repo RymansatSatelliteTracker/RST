@@ -1,8 +1,8 @@
-import { AppConfigRotator } from "@/common/model/AppConfigModel";
-import RotatorHelper from "@/common/util/RotatorHelper";
+import { AppConfigRotator } from "@/common/model/AppConfigModel.js";
+import RotatorHelper from "@/common/util/RotatorHelper.js";
 
 describe("RotatorHelper.isWithinRangeElのテスト", () => {
-  test("Elの範囲チェック", () => {
+  it("Elの範囲チェック", () => {
     const rotatorConfig = new AppConfigRotator();
     rotatorConfig.rangeElMin = 0;
     rotatorConfig.rangeElMax = 10;

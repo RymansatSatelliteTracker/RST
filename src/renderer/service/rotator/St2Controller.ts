@@ -1,6 +1,6 @@
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking";
-import RotatorControllerBase from "@/renderer/service/rotator/RotatorControllerBase";
+import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking.js";
+import RotatorControllerBase from "@/renderer/service/rotator/RotatorControllerBase.js";
 
 /**
  * Fox Delta ST-2のコントローラ

@@ -1,4 +1,4 @@
-import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
+import type { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes.js";
 
 /**
  * デフォルト衛星設定関係のレンダラ側API
@@ -6,7 +6,7 @@ import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
 export default class ApiDefaultSatellite {
   /**
    * 保存済みの衛星識別情報を返す
-   * @returns {Promise<SatelliteIdentiferType[]>} TLE文字列
+   * @returns {Promise<string>} TLE文字列
    */
   public static async getSavedSatelliteIdentifer() {
     return await window.rstApi.getSavedSatelliteIdentifer();
@@ -20,7 +20,7 @@ export default class ApiDefaultSatellite {
   public static async getDefaultSatelliteBySatelliteId(
     satelliteId: number,
     useDefaultAppConfigIfExists = true
-  ): Promise<DefaultSatelliteType> {
+  ): Promise<DefaultSatelliteType | null> {
     return await window.rstApi.getDefaultSatelliteBySatelliteId(satelliteId, useDefaultAppConfigIfExists);
   }
 

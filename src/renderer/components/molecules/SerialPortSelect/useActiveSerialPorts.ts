@@ -1,6 +1,7 @@
-import ApiSirial from "@/renderer/api/ApiSirial";
-import { SelectOption } from "@/renderer/types/vue-types";
-import { ModelRef, ref } from "vue";
+import ApiSirial from "@/renderer/api/ApiSirial.js";
+import type { SelectOption } from "@/renderer/types/vue-types.js";
+import type { ModelRef } from "vue";
+import { ref } from "vue";
 
 /**
  * 有効なシリアルポートを取得し、SelectBox向けのリストを生成するフック

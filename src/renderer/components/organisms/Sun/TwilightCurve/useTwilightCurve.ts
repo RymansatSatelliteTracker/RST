@@ -1,7 +1,7 @@
-import Constant from "@/common/Constant";
-import AstronomyUtil from "@/renderer/util/AstronomyUtil";
-import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil";
-import { Feature, Polygon } from "geojson";
+import Constant from "@/common/Constant.js";
+import AstronomyUtil from "@/renderer/util/AstronomyUtil.js";
+import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil.js";
+import type { Feature, Polygon } from "geojson";
 import { onMounted, onUnmounted, ref, watch, type Ref } from "vue";
 
 /**

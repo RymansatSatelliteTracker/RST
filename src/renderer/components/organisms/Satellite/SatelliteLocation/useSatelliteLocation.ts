@@ -1,6 +1,6 @@
-import ApiActiveSat from "@/renderer/api/ApiActiveSat";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
+import ApiActiveSat from "@/renderer/api/ApiActiveSat.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
 import { onMounted, onUnmounted, ref, watch, type Ref } from "vue";
 
 /**
@@ -63,7 +63,7 @@ const useSatelliteLocation = (currentDate: Ref<Date>, offsetLongitude: Ref<numbe
   async function getSatIdByIndex(index: number) {
     // 更新された衛星グループ情報を取得
     const satGrp = await ApiActiveSat.getActiveSatelliteGroup();
-    if (!satGrp || !satGrp.mainSattelliteTle) {
+    if (!satGrp || !satGrp.mainSatelliteOmm) {
       return;
     }
 

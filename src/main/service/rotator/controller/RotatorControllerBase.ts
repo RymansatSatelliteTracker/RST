@@ -1,8 +1,8 @@
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import { ApiResponse } from "@/common/types/types";
-import RotatorHelper from "@/common/util/RotatorHelper";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
-import AppMainLogger from "@/main/util/AppMainLogger";
+import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import type { ApiResponse } from "@/common/types/types.js";
+import RotatorHelper from "@/common/util/RotatorHelper.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
 
 /**
  * ローテーターのコントローラ親クラス

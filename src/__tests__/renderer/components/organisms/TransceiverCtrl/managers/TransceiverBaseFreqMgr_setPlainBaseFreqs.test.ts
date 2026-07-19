@@ -1,4 +1,4 @@
-import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
 
 describe("TransceiverBaseFreqMgr.setPlainBaseFreqs", () => {
   it("基準周波数を直接設定できること", () => {

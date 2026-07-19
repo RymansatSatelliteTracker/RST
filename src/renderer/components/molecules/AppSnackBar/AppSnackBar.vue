@@ -2,16 +2,16 @@
   <v-snackbar v-model="isShow" :timeout="timeout" :color="color" vertical close-on-content-click>
     <span class="text-pre-wrap" style="user-select: none">{{ text }}</span>
 
-    <template v-slot:actions>
+    <template #actions>
       <v-btn color="white" variant="text" @click="close">Close</v-btn>
     </template>
   </v-snackbar>
 </template>
 
 <script setup lang="ts">
-import Constant from "@/common/Constant";
+import Constant from "@/common/Constant.js";
 import { ref } from "vue";
-import { useAppSnackBar } from "./useAppSnackBar";
+import { useAppSnackBar } from "./useAppSnackBar.js";
 
 const { isShow, close, color, text } = useAppSnackBar();
 const timeout = ref(Constant.SnackBar.DISP_TIMEOUT_MS);

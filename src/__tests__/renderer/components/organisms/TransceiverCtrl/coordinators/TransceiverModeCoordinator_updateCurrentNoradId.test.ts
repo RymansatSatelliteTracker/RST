@@ -1,9 +1,8 @@
-import Constant from "@/common/Constant";
-import TransceiverModeCoordinator, {
-  ModeCoordinatorState,
-} from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator";
-import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr";
-import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver";
+import Constant from "@/common/Constant.js";
+import type { ModeCoordinatorState } from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator.js";
+import TransceiverModeCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator.js";
+import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
+import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver.js";
 import { ref } from "vue";
 
 const createState = (): ModeCoordinatorState => ({

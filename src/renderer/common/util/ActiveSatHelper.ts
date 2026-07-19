@@ -1,9 +1,11 @@
-import { ActiveSatelliteModel } from "@/common/model/ActiveSatModel";
-import { AppConfigSatellite } from "@/common/model/AppConfigModel";
-import TleUtil from "@/main/util/TleUtil";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite";
-import ApiTle from "@/renderer/api/ApiTle";
+import CommonUtil from "@/common/CommonUtil.js";
+import { ActiveSatelliteModel } from "@/common/model/ActiveSatModel.js";
+import type { AppConfigSatellite } from "@/common/model/AppConfigModel.js";
+import type { OmmItem } from "@/common/model/OmmModel.js";
+import OmmUtil from "@/main/util/OmmUtil.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite.js";
+import ApiOmm from "@/renderer/api/ApiOmm.js";
 
 /**
  * アクティブ衛星グループ、アクティブ衛星関係のヘルパ
@@ -17,7 +19,6 @@ export default class ActiveSatHelper {
     const appConfig = await ApiAppConfig.getAppConfig();
 
     // アクティブ衛星グループIDから衛星グループを取得
-    appConfig.mainDisplay.activeSatelliteGroupId;
     const gr = appConfig.satelliteGroups.find((group) => {
       return group.groupId === appConfig.mainDisplay.activeSatelliteGroupId;
     });
@@ -60,10 +61,26 @@ export default class ActiveSatHelper {
     // 衛星名
     satModel.satelliteName = sat.userRegisteredSatelliteName;
 
-    // TLE
-    // ユーザが登録した衛星のTLEは２行なので、ユーザー登録衛星名とTLEを結合してTLE文字列を生成
-    const tleText = `${sat.userRegisteredSatelliteName}\n${sat.userRegisteredTle}`;
-    satModel.tle = TleUtil.toTleStrings(tleText);
+    // OMM
+    let ommItem: OmmItem | null = null;
+    if (!CommonUtil.isEmpty(sat.userRegisteredOmm)) {
+      // ユーザが登録した衛星のOMMを使用
+      try {
+        ommItem = JSON.parse(sat.userRegisteredOmm) as OmmItem;
+      } catch {
+        // memo: 不正なJSON（設定ファイルの破損・手編集等）の場合はTLEへフォールバック
+        ommItem = null;
+      }
+    }
+
+    if (!ommItem) {
+      // memo: userRegisteredOmmへの移行が未済、またはパースに失敗した場合のフォールバック
+      // ユーザが登録した衛星のTLEは２行なので、ユーザー登録衛星名とTLEを結合してOMMに変換する
+      const tleText = `${sat.userRegisteredSatelliteName}\n${sat.userRegisteredTle}`;
+      const ommItems = OmmUtil.parseToOmmItems(tleText);
+      ommItem = ommItems.length > 0 ? ommItems[0] : null;
+    }
+    satModel.omm = ommItem;
 
     return satModel;
   }
@@ -80,9 +97,9 @@ export default class ActiveSatHelper {
     // ユーザ設定がない場合はdefaultSatの衛星名がここに入っている
     satModel.satelliteName = sat.userRegisteredSatelliteName;
 
-    // TLEはNorad IDから取得
-    const tles = await ApiTle.getTlesByNoradIds([sat.noradId]);
-    satModel.tle = tles[0];
+    // OMMはNorad IDから取得
+    const omms = await ApiOmm.getOmmsByNoradIds([sat.noradId]);
+    satModel.omm = omms.length > 0 ? omms[0] : null;
 
     return satModel;
   }

@@ -1,4 +1,5 @@
-import { onMounted, Ref } from "vue";
+import type { Ref } from "vue";
+import { onMounted } from "vue";
 
 /**
  * 位置情報（センター）

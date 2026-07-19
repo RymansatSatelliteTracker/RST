@@ -1,4 +1,4 @@
-import { I18nMsgItem } from "@/common/types/types";
+import type { I18nMsgItem } from "@/common/types/types.js";
 
 /**
  * バリデート結果

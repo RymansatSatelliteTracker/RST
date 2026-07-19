@@ -1,22 +1,22 @@
-import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel";
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import { AppConfigModel, AppConfigRotator, AppConfigTransceiver } from "@/common/model/AppConfigModel";
-import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
-import { FrequencyModel } from "@/common/model/FrequencyModel";
-import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
-import { ApiResponse, LangType } from "@/common/types/types";
-import WebClient from "@/common/WebClient";
-import SerialComm from "@/main/common/SerialComm";
-import ActiveSatService from "@/main/service/ActiveSatService";
-import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService";
-import DefaultSatelliteService from "@/main/service/DefaultSatelliteService";
-import GeoLocationService from "@/main/service/GeoLocationService";
-import RepoFrequencyService from "@/main/service/RepoFrequencyService";
-import RotatorService from "@/main/service/RotatorService";
-import SerialTrialService from "@/main/service/SerialTrialService";
-import TleService from "@/main/service/TleService";
-import TransceiverService from "@/main/service/TransceiverSerivice";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
+import type { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
+import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import type { AppConfigModel, AppConfigRotator, AppConfigTransceiver } from "@/common/model/AppConfigModel.js";
+import type { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import type { FrequencyModel } from "@/common/model/FrequencyModel.js";
+import type { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
+import type { ApiResponse, LangType } from "@/common/types/types.js";
+import WebClient from "@/common/WebClient.js";
+import SerialComm from "@/main/common/SerialComm.js";
+import ActiveSatService from "@/main/service/ActiveSatService.js";
+import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService.js";
+import DefaultSatelliteService from "@/main/service/DefaultSatelliteService.js";
+import GeoLocationService from "@/main/service/GeoLocationService.js";
+import RepoFrequencyService from "@/main/service/RepoFrequencyService.js";
+import OmmService from "@/main/service/OmmService.js";
+import RotatorService from "@/main/service/RotatorService.js";
+import SerialTrialService from "@/main/service/SerialTrialService.js";
+import TransceiverService from "@/main/service/TransceiverSerivice.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 import { ipcMain } from "electron";
 
 // 初期化済みか
@@ -68,6 +68,13 @@ export function initializeIpcEvents() {
   });
 
   /**
+   * メイン表示する衛星グループ、衛星ID情報を返す
+   */
+  ipcMain.handle("getAppConfigMainDisplay", (event) => {
+    return AppConfigUtil.getAppConfigMainDisplay();
+  });
+
+  /**
    * 衛星設定画面用のアプリケーション設定を保存する
    */
   ipcMain.handle(
@@ -92,10 +99,10 @@ export function initializeIpcEvents() {
   });
 
   /**
-   * 指定のNORAD IDのTLEを返す
+   * 指定のNORAD IDの軌道要素データをOMMで返す
    */
-  ipcMain.handle("getTlesByNoradIds", (event, noradIds: string) => {
-    return new TleService().getTlesByNoradIds(noradIds);
+  ipcMain.handle("getOmmsByNoradIds", (event, noradIds: string) => {
+    return new OmmService().getOmmsByNoradIds(noradIds);
   });
 
   /**
@@ -304,10 +311,10 @@ export function initializeIpcEvents() {
   ipcMain.handle("onSaveTransceiverFrequency", async (evnet) => {});
 
   /**
-   * URLから読み込み可能なTLEが取得できるか確認する
+   * URLから読み込み可能な軌道要素データが取得できるか確認する
    */
-  ipcMain.handle("canGetValidTle", async (event, url: string): Promise<boolean> => {
-    return new TleService().canGetValidTle(url, new WebClient());
+  ipcMain.handle("canGetValidOmm", async (event, url: string): Promise<boolean> => {
+    return new OmmService().canGetValidOmm(url, new WebClient());
   });
 
   /**
@@ -334,7 +341,7 @@ export function releaseIpcEvents() {
   ipcMain.removeHandler("storeAppConfigSatSetting");
   ipcMain.removeHandler("getRotatorConfig");
   ipcMain.removeHandler("getTransceiverConfig");
-  ipcMain.removeHandler("getTlesByNoradIds");
+  ipcMain.removeHandler("getOmmsByNoradIds");
   ipcMain.removeHandler("getGeoLocation");
   ipcMain.removeHandler("getSavedSatelliteIdentifer");
   ipcMain.removeHandler("getDefaultSatelliteBySatelliteId");
@@ -363,7 +370,7 @@ export function releaseIpcEvents() {
   ipcMain.removeHandler("setSatelliteMode");
   ipcMain.removeHandler("dopplerShiftWaitingCallback");
   ipcMain.removeHandler("onSaveTransceiverFrequency");
-  ipcMain.removeHandler("canGetValidTle");
+  ipcMain.removeHandler("canGetValidOmm");
   ipcMain.removeHandler("onNoticeMessage");
 
   initialized = false;

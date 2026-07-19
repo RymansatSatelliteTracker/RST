@@ -1,4 +1,4 @@
-import { FrequencyUtil } from "@/renderer/util/FrequencyUtil";
+import { FrequencyUtil } from "@/renderer/util/FrequencyUtil.js";
 import { computed, ref, type Ref } from "vue";
 /**
  * 周波数コントローラー

@@ -4,7 +4,7 @@
       {{ I18nUtil.getMsg(I18nMsgs.GCOM_RADIO) }}
 
       <!-- タブ -->
-      <v-tabs v-model="tab" @update:modelValue="onTabChange">
+      <v-tabs v-model="tab" @update:model-value="onTabChange">
         <v-tab value="device" class="g_solid_border px-16 font-weight-bold"
           >{{ I18nUtil.getMsg(I18nMsgs.G41_TAB_CONNECTION) }}
         </v-tab>
@@ -45,17 +45,17 @@
 </template>
 
 <script setup lang="ts">
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import ApiSirial from "@/renderer/api/ApiSirial";
-import ApiTransceiver from "@/renderer/api/ApiTransceiver";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ApiSirial from "@/renderer/api/ApiSirial.js";
+import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
 import { ref, watch } from "vue";
 import TransceiverBegavior from "./TransceiverBegavior/TransceiverBegavior.vue";
 import TransceiverConn from "./TransceiverConn/TransceiverConn.vue";
-import TransceiverSettingForm from "./TransceiverSettingForm";
+import TransceiverSettingForm from "./TransceiverSettingForm.js";
 
 // イベント関係
 const emits = defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
@@ -125,6 +125,7 @@ async function reloadConfig() {
   form.value.ipPort = transceiverConfig.transceiver.ipPort.toString();
   form.value.autoTrackingIntervalSec = transceiverConfig.transceiver.autoTrackingIntervalSec;
   form.value.autoTrackingStartEndTime = transceiverConfig.transceiver.autoTrackingStartEndTime;
+  form.value.dopplerResumeDelaySec = transceiverConfig.transceiver.dopplerResumeDelaySec;
 }
 
 /**
@@ -153,6 +154,7 @@ async function onOk() {
   transceiverConfig.transceiver.ipPort = form.value.ipPort;
   transceiverConfig.transceiver.autoTrackingIntervalSec = form.value.autoTrackingIntervalSec;
   transceiverConfig.transceiver.autoTrackingStartEndTime = form.value.autoTrackingStartEndTime;
+  transceiverConfig.transceiver.dopplerResumeDelaySec = form.value.dopplerResumeDelaySec;
 
   // 保存
   await ApiAppConfig.storeAppConfig(transceiverConfig);
@@ -168,7 +170,7 @@ async function onOk() {
 /**
  * キャンセルクリック
  */
-async function cancelClick() {
+function cancelClick() {
   // シリアル接続、無線機の状態監視開始
   // memo: キャンセルクリック時に待たさせるのを避けるためawaitは敢えて付けてない。
   refTravsceiverConn.value.startNewConnect();
@@ -207,5 +209,5 @@ async function validateTabContents(): Promise<boolean> {
 </script>
 
 <style lang="scss" scoped>
-@import "./TransceiverSetting.scss";
+@use "./TransceiverSetting" as *;
 </style>

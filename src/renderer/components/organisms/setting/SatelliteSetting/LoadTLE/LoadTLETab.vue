@@ -1,4 +1,4 @@
-<!-- TLE読み込みタブ -->
+<!-- 軌道要素(OMM)読み込みタブ -->
 <template>
   <v-sheet color="grey-darken-4" outlined width="100%" height="100%" class="pa-3">
     <v-row no-gutters>
@@ -8,18 +8,18 @@
             <TleUrlEditableCheckbox
               v-model:enable="item.enable"
               v-model:url="item.url"
+              v-model:valid-schema="validSchemaLoadTLETab"
+              v-model:errors-tle-url="errorsList[index]"
               @click="selectItem(index)"
-              v-model:validSchema="validSchemaLoadTLETab"
-              v-model:errorsTleUrl="errorsList[index]"
             ></TleUrlEditableCheckbox>
           </v-list-item>
         </v-list>
       </v-col>
       <v-col cols="1">
-        <v-btn @click="addItem" variant="plain">
+        <v-btn variant="plain" @click="addItem">
           <v-icon size="30" :icon="mdiPlusCircle"></v-icon>
         </v-btn>
-        <v-btn @click="removeSelectedItem" :disabled="selectedItem === null" variant="plain">
+        <v-btn :disabled="selectedItem === null" variant="plain" @click="removeSelectedItem">
           <v-icon size="30" :icon="mdiDelete"></v-icon>
         </v-btn>
       </v-col>
@@ -27,18 +27,18 @@
   </v-sheet>
 </template>
 <script setup lang="ts">
-import I18nMsgs from "@/common/I18nMsgs";
-import { AppConfigTleUrl } from "@/common/model/AppConfigModel";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import type { AppConfigTleUrl } from "@/common/model/AppConfigModel.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import TleUrlEditableCheckbox from "@/renderer/components/molecules/TleUrlEditableCheckbox/TleUrlEditableCheckbox.vue";
 import {
   getUrlofInvalidContents,
   isUpdated,
-} from "@/renderer/components/organisms/setting/SatelliteSetting/LoadTLE/useLoadTLE";
+} from "@/renderer/components/organisms/setting/SatelliteSetting/LoadTLE/useLoadTLE.js";
 import "@mdi/font/css/materialdesignicons.css";
 import { mdiDelete, mdiPlusCircle } from "@mdi/js";
 import { onMounted, ref } from "vue";
-import { useLoadTLETabValidate, validSchemaLoadTLETab } from "./useLoadTLETabValidate";
+import { useLoadTLETabValidate, validSchemaLoadTLETab } from "./useLoadTLETabValidate.js";
 
 // リストに表示するデータ
 const items = defineModel<AppConfigTleUrl[]>("tleUrls", { default: [] });
@@ -143,5 +143,5 @@ async function checkTleUrlAccessibility(): Promise<string> {
 defineExpose({ onOk, isTLEUpdated });
 </script>
 <style lang="scss" scoped>
-@import "./LoadTLETab.scss";
+@use "./LoadTLETab" as *;
 </style>

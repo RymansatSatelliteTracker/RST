@@ -1,19 +1,15 @@
-// mainプロセスでのimportでaliasを適用するために以下の module-alias を使用
-import "module-alias/register";
-// このコメント行は、 module-alias を先頭のままとするためのものです。（import整形で順序を変更させない）
-import Constant from "@/common/Constant";
-import { MessageModel } from "@/common/model/MessageModel";
-import EnvUtil from "@/common/util/EnvUtil";
-import { initializeIpcEvents, releaseIpcEvents } from "@/main/initializeIpcEvent";
-import { makeElectronMenu } from "@/main/menu";
-import RotatorService from "@/main/service/RotatorService";
-import SerialTrialService from "@/main/service/SerialTrialService";
-import StartupService from "@/main/service/StartupService";
-import TransceiverService from "@/main/service/TransceiverSerivice";
-import AppMainLogger from "@/main/util/AppMainLogger";
-import AppWindowUtil from "@/main/util/AppWindowUtil";
-import { app, BrowserWindow, Menu } from "electron";
-import electronReload from "electron-reload";
+import Constant from "@/common/Constant.js";
+import { MessageModel } from "@/common/model/MessageModel.js";
+import EnvUtil from "@/common/util/EnvUtil.js";
+import { initializeIpcEvents, releaseIpcEvents } from "@/main/initializeIpcEvent.js";
+import { makeElectronMenu } from "@/main/menu.js";
+import RotatorService from "@/main/service/RotatorService.js";
+import SerialTrialService from "@/main/service/SerialTrialService.js";
+import StartupService from "@/main/service/StartupService.js";
+import TransceiverService from "@/main/service/TransceiverSerivice.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
+import AppWindowUtil from "@/main/util/AppWindowUtil.js";
+import { BrowserWindow, Menu, app } from "electron";
 import * as path from "path";
 
 // Logger初期化
@@ -44,7 +40,7 @@ let mainWindow: BrowserWindow;
   try {
     await serive.initApp();
   } catch (e) {
-    AppMainLogger.error("StartupService init error", e instanceof Error ? e.stack ?? e.message : String(e));
+    AppMainLogger.error("StartupService init error", e instanceof Error ? (e.stack ?? e.message) : String(e));
     errorMessage = e instanceof Error ? e.message : String(e);
   }
 
@@ -136,7 +132,7 @@ function createWindow() {
       contextIsolation: true,
       // 一旦、サンドボックスは無効にしておく（preloadでapiHandler.tsをインポートしたいので）
       sandbox: false,
-      preload: path.join(__dirname, "./preload.js"),
+      preload: path.join(import.meta.dirname, "./preload.js"),
     },
   });
 
@@ -147,10 +143,6 @@ function createWindow() {
 
   // 開発環境の場合
   if (EnvUtil.isDev()) {
-    // メインプロセス側のホットリロード設定
-    // memo: メイン側のソース保存時に再起動させたくない場合は、ここをコメントアウトしてください
-    // enableHotReload();
-
     // ウィンドウ内のコンテンツの設定（レンダラプロセスのURLを指定）
     mainWindow.loadURL("http://localhost:5173");
 
@@ -159,7 +151,7 @@ function createWindow() {
     //       開発時のみであることと、実害なしのようなのでエラーは無視して良い
     mainWindow.webContents.openDevTools();
   } else {
-    mainWindow.loadFile(path.join(__dirname, "../../index.html"));
+    mainWindow.loadFile(path.join(import.meta.dirname, "../../index.html"));
   }
 
   // アプリ終了時
@@ -192,20 +184,6 @@ async function onAppClose() {
 
   // テスト用シリアルポートをクローズ
   await new SerialTrialService().close();
-}
-
-/**
- * メインプロセスのホットリロードを有効化する
- */
-function enableHotReload() {
-  const electronPath = path.resolve(
-    __dirname,
-    "../../../node_modules/electron/dist/electron" + (process.platform === "win32" ? ".exe" : "")
-  );
-  electronReload(__dirname, {
-    electron: electronPath,
-    forceHardReset: true,
-  });
 }
 
 /**

@@ -1,4 +1,4 @@
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
+import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
 
 /**
  * ローテーターのコントローラの親クラス

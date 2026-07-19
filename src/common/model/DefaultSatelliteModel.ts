@@ -1,6 +1,10 @@
-import { TleItemMap } from "@/common/model/TleModel";
-import { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes";
-import { createDefaultSatellite, initializeDefaultSatellites, normalizeData } from "@/common/util/DefaultSatelliteUtil";
+import type { OmmItemMap } from "@/common/model/OmmModel.js";
+import type { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
+import {
+  createDefaultSatellite,
+  initializeDefaultSatellites,
+  normalizeData,
+} from "@/common/util/DefaultSatelliteUtil.js";
 
 /**
  * アプリケーション内で管理しておく対象衛星のデフォルト情報
@@ -49,20 +53,20 @@ export class DefaultSatelliteModel {
   }
 
   /**
-   * TLEが存在するデフォルト衛星情報を衛星識別情報に変換して返却する
-   * @param tleItemMap TLE情報
+   * OMMが存在するデフォルト衛星情報を衛星識別情報に変換して返却する
+   * @param ommItemMap OMM情報
    * @returns 衛星識別情報
    */
-  public getSatelliteIdentifer(tleItemMap: TleItemMap): SatelliteIdentiferType[] {
-    // TLEに存在するNORADIDを取得する
+  public getSatelliteIdentifer(ommItemMap: OmmItemMap): SatelliteIdentiferType[] {
+    // OMMに存在するNORADIDを取得する
     const noradIds = this.registeredNoradIds.reduce((direcotry: { [key: string]: number }, value, index) => {
       direcotry[value] = index;
       return direcotry;
     }, {});
-    // TLEに一致するデフォルト衛星情報を取得する
+    // OMMに一致するデフォルト衛星情報を取得する
     const satIdTypes: SatelliteIdentiferType[] = [];
-    Object.values(tleItemMap).forEach((tleItem) => {
-      const index: number = noradIds[tleItem.id];
+    Object.values(ommItemMap).forEach((ommItem) => {
+      const index: number = noradIds[ommItem.noradCatId];
       const defsat = this.defaultSatellites[index];
       satIdTypes.push({
         satelliteId: defsat.satelliteId,
@@ -91,10 +95,10 @@ export class DefaultSatelliteModel {
 
   /**
    * 対象衛星を追加する
-   * 　衛星が新規追加の場合のみ追加する
-   * 　衛星追加時は衛星IDを採番する
-   *   noradId指定がない場合は仮のIDを採番する
-   * 　追加した衛星は登録済みNORAIDのリストに追加する
+   * ・衛星が新規追加の場合のみ追加する
+   * ・衛星追加時は衛星IDを採番する
+   * ・noradId指定がない場合は仮のIDを採番する
+   * ・追加した衛星は登録済みNORAIDのリストに追加する
    * @param satelliteName
    * @param noradId
    * @returns number 追加:追加時の衛星ID、更新:-1

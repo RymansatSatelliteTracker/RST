@@ -1,14 +1,13 @@
 import vue from "@vitejs/plugin-vue";
 import * as path from "path";
 import { defineConfig } from "vite";
-import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
-  plugins: [vue(), tsconfigPaths()],
+  plugins: [vue()],
   base: "./",
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "src"),
+      "@": path.resolve(import.meta.dirname, "src"),
     },
   },
   build: {
@@ -18,6 +17,17 @@ export default defineConfig({
   server: {
     hmr: {
       overlay: false,
+    },
+  },
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: "./vitest.setup.ts",
+    include: ["src/**/*.test.{ts,js}"],
+    exclude: ["node_modules", "dist", "src/__tests__/playwright/**"],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html"],
     },
   },
 });

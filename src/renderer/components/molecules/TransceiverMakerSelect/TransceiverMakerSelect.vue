@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import useTransceiverMakers from "./useTransceiverMakers";
+import useTransceiverMakers from "./useTransceiverMakers.js";
 
 const selectedValue = defineModel<string>("selectedValue", { required: true });
 const needEmpty = defineModel<boolean>("needEmpty", { required: true });

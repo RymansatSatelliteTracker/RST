@@ -1,5 +1,5 @@
-import Constant from "@/common/Constant";
-import { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
+import Constant from "@/common/Constant.js";
+import type { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes.js";
 
 /**
  * デフォルト衛星情報を作成する関数

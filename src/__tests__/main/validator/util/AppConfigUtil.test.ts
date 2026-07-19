@@ -1,20 +1,21 @@
-import { AppConfigModel, AppConfigSatellite } from "@/common/model/AppConfigModel";
-import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
-import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
+import { AppConfigModel, AppConfigSatellite } from "@/common/model/AppConfigModel.js";
+import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+
 /**
  * 正常系:transformSatelliteGroupsForSatSetting
  */
-test("success_transformSatelliteGroupsForSatSetting", () => {
+it("success_transformSatelliteGroupsForSatSetting", () => {
   // Arrange
-  jest
-    .spyOn(AppConfigSatelliteService.prototype, "getUserRegisteredAppConfigSatellite")
-    .mockImplementation((arg: number) => {
+  vi.spyOn(AppConfigSatelliteService.prototype, "getUserRegisteredAppConfigSatellite").mockImplementation(
+    (arg: number) => {
       const appConfigSat = new AppConfigSatellite();
       appConfigSat.satelliteId = arg;
       appConfigSat.userRegisteredSatelliteName = "hoge";
       return appConfigSat;
-    });
+    }
+  );
 
   const appConfig = new AppConfigModel();
   appConfig.satelliteGroups = [{ groupId: 1, groupName: "group", satelliteIds: [1] }];
@@ -30,7 +31,7 @@ test("success_transformSatelliteGroupsForSatSetting", () => {
 /**
  * 正常系:storeConfigSatSetting
  */
-test("success_transformSatelliteGroups", () => {
+it("success_transformSatelliteGroups", () => {
   const appConfigSatSet = new AppConfigSatSettingModel();
   appConfigSatSet.satelliteGroupsForSatSetting = [
     {
@@ -47,7 +48,7 @@ test("success_transformSatelliteGroups", () => {
 /**
  * 正常系:copyMatchingProperties
  */
-test("success_copyMatchingProperties", () => {
+it("success_copyMatchingProperties", () => {
   const objectA = { update: "aaa", noChange: "bbb" };
   const objectB = { update: "ccc", notExsit: "ddd" };
 

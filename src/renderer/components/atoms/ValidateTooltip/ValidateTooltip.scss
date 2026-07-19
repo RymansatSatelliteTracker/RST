@@ -1,4 +1,4 @@
-@import "@/renderer/components/styles/global.scss";
+@use "@/renderer/components/styles/global" as *;
 
 :global(.tooltip) {
   // color: red !important;

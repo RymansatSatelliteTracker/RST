@@ -1,9 +1,9 @@
-import CommonUtil from "@/common/CommonUtil";
+import CommonUtil from "@/common/CommonUtil.js";
 
 /**
  * ブランク
  */
-test("empty", () => {
+it("empty", () => {
   const result = CommonUtil.isEmpty("");
   expect(result).toBe(true);
 });
@@ -11,7 +11,7 @@ test("empty", () => {
 /**
  * null
  */
-test("null", () => {
+it("null", () => {
   const result = CommonUtil.isEmpty(null);
   expect(result).toBe(true);
 });
@@ -19,7 +19,7 @@ test("null", () => {
 /**
  * undefined
  */
-test("undefined", () => {
+it("undefined", () => {
   const result = CommonUtil.isEmpty(undefined);
   expect(result).toBe(true);
 });
@@ -27,7 +27,7 @@ test("undefined", () => {
 /**
  * 非ブランク
  */
-test("not_empty", () => {
+it("not_empty", () => {
   const result = CommonUtil.isEmpty("テキスト");
   expect(result).toBe(false);
 });

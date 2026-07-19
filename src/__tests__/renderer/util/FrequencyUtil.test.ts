@@ -1,4 +1,4 @@
-import { FrequencyUtil } from "@/renderer/util/FrequencyUtil";
+import { FrequencyUtil } from "@/renderer/util/FrequencyUtil.js";
 
 describe("FrequencyUtil", () => {
   describe("parseSignedFrequency", () => {

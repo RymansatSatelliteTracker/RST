@@ -1,5 +1,5 @@
-import Constant from "@/common/Constant";
-import { Ref } from "vue";
+import Constant from "@/common/Constant.js";
+import type { Ref } from "vue";
 
 /**
  * 周波数・運用モード同期で利用する画面状態

@@ -1,15 +1,15 @@
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import { DefaultSatelliteModel } from "@/common/model/DefaultSatelliteModel";
-import { FrequencyModel } from "@/common/model/FrequencyModel";
-import { TleItemMap } from "@/common/model/TleModel";
-import { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes";
-import { ApiResponse } from "@/common/types/types";
-import TleService from "@/main/service/TleService";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
-import AppMainLogger from "@/main/util/AppMainLogger";
-import ElectronUtil from "@/main/util/ElectronUtil";
-import FileUtil from "@/main/util/FileUtil";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { DefaultSatelliteModel } from "@/common/model/DefaultSatelliteModel.js";
+import { FrequencyModel } from "@/common/model/FrequencyModel.js";
+import type { OmmItemMap, OmmJsonModel } from "@/common/model/OmmModel.js";
+import type { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
+import { ApiResponse } from "@/common/types/types.js";
+import OmmService from "@/main/service/OmmService.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
+import ElectronUtil from "@/main/util/ElectronUtil.js";
+import FileUtil from "@/main/util/FileUtil.js";
 import fs from "fs";
 import path from "path";
 
@@ -39,9 +39,9 @@ export default class DefaultSatelliteService {
    * @param isFrequencyUpdated
    * @returns
    */
-  public async updateDefaultSatelliteService(isFrequencyUpdated = true): Promise<string> {
-    // TLEを取得
-    const tleItemMap: TleItemMap = this.getLatestTLE();
+  public updateDefaultSatelliteService(isFrequencyUpdated = true): string {
+    // OMMを取得
+    const ommItemMap: OmmItemMap = this.getLatestOmm();
 
     // デフォルト衛星定義が保存されたパスを取得する
     const savePathSat = path.join(ElectronUtil.getUserDir(), Constant.Config.DEFAULT_SATELLITE_FILENAME);
@@ -49,15 +49,15 @@ export default class DefaultSatelliteService {
     // memo: デフォルト衛星定義ファイルはアプリ起動時に、存在しなければ自動作成されるが、
     //       ユーザ操作での削除を考慮して、ファイルが存在しない場合は初期データを作成する
     if (!fs.existsSync(savePathSat)) {
-      AppConfigUtil.initDefautSatJson();
+      AppConfigUtil.initDefaultSatJson();
     }
 
-    const defaultSatData = FileUtil.readJson(savePathSat);
+    const defaultSatData = FileUtil.readJson(savePathSat) as unknown as { defaultSatellite: DefaultSatelliteModel };
     this.defSatJson = DefaultSatelliteModel.getInitializedModelFromData(defaultSatData.defaultSatellite);
 
-    // TLEから情報を取得してデフォルト衛星定義を更新する
-    for (const tleItem of Object.values(tleItemMap)) {
-      this.defSatJson.addSatellite(tleItem.name, tleItem.id);
+    // OMMから情報を取得してデフォルト衛星定義を更新する
+    for (const ommItem of Object.values(ommItemMap)) {
+      this.defSatJson.addSatellite(ommItem.objectName, ommItem.noradCatId);
     }
 
     // 衛星周波数設定で更新する
@@ -66,7 +66,7 @@ export default class DefaultSatelliteService {
       const savePathFrq = path.join(ElectronUtil.getUserDir(), Constant.Config.FREQUENCY_FILENAME);
       if (fs.existsSync(savePathFrq)) {
         const fileContentFrq = fs.readFileSync(savePathFrq, "utf-8");
-        freqModel = JSON.parse(fileContentFrq);
+        freqModel = JSON.parse(fileContentFrq) as FrequencyModel;
       }
 
       this.defSatJson.updateSatellites(freqModel.frequency.satellites);
@@ -81,10 +81,10 @@ export default class DefaultSatelliteService {
    * 保存済みの衛星識別情報を返却する
    * @returns 衛星識別情報
    */
-  public async getSavedSatelliteIdentifer(): Promise<SatelliteIdentiferType[]> {
-    const tleItemMap: TleItemMap = this.getLatestTLE();
+  public getSavedSatelliteIdentifer(): SatelliteIdentiferType[] {
+    const ommItemMap: OmmItemMap = this.getLatestOmm();
     // デフォルト衛星定義から衛星識別情報を取得
-    const satIdentifer: SatelliteIdentiferType[] = this.defSatJson.getSatelliteIdentifer(tleItemMap);
+    const satIdentifer: SatelliteIdentiferType[] = this.defSatJson.getSatelliteIdentifer(ommItemMap);
 
     return satIdentifer;
   }
@@ -95,10 +95,10 @@ export default class DefaultSatelliteService {
    * @param useAppConfigIfExists true:アプリケーション設定にデフォルト設定があれば使用する/false:アプリケーション設定を無視してデフォルト衛星情報を取得する
    * @returns
    */
-  public async getDefaultSatelliteBySatelliteId(
+  public getDefaultSatelliteBySatelliteId(
     satelliteId: number,
     useAppConfigIfExists = true
-  ): Promise<DefaultSatelliteType | null> {
+  ): DefaultSatelliteType | null {
     // デフォルト衛星定義を取得
 
     const defSat: DefaultSatelliteType | null = this.defSatJson.getDefaultSatelliteBySatelliteId(satelliteId);
@@ -154,7 +154,7 @@ export default class DefaultSatelliteService {
    * @param satelliteName
    * @returns satelliteId(更新時は-1)
    */
-  public async addDefaultSatellite(satelliteName: string): Promise<number> {
+  public addDefaultSatellite(satelliteName: string): number {
     const savePathSat = path.join(ElectronUtil.getUserDir(), Constant.Config.DEFAULT_SATELLITE_FILENAME);
     const satelliteId: number = this.defSatJson.addSatellite(satelliteName);
     fs.writeFileSync(savePathSat, this.defSatJson.getJsonString());
@@ -169,28 +169,28 @@ export default class DefaultSatelliteService {
   public async reCreateDefaultSatellite(): Promise<ApiResponse<void>> {
     // デフォルト衛星定義のリフレッシュ
     AppMainLogger.info("デフォルト衛星定義のリフレッシュ 開始");
-    const ret1 = await this.refreshDefaultSatellite();
+    const ret1 = this.refreshDefaultSatellite();
     if (!ret1) {
       return new ApiResponse(false, I18nMsgs.ERR_REFRESH_DEFAULT_SATELLITE);
     }
     AppMainLogger.info("デフォルト衛星定義のリフレッシュ 完了");
 
-    // TLE最終取得日時を更新する
+    // 軌道要素データ最終取得日時を更新する
     AppConfigUtil.saveTleLastRetrievedDate(Date.now() - Constant.Time.MILLISECONDS_IN_DAY);
 
-    // TLEの取得
-    AppMainLogger.info("TLEの取得 開始");
+    // 軌道要素データ(OMM)の取得
+    AppMainLogger.info("OMMの取得 開始");
     try {
-      await new TleService().getTleAndSave();
+      await new OmmService().getOmmAndSave();
     } catch (e) {
       AppMainLogger.error(e);
       return new ApiResponse(false, I18nMsgs.ERR_FAIL_TO_UPDATE_TLE_URL);
     }
-    AppMainLogger.info("TLEの取得 完了");
+    AppMainLogger.info("OMMの取得 完了");
 
     // デフォルト衛星定義の更新
     AppMainLogger.info("デフォルト衛星定義の更新 開始");
-    const ret3 = await this.updateDefaultSatelliteService();
+    const ret3 = this.updateDefaultSatelliteService();
     if (!ret3) {
       return new ApiResponse(false, I18nMsgs.ERR_UPDATE_DEFAULT_SATELLITE);
     }
@@ -202,7 +202,7 @@ export default class DefaultSatelliteService {
    * デフォルト衛星定義をリフレッシュする
    * @returns boolean
    */
-  private async refreshDefaultSatellite(): Promise<boolean> {
+  private refreshDefaultSatellite(): boolean {
     // 保持するリストを作成
     const userRegistSatelliteIds = AppConfigUtil.getConfig().satellites.map((sat) => sat.satelliteId);
     const groupRegistSatelliteIds = AppConfigUtil.getConfig()
@@ -219,20 +219,21 @@ export default class DefaultSatelliteService {
   }
 
   /**
-   * tle.jsonに存在するTLEを取得する
-   * @returns TleItemMap
+   * omm.jsonに存在する最新のOMMを取得する
+   * @returns OmmItemMap
    */
-  private getLatestTLE(): TleItemMap {
-    const savePathTle = AppConfigUtil.getTlePath();
-    const tleData = FileUtil.readJson(savePathTle);
+  private getLatestOmm(): OmmItemMap {
+    const savePathOmm = AppConfigUtil.getOmmPath();
+    const ommData = FileUtil.readJson(savePathOmm) as OmmJsonModel;
 
-    const tleItemMap: TleItemMap = tleData.tleItemMap;
-    const retTleItemMap: TleItemMap = {};
-    Object.values(tleItemMap).forEach((tleItem) => {
-      if (tleItem.isInLatestTLE) {
-        retTleItemMap[tleItem.id] = tleItem;
+    const ommItemMap: OmmItemMap = ommData.ommItemMap;
+    const retOmmItemMap: OmmItemMap = {};
+    Object.values(ommItemMap).forEach((ommItem) => {
+      // 最新のOMM取得で取得、更新された衛星のみを返却する
+      if (ommItem.isInLatestOmm) {
+        retOmmItemMap[ommItem.noradCatId] = ommItem;
       }
     });
-    return retTleItemMap;
+    return retOmmItemMap;
   }
 }

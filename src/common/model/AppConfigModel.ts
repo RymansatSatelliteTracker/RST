@@ -1,5 +1,5 @@
-import Constant from "@/common/Constant";
-import { autoModeFreqType } from "@/common/types/satelliteSettingTypes";
+import Constant from "@/common/Constant.js";
+import type { autoModeFreqType } from "@/common/types/satelliteSettingTypes.js";
 
 /**
  * アプリケーション設定モデル
@@ -73,6 +73,8 @@ export class AppConfigSatellite {
   public userRegisteredSatelliteName = "";
   // ユーザ登録衛星TLE
   public userRegisteredTle = "";
+  // ユーザ登録衛星OMM(OmmItemのJSON文字列)
+  public userRegisteredOmm = "";
   // 対象衛星NORAD ID
   public noradId: string = "";
   // 自動設定時に使用するアップリンク設定

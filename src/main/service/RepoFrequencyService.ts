@@ -1,8 +1,8 @@
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import { FrequencyModel } from "@/common/model/FrequencyModel";
-import { ApiResponse } from "@/common/types/types";
-import FrequencyValidator from "@/main/validator/FrequencyValidator";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { FrequencyModel } from "@/common/model/FrequencyModel.js";
+import { ApiResponse } from "@/common/types/types.js";
+import FrequencyValidator from "@/main/validator/FrequencyValidator.js";
 import fs from "fs";
 import path from "path";
 

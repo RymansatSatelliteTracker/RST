@@ -5,7 +5,12 @@
       <v-checkbox-btn v-model="enable" hide-details density="compact"></v-checkbox-btn>
     </v-col>
     <v-col cols="11">
-      <TextField v-model="url" :valiSchema="validSchema" valiSchemaFieldPath="url" v-model:errorText="errorsTleUrl" />
+      <TextField
+        v-model="url"
+        v-model:error-text="errorsTleUrl"
+        :vali-schema="validSchema"
+        vali-schema-field-path="url"
+      />
     </v-col>
   </v-row>
 </template>

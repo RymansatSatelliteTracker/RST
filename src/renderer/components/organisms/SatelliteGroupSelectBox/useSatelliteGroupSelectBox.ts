@@ -1,8 +1,9 @@
-import ApiActiveSat from "@/renderer/api/ApiActiveSat";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import { SelectOption } from "@/renderer/types/vue-types";
-import { onMounted, ref, Ref } from "vue";
+import ApiActiveSat from "@/renderer/api/ApiActiveSat.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import type { SelectOption } from "@/renderer/types/vue-types.js";
+import type { Ref } from "vue";
+import { onMounted, ref } from "vue";
 
 /**
  * アクティブ衛星グループ関係のフック
@@ -24,7 +25,7 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
   async function onChangeAppConfig() {
     // 表示対象の衛星グループを取得
     const satGrp = await ApiActiveSat.getActiveSatelliteGroup();
-    if (!satGrp || !satGrp.mainSattelliteTle) {
+    if (!satGrp || !satGrp.mainSatelliteOmm) {
       return;
     }
 

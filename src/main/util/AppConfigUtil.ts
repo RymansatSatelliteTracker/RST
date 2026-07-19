@@ -1,23 +1,25 @@
-import Constant from "@/common/Constant";
-import {
-  AppConfigMainDisplay,
-  AppConfigModel,
-  AppConfigSatellite,
-  AppConfigSatelliteGroup,
-} from "@/common/model/AppConfigModel";
-import { AppConfigRotatorDevice, AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel";
-import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
-import { AppConfigTransceiverDevice, AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel";
-import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService";
-import AppMainLogger from "@/main/util/AppMainLogger";
-import FileUtil from "@/main/util/FileUtil";
-import TransactionRegistry from "@/main/util/TransactionRegistry";
+import CommonUtil from "@/common/CommonUtil.js";
+import Constant from "@/common/Constant.js";
+import type { AppConfigMainDisplay, AppConfigSatellite } from "@/common/model/AppConfigModel.js";
+import { AppConfigModel, AppConfigSatelliteGroup } from "@/common/model/AppConfigModel.js";
+import type { AppConfigRotatorDevice, AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel.js";
+import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import type {
+  AppConfigTransceiverDevice,
+  AppConfigTransceiverModel,
+} from "@/common/model/AppConfigTransceiverModel.js";
+import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
+import FileUtil from "@/main/util/FileUtil.js";
+import OmmUtil from "@/main/util/OmmUtil.js";
+import TransactionRegistry from "@/main/util/TransactionRegistry.js";
 import Store from "electron-store";
 import * as path from "path";
 
 // 設定ファイル（JSON）のルートのキー名
 const CONFIG_ROOT_KEY = "param";
 
+// 軌道要素取得先のURLの初期値
 const DEFAULT_TLE_URL = [
   {
     enable: true,
@@ -25,31 +27,31 @@ const DEFAULT_TLE_URL = [
   },
   {
     enable: true,
-    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=amateur&FORMAT=TLE",
+    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=amateur&FORMAT=JSON",
   },
   {
     enable: true,
-    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=cubesat&FORMAT=TLE",
+    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=cubesat&FORMAT=JSON",
   },
   {
     enable: false,
-    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=geo&FORMAT=tle",
+    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=geo&FORMAT=JSON",
   },
   {
     enable: true,
-    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=stations&FORMAT=tle",
+    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=stations&FORMAT=JSON",
   },
   {
     enable: true,
-    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=last-30-days&FORMAT=tle",
+    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=last-30-days&FORMAT=JSON",
   },
   {
     enable: false,
-    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=visual&FORMAT=tle",
+    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=visual&FORMAT=JSON",
   },
   {
     enable: false,
-    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=weather&FORMAT=tle",
+    url: "https://celestrak.org/NORAD/elements/gp.php?GROUP=weather&FORMAT=JSON",
   },
 ];
 /**
@@ -66,7 +68,7 @@ export class AppConfigUtil {
     // 初期データファイルの配置
     AppConfigUtil.initTransceiverJson();
     AppConfigUtil.initRotatorJson();
-    AppConfigUtil.initDefautSatJson();
+    AppConfigUtil.initDefaultSatJson();
 
     // 設定ファイルが未作成の場合、初期値の設定を行う
     if (!FileUtil.exists(AppConfigUtil.store.path)) {
@@ -80,11 +82,43 @@ export class AppConfigUtil {
       return config;
     }
 
+    // 現アプリバージョンとアプリケーション設定のバージョンが異なる場合は、新定義に移行する
     // バージョンが異なる場合は、新定義に移行して保存する
     const mergedConfig = this.migrationConfig(config);
+
+    // ユーザ登録衛星のTLE→OMM移行(未移行分のみ反映する)
+    mergedConfig.satellites = mergedConfig.satellites.map((sat) => this.migrateSatelliteTleToOmm(sat));
     this.storeConfig(mergedConfig);
 
     return mergedConfig;
+  }
+
+  /**
+   * ユーザ登録衛星のTLE(userRegisteredTle)をOMM(userRegisteredOmm)に変換する
+   * 既にuserRegisteredOmmが設定されている場合は何もしない
+   */
+  private static migrateSatelliteTleToOmm(sat: AppConfigSatellite): AppConfigSatellite {
+    // ユーザ登録衛星でない場合は何もしない
+    if (!sat.userRegistered) {
+      return sat;
+    }
+    // ユーザ設定TLEが空の場合は何もしない
+    if (CommonUtil.isEmpty(sat.userRegisteredTle)) {
+      return sat;
+    }
+    // 既にユーザ設定OMMが設定されている場合は何もしない
+    if (!CommonUtil.isEmpty(sat.userRegisteredOmm)) {
+      return sat;
+    }
+
+    // ユーザ登録のTLEをOMMに変換する
+    const tleText = `${sat.userRegisteredSatelliteName}\n${sat.userRegisteredTle}`;
+    const items = OmmUtil.parseToOmmItems(tleText);
+    if (items.length > 0) {
+      sat.userRegisteredOmm = JSON.stringify(items[0]);
+    }
+
+    return sat;
   }
 
   /**
@@ -134,12 +168,14 @@ export class AppConfigUtil {
   /**
    * トランザクション中なら一時ファイルを優先して返す
    */
-  public static getConfigTransaction(): AppConfigModel {
-    const tempPath = TransactionRegistry.getActiveTempFilePath("appConfig");
+  public static getConfigTransaction(fileType: string = "appConfig"): AppConfigModel {
+    const tempPath = TransactionRegistry.getActiveTempFilePath(fileType);
     if (tempPath && FileUtil.exists(tempPath)) {
+      AppMainLogger.debug(`ファイル更新トランザクション中のため、一時ファイルを返します。 ${tempPath}`);
+
       const text = FileUtil.readText(tempPath);
-      const parsed = JSON.parse(text);
-      const appConfig = (parsed as any)[CONFIG_ROOT_KEY] as AppConfigModel;
+      const parsed = JSON.parse(text) as Record<string, unknown>;
+      const appConfig = parsed[CONFIG_ROOT_KEY] as AppConfigModel;
       if (!appConfig) {
         throw new Error("一時設定ファイルの内容が不正です。");
       }
@@ -317,7 +353,7 @@ export class AppConfigUtil {
   /**
    * デフォルト衛星定義の初期データファイルの配置を行う
    */
-  public static initDefautSatJson() {
+  public static initDefaultSatJson() {
     // 既にデフォルト衛星定義ファイルが存在する場合は処理終了
     const configPath = AppConfigUtil.getDefaultSatConfigPath();
     if (FileUtil.exists(configPath)) {
@@ -375,9 +411,17 @@ export class AppConfigUtil {
 
   /**
    * TLEファイルの保存先をフルパスで返す
+   * memo: omm.json移行のため新規書き込みはしないが、移行処理での読み込みに使用する
    */
   public static getTlePath() {
     return path.join(AppConfigUtil.getConfigDir(), Constant.Tle.TLE_FILENAME);
+  }
+
+  /**
+   * OMMファイルの保存先をフルパスで返す
+   */
+  public static getOmmPath() {
+    return path.join(AppConfigUtil.getConfigDir(), Constant.Omm.OMM_FILENAME);
   }
 
   /**

@@ -1,5 +1,5 @@
-import I18nMsgs from "@/common/I18nMsgs";
-import ValidatorResultModel from "@/main/common/model/ValidatorResultModel";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import ValidatorResultModel from "@/main/common/model/ValidatorResultModel.js";
 import * as zod from "zod";
 
 /**
@@ -86,6 +86,8 @@ const schemaSatellite = zod.object({
   userRegisteredSatelliteName: zod.string(),
   // ユーザ登録衛星TLE
   userRegisteredTle: zod.string(),
+  // ユーザ登録衛星OMM
+  userRegisteredOmm: zod.string().default(""),
   // 対象衛星NORAD ID
   noradId: zod.string(),
   // 自動モード時アップリンク設定
@@ -136,6 +138,7 @@ const schemaTransceiver = zod.object({
   ipPort: zod.string(),
   autoTrackingIntervalSec: zod.string(),
   autoTrackingStartEndTime: zod.string(),
+  dopplerResumeDelaySec: zod.string(),
   txFrequency: zod.string(),
   rxFrequency: zod.string(),
 });

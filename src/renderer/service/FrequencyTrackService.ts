@@ -1,8 +1,8 @@
-import Constant from "@/common/Constant";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import SatelliteService from "@/renderer/service/SatelliteService";
-import { EcefLocation } from "@/renderer/types/location-type";
-import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil";
+import Constant from "@/common/Constant.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import type SatelliteService from "@/renderer/service/SatelliteService.js";
+import type { EcefLocation } from "@/renderer/types/location-type.js";
+import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil.js";
 
 /**
  * 周波数計算サービス

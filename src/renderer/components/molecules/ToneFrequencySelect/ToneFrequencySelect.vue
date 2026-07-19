@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import Constant from "@/common/Constant";
+import Constant from "@/common/Constant.js";
 import { ref } from "vue";
 
 // 指定なしを選択可能にする

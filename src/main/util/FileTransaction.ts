@@ -1,10 +1,10 @@
-import { AppConfigModel } from "@/common/model/AppConfigModel";
-import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
-import { FileType } from "@/common/types/types";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
-import AppMainLogger from "@/main/util/AppMainLogger";
-import FileUtil from "@/main/util/FileUtil";
-import TransactionRegistry from "@/main/util/TransactionRegistry";
+import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import type { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import type { FileType } from "@/common/types/types.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
+import FileUtil from "@/main/util/FileUtil.js";
+import TransactionRegistry from "@/main/util/TransactionRegistry.js";
 
 /**
  * ファイルをトランザクション管理するクラス

@@ -1,6 +1,6 @@
-import CommonUtil from "@/common/CommonUtil";
-import { synchronized } from "@/common/decorator/synchronized";
-import AppMainLogger from "@/main/util/AppMainLogger";
+import CommonUtil from "@/common/CommonUtil.js";
+import { synchronized } from "@/common/decorator/synchronized.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
 import { ReadlineParser } from "@serialport/parser-readline";
 import { SerialPort } from "serialport";
 

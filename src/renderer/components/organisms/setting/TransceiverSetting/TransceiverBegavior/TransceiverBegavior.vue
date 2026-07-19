@@ -35,7 +35,6 @@
         <div class="d-flex mt-2">
           <label class="label form_label">{{ I18nUtil.getMsg(I18nMsgs.G41_DOPPLER_RESUME_DELAY) }}</label>
           <div class="form_select ml-2">
-            <!-- TODO main側の処理ができるまで非活性 -->
             <v-select
               v-model="form.dopplerResumeDelaySec"
               :items="doppleResumeDelaySecOptions"
@@ -43,7 +42,6 @@
               variant="outlined"
               density="compact"
               class="selectbox"
-              :disabled="true"
             />
           </div>
         </div>
@@ -56,9 +54,9 @@
 </template>
 
 <script setup lang="ts">
-import I18nMsgs from "@/common/I18nMsgs";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import TransceiverBegaviorForm from "./TransceiverBegaviorForm";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import type TransceiverBegaviorForm from "./TransceiverBegaviorForm.js";
 
 // 親との送受信
 const form = defineModel<TransceiverBegaviorForm>("form", { required: true });
@@ -76,5 +74,5 @@ const doppleResumeDelaySecOptions = Array.from({ length: 9 }, (_, i) => String(i
 </script>
 
 <style lang="scss" scoped>
-@import "./TransceiverBegavior.scss";
+@use "./TransceiverBegavior" as *;
 </style>

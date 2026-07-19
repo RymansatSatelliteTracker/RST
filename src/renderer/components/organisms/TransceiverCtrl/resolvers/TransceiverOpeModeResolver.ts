@@ -1,9 +1,9 @@
-import Constant from "@/common/Constant";
-import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
-import { ApiResponse } from "@/common/types/types";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import emitter from "@/renderer/util/EventBus";
-import { Ref } from "vue";
+import Constant from "@/common/Constant.js";
+import type { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
+import type { ApiResponse } from "@/common/types/types.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import emitter from "@/renderer/util/EventBus.js";
+import type { Ref } from "vue";
 
 /**
  * 運用モード反映で利用する画面状態

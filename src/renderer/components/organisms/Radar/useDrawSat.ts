@@ -1,7 +1,8 @@
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import { SatAzEl } from "@/renderer/types/satellite-type";
-import CanvasUtil from "@/renderer/util/CanvasUtil";
-import { computed, Ref } from "vue";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import type { SatAzEl } from "@/renderer/types/satellite-type.js";
+import CanvasUtil from "@/renderer/util/CanvasUtil.js";
+import type { Ref } from "vue";
+import { computed } from "vue";
 
 type CenterPosition = {
   x: number;

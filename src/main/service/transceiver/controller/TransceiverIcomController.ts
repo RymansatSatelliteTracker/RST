@@ -1,19 +1,19 @@
-import CommonUtil from "@/common/CommonUtil";
-import Constant from "@/common/Constant";
-import { synchronized } from "@/common/decorator/synchronized";
-import I18nMsgs from "@/common/I18nMsgs";
-import { AppConfigTransceiver } from "@/common/model/AppConfigModel";
-import { MessageModel } from "@/common/model/MessageModel";
-import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
-import { ApiResponse } from "@/common/types/types";
-import TransceiverUtil from "@/common/util/TransceiverUtil";
-import { fireIpcEvent } from "@/main/main";
-import TransceiverIcomCmdMaker, { CivCommand } from "@/main/service/transceiver/controller/TransceiverIcomCmdMaker";
-import TransceiverIcomRecvParser from "@/main/service/transceiver/controller/TransceiverIcomRecvParser";
-import TransceiverIcomState from "@/main/service/transceiver/controller/TransceiverIcomState";
-import TransceiverSerialControllerBase from "@/main/service/transceiver/controller/TransceiverSerialControllerBase";
-import AppMainLogger from "@/main/util/AppMainLogger";
-import I18nUtil4Main from "@/main/util/I18nUtil4Main";
+import CommonUtil from "@/common/CommonUtil.js";
+import Constant from "@/common/Constant.js";
+import { synchronized } from "@/common/decorator/synchronized.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { AppConfigTransceiver } from "@/common/model/AppConfigModel.js";
+import { MessageModel } from "@/common/model/MessageModel.js";
+import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
+import { ApiResponse } from "@/common/types/types.js";
+import TransceiverUtil from "@/common/util/TransceiverUtil.js";
+import { fireIpcEvent } from "@/main/main.js";
+import TransceiverIcomCmdMaker, { CivCommand } from "@/main/service/transceiver/controller/TransceiverIcomCmdMaker.js";
+import TransceiverIcomRecvParser from "@/main/service/transceiver/controller/TransceiverIcomRecvParser.js";
+import TransceiverIcomState from "@/main/service/transceiver/controller/TransceiverIcomState.js";
+import TransceiverSerialControllerBase from "@/main/service/transceiver/controller/TransceiverSerialControllerBase.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
+import I18nUtil4Main from "@/main/util/I18nUtil4Main.js";
 
 // 受信タイムアウト（秒）（起動時）
 const RECV_TIEOUT_SEC_FOR_BOOT = 2;

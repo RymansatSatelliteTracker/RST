@@ -1,14 +1,14 @@
-import CommonUtil from "@/common/CommonUtil";
-import Constant from "@/common/Constant";
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import { AppConfigRotator } from "@/common/model/AppConfigModel";
-import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking";
-import ApiSirial from "@/renderer/api/ApiSirial";
-import { useValidate } from "@/renderer/common/hook/useValidate";
-import RotatorConnForm from "@/renderer/components/organisms/setting/RotatorSetting/RotatorConn/RotatorConnForm";
-import { RotatorRage } from "@/renderer/types/rotator-types";
-import { Ref } from "vue";
-import { azTestRange, elTestRange, valiSchemaRotatorConn } from "./useRotatorConnValidate";
+import CommonUtil from "@/common/CommonUtil.js";
+import Constant from "@/common/Constant.js";
+import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import { AppConfigRotator } from "@/common/model/AppConfigModel.js";
+import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking.js";
+import ApiSirial from "@/renderer/api/ApiSirial.js";
+import { useValidate } from "@/renderer/common/hook/useValidate.js";
+import type RotatorConnForm from "@/renderer/components/organisms/setting/RotatorSetting/RotatorConn/RotatorConnForm.js";
+import type { RotatorRage } from "@/renderer/types/rotator-types.js";
+import type { Ref } from "vue";
+import { azTestRange, elTestRange, valiSchemaRotatorConn } from "./useRotatorConnValidate.js";
 
 /**
  * ローテーター制御関係のフック

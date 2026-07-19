@@ -6,10 +6,10 @@
       hide-details
       :error="!CommonUtil.isEmpty(errorText)"
       class="textarea"
-      @blur="onInput(model)"
       :rows="rows"
       :flat="true"
       no-resize
+      @blur="onInput(model)"
     >
     </v-textarea>
     <ValidateTooltip :target="errorText" />
@@ -17,8 +17,8 @@
 </template>
 
 <script setup lang="ts">
-import CommonUtil from "@/common/CommonUtil";
-import { useValidate } from "@/renderer/common/hook/useValidate";
+import CommonUtil from "@/common/CommonUtil.js";
+import { useValidate } from "@/renderer/common/hook/useValidate.js";
 import ValidateTooltip from "@/renderer/components/atoms/ValidateTooltip/ValidateTooltip.vue";
 import { onMounted } from "vue";
 

@@ -1,5 +1,5 @@
-import ApiCommon from "@/renderer/api/ApiCommon";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
+import ApiCommon from "@/renderer/api/ApiCommon.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
 import { onMounted, ref } from "vue";
 
 /**
