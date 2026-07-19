@@ -12,6 +12,8 @@
             <th>MAXEL</th>
             <th>LOS</th>
             <th>Duration</th>
+            <th>Altitude</th>
+            <th>Visibility</th>
           </tr>
         </thead>
 
@@ -29,12 +31,16 @@
               {{ DateUtil.formatDateTime(item.los?.date, { hour: "2-digit", minute: "2-digit" }) }}
             </td>
             <td>{{ DateUtil.formatMsToHHMMSS(item.durationMs) }}</td>
+            <td>{{ item.altitude }}</td>
+            <td>{{ item.visibility }}</td>
           </tr>
         </tbody>
 
         <!-- 単一地上局の場合のAOSリスト -->
         <tbody v-else class="aos_body">
           <tr v-if="orbitalPassList === null || orbitalPassList.length === 0">
+            <td>{{ I18nUtil.getMsg(I18nMsgs.GCOM_NA) }}</td>
+            <td>{{ I18nUtil.getMsg(I18nMsgs.GCOM_NA) }}</td>
             <td>{{ I18nUtil.getMsg(I18nMsgs.GCOM_NA) }}</td>
             <td>{{ I18nUtil.getMsg(I18nMsgs.GCOM_NA) }}</td>
             <td>{{ I18nUtil.getMsg(I18nMsgs.GCOM_NA) }}</td>
@@ -49,6 +55,8 @@
               {{ DateUtil.formatDateTime(item.los?.date, { hour: "2-digit", minute: "2-digit" }) }}
             </td>
             <td>{{ DateUtil.formatMsToHHMMSS(item.durationMs) }}</td>
+            <td>{{ item.altitude }}</td>
+            <td>{{ item.visibility }}</td>
           </tr>
         </tbody>
       </table>
