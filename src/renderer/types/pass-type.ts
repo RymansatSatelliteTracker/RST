@@ -7,6 +7,8 @@ export type PassesCache = {
   maxEl: PassData;
   los: PassData;
   durationMs: number | null;
+  altitude: number | null;
+  visibility: boolean | null;
 };
 
 // 仰角/方位角
