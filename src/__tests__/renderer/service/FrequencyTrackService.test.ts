@@ -14,13 +14,13 @@ import SatelliteService from "@/renderer/service/SatelliteService.js";
 describe("FrequencyTrackService", () => {
   beforeAll(() => {
     // 設定ファイルが扱えないため
-    vi.spyOn(ApiAppConfig, "getAppConfig").mockImplementation(async () => {
+    vi.spyOn(ApiAppConfig, "getAppConfig").mockImplementation(() => {
       const appConfigModel = new AppConfigModel();
       // 衛星通信入門では神奈川に受信局があるため神奈川の適当な場所を指定する
       appConfigModel.groundStation.lat = 35.384;
       appConfigModel.groundStation.lon = 139.61;
       appConfigModel.groundStation.height = 10.0;
-      return appConfigModel;
+      return Promise.resolve(appConfigModel);
     });
   });
 

@@ -14,11 +14,11 @@ function useTransceiverDevices(makerIdRef: ModelRef<string>, selectedVal: ModelR
   const transceiverDevices = ref<SelectOption[]>();
 
   // ダイアログ表示時のSelectBox再表示
-  getTransceiverDevices(makerIdRef.value, needEmpty);
+  void getTransceiverDevices(makerIdRef.value, needEmpty);
 
   // メーカー名の変更時に機種の選択リストを変動させる
   watch(makerIdRef, () => {
-    getTransceiverDevices(makerIdRef.value, needEmpty);
+    void getTransceiverDevices(makerIdRef.value, needEmpty);
   });
 
   return {

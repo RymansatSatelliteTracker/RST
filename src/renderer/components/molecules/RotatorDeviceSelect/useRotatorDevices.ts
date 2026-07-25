@@ -14,11 +14,11 @@ function useRotatorDevices(makerIdRef: ModelRef<string>, selectedVal: ModelRef<s
   const rotatorDevices = ref<SelectOption[]>();
 
   // ダイアログ表示時のSelectBox再表示
-  getRotatorDevices(makerIdRef.value, needEmpty);
+  void getRotatorDevices(makerIdRef.value, needEmpty);
 
   // メーカー名の変更時に機種の選択リストを変動させる
   watch(makerIdRef, () => {
-    getRotatorDevices(makerIdRef.value, needEmpty);
+    void getRotatorDevices(makerIdRef.value, needEmpty);
   });
 
   return {

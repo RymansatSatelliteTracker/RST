@@ -36,8 +36,8 @@ export default class RotatorSt2Controller extends RotatorSerialControllerBase {
     this.isReceived = false;
 
     // 一定間隔でアンテナ位置の取得コマンドを送信する
-    this.timer = setInterval(async () => {
-      await this.sendGetAzElCommand();
+    this.timer = setInterval(() => {
+      void this.sendGetAzElCommand();
     }, 1000);
 
     return new ApiResponse(true);
@@ -112,7 +112,7 @@ export default class RotatorSt2Controller extends RotatorSerialControllerBase {
       const el = parseFloat(cols[2]);
 
       return new AntennaPositionModel(az, el);
-    } catch (error) {
+    } catch {
       return null;
     }
   }

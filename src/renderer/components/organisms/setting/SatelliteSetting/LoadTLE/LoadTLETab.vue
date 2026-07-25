@@ -75,7 +75,7 @@ async function onOk(): Promise<string> {
   if (items.value.length === 0) return I18nUtil.getMsg(I18nMsgs.CHK_ERR_NO_URL);
 
   // バリデーションチェック
-  for await (const item of items.value) {
+  for (const item of items.value) {
     const result = await validateForm(item);
     if (!result) {
       // validateFormではerrorsの方に設定されるのでこちらからメッセージを取る

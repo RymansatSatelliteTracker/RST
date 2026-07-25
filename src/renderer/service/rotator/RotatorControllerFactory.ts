@@ -13,7 +13,14 @@ export default class RotatorControllerFactory {
   /**
    * RotatorController を生成する
    */
-  public static async getController(deviceConfig: AppConfigRotatorDevice): Promise<RotatorControllerBase> {
+  public static getController(deviceConfig: AppConfigRotatorDevice): Promise<RotatorControllerBase> {
+    return Promise.resolve(this.selectController(deviceConfig));
+  }
+
+  /**
+   * 機器種別に応じたRotatorControllerを選択する
+   */
+  private static selectController(deviceConfig: AppConfigRotatorDevice): RotatorControllerBase {
     switch (deviceConfig.commnadType) {
       // Bluetooth AZ/EL Rotator
       case Constant.Rotator.CmdType.BT_AZ_EL_ROTATOR:

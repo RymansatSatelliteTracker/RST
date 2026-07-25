@@ -38,7 +38,7 @@ export default class CommonUtil {
    * @param fractionDegits 小数部桁数
    */
   public static numFormat(inValue: number | string | null | undefined, fractionDegits: number): string {
-    if (inValue != 0 && !inValue) {
+    if (inValue !== 0 && inValue !== "0" && !inValue) {
       return "";
     }
 

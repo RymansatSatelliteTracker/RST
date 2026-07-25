@@ -99,7 +99,7 @@ watch(isShow, async (newValue) => {
   tab.value = "device";
   currentTab.value = "device";
 
-  reloadConfig();
+  void reloadConfig();
 });
 
 /**
@@ -107,7 +107,7 @@ watch(isShow, async (newValue) => {
  */
 async function reloadConfig() {
   // ローテーターの監視を終了する
-  ApiTransceiver.stopCtrl();
+  void ApiTransceiver.stopCtrl();
 
   // データの取得
   const transceiverConfig = await ApiAppConfig.getAppConfig();

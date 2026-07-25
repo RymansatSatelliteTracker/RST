@@ -17,7 +17,7 @@ export async function getUrlofInvalidContents(
     return [];
   }
   const invalidUrls: AppConfigTleUrl[] = [];
-  for await (const item of newlyEnabledUrls) {
+  for (const item of newlyEnabledUrls) {
     const canGet = await ApiOmm.canGetValidOmm(item.url);
     if (!canGet) {
       AppRendererLogger.warn(`指定のURLで軌道要素データが取得できませんでした。 ${item.url} `);

@@ -16,7 +16,7 @@ export default function useTransceiverTestConnect(
   form: Ref<TransceiverConnForm>,
   isSerialOpen: Ref<boolean>,
   loadingTestBtn: Ref<boolean>,
-  startNewConnect: () => Promise<void>
+  _startNewConnect: () => Promise<void>
 ) {
   /**
    * 接続テストが可能か

@@ -29,7 +29,9 @@ const dopplerShiftModeRange = ref(
     props: { disabled: mode !== DopplerShiftMode.FIXED_SAT },
   }))
 );
-const dopplerShiftMode = defineModel("dopplerShiftMode", { default: Constant.Transceiver.DopplerShiftMode.FIXED_SAT });
+const dopplerShiftMode = defineModel<string>("dopplerShiftMode", {
+  default: Constant.Transceiver.DopplerShiftMode.FIXED_SAT,
+});
 </script>
 
 <style lang="scss" scoped></style>

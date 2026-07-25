@@ -56,7 +56,7 @@ export function normalizeData(source: any, template: any): any {
 
   const result: any = {};
   for (const key in template) {
-    if (template.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(template, key)) {
       result[key] = normalizeData(source?.[key], template[key]);
     }
   }

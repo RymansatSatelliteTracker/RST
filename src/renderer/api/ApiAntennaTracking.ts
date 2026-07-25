@@ -38,8 +38,8 @@ export default class ApiAntennaTracking {
   /**
    * アンテナ位置の変更イベント
    */
-  public static async onChangeAntennaPosition(callback: Function) {
-    await window.rstApi.onChangeAntennaPosition(callback);
+  public static onChangeAntennaPosition(callback: Function) {
+    window.rstApi.onChangeAntennaPosition(callback);
   }
 
   /**
@@ -52,7 +52,7 @@ export default class ApiAntennaTracking {
   /**
    * ローテータのデバイスが切断された際のイベント
    */
-  public static async onRoratorDisconnect(callback: Function) {
-    await window.rstApi.onRoratorDisconnect(callback);
+  public static onRoratorDisconnect(callback: Function) {
+    window.rstApi.onRoratorDisconnect(callback);
   }
 }

@@ -160,69 +160,62 @@ class OverlapPassesService extends GroundStationService {
     }
 
     // 2か所の地上局で重複するパスを探索する
-    const overlappingPeriods = await Promise.all(
-      passesCache1.flatMap(async (pass1) => {
-        const overlaps = await Promise.all(
-          passesCache2
-            .filter(
-              (pass2) =>
-                pass1 &&
-                pass1.aos &&
-                pass1.los &&
-                pass2 &&
-                pass2.aos &&
-                pass2.los &&
-                pass1.aos.date <= pass2.los.date &&
-                pass1.los.date >= pass2.aos.date
-            )
-            .map(async (pass2) => {
-              if (pass1 && pass1.aos && pass1.maxEl && pass1.los && pass2 && pass2.aos && pass2.los) {
-                // 重複するパスの日時期間(開始)を取得する
-                const overlapStartDate = new Date(Math.max(pass1.aos.date.getTime(), pass2.aos.date.getTime()));
-                // 重複するパスの日時期間(終了)を取得する
-                const overlapEndDate = new Date(Math.min(pass1.los.date.getTime(), pass2.los.date.getTime()));
-                // 重複するパスの日時期間(開始)から人工衛星の位置を取得する
-                const startTargetLocation = this._satelliteService.getTargetPolarLocationInDegree(overlapStartDate);
-                // 重複するパスの日時期間(終了)から人工衛星の位置を取得する
-                const endTargetLocation = this._satelliteService.getTargetPolarLocationInDegree(overlapEndDate);
-                // 重複するパスの日時期間(開始)から地上局1(自局)で観測できる人工衛星の仰角/方位角を取得する
-                const startTargetLookAngles = this._groundStation1.getSatelliteLookAngles(overlapStartDate);
-                // 重複するパスの日時期間(終了)から地上局1(自局)で観測できる人工衛星の仰角/方位角を取得する
-                const endTargetLookAngles = this._groundStation1.getSatelliteLookAngles(overlapEndDate);
-                if (!startTargetLocation || !endTargetLocation) {
-                  // 人工衛星が消滅した場合はnullを返却する
-                  return null;
-                }
-                // MaxElは地上局1(自局)で観測できる人工衛星の仰角を設定する
-                let overlapMaxEl1: PassData = pass1.maxEl;
-                if (overlapMaxEl1.date < overlapStartDate || overlapEndDate < overlapMaxEl1.date) {
-                  // 地上局1(自局)のMaxElが可視範囲外の場合は可視範囲内のMaxElを再取得する
-                  overlapMaxEl1 = await this._recalculateMaxElInRangeAsync(
-                    overlapStartDate.getTime(),
-                    overlapEndDate.getTime()
-                  );
-                }
-                // 重複するパスを返却する
-                return {
-                  aos: {
-                    date: overlapStartDate,
-                    lookAngles: startTargetLookAngles,
-                    satLocation: startTargetLocation,
-                  } as PassData,
-                  maxEl: overlapMaxEl1,
-                  los: {
-                    date: overlapEndDate,
-                    lookAngles: endTargetLookAngles,
-                    satLocation: endTargetLocation,
-                  } as PassData,
-                  durationMs: (overlapEndDate.getTime() - overlapStartDate.getTime()) as number | null,
-                };
-              }
-            })
-        );
-        return overlaps.filter((overlapPass): overlapPass is PassesCache => overlapPass != null);
-      })
-    );
+    const overlappingPeriods = passesCache1.flatMap((pass1) => {
+      const overlaps = passesCache2
+        .filter(
+          (pass2) =>
+            pass1 &&
+            pass1.aos &&
+            pass1.los &&
+            pass2 &&
+            pass2.aos &&
+            pass2.los &&
+            pass1.aos.date <= pass2.los.date &&
+            pass1.los.date >= pass2.aos.date
+        )
+        .map((pass2) => {
+          if (pass1 && pass1.aos && pass1.maxEl && pass1.los && pass2 && pass2.aos && pass2.los) {
+            // 重複するパスの日時期間(開始)を取得する
+            const overlapStartDate = new Date(Math.max(pass1.aos.date.getTime(), pass2.aos.date.getTime()));
+            // 重複するパスの日時期間(終了)を取得する
+            const overlapEndDate = new Date(Math.min(pass1.los.date.getTime(), pass2.los.date.getTime()));
+            // 重複するパスの日時期間(開始)から人工衛星の位置を取得する
+            const startTargetLocation = this._satelliteService.getTargetPolarLocationInDegree(overlapStartDate);
+            // 重複するパスの日時期間(終了)から人工衛星の位置を取得する
+            const endTargetLocation = this._satelliteService.getTargetPolarLocationInDegree(overlapEndDate);
+            // 重複するパスの日時期間(開始)から地上局1(自局)で観測できる人工衛星の仰角/方位角を取得する
+            const startTargetLookAngles = this._groundStation1.getSatelliteLookAngles(overlapStartDate);
+            // 重複するパスの日時期間(終了)から地上局1(自局)で観測できる人工衛星の仰角/方位角を取得する
+            const endTargetLookAngles = this._groundStation1.getSatelliteLookAngles(overlapEndDate);
+            if (!startTargetLocation || !endTargetLocation) {
+              // 人工衛星が消滅した場合はnullを返却する
+              return null;
+            }
+            // MaxElは地上局1(自局)で観測できる人工衛星の仰角を設定する
+            let overlapMaxEl1: PassData = pass1.maxEl;
+            if (overlapMaxEl1.date < overlapStartDate || overlapEndDate < overlapMaxEl1.date) {
+              // 地上局1(自局)のMaxElが可視範囲外の場合は可視範囲内のMaxElを再取得する
+              overlapMaxEl1 = this._recalculateMaxElInRangeAsync(overlapStartDate.getTime(), overlapEndDate.getTime());
+            }
+            // 重複するパスを返却する
+            return {
+              aos: {
+                date: overlapStartDate,
+                lookAngles: startTargetLookAngles,
+                satLocation: startTargetLocation,
+              } as PassData,
+              maxEl: overlapMaxEl1,
+              los: {
+                date: overlapEndDate,
+                lookAngles: endTargetLookAngles,
+                satLocation: endTargetLocation,
+              } as PassData,
+              durationMs: (overlapEndDate.getTime() - overlapStartDate.getTime()) as number | null,
+            };
+          }
+        });
+      return overlaps.filter((overlapPass): overlapPass is PassesCache => overlapPass != null);
+    });
 
     return overlappingPeriods.flat();
   };
@@ -233,7 +226,7 @@ class OverlapPassesService extends GroundStationService {
    * @param {number} endTime 探索終了日時
    * @returns {Promise<PassData>} パスの最大仰角
    */
-  private _recalculateMaxElInRangeAsync = async (startTime: number, endTime: number): Promise<PassData> => {
+  private _recalculateMaxElInRangeAsync = (startTime: number, endTime: number): PassData => {
     // 探索終了日時を取得する
     const searchEndMin = (endTime - startTime) / Constant.Time.MILLISECONDS_IN_MINUTE;
     // パスの最大仰角探索時の周期ステップ数を初期化する

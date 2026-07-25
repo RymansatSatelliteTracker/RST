@@ -20,7 +20,7 @@ import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
 
 const enable = defineModel<boolean>("enable");
 const url = defineModel<string>("url");
-const validSchema: any = defineModel("validSchema");
+const validSchema: any = defineModel<object>("validSchema");
 const errorsTleUrl = defineModel<string>("errorsTleUrl");
 </script>
 <style lang="scss" scoped></style>

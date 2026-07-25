@@ -9,7 +9,7 @@
 import Button from "@/renderer/components/atoms/Button/Button.vue";
 import { ref, watch } from "vue";
 
-const mode = defineModel("mode", { required: true, default: "" });
+const mode = defineModel<string>("mode", { required: true, default: "" });
 const modeRange = defineModel<string[]>("modeRange", { default: ["", ""], required: true });
 const emit = defineEmits(["update:mode"]);
 
@@ -55,7 +55,7 @@ watch(
 /**
  * ボタンクリック
  */
-async function btnClick(btnmode: string) {
+function btnClick(btnmode: string) {
   // 次のモードを取得する
   mode.value = getNextMode(btnmode);
 }

@@ -191,7 +191,7 @@ async function onOk() {
   setSettingModel.satelliteGroupsForSatSetting = JSON.parse(JSON.stringify(toRaw(satelliteGroupsLocal.value)));
 
   // 保存
-  ApiAppConfig.storeAppSatSettingConfig(setSettingModel);
+  void ApiAppConfig.storeAppSatSettingConfig(setSettingModel);
 
   // 親に通知(ダイアログクローズ)
   emits("onOk", JSON.parse(JSON.stringify(toRaw(satelliteGroupsLocal.value))));
@@ -200,7 +200,7 @@ async function onOk() {
 /**
  * ダイアログを閉じるボタンで閉じる
  */
-async function onCancel() {
+function onCancel() {
   // 親に通知(ダイアログクローズ)
   emits("onCancel");
 }

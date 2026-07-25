@@ -46,12 +46,12 @@ onMounted(() => {
 
 // 親に通知用のイベント
 //const emits = defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
-const emits = defineEmits(["onConfirmOk", "onConfirmCancel", "update:isConfirmShow"]);
+defineEmits(["onConfirmOk", "onConfirmCancel", "update:isConfirmShow"]);
 
 /**
  * ダイアログでボタンを押下したときの処理
  */
-async function handleConfirm(result: boolean) {
+function handleConfirm(result: boolean) {
   isShow.value = false;
   if (resolveCallback) {
     resolveCallback(result);

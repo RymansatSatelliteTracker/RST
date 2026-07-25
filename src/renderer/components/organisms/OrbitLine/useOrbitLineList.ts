@@ -169,7 +169,7 @@ export default function useOrbitLineList(
 
     // 10秒ごとに軌道を更新する
     intervalId = window.setInterval(() => {
-      updateOrbit();
+      void updateOrbit();
     }, ORBIT_UPDATE_INTERVAL) as number;
   });
 
@@ -185,7 +185,7 @@ export default function useOrbitLineList(
 
   // currentDateの変更を監視して1500ms以上増減した場合は軌道配列を更新する
   let lastDate = currentDate.value.getTime();
-  watch(currentDate, async () => {
+  watch(currentDate, () => {
     // イベント送信中の場合は処理終了
     // memo: 軌道更新中に再度日時更新のイベントが発生した場合に、非同期で複数の軌道更新処理が発生して落ちるため、更新中は処理をスキップする。
     //       最終的な日時（currentDate）で軌道計算されるため、スキップしても最終イベントの日時で処理されるので、問題はない。
@@ -193,15 +193,17 @@ export default function useOrbitLineList(
       return;
     }
 
-    setTimeout(async () => {
-      // 前回の日時とcurrentDateを比較し、1500ms以上経過している場合は軌道配列を更新する
-      const newTime = currentDate.value.getTime();
-      if (Math.abs(newTime - lastDate) > 1500) {
-        await updateOrbit();
-      }
-      lastDate = newTime;
+    setTimeout(() => {
+      void (async () => {
+        // 前回の日時とcurrentDateを比較し、1500ms以上経過している場合は軌道配列を更新する
+        const newTime = currentDate.value.getTime();
+        if (Math.abs(newTime - lastDate) > 1500) {
+          await updateOrbit();
+        }
+        lastDate = newTime;
 
-      updating = false;
+        updating = false;
+      })();
     }, 100);
 
     updating = true;

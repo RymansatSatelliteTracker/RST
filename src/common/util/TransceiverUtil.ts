@@ -6,7 +6,7 @@ import CommonUtil from "@/common/CommonUtil.js";
  */
 export default class TransceiverUtil {
   /**
-   * 数値　→ ドット区切り文字列
+   * 数値 → ドット区切り文字列
    * @param hz
    * @returns
    */

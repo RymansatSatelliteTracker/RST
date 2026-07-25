@@ -141,7 +141,7 @@ import useTransceiverTestConnect from "./useTransceiverTestConnect.js";
 const form = defineModel<TransceiverConnForm>("form", { required: true });
 
 // ダイアログの表示可否
-const emits = defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
+defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
 
 // 「更新」クリック時に更新ボタン側のメソッドをコールするためのref
 const serialPortSelectRef = ref();

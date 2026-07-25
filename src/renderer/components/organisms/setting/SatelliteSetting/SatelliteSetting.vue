@@ -85,7 +85,7 @@ const emits = defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
 
 onMounted(() => {
   // 表示時に設定ファイルを読み込む
-  getAppConfig();
+  void getAppConfig();
 });
 
 /**

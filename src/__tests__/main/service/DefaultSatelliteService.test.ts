@@ -62,6 +62,12 @@ describe("DefaultSatelliteService", () => {
     vi.spyOn(AppConfigUtil, "saveTleLastRetrievedDate").mockImplementation(() => {});
   });
 
+  beforeEach(() => {
+    // omm.jsonはmtimeをキーにした静的キャッシュを持つため、テスト間でファイルを差し替える前にキャッシュをクリアする
+    // memo: ファイルコピーが同一mtime内に連続すると、前のテストのOMMデータが残ってしまうため
+    OmmService.resetCache();
+  });
+
   /**
    * リフレッシュ1:TLEあり=>デフォルト衛星定義は残す
    */
