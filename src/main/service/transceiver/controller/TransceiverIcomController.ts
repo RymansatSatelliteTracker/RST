@@ -730,71 +730,78 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   @synchronized()
   private async sendAndSyncRecv(cmdData: Uint8Array, targetCmdType: CommandType): Promise<string> {
     return new Promise((resolve, _reject) => {
+      let timeout: NodeJS.Timeout;
+
+      const resetCallback = () => {
+        this.recvCallbackType = null;
+        clearTimeout(timeout);
+      };
+
       void (async () => {
-        if (!(await this.checkRecvTimeout())) {
-          resolve("TIMEOUT");
-          return;
-        }
+        try {
+          if (!(await this.checkRecvTimeout())) {
+            resolve("TIMEOUT");
+            return;
+          }
 
-        let timeout: NodeJS.Timeout;
+          // データ受信
+          const onData = (recvData: string, recvCmdType: string) => {
+            if (!this.recvCallbackType) {
+              resetCallback();
+              resolve(recvData);
+              return;
+            }
 
-        const resetCallback = () => {
-          this.recvCallbackType = null;
-          clearTimeout(timeout);
-        };
+            // AppMainLogger.debug(`onData: recv=${recvCmdType}, data=${recvData}`);
 
-        // データ受信
-        const onData = (recvData: string, recvCmdType: string) => {
-          if (!this.recvCallbackType) {
+            // 待ち受けがGET系だが、他のデータが飛んできた場合は無視
+            if (targetCmdType.startsWith("GET") && recvCmdType !== targetCmdType) {
+              return;
+            }
+
+            // 送信に対する受信が来たので、応答を返す
             resetCallback();
             resolve(recvData);
-            return;
+          };
+
+          // コールバック制御データの作成
+          this.recvCallbackType = this.makeRecvCallback(targetCmdType);
+          this.recvCallback = null;
+          // 応答アリのコマンドの場合は、コールバックを設定する
+          if (this.recvCallbackType.isResponsive) {
+            this.recvCallback = onData;
           }
 
-          // AppMainLogger.debug(`onData: recv=${recvCmdType}, data=${recvData}`);
+          // 応答ありのコマンドはタイムアウト設定を行う
+          if (this.recvCallbackType.isResponsive) {
+            timeout = setTimeout(() => {
+              // 応答タイムアウトは発生しうるためログ出力を行い、処理は継続する
+              // MEMO: 必要に応じてコメント解除してください
+              // AppMainLogger.warn(
+              //   `無線機からの応答タイムアウトが発生しました。 ${targetCmdType} コマンド：${Buffer.from(cmdData).toString("hex")}`
+              // );
 
-          // 待ち受けがGET系だが、他のデータが飛んできた場合は無視
-          if (targetCmdType.startsWith("GET") && recvCmdType !== targetCmdType) {
-            return;
+              resetCallback();
+              // タイムアウト応答
+              resolve("TIMEOUT");
+            }, RECV_TIMEOUT_MSEC);
           }
 
-          // 送信に対する受信が来たので、応答を返す
-          resetCallback();
-          resolve(recvData);
-        };
+          // AppMainLogger.debug(`データ送信（RST→無線機） ${targetCmdType} ${Buffer.from(cmdData).toString("hex")}`);
 
-        // コールバック制御データの作成
-        this.recvCallbackType = this.makeRecvCallback(targetCmdType);
-        this.recvCallback = null;
-        // 応答アリのコマンドの場合は、コールバックを設定する
-        if (this.recvCallbackType.isResponsive) {
-          this.recvCallback = onData;
-        }
+          // データ送信
+          await super.sendSerial(cmdData);
 
-        // 応答ありのコマンドはタイムアウト設定を行う
-        if (this.recvCallbackType.isResponsive) {
-          timeout = setTimeout(() => {
-            // 応答タイムアウトは発生しうるためログ出力を行い、処理は継続する
-            // MEMO: 必要に応じてコメント解除してください
-            // AppMainLogger.warn(
-            //   `無線機からの応答タイムアウトが発生しました。 ${targetCmdType} コマンド：${Buffer.from(cmdData).toString("hex")}`
-            // );
-
+          // 応答なしのコマンドは、送信後に処理を終了する
+          if (!this.recvCallbackType.isResponsive) {
             resetCallback();
-            // タイムアウト応答
-            resolve("TIMEOUT");
-          }, RECV_TIMEOUT_MSEC);
-        }
-
-        // AppMainLogger.debug(`データ送信（RST→無線機） ${targetCmdType} ${Buffer.from(cmdData).toString("hex")}`);
-
-        // データ送信
-        await super.sendSerial(cmdData);
-
-        // 応答なしのコマンドは、送信後に処理を終了する
-        if (!this.recvCallbackType.isResponsive) {
+            resolve("");
+          }
+        } catch (e) {
+          // 送信失敗時もPromiseがpendingのまま残らないよう、タイムアウト扱いとして解決する
+          AppMainLogger.warn(`${targetCmdType}のデータ送信に失敗しました。 ${String(e)}`);
           resetCallback();
-          resolve("");
+          resolve("TIMEOUT");
         }
       })();
     });
