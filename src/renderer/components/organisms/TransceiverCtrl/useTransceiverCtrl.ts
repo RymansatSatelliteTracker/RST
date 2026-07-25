@@ -124,8 +124,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   async function startUpdateFreqInterval(intervalMs: number) {
     const appConfig = await ApiAppConfig.getAppConfig();
     coordinator.setTimerId(
-      setInterval(async () => {
-        await updateFreq(appConfig);
+      setInterval(() => {
+        void updateFreq(appConfig);
       }, intervalMs)
     );
   }
@@ -324,7 +324,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   /**
    * 画面でTx補正値が変更された場合
    */
-  watch(txFrequencyAdjustment, async (newFreq) => {
+  watch(txFrequencyAdjustment, async (_newFreq) => {
     // 基準周波数を更新する
     calcBaseFreqWithAdjust();
 
@@ -334,7 +334,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   /**
    * 画面でTx周波数が変更された場合
    */
-  watch(diffTxFrequency, async (newDiffFrequency) => {
+  watch(diffTxFrequency, (newDiffFrequency) => {
     if (newDiffFrequency === 0.0) {
       // 変化量が0の場合は何もしない
       return;
@@ -377,7 +377,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   /**
    * 画面でRx補正値が変更された場合に、補正値を反映した周波数を無線機に送信する
    */
-  watch(rxFrequencyAdjustment, async (newFreq) => {
+  watch(rxFrequencyAdjustment, async (_newFreq) => {
     // サテライトモードがOFFの場合はなにもしない
     if (!isSatelliteMode.value) {
       return;
@@ -392,7 +392,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   /**
    * 画面でRx周波数が変更された場合
    */
-  watch(diffRxFrequency, async (newDiffFrequency) => {
+  watch(diffRxFrequency, (newDiffFrequency) => {
     onDiffRxFrequencyChanged(newDiffFrequency);
   });
 

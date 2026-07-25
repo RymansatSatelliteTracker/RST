@@ -207,7 +207,7 @@ const apiHandler = {
    * ローテータ関係・ローテータのデバイスが切断された際のイベント
    */
   onRoratorDisconnect: (callback: Function) => {
-    ipcRenderer.on("onRoratorDisconnect", (event: IpcRendererEvent) => {
+    ipcRenderer.on("onRoratorDisconnect", (_event: IpcRendererEvent) => {
       callback();
     });
   },
@@ -349,7 +349,7 @@ const apiHandler = {
    * mainWindow.webContents.send("openFrequencyEditor");
    */
   onOpenFrequencyEditor: (callback: Function) => {
-    ipcRenderer.on("openFrequencyEditor", (event: IpcRendererEvent) => {
+    ipcRenderer.on("openFrequencyEditor", (_event: IpcRendererEvent) => {
       callback();
     });
   },
@@ -359,7 +359,7 @@ const apiHandler = {
    * mainWindow.webContents.send("onSaveTransceiverFrequency");
    */
   onSaveTransceiverFrequency: (callback: Function) => {
-    ipcRenderer.on("onSaveTransceiverFrequency", (event: IpcRendererEvent) => {
+    ipcRenderer.on("onSaveTransceiverFrequency", (_event: IpcRendererEvent) => {
       callback();
     });
   },

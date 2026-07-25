@@ -133,7 +133,7 @@ const autoStore = useStoreAutoState();
 
 onMounted(() => {
   // 衛星位置の描画開始
-  startTraking();
+  void startTraking();
 
   // アンテナの位置変化を取得し、positionを更新する
   ApiAntennaTracking.onChangeAntennaPosition((res: ApiResponse<AntennaPositionModel>) => {
@@ -179,7 +179,7 @@ watch(destPosition as Ref<AntennaPositionModel>, (newValue: AntennaPositionModel
 
   // シリアライズ可能なオブジェクトにしてから渡す
   const pos = JSON.parse(JSON.stringify(newValue));
-  ApiAntennaTracking.setAntennaPosition(pos);
+  void ApiAntennaTracking.setAntennaPosition(pos);
 });
 
 /**

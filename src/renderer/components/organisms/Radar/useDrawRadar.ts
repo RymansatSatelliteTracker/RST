@@ -20,7 +20,7 @@ export default function useDrawRadar(
   radiusPx: number,
   centerPos: CenterPosition
 ) {
-  onMounted(async () => {
+  onMounted(() => {
     const element = canvasRef.value;
     const context = element ? element.getContext("2d") : null;
     if (!context) return;

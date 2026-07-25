@@ -48,7 +48,7 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
       selectedSatGroupId.value = items.value[0].value;
 
       // AppConfigの更新
-      updateAppConfig(items.value[0].value);
+      void updateAppConfig(items.value[0].value);
     }
   }
 

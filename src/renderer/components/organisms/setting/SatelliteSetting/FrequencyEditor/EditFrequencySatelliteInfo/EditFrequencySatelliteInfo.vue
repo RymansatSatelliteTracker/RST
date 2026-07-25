@@ -95,7 +95,7 @@ async function onOk() {
 /**
  * ダイアログを閉じるボタンで閉じる
  */
-async function onCancel() {
+function onCancel() {
   emits("onCancel");
 }
 
@@ -103,7 +103,7 @@ async function onCancel() {
  * リセットボタン押下時の処理
  * ダイアログを開いた時点の値に戻す
  */
-async function onReset() {
+function onReset() {
   if (!originalForm.value) return;
   form.value = structuredClone(toRaw(originalForm.value));
   manualEditFlg.value = false;

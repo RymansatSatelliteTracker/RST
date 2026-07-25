@@ -100,7 +100,7 @@ watch(isShow, async (newValue) => {
   tab.value = "device";
   currentTab.value = "device";
 
-  reloadConfig();
+  void reloadConfig();
 });
 
 /**
@@ -108,7 +108,7 @@ watch(isShow, async (newValue) => {
  */
 async function reloadConfig() {
   // ローテーターの監視を終了する
-  ApiAntennaTracking.stopCtrl();
+  void ApiAntennaTracking.stopCtrl();
 
   // データの取得
   const appConfig = await ApiAppConfig.getAppConfig();
@@ -176,7 +176,7 @@ async function onOk() {
 /**
  * キャンセルクリック
  */
-async function cancelClick() {
+function cancelClick() {
   // シリアル接続、ローテータ状態の監視開始（機器設定のメソッドをコール）
   // memo: キャンセルクリック時に待たさせるのを避けるためawaitは敢えて付けてない。
   refRotatorConn.value.startNewConnect();

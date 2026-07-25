@@ -110,7 +110,7 @@ export default class TransceiverService {
    */
   public async changeDevice(transceiverConfig: AppConfigTransceiver) {
     // デバイスの切断、コールバックの解除
-    this.resetDevice();
+    await this.resetDevice();
 
     // コントローラを設定し直す
     this.controller = await TransceiverControllerFactory.getController(transceiverConfig);
@@ -118,22 +118,24 @@ export default class TransceiverService {
 
   /**
    * 無線機周波数の変更イベントを設定する
+   * @param this 疑似引数
    */
-  private onChangeTransceiverFrequency(res: ApiResponse<UplinkType | DownlinkType>) {
+  private onChangeTransceiverFrequency(this: void, res: ApiResponse<UplinkType | DownlinkType>) {
     getMainWindow().webContents.send("onChangeTransceiverFrequency", res);
   }
 
   /**
    * 無線機モードの変更イベントを設定する
+   * @param this 疑似引数
    */
-  private onChangeTransceiverMode(res: ApiResponse<UplinkType | DownlinkType>) {
+  private onChangeTransceiverMode(this: void, res: ApiResponse<UplinkType | DownlinkType>) {
     getMainWindow().webContents.send("onChangeTransceiverMode", res);
   }
 
   /**
    * 無線機の周波数の変動コールバックを設定する
    */
-  public async setFrequencyCallback(callback: Function) {
+  public setFrequencyCallback(callback: Function) {
     if (!this.isReady()) {
       return;
     }
@@ -144,7 +146,7 @@ export default class TransceiverService {
   /**
    * 無線機の運用モードの変動コールバックを設定する
    */
-  public async setModeCallback(callback: Function) {
+  public setModeCallback(callback: Function) {
     if (!this.isReady()) {
       return;
     }
@@ -154,15 +156,16 @@ export default class TransceiverService {
 
   /**
    * ドップラーシフト待機イベントを設定する
+   * @param this 疑似引数
    */
-  private dopplerShiftWaitingCallback(res: ApiResponse<UplinkType | DownlinkType>) {
+  private dopplerShiftWaitingCallback(this: void, res: ApiResponse<UplinkType | DownlinkType>) {
     getMainWindow().webContents.send("dopplerShiftWaitingCallback", res);
   }
 
   /**
    * 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機するコールバックを設定する
    */
-  public async setIsDopplerShiftWaitingCallback(callback: Function) {
+  public setIsDopplerShiftWaitingCallback(callback: Function) {
     if (!this.isReady()) {
       return;
     }
@@ -234,7 +237,7 @@ export default class TransceiverService {
   /**
    * 無線機制御が可能な状態か判定する
    */
-  public async isTransceiverReady(): Promise<ApiResponse<boolean>> {
-    return new ApiResponse(this.isReady());
+  public isTransceiverReady(): Promise<ApiResponse<boolean>> {
+    return Promise.resolve(new ApiResponse(this.isReady()));
   }
 }

@@ -106,8 +106,9 @@ export default class RotatorService {
 
   /**
    * データ受信ハンドラ
+   * @param this 疑似引数
    */
-  private onPosChange(res: ApiResponse<AntennaPositionModel>) {
+  private onPosChange(this: void, res: ApiResponse<AntennaPositionModel>) {
     getMainWindow().webContents.send("onChangeAntennaPosition", res);
   }
 

@@ -16,7 +16,7 @@ const useSatelliteLocation = (currentDate: Ref<Date>, offsetLongitude: Ref<numbe
   /**
    * 表示中の衛星グループが変更された場合のイベントハンドラ
    */
-  async function onChangeSatGrp() {
+  function onChangeSatGrp() {
     // 人工衛星の位置を更新
     updateLocation();
   }
@@ -75,9 +75,9 @@ const useSatelliteLocation = (currentDate: Ref<Date>, offsetLongitude: Ref<numbe
     return satGrp.activeSatellites[index].satelliteId;
   }
 
-  onMounted(async () => {
+  onMounted(() => {
     // 初期表示時の衛星グループで画面を更新
-    await onChangeSatGrp();
+    onChangeSatGrp();
 
     // 表示中の衛星グループが変更された場合のコールバックを設定
     ActiveSatServiceHub.getInstance().addOnChangeActiveSat(onChangeSatGrp);

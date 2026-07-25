@@ -80,7 +80,7 @@ export const valiSchemaRegistSatellite = zod.object({
         .string({ message: message1 })
         .min(1, { message: message1 })
         // アルファベット、数字、記号(＆*/ '-+_()[])
-        .regex(/^[A-Za-z0-9&*/ '()+_\[\]-]*$/, { message: message2 })
+        .regex(/^[A-Za-z0-9&*/ '()+_[\]-]*$/, { message: message2 })
     );
   }),
   tle: zod.lazy(() => {

@@ -17,10 +17,20 @@ export default class RotatorControllerFactory {
    * AntennaControllerを生成する
    * @param rotatorCmdType ローテーター機器の種別
    */
-  public static async getController(
+  public static getController(
     rotatorConfig: AppConfigRotator,
     deviceConfig: AppConfigRotatorDevice
   ): Promise<RotatorControllerBase> {
+    return Promise.resolve(this.selectController(rotatorConfig, deviceConfig));
+  }
+
+  /**
+   * 機器種別に応じたAntennaControllerを選択する
+   */
+  private static selectController(
+    rotatorConfig: AppConfigRotator,
+    deviceConfig: AppConfigRotatorDevice
+  ): RotatorControllerBase {
     switch (deviceConfig.commnadType) {
       // RSP Antenna IO
       case Constant.Rotator.CmdType.RSP_V1_0:

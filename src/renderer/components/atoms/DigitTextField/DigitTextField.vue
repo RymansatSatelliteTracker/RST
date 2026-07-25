@@ -43,7 +43,7 @@ const props = defineProps({
 
 const { validateAt } = useValidate(props.valiSchema);
 
-onMounted(async () => {
+onMounted(() => {
   // エラーメッセージをクリア
   errorText.value = "";
 });
@@ -51,7 +51,7 @@ onMounted(async () => {
 /**
  * focusイベントのハンドラ
  */
-async function onFocus() {
+function onFocus() {
   isEditing = true;
   // フォーカス時はドット区切りを外す
   displayValue.value = model.value ? model.value.toString() : "";

@@ -3,11 +3,6 @@ import I18nMsgs from "@/common/I18nMsgs.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import type { SatAzEl } from "@/renderer/types/satellite-type.js";
 
-type TrackingPosition = {
-  azimuth: number;
-  elevation: number;
-};
-
 type CanvasStyle = {
   strokeStyle: string;
   lineWidth: number;

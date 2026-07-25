@@ -13,7 +13,14 @@ export default class TransceiverControllerFactory {
    * TransceiverControllerを生成する
    * @param transceiverConfig 無線機設定
    */
-  public static async getController(transceiverConfig: AppConfigTransceiver): Promise<TransceiverControllerBase> {
+  public static getController(transceiverConfig: AppConfigTransceiver): Promise<TransceiverControllerBase> {
+    return Promise.resolve(this.selectController(transceiverConfig));
+  }
+
+  /**
+   * 無線機メーカーに応じたTransceiverControllerを選択する
+   */
+  private static selectController(transceiverConfig: AppConfigTransceiver): TransceiverControllerBase {
     switch (transceiverConfig.makerId) {
       // ICOMの無線機
       case Constant.Transceiver.MakerId.ICOM:

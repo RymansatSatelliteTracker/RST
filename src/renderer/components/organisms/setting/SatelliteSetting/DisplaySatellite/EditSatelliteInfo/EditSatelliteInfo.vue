@@ -144,7 +144,7 @@ async function onOk() {
 /**
  * ダイアログを閉じるボタンで閉じる
  */
-async function onCancel() {
+function onCancel() {
   // 親に通知(ダイアログクローズ)
   emits("onCancel");
 }

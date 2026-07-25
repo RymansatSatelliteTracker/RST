@@ -17,7 +17,7 @@ export default [
         parser: tseslint.parser,
         ecmaVersion: "es2023",
         sourceType: "module",
-        project: "./tsconfig.json",
+        project: "./tsconfig.eslint.json",
         extraFileExtensions: [".vue"],
       },
     },
@@ -27,7 +27,10 @@ export default [
       "no-debugger": "warn", // debuggerは警告
 
       // TypeScriptルール
-      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }], // _で始まる引数は無視
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", ignoreRestSiblings: true }, // _で始まる引数は無視、rest構文での除外パターンは許可
+      ],
       "@typescript-eslint/consistent-type-imports": "warn", // type import推奨
       "@typescript-eslint/no-unnecessary-type-assertion": "off", // 明示的な型アサーションを許可
 

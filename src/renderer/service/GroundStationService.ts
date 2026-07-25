@@ -144,7 +144,7 @@ class GroundStationService {
       this._isVisible = VisibilityType.VISIBLE;
       if (this._satelliteService.isOverSiderealDay()) {
         // 軌道周期が1恒星日以上の場合は直近のパスを取得して常に可視/不可視でないか判定する
-        this.getOrbitPassAsync(currentDate);
+        void this.getOrbitPassAsync(currentDate);
       }
     }
   };
@@ -162,22 +162,22 @@ class GroundStationService {
    * @param {Date} date 日時
    * @returns {Promise<boolean>} 可視/不可視判定(可視: true、不可視: false)
    */
-  public isSatelliteVisibleAsync = async (date: Date): Promise<boolean> => {
+  public isSatelliteVisibleAsync = (date: Date): Promise<boolean> => {
     if (this._isVisible === VisibilityType.ALWAYS_VISIBLE) {
       // 人工衛星が常に可視の場合は(可視: true)を返却する
-      return true;
+      return Promise.resolve(true);
     } else if (this._isVisible === VisibilityType.ALWAYS_INVISIBLE) {
       // 人工衛星が常に不可視の場合は(不可視: false)を返却する
-      return false;
+      return Promise.resolve(false);
     }
 
     // 人工衛星の仰角が正の場合は(可視: true)を返却する
     const elevation = this._satelliteService.getSatelliteElevationAngle(date, this._ecefLocation);
     if (elevation && elevation >= 0.0) {
-      return true;
+      return Promise.resolve(true);
     } else {
       // 人工衛星の仰角が負の場合は(不可視: false)を返却する
-      return false;
+      return Promise.resolve(false);
     }
   };
 
@@ -204,22 +204,22 @@ class GroundStationService {
    * @param {Date} startDate 日時期間(開始)
    * @returns {Promise<PassesCache | null>} パス
    */
-  public getOrbitPassAsync = async (startDate: Date): Promise<PassesCache | null> => {
+  public getOrbitPassAsync = (startDate: Date): Promise<PassesCache | null> => {
     if (this._isVisible === VisibilityType.ALWAYS_VISIBLE) {
       // 人工衛星が常に可視の場合は仰角だけが格納されたパスを返却する
-      return this._passesCache[0];
+      return Promise.resolve(this._passesCache[0]);
     } else if (this._isVisible === VisibilityType.ALWAYS_INVISIBLE) {
       // 人工衛星が常に不可視の場合はnullを返却する
-      return null;
+      return Promise.resolve(null);
     }
 
     // 開始日時から最も近いパスを返却する
-    const passesCacheInRange = await this._calculatePassesInRangeAsync(startDate, null);
+    const passesCacheInRange = this._calculatePassesInRangeAsync(startDate, null);
     if (passesCacheInRange && passesCacheInRange.length > 0) {
-      return passesCacheInRange[0];
+      return Promise.resolve(passesCacheInRange[0]);
     } else {
       // 探索した結果が常に不可視の場合はnullを返却する
-      return null;
+      return Promise.resolve(null);
     }
   };
 
@@ -229,7 +229,7 @@ class GroundStationService {
    * @param {Date} endDate 日時期間(終了)
    * @returns {Promise<PassesCache[] | null>} パス配列
    */
-  public getOrbitPassListAsync = async (startDate: Date, endDate: Date): Promise<PassesCache[] | null> => {
+  public getOrbitPassListAsync = (startDate: Date, endDate: Date): Promise<PassesCache[] | null> => {
     // 現在日時を取得する
     let currentDate = new Date();
     if (this._operationStartUtcDate) {
@@ -239,20 +239,20 @@ class GroundStationService {
     if (endDate) {
       if (endDate <= currentDate || endDate <= startDate) {
         // 日時期間(終了)が現在日時より古い、または、日時期間(開始)と日時期間(終了)の時系列が逆転している場合はnullを返却する
-        return null;
+        return Promise.resolve(null);
       }
     }
 
     if (this._isVisible === VisibilityType.ALWAYS_VISIBLE) {
       // 人工衛星が常に可視の場合は仰角だけが格納されたパスを返却する
-      return this._passesCache;
+      return Promise.resolve(this._passesCache);
     } else if (this._isVisible === VisibilityType.ALWAYS_INVISIBLE) {
       // 人工衛星が常に不可視の場合はnullを返却する
-      return null;
+      return Promise.resolve(null);
     }
 
     // 開始日時から終了日時までパスを探索して返却する
-    return await this._calculatePassesInRangeAsync(startDate, endDate);
+    return Promise.resolve(this._calculatePassesInRangeAsync(startDate, endDate));
   };
 
   /**
@@ -261,10 +261,7 @@ class GroundStationService {
    * @param {(Date | null)} endDate 日時期間(終了)(指定した日時から最も近いパスを取得する場合: null)
    * @returns {Promise<PassesCache[] | null>} パスのキャッシュ配列
    */
-  private _calculatePassesInRangeAsync = async (
-    startDate: Date,
-    endDate: Date | null
-  ): Promise<PassesCache[] | null> => {
+  private _calculatePassesInRangeAsync = (startDate: Date, endDate: Date | null): PassesCache[] | null => {
     if (this._passesCache.length > Constant.OrbitCalculation.MAX_PASSES_CACHES_SIZE) {
       // パスのキャッシュ配列が最大要素数を超えた場合は初期化する
       this._passesClear();
@@ -301,11 +298,11 @@ class GroundStationService {
       this._initCalculatedTime();
       if (endDate) {
         // 日時期間(開始)から日時期間(終了)までのパスを探索する
-        await this._updatePassListAsync(targetStartDate.getTime(), endDate.getTime());
+        this._updatePassListAsync(targetStartDate.getTime(), endDate.getTime());
         tempPassesCache = [...this._passesCache];
       } else {
         // 日時期間(開始)から最も近いパスを探索する
-        await this._updatePassListAsync(targetStartDate.getTime(), null);
+        this._updatePassListAsync(targetStartDate.getTime(), null);
         tempPassesCache = [...this._passesCache];
       }
 
@@ -333,16 +330,16 @@ class GroundStationService {
           // 日時期間(終了)が計算済み終端時間より新しい場合は追加で探索する
           if (this._calculatedTime < targetStartDate.getTime()) {
             // 日時期間(開始)が計算済み終端時間より新しい場合は日時期間(開始)から日時期間(終了)までのパスを探索する
-            await this._updatePassListAsync(targetStartDate.getTime(), endDate.getTime());
+            this._updatePassListAsync(targetStartDate.getTime(), endDate.getTime());
           } else {
             // 日時期間(開始)から日時期間(終了)の間に計算済み終端時間が跨る場合は計算済み終端時間から日時期間(終了)のパスを探索する
-            await this._updatePassListAsync(this._calculatedTime, endDate.getTime());
+            this._updatePassListAsync(this._calculatedTime, endDate.getTime());
             // 日時期間(開始)から日時期間(終了)の間に計算済み終端時間が跨る場合は日時期間(開始)から計算済み終端時間までの未探索日時区間配列を更新する
-            await this._updateUnexploredTime(targetStartDate.getTime(), this._calculatedTime);
+            this._updateUnexploredTime(targetStartDate.getTime(), this._calculatedTime);
           }
         } else {
           // 日時期間(終了)が計算済み終端時間より古い場合は日時期間(開始)から日時期間(終了)までの未探索日時区間配列を更新する
-          await this._updateUnexploredTime(targetStartDate.getTime(), endDate.getTime());
+          this._updateUnexploredTime(targetStartDate.getTime(), endDate.getTime());
         }
         // 取得日時期間のパスを取得する
         tempPassesCache = [...this._passesCache].filter(
@@ -351,14 +348,14 @@ class GroundStationService {
       } else {
         if (this._calculatedTime < targetStartDate.getTime()) {
           // 日時期間(開始)が計算済み終端時間より新しい場合は日時期間(開始)から最も近いパスを探索する
-          await this._updatePassListAsync(targetStartDate.getTime(), null);
+          this._updatePassListAsync(targetStartDate.getTime(), null);
         } else {
           // 日時期間(開始)が計算済み終端時間より古い場合はキャッシュ配列を初期化する
           this._passesClear();
           // 計算済み終端時間から日時期間(開始)を未探索日時区間配列に追加する
           this._addUnexploredTime(this._calculatedTime, targetStartDate.getTime());
           // 日時期間(開始)から最も近いパスを探索する
-          await this._updatePassListAsync(targetStartDate.getTime(), null);
+          this._updatePassListAsync(targetStartDate.getTime(), null);
         }
         // 取得日時期間のパスを取得する
         tempPassesCache = [...this._passesCache].filter((cache) => cache.los && cache.los.date >= targetStartDate);
@@ -389,7 +386,7 @@ class GroundStationService {
    * @param {number} startTime 未探索日時区間(開始)
    * @param {number} endTime 未探索日時区間(終了)
    */
-  private _updateUnexploredTime = async (startTime: number, endTime: number): Promise<void> => {
+  private _updateUnexploredTime = (startTime: number, endTime: number): void => {
     // 未探索日時区間配列に存在する該当日時区間を取得する
     const tempUnexploredTime = [...this._unexploredTime]
       .filter((cache) => cache.startTime <= endTime && startTime <= cache.endTime)
@@ -424,7 +421,7 @@ class GroundStationService {
         }
 
         // 未探索日時区間の開始日時から終了日時までのパスを探索する
-        const calculatedTime = await this._updatePassListAsync(start, end);
+        const calculatedTime = this._updatePassListAsync(start, end);
         if (calculatedTime) {
           // 開始日時から探索完了日時までの未探索日時区間配列を更新する
           this._cleanupUnexploredTime(startTime, calculatedTime);
@@ -472,7 +469,7 @@ class GroundStationService {
    * @param {(number | null)} endTime 探索終了日時(指定した日時から最も近いパスを取得する場合: null)
    * @returns {Promise<number | null>} 探索完了日時
    */
-  private _updatePassListAsync = async (startTime: number, endTime: number | null): Promise<number | null> => {
+  private _updatePassListAsync = (startTime: number, endTime: number | null): number | null => {
     // AOS/LOS/Melの一時キャッシュ
     let tempPassCache: TempPassCache = this._initTempPassCache();
 

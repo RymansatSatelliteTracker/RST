@@ -1,4 +1,4 @@
-import { OmmItem } from "@/common/model/OmmModel.js";
+import type { OmmItem } from "@/common/model/OmmModel.js";
 import OmmUtil from "@/main/util/OmmUtil.js";
 
 // 以下のテストデータは、celestrak.org の gp.php (CATNR=25544) から

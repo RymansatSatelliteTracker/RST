@@ -248,14 +248,14 @@ async function autoBtnClick() {
 /**
  * SatTrackingModeボタンクリック
  */
-async function satTrackingModeBtnClick(isNormal: boolean) {
+function satTrackingModeBtnClick(isNormal: boolean) {
   isSatTrackingModeNormal.value = isNormal;
 }
 
 /**
  * ビーコンボタンクリック
  */
-async function beaconBtnClick() {
+function beaconBtnClick() {
   isBeaconMode.value = !isBeaconMode.value;
   // TODO: ビーコンモードを実装したら削除する
   if (isBeaconMode.value) {

@@ -11,6 +11,7 @@ export const test = base.extend<{
   electronApp: ElectronApplication;
   page: Page;
 }>({
+  // eslint-disable-next-line no-empty-pattern -- Playwrightのfixture定義では依存fixtureなしを表す慣例的な記法
   electronApp: async ({}, use) => {
     // テスト間で設定が残らないよう、起動前に永続化ストアをクリアする
     appConfigStore.clear();

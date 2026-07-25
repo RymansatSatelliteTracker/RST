@@ -106,7 +106,7 @@ export default class RotatorBtAzElController extends RotatorSerialControllerBase
       const el = parseFloat(cols[1]);
 
       return new AntennaPositionModel(az, el);
-    } catch (error) {
+    } catch {
       return null;
     }
   }

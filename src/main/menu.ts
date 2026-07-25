@@ -105,7 +105,7 @@ export function makeElectronMenu(): Electron.Menu {
 
         { type: "separator" },
         // TLE更新
-        { label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_UPDATE_TLE), click: () => onUpdateTleClick() },
+        { label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_UPDATE_TLE), click: () => void onUpdateTleClick() },
       ],
     });
 
@@ -144,7 +144,7 @@ export function makeElectronMenu(): Electron.Menu {
 
         { type: "separator" },
         // TLE更新
-        { label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_UPDATE_TLE), click: () => onUpdateTleClick() },
+        { label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_UPDATE_TLE), click: () => void onUpdateTleClick() },
         // 終了
         {
           label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_QUIT),
@@ -182,7 +182,7 @@ export function makeElectronMenu(): Electron.Menu {
           label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_HELP),
           click: () => {
             // ヘルプはブラウザで開く
-            shell.openExternal(Constant.Manual.HELP_URL);
+            void shell.openExternal(Constant.Manual.HELP_URL);
           },
         },
       ],
@@ -199,7 +199,7 @@ export function makeElectronMenu(): Electron.Menu {
           label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_HELP),
           click: () => {
             // ヘルプはブラウザで開く
-            shell.openExternal(Constant.Manual.HELP_URL);
+            void shell.openExternal(Constant.Manual.HELP_URL);
           },
         },
         // バージョン

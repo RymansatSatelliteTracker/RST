@@ -10,16 +10,16 @@ describe("FileTransaction", () => {
     vi.spyOn(AppConfigUtil, "getConfigPath").mockImplementation(() => {
       return "/path/to/config.json";
     });
-    vi.spyOn(FileUtil, "copyFile").mockImplementation((sourcePath, tempFilePath) => {
+    vi.spyOn(FileUtil, "copyFile").mockImplementation((_sourcePath, _tempFilePath) => {
       return;
     });
-    vi.spyOn(FileUtil, "exists").mockImplementation((tempFilePath) => {
+    vi.spyOn(FileUtil, "exists").mockImplementation((_tempFilePath) => {
       return true;
     });
-    wirteTextSpy = vi.spyOn(FileUtil, "writeText").mockImplementation((tempFilePath, text) => {
+    wirteTextSpy = vi.spyOn(FileUtil, "writeText").mockImplementation((_tempFilePath, _text) => {
       return;
     });
-    vi.spyOn(FileUtil, "deleteFile").mockImplementation((tempFilePath) => {
+    vi.spyOn(FileUtil, "deleteFile").mockImplementation((_tempFilePath) => {
       return;
     });
   });

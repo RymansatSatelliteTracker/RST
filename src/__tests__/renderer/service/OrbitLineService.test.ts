@@ -293,9 +293,6 @@ describe("[正常系]人工衛星の軌道配列がラップアラウンドし�
  * 人工衛星の軌道配列が指定時間で分割して取得できる
  */
 describe("[正常系]人工衛星の軌道配列が指定時間で分割して取得できる", () => {
-  // 現在日時を作成する
-  const currentDate = new Date("2024-10-01T00:00:00Z");
-
   it("ISSの軌道配列が指定時間で分割して取得できる", async () => {
     // given 前提条件
     const issOrbitLine = new OrbitLineService(TleDataHelper.Satellite.ISS);

@@ -18,7 +18,7 @@ AppMainLogger.init();
 // メインウィンドウ
 let mainWindow: BrowserWindow;
 
-(async () => {
+void (async () => {
   // 既に起動中のインスタンスがある場合は終了する
   const gotTheLock = app.requestSingleInstanceLock();
   if (!gotTheLock) {
@@ -144,20 +144,20 @@ function createWindow() {
   // 開発環境の場合
   if (EnvUtil.isDev()) {
     // ウィンドウ内のコンテンツの設定（レンダラプロセスのURLを指定）
-    mainWindow.loadURL("http://localhost:5173");
+    void mainWindow.loadURL("http://localhost:5173");
 
     // DevTool表示
     // memo: 以下を行うと"Request Autofill.enable failed"が表示されるが、
     //       開発時のみであることと、実害なしのようなのでエラーは無視して良い
     mainWindow.webContents.openDevTools();
   } else {
-    mainWindow.loadFile(path.join(import.meta.dirname, "../../index.html"));
+    void mainWindow.loadFile(path.join(import.meta.dirname, "../../index.html"));
   }
 
   // アプリ終了時
-  mainWindow.on("close", async (event) => {
+  mainWindow.on("close", () => {
     // アプリ終了処理
-    await onAppClose();
+    void onAppClose();
   });
 
   return mainWindow;
@@ -191,7 +191,7 @@ async function onAppClose() {
  * @param params
  * @returns
  */
-function buildMenuTemplate(params: Electron.ContextMenuParams): Electron.MenuItemConstructorOptions[] {
+function buildMenuTemplate(_params: Electron.ContextMenuParams): Electron.MenuItemConstructorOptions[] {
   const menuTemplate: Electron.MenuItemConstructorOptions[] = [
     {
       label: "Cut",

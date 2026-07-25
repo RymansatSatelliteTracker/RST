@@ -69,8 +69,8 @@ export default class AppConfigImportSerivce {
     // JSONがパースできるか
     let appConfig;
     try {
-      appConfig = JSON.parse(text);
-    } catch (err: any) {
+      appConfig = JSON.parse(text) as unknown;
+    } catch {
       return [new ValidatorResultModel("file", I18nMsgs.CHK_ERR_APPCONFIG_NOT_JSON_FORMAT)];
     }
 

@@ -31,14 +31,14 @@ export default abstract class RotatorControllerBase {
       return;
     }
 
-    this.doSetPosition(pos);
+    void this.doSetPosition(pos);
   }
 
   /**
    * ローテーター位置を設定する
    * MEMO: 子クラスでローテーター位置をシリアル送信するなどの実行を行う
    */
-  public abstract doSetPosition(pos: AntennaPositionModel): void;
+  public abstract doSetPosition(pos: AntennaPositionModel): void | Promise<void>;
 
   /**
    * アンテナ位置の変化を呼び出し側に伝播させるためのコールバックを設定する

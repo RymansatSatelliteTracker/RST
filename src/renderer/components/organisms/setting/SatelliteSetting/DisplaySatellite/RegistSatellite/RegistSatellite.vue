@@ -270,7 +270,7 @@ async function onOk() {
 /**
  * キャンセルボタン押下
  */
-async function onCancel() {
+function onCancel() {
   emits("onCancel");
 }
 </script>

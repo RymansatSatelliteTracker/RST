@@ -83,7 +83,7 @@ export default class TransceiverModeCoordinator {
     private modeSettingResolver: TransceiverModeSettingResolver,
     private baseFreqMgr: TransceiverBaseFreqMgr,
     private onCalcBaseFreqWithAdjust: () => void,
-    private onStartUpdateFreqInterval: (intervalMs: number) => void
+    private onStartUpdateFreqInterval: (intervalMs: number) => void | Promise<void>
   ) {}
 
   /**
@@ -178,7 +178,7 @@ export default class TransceiverModeCoordinator {
     );
 
     // 更新インターバルごとに周波数を更新するタイマを開始する
-    this.onStartUpdateFreqInterval(this._autoTrackingIntervalMsec);
+    void this.onStartUpdateFreqInterval(this._autoTrackingIntervalMsec);
 
     // AutoOn時の受信処理スキップを解除
     this._isRecvProcSkip = false;
@@ -319,28 +319,30 @@ export default class TransceiverModeCoordinator {
   /**
    * ビーコンモードを開始する
    */
-  public async startBeaconMode(): Promise<void> {
+  public startBeaconMode(): Promise<void> {
     // 周波数と運用モードを設定、保存する
     this.setFreqAndOpeModeInModeStart();
     this.saveFreqAndOpeModeInModeStart();
+    return Promise.resolve();
   }
 
   /**
    * ビーコンモードを停止する
    */
-  public async stopBeaconMode(): Promise<void> {
+  public stopBeaconMode(): Promise<void> {
     // アクティブ衛星の周波数/運用モードを取得
     const transceiverSetting = this.getActiveSatTransceiverSetting();
 
     // Autoモード中じゃない場合は移行前の周波数と運用モードを復元して抜ける
     if (!this.autoStore.tranceiverAuto) {
       this.restoreSavedFreqAndOpeMode();
-      return;
+      return Promise.resolve();
     }
 
     // Autoモード中の場合は、Autoモードの周波数/運用モードを優先して設定する
     const resolved = this.modeSettingResolver.resolveWhenBeaconOffInAuto(transceiverSetting);
     this.applyResolvedModeState(resolved);
+    return Promise.resolve();
   }
 
   /**

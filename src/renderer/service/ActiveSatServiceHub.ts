@@ -86,8 +86,8 @@ export default class ActiveSatServiceHub {
     await this.onChangeSatGrp();
 
     // 表示中の衛星グループが変更された場合のコールバックを設定
-    await ApiActiveSat.onChangeActiveSatelliteGroup(async () => {
-      await this.onChangeSatGrp();
+    ApiActiveSat.onChangeActiveSatelliteGroup(() => {
+      void this.onChangeSatGrp();
     });
   }
 

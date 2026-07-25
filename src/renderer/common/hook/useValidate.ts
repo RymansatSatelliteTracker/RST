@@ -14,10 +14,10 @@ export const useValidate = (valiSchema: any) => {
    * @param fieldPath チェック対象のZodスキーマのキー名
    * @param value チェック対象の値
    */
-  async function validateAt(fieldPath: string, value: any): Promise<string> {
+  function validateAt(fieldPath: string, value: any): Promise<string> {
     // スキーマが未設定の場合はチェックしない
     if (!valiSchema) {
-      return "";
+      return Promise.resolve("");
     }
 
     // チェック用のオブジェクトを作成
@@ -29,20 +29,20 @@ export const useValidate = (valiSchema: any) => {
     // チェック実行
     const result = valiItemSchema.safeParse(checkObj);
     if (!result.success) {
-      return result.error.issues[0].message;
+      return Promise.resolve(result.error.issues[0].message);
     }
 
     // 正常時は空文字を返却
-    return "";
+    return Promise.resolve("");
   }
 
   /**
    * 全項目の入力チェックを行う
    */
-  async function validateAll(form: any) {
+  function validateAll(form: any): Promise<boolean> {
     // スキーマが未設定の場合はチェックしない
     if (!valiSchema) {
-      return true;
+      return Promise.resolve(true);
     }
 
     // すべてのエラーメッセージをクリア
@@ -63,7 +63,7 @@ export const useValidate = (valiSchema: any) => {
     }
 
     // エラーの有無を返却
-    return result.success;
+    return Promise.resolve(result.success);
   }
 
   return { validateAt, validateAll, errors };
