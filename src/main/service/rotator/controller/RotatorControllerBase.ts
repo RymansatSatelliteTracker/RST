@@ -31,7 +31,12 @@ export default abstract class RotatorControllerBase {
       return;
     }
 
-    void this.doSetPosition(pos);
+    // ローテーター位置の設定（実装側の呼び出し）
+    void Promise.resolve()
+      .then(() => this.doSetPosition(pos))
+      .catch((err: unknown) => {
+        AppMainLogger.error("ローテーター位置設定に失敗しました。", err);
+      });
   }
 
   /**

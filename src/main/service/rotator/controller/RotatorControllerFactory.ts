@@ -21,7 +21,7 @@ export default class RotatorControllerFactory {
     rotatorConfig: AppConfigRotator,
     deviceConfig: AppConfigRotatorDevice
   ): Promise<RotatorControllerBase> {
-    return Promise.resolve(this.selectController(rotatorConfig, deviceConfig));
+    return Promise.resolve().then(() => this.selectController(rotatorConfig, deviceConfig));
   }
 
   /**

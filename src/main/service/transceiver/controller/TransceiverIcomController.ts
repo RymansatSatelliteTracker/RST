@@ -732,6 +732,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     return new Promise((resolve, _reject) => {
       void (async () => {
         if (!(await this.checkRecvTimeout())) {
+          resolve("TIMEOUT");
           return;
         }
 

@@ -14,7 +14,7 @@ export default class TransceiverControllerFactory {
    * @param transceiverConfig 無線機設定
    */
   public static getController(transceiverConfig: AppConfigTransceiver): Promise<TransceiverControllerBase> {
-    return Promise.resolve(this.selectController(transceiverConfig));
+    return Promise.resolve().then(() => this.selectController(transceiverConfig));
   }
 
   /**
