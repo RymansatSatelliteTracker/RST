@@ -2,6 +2,7 @@ import I18nMsgs from "@/common/I18nMsgs.js";
 import FileUtil from "@/main/util/FileUtil.js";
 import AppConfigValidator from "@/main/validator/AppConfigValidator.js";
 import * as path from "path";
+import { expect, it } from "vitest";
 
 /**
  * エラー
@@ -26,7 +27,7 @@ it("param_only", () => {
   // テストデータ
   const dataPath = path.resolve(import.meta.dirname, "data_AppConfigValidator_exec", "param_only.json");
   const text = FileUtil.readText(dataPath);
-  const appConfig = JSON.parse(text);
+  const appConfig = JSON.parse(text) as unknown;
 
   // 実行
   const validator = new AppConfigValidator();
@@ -66,7 +67,7 @@ it("appVersion_num", () => {
   // テストデータ
   const dataPath = path.resolve(import.meta.dirname, "data_AppConfigValidator_exec", "appVersion_num.json");
   const text = FileUtil.readText(dataPath);
-  const appConfig = JSON.parse(text);
+  const appConfig = JSON.parse(text) as unknown;
 
   // 実行
   const validator = new AppConfigValidator();
@@ -86,7 +87,7 @@ it("app_config", () => {
   // テストデータ
   const dataPath = path.resolve(import.meta.dirname, "data_AppConfigValidator_exec", "app_config.json");
   const text = FileUtil.readText(dataPath);
-  const appConfig = JSON.parse(text);
+  const appConfig = JSON.parse(text) as unknown;
 
   // 実行
   const validator = new AppConfigValidator();

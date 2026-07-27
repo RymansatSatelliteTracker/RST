@@ -1,5 +1,6 @@
 import type { OmmItem } from "@/common/model/OmmModel.js";
 import OmmUtil from "@/main/util/OmmUtil.js";
+import { describe, expect, it } from "vitest";
 
 // 以下のテストデータは、celestrak.org の gp.php (CATNR=25544) から
 // 同一エポックで取得した実際のレスポンス(2026-06-20T09:57:02.757600 UTC時点のISS)

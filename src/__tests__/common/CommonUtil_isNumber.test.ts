@@ -1,4 +1,5 @@
 import CommonUtil from "@/common/CommonUtil.js";
+import { describe, expect, it } from "vitest";
 
 /**
  * CommonUtil.isNumberのテスト
