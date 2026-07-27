@@ -75,11 +75,11 @@ function useTransceiverDevices(makerIdRef: ModelRef<string>, selectedVal: ModelR
       return selectedVal.value === device.value;
     });
     if (index >= 0) {
-      selectedVal.value = devices[index].value;
+      selectedVal.value = String(devices[index].value);
       return;
     }
 
-    selectedVal.value = devices[0].value;
+    selectedVal.value = String(devices[0].value);
   }
 }
 

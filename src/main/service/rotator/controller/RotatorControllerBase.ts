@@ -8,7 +8,7 @@ import AppMainLogger from "@/main/util/AppMainLogger.js";
  * ローテーターのコントローラ親クラス
  */
 export default abstract class RotatorControllerBase {
-  protected callback: Function | null = null;
+  protected callback: ((res: ApiResponse<AntennaPositionModel>) => void) | null = null;
 
   /**
    * ローテーターの監視、操作を開始する
@@ -48,7 +48,7 @@ export default abstract class RotatorControllerBase {
   /**
    * アンテナ位置の変化を呼び出し側に伝播させるためのコールバックを設定する
    */
-  public setCallback(callback: Function): void {
+  public setCallback(callback: (res: ApiResponse<AntennaPositionModel>) => void): void {
     this.callback = callback;
   }
 

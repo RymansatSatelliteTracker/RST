@@ -222,7 +222,7 @@ function buildMenuTemplate(_params: Electron.ContextMenuParams): Electron.MenuIt
  * IPCイベントを発火させる
  * @param channel メインプロセス内のイベント伝播用のチャネル名
  */
-export function fireIpcEvent(channel: string, ...args: any): void {
+export function fireIpcEvent(channel: string, ...args: unknown[]): void {
   mainWindow.webContents.send(channel, args);
 }
 

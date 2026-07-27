@@ -21,7 +21,7 @@ const DopplerShiftMode = Constant.Transceiver.DopplerShiftMode;
 const dopplerShiftModeLabel = createDopplerShiftLabelMapping();
 // items配列を生成
 const dopplerShiftModeRange = ref(
-  Object.values(DopplerShiftMode).map((mode) => ({
+  Object.values(DopplerShiftMode).map((mode: string) => ({
     value: mode,
     title: dopplerShiftModeLabel[mode],
     // TODO: 受信固定、送信固定に対応するまでは衛星固定のみを有効化

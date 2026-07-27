@@ -1,6 +1,7 @@
 import Constant from "@/common/Constant.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
 import { DefaultSatelliteModel } from "@/common/model/DefaultSatelliteModel.js";
+import type { DefaultSatelliteFileData } from "@/common/model/DefaultSatelliteModel.js";
 import { FrequencyModel } from "@/common/model/FrequencyModel.js";
 import type { OmmItemMap, OmmJsonModel } from "@/common/model/OmmModel.js";
 import type { DefaultSatelliteType, SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
@@ -30,7 +31,8 @@ export default class DefaultSatelliteService {
     const savePathSat = path.join(ElectronUtil.getUserDir(), Constant.Config.DEFAULT_SATELLITE_FILENAME);
     if (fs.existsSync(savePathSat)) {
       const fileContentSat = fs.readFileSync(savePathSat, "utf-8");
-      this.defSatJson = DefaultSatelliteModel.getInitializedModelFromData(JSON.parse(fileContentSat).defaultSatellite);
+      const parsed = JSON.parse(fileContentSat) as { defaultSatellite: DefaultSatelliteFileData };
+      this.defSatJson = DefaultSatelliteModel.getInitializedModelFromData(parsed.defaultSatellite);
     }
   }
 
@@ -52,7 +54,7 @@ export default class DefaultSatelliteService {
       AppConfigUtil.initDefaultSatJson();
     }
 
-    const defaultSatData = FileUtil.readJson(savePathSat) as unknown as { defaultSatellite: DefaultSatelliteModel };
+    const defaultSatData = FileUtil.readJson(savePathSat) as { defaultSatellite: DefaultSatelliteFileData };
     this.defSatJson = DefaultSatelliteModel.getInitializedModelFromData(defaultSatData.defaultSatellite);
 
     // OMMから情報を取得してデフォルト衛星定義を更新する

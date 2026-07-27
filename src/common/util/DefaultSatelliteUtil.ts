@@ -36,7 +36,7 @@ export function createDefaultSatellite(
  * @param defaultSatellites デフォルト衛星情報の配列
  * @returns
  */
-export function initializeDefaultSatellites(defaultSatellites: any[]) {
+export function initializeDefaultSatellites(defaultSatellites: DefaultSatelliteType[]) {
   return defaultSatellites.map((sat: DefaultSatelliteType) => {
     return normalizeData(sat, createDefaultSatellite(-1, "", ""));
   });
@@ -48,17 +48,19 @@ export function initializeDefaultSatellites(defaultSatellites: any[]) {
  * @param template テンプレートオブジェクト
  * @returns テンプレートに基づいて正規化されたオブジェクト
  */
-export function normalizeData(source: any, template: any): any {
+export function normalizeData<T>(source: unknown, template: T): T {
   if (typeof template !== "object" || template === null) {
     // テンプレートがオブジェクトでない場合はそのまま返す
-    return source ?? template;
+    return (source ?? template) as T;
   }
 
-  const result: any = {};
-  for (const key in template) {
-    if (Object.prototype.hasOwnProperty.call(template, key)) {
-      result[key] = normalizeData(source?.[key], template[key]);
+  const templateRecord = template as Record<string, unknown>;
+  const sourceRecord = (source ?? {}) as Record<string, unknown>;
+  const result: Record<string, unknown> = {};
+  for (const key in templateRecord) {
+    if (Object.prototype.hasOwnProperty.call(templateRecord, key)) {
+      result[key] = normalizeData(sourceRecord[key], templateRecord[key]);
     }
   }
-  return result;
+  return result as T;
 }

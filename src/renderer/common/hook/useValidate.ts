@@ -5,7 +5,7 @@ import type * as zod from "zod";
  * 入力チェックを行うフック
  * @param valiSchema Zodスキーマ
  */
-export const useValidate = (valiSchema: any) => {
+export const useValidate = (valiSchema: zod.AnyZodObject | null) => {
   // エラーメッセージ
   const errors = ref<Record<string, string>>({});
 
@@ -14,7 +14,7 @@ export const useValidate = (valiSchema: any) => {
    * @param fieldPath チェック対象のZodスキーマのキー名
    * @param value チェック対象の値
    */
-  function validateAt(fieldPath: string, value: any): Promise<string> {
+  function validateAt(fieldPath: string, value: unknown): Promise<string> {
     // スキーマが未設定の場合はチェックしない
     if (!valiSchema) {
       return Promise.resolve("");
@@ -39,7 +39,7 @@ export const useValidate = (valiSchema: any) => {
   /**
    * 全項目の入力チェックを行う
    */
-  function validateAll(form: any): Promise<boolean> {
+  function validateAll(form: unknown): Promise<boolean> {
     // スキーマが未設定の場合はチェックしない
     if (!valiSchema) {
       return Promise.resolve(true);
