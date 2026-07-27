@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["./**/*", "../renderer/env.d.ts"],
+  "exclude": [],
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["vite/client", "vitest/globals", "node"]
+  }
+}

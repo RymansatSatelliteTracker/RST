@@ -1,5 +1,5 @@
-import { it, expect } from "vitest";
 import CommonUtil from "@/common/CommonUtil.js";
+import { expect, it } from "vitest";
 
 /**
  * ブランク
