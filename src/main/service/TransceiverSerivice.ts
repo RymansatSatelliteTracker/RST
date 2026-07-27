@@ -135,7 +135,7 @@ export default class TransceiverService {
   /**
    * 無線機の周波数の変動コールバックを設定する
    */
-  public setFrequencyCallback(callback: Function) {
+  public setFrequencyCallback(callback: (res: ApiResponse<UplinkType | DownlinkType>) => void) {
     if (!this.isReady()) {
       return;
     }
@@ -146,7 +146,7 @@ export default class TransceiverService {
   /**
    * 無線機の運用モードの変動コールバックを設定する
    */
-  public setModeCallback(callback: Function) {
+  public setModeCallback(callback: (res: ApiResponse<UplinkType | DownlinkType>) => void) {
     if (!this.isReady()) {
       return;
     }
@@ -158,14 +158,14 @@ export default class TransceiverService {
    * ドップラーシフト待機イベントを設定する
    * @param this 疑似引数
    */
-  private dopplerShiftWaitingCallback(this: void, res: ApiResponse<UplinkType | DownlinkType>) {
+  private dopplerShiftWaitingCallback(this: void, res: ApiResponse<boolean>) {
     getMainWindow().webContents.send("dopplerShiftWaitingCallback", res);
   }
 
   /**
    * 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機するコールバックを設定する
    */
-  public setIsDopplerShiftWaitingCallback(callback: Function) {
+  public setIsDopplerShiftWaitingCallback(callback: (res: ApiResponse<boolean>) => void) {
     if (!this.isReady()) {
       return;
     }

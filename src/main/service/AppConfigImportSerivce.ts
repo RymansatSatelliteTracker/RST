@@ -1,5 +1,6 @@
 import Constant from "@/common/Constant.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
+import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
 import { MessageModel } from "@/common/model/MessageModel.js";
 import ValidatorResultModel from "@/main/common/model/ValidatorResultModel.js";
 import { fireIpcEvent, getMainWindow } from "@/main/main.js";
@@ -42,10 +43,10 @@ export default class AppConfigImportSerivce {
     // memo: 入力チェック内で一度読んでるので読み直したくない。
     //      （JSONパースで落ちる可能性があるのと、処理配置的にこうしている）
     const text = FileUtil.readText(newConfigPath);
-    const appConfig = JSON.parse(text);
+    const appConfig = JSON.parse(text) as { param: AppConfigModel };
 
     // ユーザ指定の設定ファイルをアプリの設定ファイルクラスに割り当てる
-    const newConfig = AppConfigUtil.migrationConfig(appConfig["param"]);
+    const newConfig = AppConfigUtil.migrationConfig(appConfig.param);
 
     // 保存する
     AppConfigUtil.storeConfig(newConfig);

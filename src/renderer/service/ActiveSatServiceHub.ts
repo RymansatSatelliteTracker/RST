@@ -33,10 +33,10 @@ export default class ActiveSatServiceHub {
   private groundStation2: GroundStation | null = null;
 
   // 衛星グループ、アクティブ衛星が変更された場合のコールバックリスト
-  private activeSatChangeCallbacks: Function[] = [];
+  private activeSatChangeCallbacks: (() => void | Promise<void>)[] = [];
 
   // 基準時刻が変更された場合のコールバックリスト
-  private baseDateChangeCallbacks: Function[] = [];
+  private baseDateChangeCallbacks: (() => void | Promise<void>)[] = [];
 
   // アクティブ衛星のSatelliteService
   private satService: SatelliteService | null = null;
@@ -115,21 +115,21 @@ export default class ActiveSatServiceHub {
 
     // コールバックを実行
     this.activeSatChangeCallbacks.forEach((callback) => {
-      callback();
+      void callback();
     });
   }
 
   /**
    * 衛星グループ、アクティブ衛星が変更された場合のコールバックを追加する
    */
-  public addOnChangeActiveSat(callback: Function) {
+  public addOnChangeActiveSat(callback: () => void | Promise<void>) {
     this.activeSatChangeCallbacks.push(callback);
   }
 
   /**
    * 基準時刻が変更された場合のコールバックを追加する
    */
-  public addOnChangeBaseDate(callback: Function) {
+  public addOnChangeBaseDate(callback: () => void | Promise<void>) {
     this.baseDateChangeCallbacks.push(callback);
   }
 
@@ -188,7 +188,7 @@ export default class ActiveSatServiceHub {
 
     // コールバックを実行
     this.activeSatChangeCallbacks.forEach((callback) => {
-      callback();
+      void callback();
     });
   }
 

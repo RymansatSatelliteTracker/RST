@@ -2,6 +2,7 @@ import CommonUtil from "@/common/CommonUtil.js";
 import Constant from "@/common/Constant.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
 import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import type { I18nMsgItem } from "@/common/types/types.js";
 import TransceiverUtil from "@/common/util/TransceiverUtil.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
@@ -208,7 +209,7 @@ export default class TransceiverModeCoordinator {
   /**
    * 通知を表示して失敗を返す
    */
-  private emitNoticeAndFail(eventType: "NOTICE_INFO" | "NOTICE_ERR", messageKey: any): false {
+  private emitNoticeAndFail(eventType: "NOTICE_INFO" | "NOTICE_ERR", messageKey: I18nMsgItem | null): false {
     emitter.emit(eventType, I18nUtil.getMsg(messageKey));
     return false;
   }

@@ -1,6 +1,5 @@
 import Constant from "@/common/Constant.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
-import type { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
 import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
 import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
 import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking.js";
@@ -115,7 +114,7 @@ export default class AntennaAutoTrackingService {
   /**
    * 表示中の衛星グループが変更された場合のイベントハンドラ
    */
-  public onChangeActiveSat(_satGrp: ActiveSatelliteGroupModel) {
+  public onChangeActiveSat() {
     this.stop();
   }
 

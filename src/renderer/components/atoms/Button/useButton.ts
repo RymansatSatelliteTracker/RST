@@ -30,7 +30,7 @@ export const useButton = (props: Props) => {
       }
       default: {
         const strangeValue = props.styleType as never;
-        throw Error(`'color' is invalid. 'color':${strangeValue}`);
+        throw Error(`'color' is invalid. 'color':${String(strangeValue)}`);
       }
     }
   });

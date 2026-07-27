@@ -6,8 +6,13 @@ import type { LPolyline } from "@vue-leaflet/vue-leaflet";
 import "leaflet-arrowheads";
 import { onMounted, onUnmounted, ref, watch, type Ref } from "vue";
 
+// 矢印のサイズ
+type ArrowSize = `${number}px`;
+// 矢印の表示間隔
+type ArrowFrequency = "endonly" | `${number}px`;
+
 // 矢印のサイズ定義
-const arrowSizeMap: StringMap<string> = {
+const arrowSizeMap: StringMap<ArrowSize> = {
   0: "5px",
   1: "8px",
   2: "8px",
@@ -20,7 +25,7 @@ const arrowSizeMap: StringMap<string> = {
 };
 
 // 矢印の表示間隔定義
-const arrowFreqMap: StringMap<string> = {
+const arrowFreqMap: StringMap<ArrowFrequency> = {
   0: "endonly",
   1: "endonly",
   2: "200px",
@@ -44,8 +49,8 @@ const ORBIT_UPDATE_INTERVAL = 10000;
 export default function useOrbitLineList(
   currentDate: Ref<Date>,
   colorCode: Ref<string>,
-  refPolylineNormal: Ref<typeof LPolyline | undefined>,
-  refPolylineDash: Ref<typeof LPolyline | undefined>,
+  refPolylineNormal: Ref<InstanceType<typeof LPolyline> | undefined>,
+  refPolylineDash: Ref<InstanceType<typeof LPolyline> | undefined>,
   zoomLevel: Ref<number>
 ) {
   const orbitLineList = ref<[number, number][][]>([[]]);
@@ -77,8 +82,8 @@ export default function useOrbitLineList(
     // memo: このタイミング（軌道の更新前）に行わないと、１回前の古い衛星Indexの色で描画されてしまう
     colorCode.value = CanvasUtil.getSatelliteColorCode(activeSatIndex);
     // さらに強制的にstyle指定を行わないと色が反映されないことがある
-    refPolylineNormal.value!.leafletObject.setStyle({ color: colorCode.value });
-    refPolylineDash.value!.leafletObject.setStyle({ color: colorCode.value });
+    refPolylineNormal.value?.leafletObject?.setStyle({ color: colorCode.value });
+    refPolylineDash.value?.leafletObject?.setStyle({ color: colorCode.value });
 
     // 軌道を更新
     await updateOrbit();
@@ -121,10 +126,9 @@ export default function useOrbitLineList(
   /**
    * 軌道の向きを示す矢印を有効化する
    * @param targetEef LPolylineのref
-   *                  leafletObjectの参照で ts-plugin(2339) が発生するため、anyとしている。。
    */
-  function applyArrow(targetEef: any) {
-    if (!targetEef || !targetEef.leafletObject) {
+  function applyArrow(targetEef: InstanceType<typeof LPolyline> | undefined) {
+    if (!targetEef?.leafletObject) {
       return;
     }
 

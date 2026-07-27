@@ -58,7 +58,9 @@ export default class ApiTransceiver {
   /**
    * 周波数の変更イベント
    */
-  public static onChangeTransceiverFrequency(callback: Function) {
+  public static onChangeTransceiverFrequency(
+    callback: (res: ApiResponse<UplinkType | DownlinkType>) => void | Promise<void>
+  ) {
     window.rstApi.onChangeTransceiverFrequency(callback);
   }
 
@@ -72,7 +74,7 @@ export default class ApiTransceiver {
   /**
    * 運用モードの変更イベント
    */
-  public static onChangeTransceiverMode(callback: Function) {
+  public static onChangeTransceiverMode(callback: (res: ApiResponse<UplinkType | DownlinkType>) => void) {
     window.rstApi.onChangeTransceiverMode(callback);
   }
 
@@ -86,14 +88,14 @@ export default class ApiTransceiver {
   /**
    * ドップラーシフト待機イベント
    */
-  public static dopplerShiftWaitingCallback(callback: Function) {
+  public static dopplerShiftWaitingCallback(callback: (res: ApiResponse<boolean>) => void) {
     window.rstApi.dopplerShiftWaitingCallback(callback);
   }
 
   /**
    * 無線機周波数保存イベント
    */
-  public static onSaveTransceiverFrequency(callback: Function) {
+  public static onSaveTransceiverFrequency(callback: () => void | Promise<void>) {
     window.rstApi.onSaveTransceiverFrequency(callback);
   }
 }

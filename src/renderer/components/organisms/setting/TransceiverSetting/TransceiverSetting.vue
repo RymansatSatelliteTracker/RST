@@ -52,7 +52,8 @@ import ApiSirial from "@/renderer/api/ApiSirial.js";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
-import { ref, watch } from "vue";
+import { ref, useTemplateRef, watch } from "vue";
+import type { ComponentExposed } from "vue-component-type-helpers";
 import TransceiverBegavior from "./TransceiverBegavior/TransceiverBegavior.vue";
 import TransceiverConn from "./TransceiverConn/TransceiverConn.vue";
 import TransceiverSettingForm from "./TransceiverSettingForm.js";
@@ -68,7 +69,7 @@ const form = ref<TransceiverSettingForm>(new TransceiverSettingForm());
 const isShow = defineModel<boolean>("isShow");
 const loadingTestBtn = ref(false);
 const isSerialOpen = ref(false);
-const refTravsceiverConn = ref();
+const refTravsceiverConn = useTemplateRef<ComponentExposed<typeof TransceiverConn>>("refTravsceiverConn");
 // v-tabsの現在のタブ
 const tab = ref("device");
 // アプリ側で管理する現在のタブ
@@ -161,7 +162,10 @@ async function onOk() {
 
   // シリアル接続、無線機の状態監視開始
   // memo: OKクリック時に待たさせるのを避けるためawaitは敢えて付けてない。
-  refTravsceiverConn.value.startNewConnect();
+  // memo: env.d.tsの"*.vue"shimの都合上、ESLintの型解析ではTransceiverConnの公開プロパティの型を解決できないため無効化する
+  // （vue-tscでは正しく型付けされていることを確認済み）
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  refTravsceiverConn.value?.startNewConnect();
 
   // 親へ通知
   emits("onOk");
@@ -173,7 +177,8 @@ async function onOk() {
 function cancelClick() {
   // シリアル接続、無線機の状態監視開始
   // memo: キャンセルクリック時に待たさせるのを避けるためawaitは敢えて付けてない。
-  refTravsceiverConn.value.startNewConnect();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  refTravsceiverConn.value?.startNewConnect();
 
   // 親へ通知
   emits("onCancel");
@@ -200,7 +205,8 @@ async function onTabChange() {
 async function validateTabContents(): Promise<boolean> {
   // 現在のタブが「機器設定」の場合
   if (currentTab.value === "device") {
-    return await refTravsceiverConn.value.validateAll();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+    return (await refTravsceiverConn.value?.validateAll()) ?? true;
   }
   // 現在のタブが「動作設定」の場合は入力チェックなし（現状はSelectBoxのみのため）
 

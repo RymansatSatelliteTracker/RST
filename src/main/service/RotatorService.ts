@@ -115,7 +115,7 @@ export default class RotatorService {
   /**
    * アンテナ位置の変動コールバックを設定する
    */
-  public setCallback(callback: Function) {
+  public setCallback(callback: (res: ApiResponse<AntennaPositionModel>) => void) {
     if (!this.isReady()) {
       return;
     }

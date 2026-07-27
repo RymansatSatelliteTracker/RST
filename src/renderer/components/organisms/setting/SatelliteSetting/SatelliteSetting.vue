@@ -70,14 +70,15 @@ import ApiActiveSat from "@/renderer/api/ApiActiveSat.js";
 import ApiConfig from "@/renderer/api/ApiAppConfig.js";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
-import { nextTick, onMounted, ref, toRaw } from "vue";
+import { nextTick, onMounted, ref, toRaw, useTemplateRef } from "vue";
+import type { ComponentExposed } from "vue-component-type-helpers";
 
 // タブの状態を管理するref
 const tab = ref(null);
 // アプリケーション設定を管理するref
 const apiConfigData = ref<AppConfigSatSettingModel>(new AppConfigSatSettingModel());
 // バリデーションチェック用のformのref
-const loadTLETabRef = ref();
+const loadTLETabRef = useTemplateRef<ComponentExposed<typeof LoadTLETab>>("loadTLETabRef");
 
 // ダイアログの表示可否
 const isShow = defineModel<boolean>("isShow");
@@ -109,15 +110,19 @@ async function regist(): Promise<boolean> {
   // 画面を開かないとロードしないので判定する
   // 画面を開かない場合は編集もできないのでチェックしない
   let isTleUpdated = false;
+  // memo: env.d.tsの"*.vue"shimの都合上、ESLintの型解析ではLoadTLETabの公開プロパティの型を解決できないため無効化する
+  // （vue-tscでは正しく型付けされていることを確認済み）
   if (loadTLETabRef.value) {
-    const result = await loadTLETabRef.value.onOk();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    const result = (await loadTLETabRef.value.onOk()) as string;
     if (result !== "OK") {
       emitter.emit(Constant.GlobalEvent.NOTICE_ERR, result);
       return false;
     }
     // TLEのURLが更新されているか確認
     // 保存の前にやらないとURLの情報が同期してしまう
-    isTleUpdated = loadTLETabRef.value.isTLEUpdated();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    isTleUpdated = loadTLETabRef.value.isTLEUpdated() as boolean;
   }
 
   // 更新
@@ -177,9 +182,9 @@ async function updateAppConfig(isTleUpdated: boolean) {
         apiConfigData.value.satelliteSetting.satelliteChoiceMinEl
       );
     })
-    .catch((e) => {
+    .catch((e: unknown) => {
       // 想定外エラーの場合
-      emitter.emit(Constant.GlobalEvent.NOTICE_ERR, e.message);
+      emitter.emit(Constant.GlobalEvent.NOTICE_ERR, e instanceof Error ? e.message : String(e));
     });
 }
 </script>

@@ -9,8 +9,8 @@ import { SerialPort } from "serialport";
  */
 export default class SerialComm {
   private port: SerialPort | null = null;
-  private recvCallback: Function | null = null;
-  private closeCallback: Function | null = null;
+  private recvCallback: ((data: Buffer) => void | Promise<void>) | null = null;
+  private closeCallback: (() => void) | null = null;
 
   // シリアルポート接続がアクティブかどうか
   private active = false;
@@ -23,8 +23,8 @@ export default class SerialComm {
     comName: string,
     baudRate: number,
     useReadlineParsar: boolean = false,
-    recvCallback: Function | null = null,
-    closeCallback: Function | null = null
+    recvCallback: ((data: Buffer) => void | Promise<void>) | null = null,
+    closeCallback: (() => void) | null = null
   ) {
     if (CommonUtil.isEmpty(comName)) {
       AppMainLogger.warn(`シリアルポートが未指定のため、接続は行いません。`);
@@ -76,7 +76,7 @@ export default class SerialComm {
    */
   static async getPortList() {
     const portInfos = await SerialPort.list();
-    const ports = portInfos.map((portInfo) => portInfo.path);
+    const ports = portInfos.map((portInfo: { path: string }) => portInfo.path);
     return ports.toSorted();
   }
 
@@ -228,7 +228,7 @@ export default class SerialComm {
    * 指定のFunctionを排他的にsynchronizedで実行する
    */
   @synchronized()
-  private async doProcess(target: Function): Promise<any> {
+  private async doProcess<T>(target: () => Promise<T>): Promise<T> {
     return await target();
   }
 
@@ -242,7 +242,7 @@ export default class SerialComm {
       return;
     }
 
-    this.recvCallback(data);
+    void this.recvCallback(data);
   }
 
   /**

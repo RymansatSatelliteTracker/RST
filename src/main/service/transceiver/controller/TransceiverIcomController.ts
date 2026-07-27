@@ -66,7 +66,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
   // 無線機からの受信コールバック制御用
   private recvCallbackType: RecvCallBackType | null = null;
-  private recvCallback: Function | null = null;
+  private recvCallback: ((recvData: string, recvCmdType: string) => void) | null = null;
 
   // RST側と無線機側の周波数、モードの状態の保持
   private state = new TransceiverIcomState();
@@ -948,7 +948,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     }
 
     // 無線機からの周波数データ(トランシーブ)受信があった場合の戻り値
-    const res = new ApiResponse(true);
+    const res = new ApiResponse<boolean>(true);
 
     // コマンド部により処理を切り替え
     const cmd = trimedData.substring(8, 10);
@@ -1073,7 +1073,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
     // 受信データをパースして周波数部を読み取る
     const freqHz = TransceiverIcomRecvParser.parseFreq(recvData);
-    const res = new ApiResponse(true);
+    const res = new ApiResponse<UplinkType | DownlinkType>(true);
 
     // 現在のバンドを再取得
     // memo: 無線機側でメイン／サブの切り替えが行われている可能性があるため、更新ターゲットを再取得する
@@ -1112,7 +1112,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       return;
     }
 
-    const res = new ApiResponse(true);
+    const res = new ApiResponse<UplinkType | DownlinkType>(true);
     // 無線機から受信したデータから運用モードを取得する
     const recvModeText = TransceiverIcomRecvParser.parseMode(recvData);
     if (!recvModeText) {
@@ -1201,7 +1201,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       return;
     }
 
-    const res = new ApiResponse(true);
+    const res = new ApiResponse<UplinkType | DownlinkType>(true);
     // 無線機から受信したデータからデータモードを取得する
     const recvDataMode = TransceiverIcomRecvParser.parseDataMode(recvData);
     if (!recvDataMode) {
@@ -1343,11 +1343,11 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
     // コールバック呼び出し
     if (this.freqCallback) {
-      const res = new ApiResponse(false, I18nMsgs.SYSTEM_TRANSCEIVER_SERIAL_RECV_TIMEOUT);
+      const res = new ApiResponse<UplinkType | DownlinkType>(false, I18nMsgs.SYSTEM_TRANSCEIVER_SERIAL_RECV_TIMEOUT);
       this.freqCallback(res);
     }
     if (this.modeCallback) {
-      const res = new ApiResponse(false, I18nMsgs.SYSTEM_TRANSCEIVER_SERIAL_RECV_TIMEOUT);
+      const res = new ApiResponse<UplinkType | DownlinkType>(false, I18nMsgs.SYSTEM_TRANSCEIVER_SERIAL_RECV_TIMEOUT);
       this.modeCallback(res);
     }
 

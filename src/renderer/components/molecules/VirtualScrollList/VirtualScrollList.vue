@@ -4,27 +4,26 @@
       <template #default="{ item, index }">
         <span v-if="index === items.length - 1" v-intersect.once="onIntersect"></span>
         <v-list-item
-          :key="getItemKey(item, index)"
-          ref="listItemRef"
+          :key="getItemKey(item as T, index)"
           :class="{ 'v-list-item--active': isSelected(index) }"
           class="listitem"
           density="compact"
           @click="selectItem(index)"
-          @dblclick="emitItemDblClick(item)"
-          >{{ item[itemName] }}
+          @dblclick="emitItemDblClick(item as T)"
+          >{{ (item as Record<string, unknown>)[itemName] }}
         </v-list-item>
       </template>
     </v-virtual-scroll>
   </v-list>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends object">
 import { computed, ref, watch } from "vue";
 
 // コンポーネントに渡された源泉のアイテム
-const srcItems = defineModel<any[]>("items", { default: [] });
+const srcItems = defineModel<T[]>("items", { default: [] });
 // 表示対象のアイテム
-const items = ref<any[]>([]);
+const items = ref<T[]>([]);
 const itemName = defineModel<string>("itemName", { default: "" });
 const itemKey = defineModel<string>("itemKey", { default: "" });
 const height = defineModel<number>("height", { default: 0 });
@@ -37,8 +36,8 @@ const maxNumberOfOnceLoad: number = 200;
 // 現在のページ数
 let currentPage: number = 0;
 
-const emits = defineEmits(["itemDblClick"]);
-function emitItemDblClick(item: any) {
+const emits = defineEmits<{ itemDblClick: [item: T] }>();
+function emitItemDblClick(item: T) {
   emits("itemDblClick", item);
 }
 
@@ -46,9 +45,9 @@ function emitItemDblClick(item: any) {
  * アイテムのキーを返す
  * itemKeyが未指定の場合はindexを返す
  */
-function getItemKey(item: any, index: number) {
+function getItemKey(item: T, index: number): string | number {
   if (!itemKey.value) return index;
-  return item[itemKey.value];
+  return (item as Record<string, unknown>)[itemKey.value] as string | number;
 }
 
 /**

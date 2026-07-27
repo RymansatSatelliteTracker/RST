@@ -178,7 +178,7 @@ watch(destPosition as Ref<AntennaPositionModel>, (newValue: AntennaPositionModel
   }
 
   // シリアライズ可能なオブジェクトにしてから渡す
-  const pos = JSON.parse(JSON.stringify(newValue));
+  const pos = JSON.parse(JSON.stringify(newValue)) as AntennaPositionModel;
   void ApiAntennaTracking.setAntennaPosition(pos);
 });
 

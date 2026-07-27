@@ -131,7 +131,8 @@ import BorateSelect from "@/renderer/components/molecules/BorateSelect/BorateSel
 import SerialPortSelect from "@/renderer/components/molecules/SerialPortSelect/SerialPortSelect.vue";
 import TransceiverDeviceSelect from "@/renderer/components/molecules/TransceiverDeviceSelect/TransceiverDeviceSelect.vue";
 import TransceiverMakerSelect from "@/renderer/components/molecules/TransceiverMakerSelect/TransceiverMakerSelect.vue";
-import { ref, watch } from "vue";
+import { ref, useTemplateRef, watch } from "vue";
+import type { ComponentExposed } from "vue-component-type-helpers";
 import type TransceiverConnForm from "./TransceiverConnForm.js";
 import { useTransceiverConnValidate, valiSchemaTransceiverSetting } from "./useTransceiverConnValidate.js";
 import useTransceiverCtrl from "./useTransceiverCtrl.js";
@@ -144,7 +145,7 @@ const form = defineModel<TransceiverConnForm>("form", { required: true });
 defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
 
 // 「更新」クリック時に更新ボタン側のメソッドをコールするためのref
-const serialPortSelectRef = ref();
+const serialPortSelectRef = useTemplateRef<ComponentExposed<typeof SerialPortSelect>>("serialPortSelectRef");
 
 // 入力チェック関係
 const { validateForm, errors } = useTransceiverConnValidate();
@@ -197,7 +198,10 @@ watch(
  * 更新クリック
  */
 function onRefreshSerialPort() {
-  serialPortSelectRef.value.refreshSerialPort();
+  // memo: env.d.tsの"*.vue"shimの都合上、ESLintの型解析ではSerialPortSelectの公開プロパティの型を解決できないため無効化する
+  // （vue-tscでは正しく型付けされていることを確認済み）
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  serialPortSelectRef.value?.refreshSerialPort();
 }
 
 /**

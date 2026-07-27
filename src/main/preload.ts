@@ -38,7 +38,7 @@ const apiHandler = {
   /**
    * アプリケーション設定を保存する
    */
-  storeAppConfig: function (config: AppConfigModel) {
+  storeAppConfig: function (config: AppConfigModel): Promise<void> {
     return ipcRenderer.invoke("storeAppConfig", config);
   },
 
@@ -83,7 +83,7 @@ const apiHandler = {
   /**
    * メイン表示する衛星グループ、衛星ID情報が保存された場合の変更イベント
    */
-  onChangeActiveSatelliteGroup: (callback: Function) => {
+  onChangeActiveSatelliteGroup: (callback: (satGrpModel: ActiveSatelliteGroupModel) => void) => {
     ipcRenderer.on(
       "onChangeActiveSatelliteGroup",
       (event: IpcRendererEvent, satGrpModel: ActiveSatelliteGroupModel) => {
@@ -197,7 +197,7 @@ const apiHandler = {
   /**
    * ローテータ関係・アンテナ位置の変更イベント
    */
-  onChangeAntennaPosition: (callback: Function) => {
+  onChangeAntennaPosition: (callback: (res: ApiResponse<AntennaPositionModel>) => void) => {
     ipcRenderer.on("onChangeAntennaPosition", (event: IpcRendererEvent, res: ApiResponse<AntennaPositionModel>) => {
       callback(res);
     });
@@ -206,7 +206,7 @@ const apiHandler = {
   /**
    * ローテータ関係・ローテータのデバイスが切断された際のイベント
    */
-  onRoratorDisconnect: (callback: Function) => {
+  onRoratorDisconnect: (callback: () => void) => {
     ipcRenderer.on("onRoratorDisconnect", (_event: IpcRendererEvent) => {
       callback();
     });
@@ -267,11 +267,11 @@ const apiHandler = {
   /**
    * 無線機関係・周波数の変更イベント
    */
-  onChangeTransceiverFrequency: (callback: Function) => {
+  onChangeTransceiverFrequency: (callback: (res: ApiResponse<UplinkType | DownlinkType>) => void | Promise<void>) => {
     ipcRenderer.on(
       "onChangeTransceiverFrequency",
       (event: IpcRendererEvent, res: ApiResponse<UplinkType | DownlinkType>) => {
-        callback(res);
+        void callback(res);
       }
     );
   },
@@ -287,7 +287,7 @@ const apiHandler = {
   /**
    * 無線機関係・モードの変更イベント
    */
-  onChangeTransceiverMode: (callback: Function) => {
+  onChangeTransceiverMode: (callback: (res: ApiResponse<UplinkType | DownlinkType>) => void) => {
     ipcRenderer.on(
       "onChangeTransceiverMode",
       (event: IpcRendererEvent, res: ApiResponse<UplinkType | DownlinkType>) => {
@@ -307,7 +307,7 @@ const apiHandler = {
   /**
    * ドップラーシフト待機イベント
    */
-  dopplerShiftWaitingCallback: (callback: Function) => {
+  dopplerShiftWaitingCallback: (callback: (res: ApiResponse<boolean>) => void) => {
     ipcRenderer.on("dopplerShiftWaitingCallback", (event: IpcRendererEvent, res: ApiResponse<boolean>) => {
       callback(res);
     });
@@ -338,7 +338,7 @@ const apiHandler = {
    * メイン側で以下の記載を行うと"onDispLangChange"が発火し、レンダラ側のコールバックが実行される
    * mainWindow.webContents.send("onDispLangChange", "ja");
    */
-  onDispLangChange: (callback: Function) => {
+  onDispLangChange: (callback: (lang: LangType) => void) => {
     ipcRenderer.on("onDispLangChange", (event: IpcRendererEvent, lang: LangType) => {
       callback(lang);
     });
@@ -348,7 +348,7 @@ const apiHandler = {
    * メイン側で以下の記載を行うと"openFrequencyEditor"が発火し、レンダラ側のコールバックが実行される
    * mainWindow.webContents.send("openFrequencyEditor");
    */
-  onOpenFrequencyEditor: (callback: Function) => {
+  onOpenFrequencyEditor: (callback: () => void) => {
     ipcRenderer.on("openFrequencyEditor", (_event: IpcRendererEvent) => {
       callback();
     });
@@ -358,9 +358,9 @@ const apiHandler = {
    * メイン側で以下の記載を行うと"onSaveTransceiverFrequency"が発火し、レンダラ側のコールバックが実行される
    * mainWindow.webContents.send("onSaveTransceiverFrequency");
    */
-  onSaveTransceiverFrequency: (callback: Function) => {
+  onSaveTransceiverFrequency: (callback: () => void | Promise<void>) => {
     ipcRenderer.on("onSaveTransceiverFrequency", (_event: IpcRendererEvent) => {
-      callback();
+      void callback();
     });
   },
   /**
@@ -375,9 +375,9 @@ const apiHandler = {
    * メイン側で以下の記載を行うと"onNoticeMessage"が発火し、レンダラ側のコールバックが実行される
    * mainWindow.webContents.send("onNoticeMessage", message);
    */
-  onNoticeMessage: (callback: Function) => {
-    ipcRenderer.on("onNoticeMessage", (event: IpcRendererEvent, args: any) => {
-      callback(args[0] as MessageModel);
+  onNoticeMessage: (callback: (message: MessageModel) => void) => {
+    ipcRenderer.on("onNoticeMessage", (event: IpcRendererEvent, args: [MessageModel]) => {
+      callback(args[0]);
     });
   },
 
