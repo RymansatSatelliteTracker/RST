@@ -1,4 +1,3 @@
-import { describe, it, expect } from "vitest";
 import Constant from "@/common/Constant.js";
 import { DefaultSatelliteModel } from "@/common/model/DefaultSatelliteModel.js";
 import type { OmmItemMap, OmmJsonModel } from "@/common/model/OmmModel.js";
@@ -7,6 +6,7 @@ import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 import FileUtil from "@/main/util/FileUtil.js";
 import * as path from "path";
+import { describe, expect, it } from "vitest";
 
 describe("DefaultSatelliteModel", () => {
   function getLatestOmm(): OmmItemMap {

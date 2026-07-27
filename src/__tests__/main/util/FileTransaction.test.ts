@@ -1,3 +1,4 @@
+import { AppConfigModel } from "@/common/model/AppConfigModel.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 import { FileTransaction } from "@/main/util/FileTransaction.js";
 import FileUtil from "@/main/util/FileUtil.js";
@@ -40,7 +41,7 @@ describe("FileTransaction", () => {
     const fileType = "appConfig";
     const transaction = new FileTransaction(fileType);
     // 実行
-    transaction.update({ some: "data" });
+    transaction.update(new AppConfigModel());
     // 検証
     expect(wirteTextSpy).toHaveBeenCalledTimes(1);
   });
