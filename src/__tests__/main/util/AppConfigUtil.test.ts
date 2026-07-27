@@ -1,6 +1,7 @@
-import { describe, it, expect } from "vitest";
-import { AppConfigSatellite } from "@/common/model/AppConfigModel.js";
+import { AppConfigSatellite, type AppConfigModel } from "@/common/model/AppConfigModel.js";
+import type { OmmItem } from "@/common/model/OmmModel.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import { beforeAll, describe, expect, it } from "vitest";
 
 describe("AppConfigUtil", () => {
   beforeAll(() => {
@@ -8,7 +9,7 @@ describe("AppConfigUtil", () => {
       const sat: AppConfigSatellite = new AppConfigSatellite();
       sat.satelliteId = 12345;
       sat.groupId = 1;
-      return { satellites: [sat] } as any;
+      return { satellites: [sat] } as unknown as AppConfigModel;
     });
   });
 
@@ -39,7 +40,10 @@ describe("AppConfigUtil", () => {
  */
 describe("AppConfigUtil - migrateSatelliteTleToOmm", () => {
   function callMigrate(sat: AppConfigSatellite): AppConfigSatellite {
-    return (AppConfigUtil as any)["migrateSatelliteTleToOmm"](sat);
+    const target = AppConfigUtil as unknown as {
+      migrateSatelliteTleToOmm: (sat: AppConfigSatellite) => AppConfigSatellite;
+    };
+    return target.migrateSatelliteTleToOmm(sat);
   }
 
   it("ユーザ登録衛星でuserRegisteredOmmが未設定の場合は変換して設定する", () => {
@@ -56,7 +60,7 @@ describe("AppConfigUtil - migrateSatelliteTleToOmm", () => {
 
     // 検証
     expect(result.userRegisteredOmm).not.toBe("");
-    const ommItem = JSON.parse(result.userRegisteredOmm);
+    const ommItem = JSON.parse(result.userRegisteredOmm) as OmmItem;
     expect(ommItem.noradCatId).toBe("25544");
     expect(ommItem.meanMotion).toBeCloseTo(15.49333088, 8);
   });
@@ -66,7 +70,8 @@ describe("AppConfigUtil - migrateSatelliteTleToOmm", () => {
     const sat = new AppConfigSatellite();
     sat.userRegistered = true;
     sat.userRegisteredSatelliteName = "TEST";
-    sat.userRegisteredTle = "1 99999U 00000A   24001.00000000  .00000000  00000-0  00000-0 0  9990\n2 99999  00.0000 000.0000 0000000 000.0000 000.0000 15.00000000000010";
+    sat.userRegisteredTle =
+      "1 99999U 00000A   24001.00000000  .00000000  00000-0  00000-0 0  9990\n2 99999  00.0000 000.0000 0000000 000.0000 000.0000 15.00000000000010";
     sat.userRegisteredOmm = '{"already":"set"}';
 
     // 実行

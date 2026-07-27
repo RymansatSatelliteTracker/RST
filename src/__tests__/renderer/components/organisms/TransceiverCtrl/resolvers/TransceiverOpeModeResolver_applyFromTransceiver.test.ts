@@ -1,11 +1,12 @@
-import { describe, it, expect } from "vitest";
 import Constant from "@/common/Constant.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
+import type { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
 import type { ApiResponse } from "@/common/types/types.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import type { OpeModeResolverState } from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver.js";
 import TransceiverOpeModeResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver.js";
 import emitter from "@/renderer/util/EventBus.js";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 
 const createState = (): OpeModeResolverState => ({
@@ -29,7 +30,7 @@ describe("TransceiverOpeModeResolver.applyFromTransceiver", () => {
       status: false,
       message: I18nMsgs.SERIAL_NOT_CONNECTED_TRANSCEIVER,
       data: null,
-    } as ApiResponse<any>;
+    } as unknown as ApiResponse<UplinkType | DownlinkType>;
 
     resolver.applyFromTransceiver(res);
 
@@ -46,7 +47,7 @@ describe("TransceiverOpeModeResolver.applyFromTransceiver", () => {
       data: {
         uplinkMode: Constant.Transceiver.OpeMode.USB,
       },
-    } as ApiResponse<any>;
+    } as unknown as ApiResponse<UplinkType | DownlinkType>;
 
     resolver.applyFromTransceiver(res);
 
@@ -62,7 +63,7 @@ describe("TransceiverOpeModeResolver.applyFromTransceiver", () => {
       data: {
         downlinkMode: Constant.Transceiver.OpeMode.FM,
       },
-    } as ApiResponse<any>;
+    } as unknown as ApiResponse<UplinkType | DownlinkType>;
 
     resolver.applyFromTransceiver(res);
 

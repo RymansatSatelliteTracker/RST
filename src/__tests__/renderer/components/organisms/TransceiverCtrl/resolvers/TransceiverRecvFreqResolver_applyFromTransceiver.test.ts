@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
 import Constant from "@/common/Constant.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
+import type { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
 import type { ApiResponse } from "@/common/types/types.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc.js";
@@ -8,6 +8,7 @@ import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverC
 import type { RecvFreqResolverState } from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverRecvFreqResolver.js";
 import TransceiverRecvFreqResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverRecvFreqResolver.js";
 import emitter from "@/renderer/util/EventBus.js";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 
 const createState = (): RecvFreqResolverState => ({
@@ -44,7 +45,7 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
       status: false,
       message: I18nMsgs.SERIAL_NOT_CONNECTED_TRANSCEIVER,
       data: null,
-    } as ApiResponse<any>);
+    } as unknown as ApiResponse<UplinkType | DownlinkType>);
 
     expect(emitSpy).toHaveBeenCalledWith(Constant.GlobalEvent.NOTICE_ERR, "mocked notice");
     expect(calcWithAdjust).not.toHaveBeenCalled();
@@ -69,7 +70,7 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
       data: {
         uplinkHz: 2430123456,
       },
-    } as ApiResponse<any>);
+    } as unknown as ApiResponse<UplinkType | DownlinkType>);
 
     expect(state.txFrequency.value).toBe("2430.123.456");
     expect(calcWithAdjust).not.toHaveBeenCalled();
@@ -99,7 +100,7 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
       data: {
         downlinkHz: 480100000,
       },
-    } as ApiResponse<any>);
+    } as unknown as ApiResponse<UplinkType | DownlinkType>);
 
     expect(state.rxFrequency.value).toBe("0480.100.000");
     expect(calcRxSpy).toHaveBeenCalledWith(

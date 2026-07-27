@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
 import TleDataHelper from "@/__tests__/renderer/service/TleDataHelper.js";
 import { InvalidArgumentError } from "@/common/exceptions.js";
 import OmmUtil from "@/main/util/OmmUtil.js";
 import SatelliteService from "@/renderer/service/SatelliteService.js";
+import { describe, expect, it } from "vitest";
 
 /**
  * [正常系]

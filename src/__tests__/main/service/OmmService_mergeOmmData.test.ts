@@ -1,7 +1,7 @@
-import { describe, it, expect } from "vitest";
-import { OmmItem } from "@/common/model/OmmModel.js";
 import type { OmmItemMap } from "@/common/model/OmmModel.js";
+import { OmmItem } from "@/common/model/OmmModel.js";
 import OmmService from "@/main/service/OmmService.js";
+import { describe, expect, it } from "vitest";
 
 /**
  * 試験用のOmmItemを生成する

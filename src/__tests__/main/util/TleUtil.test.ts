@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
 import TleUtil from "@/main/util/TleUtil.js";
+import { describe, expect, it } from "vitest";
 
 /**
  * [正常系]
