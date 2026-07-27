@@ -1,3 +1,4 @@
+import type { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
 import {
   createDefaultSatellite,
   initializeDefaultSatellites,
@@ -33,7 +34,7 @@ describe("DefaultSatelliteUtil", () => {
     ];
 
     // 実行
-    const result = initializeDefaultSatellites(satellites);
+    const result = initializeDefaultSatellites(satellites as DefaultSatelliteType[]);
 
     // 検証
     expect(result).toHaveLength(1);

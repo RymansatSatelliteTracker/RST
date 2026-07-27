@@ -200,7 +200,8 @@ describe("DefaultSatelliteModel", () => {
     };
 
     // Act
-    const initilizedModel = DefaultSatelliteModel.getInitializedModelFromData(data.defaultSatellite);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+    const initilizedModel = DefaultSatelliteModel.getInitializedModelFromData(data.defaultSatellite as any);
     const defsat = initilizedModel.getDefaultSatelliteBySatelliteId(0);
 
     // Assert
