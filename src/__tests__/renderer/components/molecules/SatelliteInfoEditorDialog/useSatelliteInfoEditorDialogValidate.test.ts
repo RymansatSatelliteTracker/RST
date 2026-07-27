@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import I18nMsgs from "@/common/I18nMsgs.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import SatelliteInfoEditorDialogForm from "@/renderer/components/molecules/SatelliteInfoEditorDialog/SatelliteInfoEditorDialogForm.js";

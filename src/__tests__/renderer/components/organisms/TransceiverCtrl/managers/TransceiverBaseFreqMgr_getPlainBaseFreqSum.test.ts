@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
 
 describe("TransceiverBaseFreqMgr.getPlainBaseFreqSum", () => {

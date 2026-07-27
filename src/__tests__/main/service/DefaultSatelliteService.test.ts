@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import Constant from "@/common/Constant.js";
 import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
 import DefaultSatelliteService from "@/main/service/DefaultSatelliteService.js";

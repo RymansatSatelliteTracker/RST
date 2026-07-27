@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import TleDataHelper from "@/__tests__/renderer/service/TleDataHelper.js";
 import { InvalidArgumentError } from "@/common/exceptions.js";
 import OrbitLineService from "@/renderer/service/OrbitLineService.js";

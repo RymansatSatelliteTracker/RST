@@ -1,3 +1,4 @@
+import { it, expect } from "vitest";
 import I18nMsgs from "@/common/I18nMsgs.js";
 import FileUtil from "@/main/util/FileUtil.js";
 import FrequencyValidator from "@/main/validator/FrequencyValidator.js";

@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import TransceiverUtil from "@/common/util/TransceiverUtil.js";
 
 describe("TransceiverUtil", () => {

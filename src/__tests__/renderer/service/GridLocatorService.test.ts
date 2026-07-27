@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import GridLocatorService from "@/renderer/service/GridLocatorService.js";
 
 describe("GridLocatorService - fromGridLocator", () => {

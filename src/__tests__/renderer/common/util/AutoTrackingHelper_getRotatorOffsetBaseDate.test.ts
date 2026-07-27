@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { AppConfigModel } from "@/common/model/AppConfigModel.js";
 import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper.js";
 

@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { AppConfigSatellite } from "@/common/model/AppConfigModel.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 

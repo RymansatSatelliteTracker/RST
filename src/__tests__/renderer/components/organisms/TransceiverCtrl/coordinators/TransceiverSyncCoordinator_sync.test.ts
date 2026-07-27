@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import Constant from "@/common/Constant.js";
 import type { SyncCoordinatorState } from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverSyncCoordinator.js";
 import TransceiverSyncCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverSyncCoordinator.js";

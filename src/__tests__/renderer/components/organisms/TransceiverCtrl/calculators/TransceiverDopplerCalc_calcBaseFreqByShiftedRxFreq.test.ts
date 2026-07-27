@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc.js";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
 

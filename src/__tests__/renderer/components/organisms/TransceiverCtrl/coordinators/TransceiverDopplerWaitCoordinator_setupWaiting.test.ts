@@ -1,9 +1,9 @@
+import { describe, it, expect, type MockInstance } from "vitest";
 import { AppConfigModel } from "@/common/model/AppConfigModel.js";
 import type { ApiResponse } from "@/common/types/types.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import TransceiverDopplerWaitCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverDopplerWaitCoordinator.js";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
-import type { MockInstance } from "vitest";
 
 describe("TransceiverDopplerWaitCoordinator.setupWaiting", () => {
   let getAppConfigSpy: MockInstance<() => Promise<AppConfigModel>>;

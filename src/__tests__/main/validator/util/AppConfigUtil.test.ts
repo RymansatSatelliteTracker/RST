@@ -1,3 +1,4 @@
+import { it, expect } from "vitest";
 import { AppConfigModel, AppConfigSatellite } from "@/common/model/AppConfigModel.js";
 import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
 import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService.js";

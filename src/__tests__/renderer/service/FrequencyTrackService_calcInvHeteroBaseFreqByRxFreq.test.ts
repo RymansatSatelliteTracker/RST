@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { OmmItem } from "@/common/model/OmmModel.js";
 import FrequencyTrackService from "@/renderer/service/FrequencyTrackService.js";
 import SatelliteService from "@/renderer/service/SatelliteService.js";

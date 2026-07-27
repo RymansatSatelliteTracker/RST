@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { FrequencyUtil } from "@/renderer/util/FrequencyUtil.js";
 
 describe("FrequencyUtil", () => {

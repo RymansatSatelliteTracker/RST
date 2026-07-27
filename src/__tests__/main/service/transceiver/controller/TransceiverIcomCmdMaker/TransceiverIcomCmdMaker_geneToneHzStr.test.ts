@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import TransceiverIcomCmdMaker from "@/main/service/transceiver/controller/TransceiverIcomCmdMaker.js";
 
 describe("TransceiverIcomCmdMaker.geneToneHzStrのテスト", () => {

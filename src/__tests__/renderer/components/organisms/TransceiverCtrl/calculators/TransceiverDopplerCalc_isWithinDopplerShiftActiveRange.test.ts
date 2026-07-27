@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { AppConfigModel } from "@/common/model/AppConfigModel.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc.js";

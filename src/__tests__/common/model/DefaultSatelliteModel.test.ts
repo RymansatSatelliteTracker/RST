@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import Constant from "@/common/Constant.js";
 import { DefaultSatelliteModel } from "@/common/model/DefaultSatelliteModel.js";
 import type { OmmItemMap } from "@/common/model/OmmModel.js";

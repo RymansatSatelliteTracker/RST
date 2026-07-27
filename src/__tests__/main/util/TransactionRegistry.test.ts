@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import TransactionRegistry from "@/main/util/TransactionRegistry.js";
 
 describe("TransactionRegistry", () => {

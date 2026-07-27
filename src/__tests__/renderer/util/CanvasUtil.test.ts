@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import CanvasUtil from "@/renderer/util/CanvasUtil.js";
 import { createPinia, setActivePinia } from "pinia";
 

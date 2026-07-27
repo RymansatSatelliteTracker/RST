@@ -1,8 +1,8 @@
+import { describe, it, expect, type MockInstance } from "vitest";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 import { FileTransaction } from "@/main/util/FileTransaction.js";
 import FileUtil from "@/main/util/FileUtil.js";
 import TransactionRegistry from "@/main/util/TransactionRegistry.js";
-import type { MockInstance } from "vitest";
 
 describe("FileTransaction", () => {
   let wirteTextSpy: MockInstance;

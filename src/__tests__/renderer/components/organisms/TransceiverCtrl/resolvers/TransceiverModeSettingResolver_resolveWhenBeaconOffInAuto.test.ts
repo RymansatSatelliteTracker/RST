@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import type { TransceiverSettingLike } from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver.js";
 import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver.js";
 
