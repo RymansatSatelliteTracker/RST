@@ -24,9 +24,6 @@ const dopplerShiftModeRange = ref(
   Object.values(DopplerShiftMode).map((mode: string) => ({
     value: mode,
     title: dopplerShiftModeLabel[mode],
-    // TODO: 受信固定、送信固定に対応するまでは衛星固定のみを有効化
-    //       対応後は、以下のpropsは削除して良い
-    props: { disabled: mode !== DopplerShiftMode.FIXED_SAT },
   }))
 );
 const dopplerShiftMode = defineModel<string>("dopplerShiftMode", {

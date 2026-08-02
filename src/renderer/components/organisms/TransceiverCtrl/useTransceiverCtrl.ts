@@ -10,6 +10,7 @@ import TransceiverFreqCoordinator from "@/renderer/components/organisms/Transcei
 import TransceiverModeCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator.js";
 import TransceiverSyncCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverSyncCoordinator.js";
 import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
+import TransceiverDopplerModeResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverDopplerModeResolver.js";
 import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver.js";
 import TransceiverModeStateResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeStateResolver.js";
 import TransceiverOpeModeResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver.js";
@@ -105,8 +106,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   const dopplerWaitCoordinator = new TransceiverDopplerWaitCoordinator(autoStore);
   // 基準周波数（補正値なし）の管理
   const baseFreqMgr = new TransceiverBaseFreqMgr();
-  // モードごとの周波数・運用モード解決
+  // モードごとの周波数・運用モード管理
   const modeSettingResolver = new TransceiverModeSettingResolver();
+  // ドップラーシフトモードから補正要否フラグ管理
+  const dopplerModeResolver = new TransceiverDopplerModeResolver();
   // 周波数の初期化・送信・ドップラー補正更新
   const freqCoordinator = new TransceiverFreqCoordinator(
     {
@@ -474,12 +477,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * ドップラーシフト補正を実行するかどうかのフラグを更新する
    */
   function updateDopplerShiftCorrectionFlags() {
-    execTxDopplerShiftCorrection.value =
-      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_SAT ||
-      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_RX;
-    execRxDopplerShiftCorrection.value =
-      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_SAT ||
-      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_TX;
+    const flags = dopplerModeResolver.resolveCorrectionFlags(dopplerShiftMode.value);
+    execTxDopplerShiftCorrection.value = flags.execTxDopplerShiftCorrection;
+    execRxDopplerShiftCorrection.value = flags.execRxDopplerShiftCorrection;
   }
 
   /**
