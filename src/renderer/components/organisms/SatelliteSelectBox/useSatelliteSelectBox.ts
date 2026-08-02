@@ -75,7 +75,7 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
     }
 
     // 前回選択肢として現在の衛星リストを保持
-    prevItems = JSON.parse(JSON.stringify(items.value));
+    prevItems = JSON.parse(JSON.stringify(items.value)) as SelectOption[];
 
     // 現在の衛星グループIDを保持
     currentSatGroupId = satGrp.activeSatelliteGroupId;
@@ -120,7 +120,7 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
     }
 
     // 一旦、先頭を候補にしておく
-    let satId = items[0].value;
+    let satId = Number(items[0].value);
 
     // 衛星グループごとの前回選択された衛星IDが存在する場合は、その衛星を選択
     if (activeSatGrp.activeSatelliteGroupId in prevSelectedSatIdMap) {
@@ -130,7 +130,7 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
     // ただし、選択肢に当該衛星が存在しない（削除された)場合は、先頭の衛星を選択する
     const index = items.findIndex((item) => item.value === satId);
     if (index < 0) {
-      satId = items[0].value;
+      satId = Number(items[0].value);
     }
 
     return satId;

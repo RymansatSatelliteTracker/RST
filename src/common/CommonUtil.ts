@@ -22,7 +22,7 @@ export default class CommonUtil {
   /**
    * 数値か判定する
    */
-  public static isNumber(val: any): boolean {
+  public static isNumber(val: unknown): boolean {
     if (val == null) {
       return false;
     }
@@ -30,7 +30,7 @@ export default class CommonUtil {
       return false;
     }
 
-    return !isNaN(val);
+    return !isNaN(Number(val));
   }
 
   /**
@@ -67,7 +67,7 @@ export default class CommonUtil {
    * @param val
    * @returns
    */
-  public static toString(val: any): string {
+  public static toString(val: unknown): string {
     // numberの0の場合は、null判定でtrueになってしまうので個別判定する
     if (val === 0) {
       return "0";
@@ -77,6 +77,10 @@ export default class CommonUtil {
       return "";
     }
 
-    return val.toString();
+    if (typeof val === "string" || typeof val === "number" || typeof val === "boolean" || typeof val === "bigint") {
+      return val.toString();
+    }
+
+    return "";
   }
 }

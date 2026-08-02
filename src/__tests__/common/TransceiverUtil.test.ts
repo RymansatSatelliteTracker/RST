@@ -1,4 +1,5 @@
 import TransceiverUtil from "@/common/util/TransceiverUtil.js";
+import { describe, expect, it } from "vitest";
 
 describe("TransceiverUtil", () => {
   it("周波数をドット区切りの文字列に変換する", () => {

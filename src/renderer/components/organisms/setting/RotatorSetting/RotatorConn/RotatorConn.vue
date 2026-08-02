@@ -226,7 +226,8 @@ import RotatorDeviceSelect from "@/renderer/components/molecules/RotatorDeviceSe
 import RotatorMakerSelect from "@/renderer/components/molecules/RotatorMakerSelect/RotatorMakerSelect.vue";
 import SerialPortSelect from "@/renderer/components/molecules/SerialPortSelect/SerialPortSelect.vue";
 import { mdiArrowDownBold, mdiArrowLeftBold, mdiArrowRightBold, mdiArrowUpBold } from "@mdi/js";
-import { ref } from "vue";
+import { ref, useTemplateRef } from "vue";
+import type { ComponentExposed } from "vue-component-type-helpers";
 import type RotatorConnForm from "./RotatorConnForm.js";
 import { useRotatorConnValidate, valiSchemaRotatorConn } from "./useRotatorConnValidate.js";
 import useRotatorCtrl from "./useRotatorCtrl.js";
@@ -237,7 +238,7 @@ import useRotatorTestConnect from "./useRotatorTestConnect.js";
 const form = defineModel<RotatorConnForm>("form", { required: true });
 
 // 「更新」クリック時に更新ボタン側のメソッドをコールするためのref
-const serialPortSelectRef = ref();
+const serialPortSelectRef = useTemplateRef<ComponentExposed<typeof SerialPortSelect>>("serialPortSelectRef");
 const antennaPosition = ref<AntennaPositionModel>({ azimuth: 0, elevation: 0 });
 
 // 制御系データ
@@ -269,7 +270,10 @@ defineExpose({
  * 更新クリック
  */
 function onRefreshSerialPort() {
-  serialPortSelectRef.value.refreshSerialPort();
+  // memo: env.d.tsの"*.vue"shimの都合上、ESLintの型解析ではSerialPortSelectの公開プロパティの型を解決できないため無効化する
+  // （vue-tscでは正しく型付けされていることを確認済み）
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  serialPortSelectRef.value?.refreshSerialPort();
 }
 
 /**

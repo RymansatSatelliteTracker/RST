@@ -6,7 +6,7 @@ export class ApiResponse<T> {
   public message: I18nMsgItem | null = null;
   public data: T | null = null;
 
-  constructor(status: boolean = true, message: I18nMsgItem | null = null, data: any = null) {
+  constructor(status: boolean = true, message: I18nMsgItem | null = null, data: T | null = null) {
     this.status = status;
     this.message = message;
     this.data = data;

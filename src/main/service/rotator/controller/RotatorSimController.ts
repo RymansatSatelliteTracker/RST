@@ -46,7 +46,7 @@ export default class RotatorSimController extends RotatorControllerBase {
   /**
    * アンテナ位置の変化を呼び出し側に伝播させるためのコールバックを設定する
    */
-  public override setCallback(callback: Function): void {
+  public override setCallback(callback: (res: ApiResponse<AntennaPositionModel>) => void): void {
     this.callback = callback;
 
     // 既に本メソッドが呼び出されている場合は、コールバックのタイマを解放する

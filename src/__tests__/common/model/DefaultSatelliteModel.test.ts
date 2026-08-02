@@ -1,16 +1,17 @@
 import Constant from "@/common/Constant.js";
 import { DefaultSatelliteModel } from "@/common/model/DefaultSatelliteModel.js";
-import type { OmmItemMap } from "@/common/model/OmmModel.js";
+import type { OmmItemMap, OmmJsonModel } from "@/common/model/OmmModel.js";
 import type { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes.js";
 import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 import FileUtil from "@/main/util/FileUtil.js";
 import * as path from "path";
+import { describe, expect, it } from "vitest";
 
 describe("DefaultSatelliteModel", () => {
   function getLatestOmm(): OmmItemMap {
     const savePathOmm = AppConfigUtil.getOmmPath();
-    const ommData = FileUtil.readJson(savePathOmm);
+    const ommData = FileUtil.readJson(savePathOmm) as OmmJsonModel;
 
     const ommItemMap: OmmItemMap = ommData.ommItemMap;
     const retOmmItemMap: OmmItemMap = {};
@@ -76,7 +77,7 @@ describe("DefaultSatelliteModel", () => {
     // Act
     const ret = defSatModel.getJsonString();
     // Assert
-    const json = JSON.parse(ret);
+    const json = JSON.parse(ret) as Record<string, unknown>;
     expect(json).toHaveProperty("defaultSatellite");
     expect(json).toHaveProperty("defaultSatellite.defaultSatellites");
     expect(json).toHaveProperty("defaultSatellite.maxSatelliteId");
@@ -199,7 +200,8 @@ describe("DefaultSatelliteModel", () => {
     };
 
     // Act
-    const initilizedModel = DefaultSatelliteModel.getInitializedModelFromData(data.defaultSatellite);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+    const initilizedModel = DefaultSatelliteModel.getInitializedModelFromData(data.defaultSatellite as any);
     const defsat = initilizedModel.getDefaultSatelliteBySatelliteId(0);
 
     // Assert

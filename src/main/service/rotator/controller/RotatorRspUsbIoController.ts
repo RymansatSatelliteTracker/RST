@@ -73,7 +73,7 @@ export default class RotatorRspUsbIoController extends RotatorControllerBase {
   /**
    * アンテナ位置の変化を呼び出し側に伝播させるためのコールバックを設定する
    */
-  public override setCallback(callback: Function): void {
+  public override setCallback(callback: (res: ApiResponse<AntennaPositionModel>) => void): void {
     this.callback = callback;
   }
 
@@ -148,7 +148,9 @@ export default class RotatorRspUsbIoController extends RotatorControllerBase {
     const pos = new AntennaPositionModel(azDeg, elDeg);
 
     // コールバック呼び出し
-    this.callback(pos);
+    const res = new ApiResponse<AntennaPositionModel>(true);
+    res.data = pos;
+    this.callback(res);
   };
 
   /**

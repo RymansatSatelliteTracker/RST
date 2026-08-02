@@ -21,7 +21,7 @@ export default class ApiActiveSat {
   /**
    * メイン表示する衛星グループ、衛星ID情報が保存された場合の変更イベント
    */
-  public static onChangeActiveSatelliteGroup(callback: Function) {
+  public static onChangeActiveSatelliteGroup(callback: (satGrpModel: ActiveSatelliteGroupModel) => void) {
     window.rstApi.onChangeActiveSatelliteGroup(callback);
   }
 }

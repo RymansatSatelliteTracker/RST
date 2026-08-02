@@ -20,7 +20,7 @@ export default class RepoFrequencyService {
     }
 
     const fileContent = fs.readFileSync(savePath, "utf-8");
-    return Object.assign(new FrequencyModel(), JSON.parse(fileContent));
+    return Object.assign(new FrequencyModel(), JSON.parse(fileContent) as Partial<FrequencyModel>);
   }
 
   /**

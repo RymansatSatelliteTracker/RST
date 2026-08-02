@@ -80,7 +80,7 @@ export default class RotatorBtAzElController extends RotatorSerialControllerBase
     }
 
     // コールバック呼び出し
-    const res = new ApiResponse(true);
+    const res = new ApiResponse<AntennaPositionModel>(true);
     res.data = pos;
     this.callback(res);
   };
@@ -127,7 +127,7 @@ export default class RotatorBtAzElController extends RotatorSerialControllerBase
 
     // コールバック呼び出し
     if (this.callback) {
-      const res = new ApiResponse(false, I18nMsgs.SYSTEM_ROTATOR_SERIAL_RECV_TIMEOUT);
+      const res = new ApiResponse<AntennaPositionModel>(false, I18nMsgs.SYSTEM_ROTATOR_SERIAL_RECV_TIMEOUT);
       this.callback(res);
     }
 

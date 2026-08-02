@@ -44,7 +44,7 @@ import { useLoadTLETabValidate, validSchemaLoadTLETab } from "./useLoadTLETabVal
 const items = defineModel<AppConfigTleUrl[]>("tleUrls", { default: [] });
 
 // 選択されたアイテムのインデックス
-const selectedItem = ref(null);
+const selectedItem = ref<number | null>(null);
 
 // 画面表示時の初期設定値
 const initialItems: AppConfigTleUrl[] = [];
@@ -114,7 +114,7 @@ function removeSelectedItem() {
  * 指定されたアイテムを選択する
  * @param index リスト内のインデックス
  */
-function selectItem(index: any) {
+function selectItem(index: number) {
   selectedItem.value = index;
 }
 

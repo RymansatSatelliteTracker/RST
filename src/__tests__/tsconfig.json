@@ -1,0 +1,18 @@
+// テストファイル向けTSConfig
+{
+  "extends": "../../tsconfig.json",
+  "include": [
+    "./**/*",
+    "../@types/**/*.d.ts",
+    "../renderer/env.d.ts"
+  ],
+  "exclude": [],
+  "compilerOptions": {
+    "noEmit": true,
+    "types": [
+      "vite/client",
+      "vitest/globals",
+      "node"
+    ]
+  }
+}

@@ -38,7 +38,8 @@ import FilterableItemList from "@/renderer/components/organisms/setting/Satellit
 import SelectControlledItemList from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/SelectControlledItemList/SelectControlledItemList.vue";
 import emitter from "@/renderer/util/EventBus.js";
 import { mdiArrowRightBold } from "@mdi/js";
-import { computed, ref } from "vue";
+import { computed, ref, useTemplateRef } from "vue";
+import type { ComponentExposed } from "vue-component-type-helpers";
 
 // 衛星グループリスト
 const satelliteGroups = defineModel<AppConfigSatelliteGroupForSatSetting[]>("satelliteGroups", { default: [] });
@@ -46,12 +47,15 @@ const satelliteGroups = defineModel<AppConfigSatelliteGroupForSatSetting[]>("sat
 // 右側のリストに表示しているアイテム
 const rightItems = ref<SatelliteIdentiferType[]>([]);
 // リストの関数を使用するためのref
-const filtListRef = ref<InstanceType<typeof FilterableItemList> | null>(null);
+const filtListRef = useTemplateRef<ComponentExposed<typeof FilterableItemList>>("filtListRef");
 
 /**
  * 選択したアイテムが右に移動可能かどうかを判断
  */
 const canMoveRight = computed(() => {
+  // memo: env.d.tsの"*.vue"shimの都合上、ESLintの型解析ではFilterableItemListの公開プロパティの型を解決できないため無効化する
+  // （vue-tscでは正しく型付けされていることを確認済み）
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   return filtListRef.value?.selectedItems.length !== 0;
 });
 
@@ -61,6 +65,9 @@ const canMoveRight = computed(() => {
 function moveSelectedToRight() {
   const toBeRegistedItems: SatelliteIdentiferType[] = [];
   const duplicateSats: string[] = [];
+  // memo: env.d.tsの"*.vue"シムの都合上、ESLintの型解析ではFilterableItemListの公開プロパティの型を解決できないため無効化する
+  // （vue-tscでは正しく型付けされていることを確認済み）
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
   filtListRef.value?.selectedItems.forEach((leftItem: SatelliteIdentiferType) => {
     // idが一致する場合は移動しない
     if (rightItems.value.some((rightItem) => rightItem.satelliteId === leftItem.satelliteId)) {
@@ -96,6 +103,9 @@ function moveSelectedToRight() {
     rightItems.value.push(item);
   });
 
+  // memo: env.d.tsの"*.vue"シムの都合上、ESLintの型解析ではFilterableItemListの公開プロパティの型を解決できないため無効化する
+  // （vue-tscでは正しく型付けされていることを確認済み）
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   filtListRef.value?.clearSelect();
 }
 </script>

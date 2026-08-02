@@ -1,5 +1,6 @@
 import Constant from "@/common/Constant.js";
 import type { autoModeFreqType } from "@/common/types/satelliteSettingTypes.js";
+import type { LangType } from "@/common/types/types.js";
 
 /**
  * アプリケーション設定モデル
@@ -9,7 +10,7 @@ export class AppConfigModel {
   public appVersion = "0.0.3";
 
   // 表示言語
-  public lang = "ja";
+  public lang: LangType = "ja";
 
   // TLE設定
   public tle: AppConfigTle = new AppConfigTle();

@@ -88,7 +88,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onUnmounted, ref, watch } from "vue";
+import { computed, onUnmounted, ref, useTemplateRef, watch } from "vue";
 
 import I18nMsgs from "@/common/I18nMsgs.js";
 import type { AppConfigSatelliteGroupForSatSetting } from "@/common/model/AppConfigSatelliteSettingModel.js";
@@ -102,6 +102,7 @@ import Constant from "@/common/Constant.js";
 import VirtualScrollList from "@/renderer/components/molecules/VirtualScrollList/VirtualScrollList.vue";
 import emitter from "@/renderer/util/EventBus.js";
 import { mdiArrowDownBold, mdiArrowUpBold, mdiDelete } from "@mdi/js";
+import type { ComponentExposed } from "vue-component-type-helpers";
 
 // 衛星グループリスト
 const satelliteGroups = defineModel<AppConfigSatelliteGroupForSatSetting[]>("satelliteGroups", { default: [] });
@@ -130,7 +131,7 @@ const enableRegistSatellite = ref(false);
 // 衛星情報編集画面表示用のフラグ
 const enableEditSatelliteInfo = ref(false);
 // リストの関数を使用するためのref
-const listRef = ref<InstanceType<typeof VirtualScrollList> | null>(null);
+const listRef = useTemplateRef<ComponentExposed<typeof VirtualScrollList>>("listRef");
 
 // 画面表示時にデータ更新する
 // deepCopyにするとnewとoldが同じになってしまうので展開して別のオブジェクトとして扱う
@@ -173,7 +174,10 @@ onUnmounted(() => {
  * 選択したアイテムに対して衛星登録画面が表示可能かを判断
  */
 const canRegist = computed(() => {
-  const items = listRef.value?.selectedItems;
+  // memo: env.d.tsの"*.vue"shimの都合上、ESLintの型解析ではVirtualScrollListの公開プロパティの型を解決できないため無効化する
+  // （vue-tscでは正しく型付けされていることを確認済み）
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  const items = listRef.value?.selectedItems as SatelliteIdentiferType[] | undefined;
   if (!items) return false;
   if (items.length > 1) return false;
   return checkCanRegist(items[0]);
@@ -223,7 +227,10 @@ function onOkShowGroupSatellite(newSatelliteGroups: AppConfigSatelliteGroupForSa
  * 衛星登録画面を表示する
  */
 function showRegistSatellite() {
-  const items = listRef.value?.selectedItems;
+  // memo: env.d.tsの"*.vue"shimの都合上、ESLintの型解析ではVirtualScrollListの公開プロパティの型を解決できないため無効化する
+  // （vue-tscでは正しく型付けされていることを確認済み）
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  const items = listRef.value?.selectedItems as SatelliteIdentiferType[] | undefined;
   if (!items) return;
   if (items.length > 1) return;
   const item = items[0];

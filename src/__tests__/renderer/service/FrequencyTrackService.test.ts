@@ -3,6 +3,7 @@ import OmmUtil from "@/main/util/OmmUtil.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import FrequencyTrackService from "@/renderer/service/FrequencyTrackService.js";
 import SatelliteService from "@/renderer/service/SatelliteService.js";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 /**
  * FrequencyTrackServiceのテスト
@@ -47,22 +48,25 @@ describe("FrequencyTrackService", () => {
     ${"2000-11-28T08:30:00Z"} | ${145899}
     ${"2000-11-28T08:39:00Z"} | ${145898}
     ${"2000-11-28T08:41:00Z"} | ${145897}
-  `("観測日時 $observedTime のダウンリンク周波数は $expectedFreq である", async ({ observedTime, expectedFreq }) => {
-    //Arrange
-    const INTERVAL_MS = 1000.0;
-    const BASE_FREQ_kHz = 145898;
+  `(
+    "観測日時 $observedTime のダウンリンク周波数は $expectedFreq である",
+    async ({ observedTime, expectedFreq }: { observedTime: string; expectedFreq: number }) => {
+      //Arrange
+      const INTERVAL_MS = 1000.0;
+      const BASE_FREQ_kHz = 145898;
 
-    const dt = new Date(observedTime);
-    const satService = getSatelliteService();
-    const freqTrack = new FrequencyTrackService(satService);
+      const dt = new Date(observedTime);
+      const satService = getSatelliteService();
+      const freqTrack = new FrequencyTrackService(satService);
 
-    //Act
-    const dopplerFactor = await freqTrack.calcDownlinkDopplerFactor(dt, INTERVAL_MS);
+      //Act
+      const dopplerFactor = await freqTrack.calcDownlinkDopplerFactor(dt, INTERVAL_MS);
 
-    //Assert
-    const downlinkFreq = Math.floor(dopplerFactor * BASE_FREQ_kHz);
-    expect(downlinkFreq).toBe(expectedFreq);
-  });
+      //Assert
+      const downlinkFreq = Math.floor(dopplerFactor * BASE_FREQ_kHz);
+      expect(downlinkFreq).toBe(expectedFreq);
+    }
+  );
 
   /**
    * アップリンクのドップラーファクターの検証

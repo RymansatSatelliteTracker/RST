@@ -17,10 +17,11 @@
 
 <script setup lang="ts">
 import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
+import type { AnyZodObject } from "zod";
 
 const enable = defineModel<boolean>("enable");
 const url = defineModel<string>("url");
-const validSchema: any = defineModel<object>("validSchema");
+const validSchema = defineModel<AnyZodObject | null>("validSchema", { default: null });
 const errorsTleUrl = defineModel<string>("errorsTleUrl");
 </script>
 <style lang="scss" scoped></style>

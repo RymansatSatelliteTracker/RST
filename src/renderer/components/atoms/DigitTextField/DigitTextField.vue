@@ -17,15 +17,17 @@ import CommonUtil from "@/common/CommonUtil.js";
 import { useValidate } from "@/renderer/common/hook/useValidate.js";
 import ValidateTooltip from "@/renderer/components/atoms/ValidateTooltip/ValidateTooltip.vue";
 import { nextTick, onMounted, ref, watch } from "vue";
+import type { PropType } from "vue";
+import type { AnyZodObject } from "zod";
 
-const model = defineModel<any>();
+const model = defineModel<number | null>({ default: null });
 const errorText = defineModel<string>("errorText", { required: false, default: "" });
 // 表示用の文字列（ドット区切り）
 const displayValue = ref<string>("");
 let isEditing = false;
 const props = defineProps({
   valiSchema: {
-    type: Object, // as () => ZodObject<any>,
+    type: Object as PropType<AnyZodObject | null>,
     required: false,
     default: null,
   },

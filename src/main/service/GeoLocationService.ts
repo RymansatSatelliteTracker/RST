@@ -21,7 +21,10 @@ export default class GeoLocationService {
     }
 
     // 取得したGeoLocationから緯度/経度を取得する
-    const { latitude, longitude } = JSON.parse(JSON.stringify(res.data));
+    const { latitude, longitude } = JSON.parse(JSON.stringify(res.data)) as {
+      latitude: string;
+      longitude: string;
+    };
 
     if (CommonUtil.isEmpty(latitude) || CommonUtil.isEmpty(longitude)) {
       // 緯度/経度が取得できなかった場合はnullを返却する

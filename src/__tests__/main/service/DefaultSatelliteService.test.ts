@@ -7,6 +7,7 @@ import ElectronUtil from "@/main/util/ElectronUtil.js";
 import FileUtil from "@/main/util/FileUtil.js";
 import fs from "fs";
 import * as path from "path";
+import { describe, expect, it } from "vitest";
 
 describe("DefaultSatelliteService", () => {
   const TEST_HOME_DIR = path.resolve(import.meta.dirname, "data_DefaultSatelliteService");
@@ -52,7 +53,8 @@ describe("DefaultSatelliteService", () => {
     // 設定ファイルが扱えないため
     vi.spyOn(AppConfigUtil, "getConfig").mockImplementation(() => {
       const jsonText = FileUtil.readText(path.join(TEST_WORK_DIR, Constant.Config.CONFIG_FILENAME + ".json"));
-      return JSON.parse(jsonText)["param"] as AppConfigModel;
+      const parsed = JSON.parse(jsonText) as { param: AppConfigModel };
+      return parsed.param;
     });
     vi.spyOn(AppConfigUtil, "getConfigDir").mockImplementation(() => {
       return TEST_WORK_DIR;

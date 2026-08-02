@@ -320,7 +320,7 @@ export function initializeIpcEvents() {
   /**
    * 通知メッセージイベント
    */
-  ipcMain.handle("onNoticeMessage", (_event, args: any) => {
+  ipcMain.handle("onNoticeMessage", (_event, args: unknown) => {
     return args;
   });
 }

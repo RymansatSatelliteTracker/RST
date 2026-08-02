@@ -1,5 +1,6 @@
 import WebClient, { AppHttpResponse } from "@/common/WebClient.js";
 import OmmService from "@/main/service/OmmService.js";
+import { describe, expect, it, vi } from "vitest";
 
 /**
  * canGetValidOmm のテスト
@@ -52,7 +53,9 @@ describe("OmmService - canGetValidOmm", () => {
   it("axiosがJSONを自動パースしオブジェクトとなった場合でもtrue", async () => {
     // Arrange
     const parsedJson = [{ OBJECT_NAME: "ISS (ZARYA)", NORAD_CAT_ID: 25544, EPOCH: "2026-06-20T09:57:02.757600" }];
-    vi.spyOn(WebClient.prototype, "get").mockResolvedValue(new AppHttpResponse(200, "", parsedJson as unknown as string));
+    vi.spyOn(WebClient.prototype, "get").mockResolvedValue(
+      new AppHttpResponse(200, "", parsedJson as unknown as string)
+    );
     const url = "https://example.com/gp.php?FORMAT=JSON";
     const sut = new OmmService();
     // Act

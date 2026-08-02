@@ -50,7 +50,7 @@ export default class FrequencyService {
     const savePath = path.join(ElectronUtil.getUserDir(), Constant.Config.FREQUENCY_FILENAME);
     if (fs.existsSync(savePath)) {
       const fileContent = fs.readFileSync(savePath, "utf-8");
-      oldFreqModel = JSON.parse(fileContent);
+      oldFreqModel = JSON.parse(fileContent) as FrequencyModel;
     }
 
     const isNew: boolean = oldFreqModel.frequency.lastUpdateTime < 0;

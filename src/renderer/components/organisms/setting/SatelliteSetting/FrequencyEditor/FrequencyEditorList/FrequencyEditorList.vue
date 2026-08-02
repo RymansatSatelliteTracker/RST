@@ -43,7 +43,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, useTemplateRef } from "vue";
 
 import type { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes.js";
 import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil.js";
@@ -51,6 +51,7 @@ import EditFrequencySatelliteInfo from "@/renderer/components/organisms/setting/
 
 import VirtualScrollList from "@/renderer/components/molecules/VirtualScrollList/VirtualScrollList.vue";
 import { mdiArrowDownBold, mdiArrowUpBold, mdiDelete, mdiPlusCircle } from "@mdi/js";
+import type { ComponentExposed } from "vue-component-type-helpers";
 
 // 衛星リスト
 const satellites = defineModel<DefaultSatelliteType[]>("satellites", { default: [] });
@@ -64,7 +65,7 @@ const isNewSatellite = ref(false);
 // 新規追加した衛星のindex
 const newSatelliteIndex = ref(-1);
 // リストの関数を使用するためのref
-const listRef = ref<InstanceType<typeof VirtualScrollList> | null>(null);
+const listRef = useTemplateRef<ComponentExposed<typeof VirtualScrollList>>("listRef");
 
 /**
  * 衛星情報追加画面を表示する
