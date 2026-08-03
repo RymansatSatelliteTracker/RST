@@ -72,9 +72,17 @@ void (async () => {
   // アプリ初期化時に例外が発生した場合は、mainWindowが読み込み終わってからエラーメッセージを表示する
   if (errorMessage) {
     const errorText = errorMessage;
-    mainWindow.webContents.once("did-finish-load", () => {
-      fireIpcEvent("onNoticeMessage", new MessageModel(Constant.GlobalEvent.NOTICE_ERR, errorText));
-    });
+
+    // mainWindowがまだ読み込み中の場合は、読み込み完了後にエラーメッセージを表示する
+    if (mainWindow.webContents.isLoadingMainFrame()) {
+      mainWindow.webContents.once("did-finish-load", () => {
+        fireIpcEvent("onNoticeMessage", new MessageModel(Constant.GlobalEvent.NOTICE_ERR, errorText));
+      });
+      return;
+    }
+
+    // mainWindowが読み込み終わっている場合は、即座にエラーメッセージを表示する
+    fireIpcEvent("onNoticeMessage", new MessageModel(Constant.GlobalEvent.NOTICE_ERR, errorText));
   }
 })();
 
