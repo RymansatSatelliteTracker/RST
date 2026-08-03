@@ -35,20 +35,14 @@ void (async () => {
 
   // アプリ関係の初期化処理
   const serive = new StartupService();
-  // アプリ初期化時にTLE取得に失敗する場合があるためtry-catchで囲む
   let errorMessage: string | undefined;
-  try {
-    await serive.initApp();
-  } catch (e) {
+
+  // 起動高速化のため、初期化は非同期で継続し、レンダラの起動を先行させる
+  // memo: initApp()内のawait前処理（AppConfig初期化など）は同期で実行される
+  const startupPromise = serive.initApp().catch((e: unknown) => {
     AppMainLogger.error("StartupService init error", e instanceof Error ? (e.stack ?? e.message) : String(e));
     errorMessage = e instanceof Error ? e.message : String(e);
-  }
-
-  // メニュー設定
-  // memo: makeElectronMenu()内でapp_configを参照しているため、
-  //       serive.initApp()コール後に実行する必要がある
-  const appMenu = makeElectronMenu();
-  Menu.setApplicationMenu(appMenu);
+  });
 
   // ウィンドウ生成
   mainWindow = createWindow();
@@ -66,12 +60,30 @@ void (async () => {
     contextMenu.popup();
   });
 
+  // 起動時の重い初期化が完了するまで待機する
+  await startupPromise;
+
+  // メニュー設定
+  // memo: makeElectronMenu()内でapp_configを参照しているため、
+  //       serive.initApp()完了後に実行する必要がある
+  const appMenu = makeElectronMenu();
+  Menu.setApplicationMenu(appMenu);
+
   // アプリ初期化時に例外が発生した場合は、mainWindowが読み込み終わってからエラーメッセージを表示する
-  mainWindow.once("ready-to-show", () => {
-    if (errorMessage) {
-      fireIpcEvent("onNoticeMessage", new MessageModel(Constant.GlobalEvent.NOTICE_ERR, errorMessage));
+  if (errorMessage) {
+    const errorText = errorMessage;
+
+    // mainWindowがまだ読み込み中の場合は、読み込み完了後にエラーメッセージを表示する
+    if (mainWindow.webContents.isLoadingMainFrame()) {
+      mainWindow.webContents.once("did-finish-load", () => {
+        fireIpcEvent("onNoticeMessage", new MessageModel(Constant.GlobalEvent.NOTICE_ERR, errorText));
+      });
+      return;
     }
-  });
+
+    // mainWindowが読み込み終わっている場合は、即座にエラーメッセージを表示する
+    fireIpcEvent("onNoticeMessage", new MessageModel(Constant.GlobalEvent.NOTICE_ERR, errorText));
+  }
 })();
 
 // Quit when all windows are closed, except on macOS. There, it's common
