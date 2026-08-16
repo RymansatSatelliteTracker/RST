@@ -76,7 +76,7 @@
       },
       {
         "noradId": "43678",
-        "satelliteName": "DIWATA-2B",
+        "satelliteName": "PO-101 (DIWATA-2)",
         "uplink1": {
           "uplinkHz": 437500000,
           "uplinkMode": "FM"
@@ -579,7 +579,7 @@
         "outline": ""
       },
       {
-        "noradId": "98323",
+        "noradId": "68798",
         "satelliteName": "MAGNARO-II Piscis",
         "uplink1": {
           "uplinkHz": null,
@@ -651,7 +651,7 @@
         "outline": ""
       },
       {
-        "noradId": "98327",
+        "noradId": "63797",
         "satelliteName": "WASEDA-SAT-ZERO-II",
         "uplink1": {
           "uplinkHz": null,
@@ -1191,7 +1191,7 @@
         "outline": ""
       },
       {
-        "noradId": "68422",
+        "noradId": "71922",
         "satelliteName": "Lilium-4",
         "uplink1": {
           "uplinkHz": 145825000,
