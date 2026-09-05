@@ -42,22 +42,32 @@ export default class TransceiverFreqCoordinator {
 
   /**
    * アップリンク周波数を無線機へ送信する
+   * @param newTxFrequency 送信するアップリンク周波数
+   * @param isForce 強制送信（無線機側の値が同一であっても強制的に送信する場合はtrueを指定する）
    */
-  public async sendTxFreq(newTxFrequency: number): Promise<void> {
-    await ApiTransceiver.setTransceiverFrequency({
-      uplinkHz: newTxFrequency,
-      uplinkMode: "",
-    });
+  public async sendTxFreq(newTxFrequency: number, isForce: boolean = false): Promise<void> {
+    await ApiTransceiver.setTransceiverFrequency(
+      {
+        uplinkHz: newTxFrequency,
+        uplinkMode: "",
+      },
+      isForce
+    );
   }
 
   /**
    * ダウンリンク周波数を無線機へ送信する
+   * @param newRxFreq 送信するダウンリンク周波数
+   * @param isForce 強制送信（無線機側の値が同一であっても強制的に送信する場合はtrueを指定する）
    */
-  public async sendRxFreq(newRxFreq: number): Promise<void> {
-    await ApiTransceiver.setTransceiverFrequency({
-      downlinkHz: newRxFreq,
-      downlinkMode: "",
-    });
+  public async sendRxFreq(newRxFreq: number, isForce: boolean = false): Promise<void> {
+    await ApiTransceiver.setTransceiverFrequency(
+      {
+        downlinkHz: newRxFreq,
+        downlinkMode: "",
+      },
+      isForce
+    );
   }
 
   /**

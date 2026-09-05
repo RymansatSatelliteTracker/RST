@@ -188,13 +188,14 @@ export default class TransceiverService {
   /**
    * 無線機周波数を変更する
    * @param {(UplinkType | DownlinkType)} frequencyModel 周波数設定
+   * @param {boolean} isForce 強制設定（同一周波数でも強制的に無線機へ送信する場合はtrueを指定する）
    */
-  public async setTransceiverFrequency(frequencyModel: UplinkType | DownlinkType) {
+  public async setTransceiverFrequency(frequencyModel: UplinkType | DownlinkType, isForce: boolean = false) {
     if (!this.isReady()) {
       return;
     }
 
-    await this.controller?.setFreq(frequencyModel);
+    await this.controller?.setFreq(frequencyModel, isForce);
   }
 
   /**

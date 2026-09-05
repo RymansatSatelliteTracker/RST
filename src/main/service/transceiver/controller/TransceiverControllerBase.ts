@@ -43,8 +43,9 @@ export default abstract class TransceiverControllerBase {
   /**
    * 無線機に送信する周波数を設定する
    * @param {(UplinkType | DownlinkType)} frequencyModel 周波数設定
+   * @param {boolean} isForce 強制設定（同一周波数でも強制的に無線機へ送信する場合はtrueを指定する）
    */
-  public abstract setFreq(frequencyModel: UplinkType | DownlinkType): Promise<void>;
+  public abstract setFreq(frequencyModel: UplinkType | DownlinkType, isForce?: boolean): Promise<void>;
 
   /**
    * 無線機に送信する運用モードを設定する
