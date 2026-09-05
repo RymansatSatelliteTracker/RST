@@ -78,6 +78,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   const autoStore = useStoreAutoState();
   // サテライトモード切替時の状態保存/復元管理
   const { save, load } = useModeStateManager();
+
+  // 直前のupdateFreq()でドップラーシフト待機中だったかどうか（ダイヤル操作終了の検出用）
+  let wasDopplerWaiting = false;
+
   const modeStateResolver = new TransceiverModeStateResolver(
     {
       rxFrequency,
@@ -120,6 +124,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     },
     currentDate
   );
+
   /**
    * 周波数更新インターバルを開始する
    * @param {number} intervalMs 時間間隔[単位：ミリ秒]
@@ -159,6 +164,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     calcBaseFreqWithAdjust,
     startUpdateFreqInterval
   );
+
   // 無線機からの周波数受信値を画面状態と基準周波数へ反映
   const recvFreqResolver = new TransceiverRecvFreqResolver(
     {
@@ -174,7 +180,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     currentDate,
     () => coordinator.autoTrackingIntervalMsec,
     calcBaseFreqWithAdjust,
-    getBaseFreqSum
+    getBaseFreqSum,
+    () => dopplerModeResolver.resolveCorrectionFlags(dopplerShiftMode.value),
+    isSatelliteMode
   );
 
   /**
@@ -452,25 +460,59 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   async function updateFreq(appConfig: AppConfigModel) {
     // Autoモード中でない場合は何もしない
     if (!autoStore.tranceiverAuto) {
+      wasDopplerWaiting = false;
       return;
     }
 
     // 人工衛星がドップラーシフトが有効となる範囲外の場合は処理終了
+    // MEMO: 範囲外に出た時点で待機状態は意味を失うため、待機中フラグも合わせてリセットする
+    //       （リセットしないと、次に範囲内に戻った際に無関係な過去の操作に起因する固定側再送信が誤発火する）
     if (!(await freqCoordinator.isWithinDopplerShiftActiveRange(appConfig))) {
+      wasDopplerWaiting = false;
       return;
     }
 
     // ドップラーシフト待機フラグが有効の場合は処理を中断する
     if (dopplerWaitCoordinator.isWaiting) {
+      wasDopplerWaiting = true;
       return;
     }
 
     // ドップラーシフト補正を実行するかどうかのフラグを更新
     updateDopplerShiftCorrectionFlags();
+
+    // ダイヤル操作終了直後は、無線機側でズレた可能性のある固定側の周波数をRST側の値で上書き送信する
+    if (wasDopplerWaiting) {
+      await resendFixedSideFreqToTransceiver();
+      wasDopplerWaiting = false;
+    }
+
     // ドップラーシフト補正を実行する
     await applyDopplerShiftCorrections();
 
     logDopplerShiftResult();
+  }
+
+  /**
+   * 固定側（execフラグがfalseの側）の現在の周波数を無線機へ再送信する
+   * ダイヤル操作により無線機側で固定側の周波数がズレた場合に、RST側の値で上書きする
+   * RST側の周波数自体は変化していないため、通常の送信では同一値として送信がスキップされる。
+   * そのため、無線機への送信を強制する（isForce: true）
+   */
+  async function resendFixedSideFreqToTransceiver() {
+    // 固定側(Tx)の周波数を再送信
+    if (!execTxDopplerShiftCorrection.value) {
+      AppRendererLogger.debug(`ダイヤル操作終了検知：固定側(Tx)の周波数を再送信します。 ${txFrequency.value}`);
+      await freqCoordinator.sendTxFreq(TransceiverUtil.parseNumber(txFrequency.value), true);
+      return;
+    }
+
+    // 固定側(Rx)の周波数を再送信
+    if (!execRxDopplerShiftCorrection.value && isSatelliteMode.value) {
+      AppRendererLogger.debug(`ダイヤル操作終了検知：固定側(Rx)の周波数を再送信します。 ${rxFrequency.value}`);
+      await freqCoordinator.sendRxFreq(TransceiverUtil.parseNumber(rxFrequency.value), true);
+      return;
+    }
   }
 
   /**

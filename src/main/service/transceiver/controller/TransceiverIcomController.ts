@@ -121,6 +121,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
         // 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機する
         if (this.isWaitSendFreq) {
+          AppMainLogger.debug(`定期送受信 スキップ（無線機への送信を一時停止中）`);
           return;
         }
 
@@ -447,6 +448,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
     // 無線機へ送信するRx周波数の設定
     if (this.state.isReqRxFreqUpdate) {
+      AppMainLogger.debug(`${comId}：Rx周波数（RST→無線機） ${this.state.getReqRxFreqHz()}`);
       await this.sendFreq(this.state.getReqRxFreqHz());
       this.state.isReqRxFreqUpdate = false;
     } else if (this.state.isRecvRxFreqUpdate) {
@@ -495,6 +497,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
     // 無線機へ送信するTx周波数の設定
     if (this.state.isReqTxFreqUpdate) {
+      AppMainLogger.debug(`Tx周波数（RST→無線機） ${this.state.getReqTxFreqHz()}`);
       await this.sendFreq(this.state.getReqTxFreqHz());
       this.state.isReqTxFreqUpdate = false;
     } else if (this.state.isRecvTxFreqUpdate) {
@@ -549,8 +552,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   /**
    * 無線機に周波数を設定するコマンドを送信する
    * @param {(UplinkType | DownlinkType)} freqModel 周波数設定
+   * @param {boolean} isForce 強制設定（同一周波数でも強制的に無線機へ送信する場合はtrueを指定する）
    */
-  public override setFreq(freqModel: UplinkType | DownlinkType): Promise<void> {
+  public override setFreq(freqModel: UplinkType | DownlinkType, isForce: boolean = false): Promise<void> {
     // シリアル未接続の場合は処理終了
     if (!this.serial?.isOpen()) {
       AppMainLogger.warn("シリアル未接続のため、処理を終了します。");
@@ -559,10 +563,10 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
     if ("uplinkHz" in freqModel && freqModel.uplinkHz) {
       // アップリンク周波数を取得する
-      this.state.setReqTxFreqHz(freqModel.uplinkHz);
+      this.state.setReqTxFreqHz(freqModel.uplinkHz, isForce);
     } else if ("downlinkHz" in freqModel && freqModel.downlinkHz) {
       // ダウンリンク周波数を取得する
-      this.state.setReqRxFreqHz(freqModel.downlinkHz);
+      this.state.setReqRxFreqHz(freqModel.downlinkHz, isForce);
     }
     return Promise.resolve();
   }
@@ -1477,6 +1481,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    */
   private startTransceiveWaitTimer(waitMs: number) {
     this.isWaitSendFreq = true;
+    AppMainLogger.debug(`無線機への送信を一時停止します（${waitMs}ms）`);
 
     // 既存のタイマーがあればクリア
     if (this.transceiveWaitTimer) {
@@ -1487,6 +1492,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     this.transceiveWaitTimer = setTimeout(() => {
       this.isWaitSendFreq = false;
       this.transceiveWaitTimer = null;
+      AppMainLogger.debug(`無線機への送信の一時停止を解除しました`);
     }, waitMs);
   }
 

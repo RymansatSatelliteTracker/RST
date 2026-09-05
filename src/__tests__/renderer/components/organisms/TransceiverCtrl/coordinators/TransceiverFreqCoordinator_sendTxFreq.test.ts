@@ -22,9 +22,27 @@ describe("TransceiverFreqCoordinator.sendTxFreq", () => {
 
     await coordinator.sendTxFreq(2430000000);
 
-    expect(setFreqSpy).toHaveBeenCalledWith({
-      uplinkHz: 2430000000,
-      uplinkMode: "",
-    });
+    expect(setFreqSpy).toHaveBeenCalledWith(
+      {
+        uplinkHz: 2430000000,
+        uplinkMode: "",
+      },
+      false
+    );
+  });
+
+  it("isForceにtrueを指定した場合、強制送信フラグを付けて送信すること", async () => {
+    const coordinator = new TransceiverFreqCoordinator(createState(), ref(new Date("2026-05-09T00:00:00.000Z")));
+    const setFreqSpy = vi.spyOn(ApiTransceiver, "setTransceiverFrequency").mockResolvedValue();
+
+    await coordinator.sendTxFreq(2430000000, true);
+
+    expect(setFreqSpy).toHaveBeenCalledWith(
+      {
+        uplinkHz: 2430000000,
+        uplinkMode: "",
+      },
+      true
+    );
   });
 });

@@ -266,9 +266,12 @@ export function initializeIpcEvents() {
   /**
    * 無線機関係・無線機周波数を変更する
    */
-  ipcMain.handle("setTransceiverFrequency", async (_event, frequencyModel: UplinkType | DownlinkType) => {
-    return await TransceiverService.getInstance().setTransceiverFrequency(frequencyModel);
-  });
+  ipcMain.handle(
+    "setTransceiverFrequency",
+    async (_event, frequencyModel: UplinkType | DownlinkType, isForce?: boolean) => {
+      return await TransceiverService.getInstance().setTransceiverFrequency(frequencyModel, isForce);
+    }
+  );
 
   /**
    * 無線機関係・無線機周波数の変更イベント

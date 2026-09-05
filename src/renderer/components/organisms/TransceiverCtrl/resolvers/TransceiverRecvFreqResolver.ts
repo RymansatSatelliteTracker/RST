@@ -5,6 +5,7 @@ import TransceiverUtil from "@/common/util/TransceiverUtil.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc.js";
 import type TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
+import type { DopplerShiftCorrectionFlags } from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverDopplerModeResolver.js";
 import type { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
 import emitter from "@/renderer/util/EventBus.js";
@@ -32,6 +33,7 @@ export interface RecvFreqResolverState {
  * 無線機から受信した周波数を画面状態と基準周波数へ反映するクラス
  */
 export default class TransceiverRecvFreqResolver {
+  // ドップラーシフト計算用インスタンス
   private dopplerCalc: TransceiverDopplerCalc;
 
   /**
@@ -42,6 +44,8 @@ export default class TransceiverRecvFreqResolver {
    * @param getAutoTrackingIntervalMsec - 自動追尾更新間隔を返す関数
    * @param calcBaseFreqWithAdjust - 補正値反映後の基準周波数算出関数
    * @param getBaseFreqSum - 補正値反映後の基準周波数和を返す関数
+   * @param getCorrectionFlags - 現在のDopplerモードにおけるTx/Rxの補正要否フラグを返す関数
+   * @param isSatelliteMode - サテライトモードが有効かどうか
    */
   public constructor(
     private state: RecvFreqResolverState,
@@ -50,7 +54,9 @@ export default class TransceiverRecvFreqResolver {
     private currentDate: Ref<Date>,
     private getAutoTrackingIntervalMsec: () => number,
     private calcBaseFreqWithAdjust: () => void,
-    private getBaseFreqSum: () => number
+    private getBaseFreqSum: () => number,
+    private getCorrectionFlags: () => DopplerShiftCorrectionFlags,
+    private isSatelliteMode: Ref<boolean>
   ) {
     this.dopplerCalc = new TransceiverDopplerCalc();
   }
@@ -83,6 +89,12 @@ export default class TransceiverRecvFreqResolver {
    * 無線機から受信したTx周波数を反映する
    */
   private async applyTxFromTransceiver(recvTxFreq: number): Promise<void> {
+    // Txが固定側の場合、無線機からの通知は表示・基準周波数とも反映せず破棄する
+    if (this.autoStore.tranceiverAuto && this.isTxFixedSide(this.getCorrectionFlags())) {
+      this.logDiscardFixedSide("Tx");
+      return;
+    }
+
     AppRendererLogger.debug(`Tx周波数（無線機→RST） ${recvTxFreq}`);
 
     const recvTxFreqFmt = TransceiverUtil.formatWithDot(recvTxFreq);
@@ -108,7 +120,10 @@ export default class TransceiverRecvFreqResolver {
       this.currentDate.value,
       this.getAutoTrackingIntervalMsec()
     );
-    this.baseFreqMgr.setPlainBaseFreqs(newRxBaseFreq, newTxBaseFreq);
+
+    // Rxが固定側の場合、Sum維持のために計算された値を採用せず、既存のRx基準周波数を維持する
+    const finalRxBaseFreq = this.isRxFixedSide(this.getCorrectionFlags()) ? plainRxBaseFreq : newRxBaseFreq;
+    this.baseFreqMgr.setPlainBaseFreqs(finalRxBaseFreq, newTxBaseFreq);
 
     this.calcBaseFreqWithAdjust();
     this.logUpdatedBaseFreq();
@@ -118,6 +133,12 @@ export default class TransceiverRecvFreqResolver {
    * 無線機から受信したRx周波数を反映する
    */
   private async applyRxFromTransceiver(recvRxFreq: number): Promise<void> {
+    // Rxが固定側の場合、無線機からの通知は表示・基準周波数とも反映せず破棄する
+    if (this.autoStore.tranceiverAuto && this.isRxFixedSide(this.getCorrectionFlags())) {
+      this.logDiscardFixedSide("Rx");
+      return;
+    }
+
     AppRendererLogger.debug(`Rx周波数（無線機→RST） ${recvRxFreq}`);
 
     const recvRxFreqFmt = TransceiverUtil.formatWithDot(recvRxFreq);
@@ -143,10 +164,37 @@ export default class TransceiverRecvFreqResolver {
       this.currentDate.value,
       this.getAutoTrackingIntervalMsec()
     );
-    this.baseFreqMgr.setPlainBaseFreqs(newRxBaseFreq, newTxBaseFreq);
+
+    // Txが固定側の場合、Sum維持のために計算された値を採用せず、既存のTx基準周波数を維持する
+    const finalTxBaseFreq = this.isTxFixedSide(this.getCorrectionFlags()) ? plainTxBaseFreq : newTxBaseFreq;
+    this.baseFreqMgr.setPlainBaseFreqs(newRxBaseFreq, finalTxBaseFreq);
 
     this.calcBaseFreqWithAdjust();
     this.logUpdatedBaseFreq();
+  }
+
+  /**
+   * Txが固定側かどうかを判定する
+   * Txの固定側判定はサテライトモードの状態に関わらず有効（Doppler補正はサテライトモードOFFでも実行されるため）
+   */
+  private isTxFixedSide(flags: DopplerShiftCorrectionFlags): boolean {
+    return !flags.execTxDopplerShiftCorrection;
+  }
+
+  /**
+   * Rxが固定側かどうかを判定する
+   * サテライトモードOFF時はRx周波数がTxに同期される専用の値となり、固定側という概念自体が意味を持たないため、
+   * サテライトモードONの場合のみ固定側と判定する
+   */
+  private isRxFixedSide(flags: DopplerShiftCorrectionFlags): boolean {
+    return this.isSatelliteMode.value && !flags.execRxDopplerShiftCorrection;
+  }
+
+  /**
+   * 固定側のため無線機からの通知を破棄した理由をログ出力する
+   */
+  private logDiscardFixedSide(freqLabel: "Tx" | "Rx"): void {
+    AppRendererLogger.debug(`${freqLabel}は固定側のため、無線機からの周波数通知を破棄します。`);
   }
 
   /**

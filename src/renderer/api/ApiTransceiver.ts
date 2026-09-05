@@ -50,9 +50,11 @@ export default class ApiTransceiver {
 
   /**
    * 指定の周波数に変更する
+   * @param frequencyModel 周波数設定
+   * @param isForce 強制設定（同一周波数でも強制的に無線機へ送信する場合はtrueを指定する）
    */
-  public static async setTransceiverFrequency(frequencyModel: UplinkType | DownlinkType) {
-    await window.rstApi.setTransceiverFrequency(frequencyModel);
+  public static async setTransceiverFrequency(frequencyModel: UplinkType | DownlinkType, isForce: boolean = false) {
+    await window.rstApi.setTransceiverFrequency(frequencyModel, isForce);
   }
 
   /**

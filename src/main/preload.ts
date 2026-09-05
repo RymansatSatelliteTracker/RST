@@ -260,8 +260,8 @@ const apiHandler = {
   /**
    * 無線機関係・周波数設定コマンドを送信する
    */
-  setTransceiverFrequency: function (frequencyModel: UplinkType | DownlinkType): Promise<void> {
-    return ipcRenderer.invoke("setTransceiverFrequency", frequencyModel);
+  setTransceiverFrequency: function (frequencyModel: UplinkType | DownlinkType, isForce?: boolean): Promise<void> {
+    return ipcRenderer.invoke("setTransceiverFrequency", frequencyModel, isForce);
   },
 
   /**

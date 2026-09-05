@@ -50,10 +50,11 @@ export default class TransceiverIcomState {
 
   /**
    * RSTから無線機に設定したいRx周波数をセットする
+   * @param isForce 強制設定（同一周波数でも強制的に無線機へ送信する場合はtrueを指定する）
    */
-  public setReqRxFreqHz(freqHz: number): void {
+  public setReqRxFreqHz(freqHz: number, isForce: boolean = false): void {
     // 現在保持している値と同一の場合は何もしない（不要なバンド切り替えを抑止する）
-    if (this.reqRxFreqHz === freqHz) {
+    if (!isForce && this.reqRxFreqHz === freqHz) {
       return;
     }
     this.reqRxFreqHz = freqHz;
@@ -62,10 +63,11 @@ export default class TransceiverIcomState {
 
   /**
    * RSTから無線機に設定したいTx周波数をセットする
+   * @param isForce 強制設定（同一周波数でも強制的に無線機へ送信する場合はtrueを指定する）
    */
-  public setReqTxFreqHz(freq: number): void {
+  public setReqTxFreqHz(freq: number, isForce: boolean = false): void {
     // 現在保持している値と同一の場合は何もしない（不要なバンド切り替えを抑止する）
-    if (this.reqTxFreqHz === freq) {
+    if (!isForce && this.reqTxFreqHz === freq) {
       return;
     }
     this.reqTxFreqHz = freq;
