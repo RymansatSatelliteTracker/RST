@@ -13,8 +13,11 @@ describe("[正常系]2か所の地上局から観測できる人工衛星の可�
     const oneDayLaterDate = new Date(nowDate.getTime() + 24 * 60 * 60 * 1000);
 
     // 宮本工場(東京都江戸川区)と種子島宇宙センターで同時に観測できる可視時間リストを取得する
+    // MEMO: nowDateが実行時の現在日時のため、静的なTLE（TleDataHelper.Satellite.ISS）は
+    //       TLEのエポックから時間が経過するほどSGP4の伝播誤差が大きくなり可視パスが求まらなくなる。
+    //       そのためエポックを現在日時に合わせて動的に生成するISS_ORBITを使用する。
     const issOverlapPasses = new OverlapPassesService(
-      TleDataHelper.Satellite.ISS,
+      TleDataHelper.Satellite.ISS_ORBIT,
       GROUND_STATION.latitudeDeg,
       GROUND_STATION.longitudeDeg,
       GROUND2_STATION.latitudeDeg,
