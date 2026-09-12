@@ -181,8 +181,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     () => coordinator.autoTrackingIntervalMsec,
     calcBaseFreqWithAdjust,
     getBaseFreqSum,
-    () => dopplerModeResolver.resolveCorrectionFlags(dopplerShiftMode.value),
-    isSatelliteMode
+    () => dopplerModeResolver.resolveCorrectionFlags(dopplerShiftMode.value)
   );
 
   /**
@@ -500,15 +499,17 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * そのため、無線機への送信を強制する（isForce: true）
    */
   async function resendFixedSideFreqToTransceiver() {
-    // 固定側(Tx)の周波数を再送信
+    // 固定側(Tx)：周期処理では更新されないため、ダイヤル操作で更新された基準周波数から明示的に算出してから送信する
     if (!execTxDopplerShiftCorrection.value) {
+      await freqCoordinator.updateTxFreqByInvertingHeterodyne(coordinator.autoTrackingIntervalMsec);
       AppRendererLogger.debug(`ダイヤル操作終了検知：固定側(Tx)の周波数を再送信します。 ${txFrequency.value}`);
       await freqCoordinator.sendTxFreq(TransceiverUtil.parseNumber(txFrequency.value), true);
       return;
     }
 
-    // 固定側(Rx)の周波数を再送信
+    // 固定側(Rx)：周期処理では更新されないため、ダイヤル操作で更新された基準周波数から明示的に算出してから送信する
     if (!execRxDopplerShiftCorrection.value && isSatelliteMode.value) {
+      await freqCoordinator.updateRxFreqWithDopplerShift(coordinator.autoTrackingIntervalMsec);
       AppRendererLogger.debug(`ダイヤル操作終了検知：固定側(Rx)の周波数を再送信します。 ${rxFrequency.value}`);
       await freqCoordinator.sendRxFreq(TransceiverUtil.parseNumber(rxFrequency.value), true);
       return;
