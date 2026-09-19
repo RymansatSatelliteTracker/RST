@@ -141,3 +141,43 @@ async function resendFixedSideFreqToTransceiver() {
 
 - 「無線機内部のサテライトモード追尾処理により、ダイヤル操作していない側の周波数が意図せず物理的にドリフトした場合、そのドリフトも無線機からの通知として無条件に受け入れられるようになる」という前述のリスクは、本追加対応により解消される（Tx側の通知は衛星固定モード以外では常に破棄されるため）。
 - ドキュメント（[`doc/30_画面設計/G2_メイン.md`](../../../doc/30_画面設計/G2_メイン.md)）も、「送信固定・受信固定では、無線機側のダイヤル操作はRx側としてのみ受け付け、Tx側の無線機通知（ダイヤル操作に伴う自動変化を含む）は取り込まない」という記載に修正する。
+
+## 実機検証で発覚した不具合の修正：受信固定モードでダイヤル操作終了後にRx周波数がズレる
+
+実機検証の結果、送信固定モードは問題なかったが、受信固定モードで以下の不具合が発生した。
+
+> ・AutoOn　RX=437800000
+> ・無線機側のRX周波数をダイヤル操作。RX＝437820000
+> ・ダイヤル操作3秒経過後のドップラーシフト再開時に RX=437819616 となってしまう。RX=437820000 を保持する必要がある。
+
+### 原因
+
+`resendFixedSideFreqToTransceiver()`（[`useTransceiverCtrl.ts`](../../../src/renderer/components/organisms/TransceiverCtrl/useTransceiverCtrl.ts#L501-L517)）は、Phase 1の改修でTx側・Rx側とも「ダイヤル操作で更新された基準周波数から、現在時刻のドップラーシフト式で再算出してから送信する」という対称的な処理にしていたが、これはRx側（受信固定の固定側）に対しては誤りだった。
+
+- `applyTxFromTransceiver`はTx側の無線機通知を破棄するため（前セクションの追加対応）、送信固定モードでTxの画面表示（`txFrequency.value`）はダイヤル操作中に一切更新されない。Sum維持のために再計算された`txBaseFreq`だけが更新され、`txFrequency.value`は古い値のまま取り残される。そのため、ダイヤル操作終了後に`txBaseFreq`から`updateTxFreqByInvertingHeterodyne()`で明示的に再算出する処理が正しく必要である（この部分は実機検証OK）。
+- 一方`applyRxFromTransceiver`は、Rxの無線機通知を受けた時点で`this.state.rxFrequency.value = recvRxFreqFmt`と**画面表示に直接、無条件に反映**している（[`TransceiverRecvFreqResolver.ts#L141`](../../../src/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverRecvFreqResolver.ts#L141)）。つまりダイヤル操作の瞬間から、`rxFrequency.value`は既に無線機がダイヤルされた正しい値（437820000）になっており、受信固定モード（`execRxDopplerShiftCorrection: false`）では周期処理の対象外のため、その後何もしなければその値のまま変化しない。
+- にもかかわらず、`resendFixedSideFreqToTransceiver()`はダイヤル操作終了時に`updateRxFreqWithDopplerShift()`を呼び、`rxBaseFreq`（ダイヤル操作時点＝T1の衛星ドップラーファクターで逆算した基準周波数）に対して**再送信時点＝T2の最新ドップラーファクター**を掛け直して`rxFrequency.value`を上書きしていた。T1とT2の間（既定3秒）で衛星のドップラーファクターが変化するため、再計算結果（437819616）は元のダイヤル値（437820000）からズレてしまう。これが原因である。
+- Tx側とRx側でこの非対称性が生まれる理由：Txは「Sum維持の副次計算でしか更新されない値」であり、画面表示への反映は常に明示的な再算出が必要。一方Rxは「ダイヤル操作で無条件に画面表示へ直接反映される値」であり、既に正しい値が画面表示に入っているため、再算出はむしろ有害（時間経過分のズレを再度上乗せしてしまう）。
+
+### 修正内容
+
+`resendFixedSideFreqToTransceiver()`からRx側の分岐を削除し、Tx側（送信固定モード）の処理のみを残す。
+
+```ts
+async function resendFixedSideFreqToTransceiver() {
+  if (!execTxDopplerShiftCorrection.value) {
+    await freqCoordinator.updateTxFreqByInvertingHeterodyne(coordinator.autoTrackingIntervalMsec);
+    AppRendererLogger.debug(`ダイヤル操作終了検知：固定側(Tx)の周波数を再送信します。 ${txFrequency.value}`);
+    await freqCoordinator.sendTxFreq(TransceiverUtil.parseNumber(txFrequency.value), true);
+  }
+}
+```
+
+- 受信固定モードでは、ダイヤル操作終了後にこの関数は何もしない。Rxは既に正しい値のまま変化しないため、再送信自体が不要（無線機側にも、ユーザーが直接ダイヤルした値がそのまま残っているはずであり、RST側から上書きする必要がない）。
+- `updateFreq()`はこの関数の直後に`applyDopplerShiftCorrections()`を同一tick内で呼んでいる。受信固定モードでは`execTxDopplerShiftCorrection: true`のため、Sum維持で更新済みの`txBaseFreq`から`updateTxFreqByInvertingHeterodyne()`により自動的にTxの画面表示・無線機送信が行われる。このため、受信固定モードのTx更新について特別な処理は不要であり、既存の周期処理だけで要求（「ドップラーシフトが再開される。その際に基準周波数Sumを保ったまま無線機の送信周波数を更新する」）を満たす。
+- なお、`1_requirements.md`の受信固定セクションの最終行「無線機のダイヤル操作の終了後、受信固定の状態ママ、ドップラーシフトが再開される。その際に基準周波数Sumを保ったまま無線機の送信周波数を更新する。」は、送信固定セクションと同一の文言で「送信周波数を更新する」となっており、受信周波数の更新には言及していない。これは今回の修正（Rxは何もしない、Txのみ更新する）と整合している。
+
+### 単体テスト・ドキュメントへの影響
+
+- `resendFixedSideFreqToTransceiver()`は元々composable内クロージャのため単体テスト対象外（既存方針のまま）。`TransceiverRecvFreqResolver`側の変更はないため、既存のテストに変更は不要。
+- [`doc/30_画面設計/G2_メイン.md`](../../../doc/30_画面設計/G2_メイン.md)の「受信固定」の説明から、「ダイヤル操作終了後、Rxにはドップラーシフト補正を適用しないため、直前のダイヤル操作で更新された基準周波数から改めてRx周波数を算出し、無線機へ送信して受信固定を継続する」という記載を削除し、「ダイヤル操作で直接設定された値がそのまま維持される（再送信は不要）」という記載に修正する。「送信固定」側の記載は変更しない。
