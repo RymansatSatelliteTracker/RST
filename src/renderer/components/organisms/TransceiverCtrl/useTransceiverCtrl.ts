@@ -181,8 +181,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     () => coordinator.autoTrackingIntervalMsec,
     calcBaseFreqWithAdjust,
     getBaseFreqSum,
-    () => dopplerModeResolver.resolveCorrectionFlags(dopplerShiftMode.value),
-    isSatelliteMode
+    () => dopplerModeResolver.resolveCorrectionFlags(dopplerShiftMode.value)
   );
 
   /**
@@ -494,24 +493,24 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   }
 
   /**
-   * 固定側（execフラグがfalseの側）の現在の周波数を無線機へ再送信する
-   * ダイヤル操作により無線機側で固定側の周波数がズレた場合に、RST側の値で上書きする
-   * RST側の周波数自体は変化していないため、通常の送信では同一値として送信がスキップされる。
-   * そのため、無線機への送信を強制する（isForce: true）
+   * 送信固定モードの固定側（Tx）の周波数を無線機へ再送信する
+   * ダイヤル操作（Rx側）によりSum維持のためTx基準周波数が更新されても、
+   * Txは周期処理の対象外のため画面表示・無線機側とも反映されないままとなる。
+   * そのため、ダイヤル操作終了直後に明示的に算出して無線機へ送信する。
+   * RST側の周波数表示自体は変化する場合があるが、無線機側は前回送信時の値のまま変化していない可能性があるため、
+   * 通常の送信では同一値として送信がスキップされないよう、無線機への送信を強制する（isForce: true）
+   *
+   * 受信固定モードの固定側（Rx）は、ダイヤル操作時に`applyRxFromTransceiver`で直接画面表示へ反映済みであり、
+   * 周期処理の対象外のためダイヤル操作終了後も値が変化しない。そのため再送信は不要（現在時刻のドップラー式で
+   * 再算出すると、ダイヤル操作からの経過時間の分だけ実際の値からズレてしまうため、あえて何もしない）。
+   * Tx側は周期処理の対象（execTxDopplerShiftCorrection: true）のため、直後の`applyDopplerShiftCorrections()`で
+   * 更新されたTx基準周波数から自動的に反映される。
    */
   async function resendFixedSideFreqToTransceiver() {
-    // 固定側(Tx)の周波数を再送信
     if (!execTxDopplerShiftCorrection.value) {
+      await freqCoordinator.updateTxFreqByInvertingHeterodyne(coordinator.autoTrackingIntervalMsec);
       AppRendererLogger.debug(`ダイヤル操作終了検知：固定側(Tx)の周波数を再送信します。 ${txFrequency.value}`);
       await freqCoordinator.sendTxFreq(TransceiverUtil.parseNumber(txFrequency.value), true);
-      return;
-    }
-
-    // 固定側(Rx)の周波数を再送信
-    if (!execRxDopplerShiftCorrection.value && isSatelliteMode.value) {
-      AppRendererLogger.debug(`ダイヤル操作終了検知：固定側(Rx)の周波数を再送信します。 ${rxFrequency.value}`);
-      await freqCoordinator.sendRxFreq(TransceiverUtil.parseNumber(rxFrequency.value), true);
-      return;
     }
   }
 

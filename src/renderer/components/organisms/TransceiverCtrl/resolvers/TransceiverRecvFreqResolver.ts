@@ -45,7 +45,6 @@ export default class TransceiverRecvFreqResolver {
    * @param calcBaseFreqWithAdjust - 補正値反映後の基準周波数算出関数
    * @param getBaseFreqSum - 補正値反映後の基準周波数和を返す関数
    * @param getCorrectionFlags - 現在のDopplerモードにおけるTx/Rxの補正要否フラグを返す関数
-   * @param isSatelliteMode - サテライトモードが有効かどうか
    */
   public constructor(
     private state: RecvFreqResolverState,
@@ -55,8 +54,7 @@ export default class TransceiverRecvFreqResolver {
     private getAutoTrackingIntervalMsec: () => number,
     private calcBaseFreqWithAdjust: () => void,
     private getBaseFreqSum: () => number,
-    private getCorrectionFlags: () => DopplerShiftCorrectionFlags,
-    private isSatelliteMode: Ref<boolean>
+    private getCorrectionFlags: () => DopplerShiftCorrectionFlags
   ) {
     this.dopplerCalc = new TransceiverDopplerCalc();
   }
@@ -89,9 +87,10 @@ export default class TransceiverRecvFreqResolver {
    * 無線機から受信したTx周波数を反映する
    */
   private async applyTxFromTransceiver(recvTxFreq: number): Promise<void> {
-    // Txが固定側の場合、無線機からの通知は表示・基準周波数とも反映せず破棄する
-    if (this.autoStore.tranceiverAuto && this.isTxFixedSide(this.getCorrectionFlags())) {
-      this.logDiscardFixedSide("Tx");
+    // 衛星固定モード以外（送信固定・受信固定）では、Rxダイヤル操作に伴う無線機側の自動追尾処理により
+    // Tx周波数が意図せず変化することがあるため、Tx側の無線機通知は取り込まずRST側の値を常に正とする
+    if (this.autoStore.tranceiverAuto && !this.isFixedSatMode(this.getCorrectionFlags())) {
+      this.logDiscardTxNotification();
       return;
     }
 
@@ -121,9 +120,7 @@ export default class TransceiverRecvFreqResolver {
       this.getAutoTrackingIntervalMsec()
     );
 
-    // Rxが固定側の場合、Sum維持のために計算された値を採用せず、既存のRx基準周波数を維持する
-    const finalRxBaseFreq = this.isRxFixedSide(this.getCorrectionFlags()) ? plainRxBaseFreq : newRxBaseFreq;
-    this.baseFreqMgr.setPlainBaseFreqs(finalRxBaseFreq, newTxBaseFreq);
+    this.baseFreqMgr.setPlainBaseFreqs(newRxBaseFreq, newTxBaseFreq);
 
     this.calcBaseFreqWithAdjust();
     this.logUpdatedBaseFreq();
@@ -133,12 +130,6 @@ export default class TransceiverRecvFreqResolver {
    * 無線機から受信したRx周波数を反映する
    */
   private async applyRxFromTransceiver(recvRxFreq: number): Promise<void> {
-    // Rxが固定側の場合、無線機からの通知は表示・基準周波数とも反映せず破棄する
-    if (this.autoStore.tranceiverAuto && this.isRxFixedSide(this.getCorrectionFlags())) {
-      this.logDiscardFixedSide("Rx");
-      return;
-    }
-
     AppRendererLogger.debug(`Rx周波数（無線機→RST） ${recvRxFreq}`);
 
     const recvRxFreqFmt = TransceiverUtil.formatWithDot(recvRxFreq);
@@ -165,36 +156,27 @@ export default class TransceiverRecvFreqResolver {
       this.getAutoTrackingIntervalMsec()
     );
 
-    // Txが固定側の場合、Sum維持のために計算された値を採用せず、既存のTx基準周波数を維持する
-    const finalTxBaseFreq = this.isTxFixedSide(this.getCorrectionFlags()) ? plainTxBaseFreq : newTxBaseFreq;
-    this.baseFreqMgr.setPlainBaseFreqs(newRxBaseFreq, finalTxBaseFreq);
+    this.baseFreqMgr.setPlainBaseFreqs(newRxBaseFreq, newTxBaseFreq);
 
     this.calcBaseFreqWithAdjust();
     this.logUpdatedBaseFreq();
   }
 
   /**
-   * Txが固定側かどうかを判定する
-   * Txの固定側判定はサテライトモードの状態に関わらず有効（Doppler補正はサテライトモードOFFでも実行されるため）
+   * 衛星固定モードかどうかを判定する
+   * Tx/Rxとも補正対象（execフラグが両方true）となるのは衛星固定モードのみ
    */
-  private isTxFixedSide(flags: DopplerShiftCorrectionFlags): boolean {
-    return !flags.execTxDopplerShiftCorrection;
+  private isFixedSatMode(flags: DopplerShiftCorrectionFlags): boolean {
+    return flags.execTxDopplerShiftCorrection && flags.execRxDopplerShiftCorrection;
   }
 
   /**
-   * Rxが固定側かどうかを判定する
-   * サテライトモードOFF時はRx周波数がTxに同期される専用の値となり、固定側という概念自体が意味を持たないため、
-   * サテライトモードONの場合のみ固定側と判定する
+   * 衛星固定モード以外のためTx側の無線機通知を破棄した理由をログ出力する
    */
-  private isRxFixedSide(flags: DopplerShiftCorrectionFlags): boolean {
-    return this.isSatelliteMode.value && !flags.execRxDopplerShiftCorrection;
-  }
-
-  /**
-   * 固定側のため無線機からの通知を破棄した理由をログ出力する
-   */
-  private logDiscardFixedSide(freqLabel: "Tx" | "Rx"): void {
-    AppRendererLogger.debug(`${freqLabel}は固定側のため、無線機からの周波数通知を破棄します。`);
+  private logDiscardTxNotification(): void {
+    AppRendererLogger.debug(
+      "Txは送信固定・受信固定モードではダイヤル操作の反映対象外のため、無線機からの周波数通知を破棄します。"
+    );
   }
 
   /**

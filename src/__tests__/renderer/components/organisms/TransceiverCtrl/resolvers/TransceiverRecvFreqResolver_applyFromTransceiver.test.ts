@@ -54,8 +54,7 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
       () => 1000,
       calcWithAdjust,
       () => 0,
-      () => FLAGS_FIXED_SAT,
-      ref(true)
+      () => FLAGS_FIXED_SAT
     );
     vi.spyOn(I18nUtil, "getMsg").mockReturnValue("mocked notice");
     const emitSpy = vi.spyOn(emitter, "emit").mockImplementation(() => {});
@@ -70,11 +69,10 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
     expect(calcWithAdjust).not.toHaveBeenCalled();
   });
 
-  it("Tx周波数受信かつAutoOff時、固定側判定を行わず画面周波数のみ更新すること", async () => {
+  it("Tx周波数受信かつAutoOff時、モードに関わらず画面周波数のみ更新し基準周波数は再算出しないこと", async () => {
     const state = createState();
     const baseFreqMgr = new TransceiverBaseFreqMgr();
     const calcWithAdjust = vi.fn();
-    const getCorrectionFlags = vi.fn(() => FLAGS_FIXED_TX);
     const resolver = new TransceiverRecvFreqResolver(
       state,
       { tranceiverAuto: false } as never,
@@ -83,8 +81,7 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
       () => 1000,
       calcWithAdjust,
       () => 0,
-      getCorrectionFlags,
-      ref(true)
+      () => FLAGS_FIXED_TX
     );
 
     await resolver.applyFromTransceiver({
@@ -94,12 +91,12 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
       },
     } as unknown as ApiResponse<UplinkType | DownlinkType>);
 
-    // AutoOff時は固定側であっても画面表示はそのまま反映される
+    // AutoOff時はTx破棄判定を行わず、画面表示のみ反映され基準周波数の再算出は行われない
     expect(state.txFrequency.value).toBe("2430.123.456");
     expect(calcWithAdjust).not.toHaveBeenCalled();
   });
 
-  it("Rx周波数受信かつAutoOn時（衛星固定相当）、基準周波数を算出すること", async () => {
+  it("Rx周波数受信かつAutoOn時、モードに関わらずRxが更新されSumを保ったままTx基準周波数も更新されること（送信固定モード）", async () => {
     const state = createState();
     const baseFreqMgr = new TransceiverBaseFreqMgr();
     baseFreqMgr.setPlainBaseFreqs(480000000, 2430000000);
@@ -116,8 +113,7 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
       () => 1000,
       calcWithAdjust,
       () => state.rxBaseFreq.value + state.txBaseFreq.value,
-      () => FLAGS_FIXED_SAT,
-      ref(true)
+      () => FLAGS_FIXED_TX
     );
 
     await resolver.applyFromTransceiver({
@@ -137,48 +133,14 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
       1000
     );
     expect(calcWithAdjust).toHaveBeenCalled();
-    // 衛星固定相当のため、Sum維持のために再計算されたTx側の値もそのまま採用される
+    // Rxは常に受け付ける。ダイヤル操作された側（Rx）に伴い、Sum維持のために再計算されたTx側の値もRST自身の計算として採用される
     expect(baseFreqMgr.getPlainBaseFreqs()).toEqual({
       plainRxBaseFreq: 481000000,
       plainTxBaseFreq: 2429000000,
     });
   });
 
-  it("送信固定モードでTx周波数を受信した場合、画面表示・基準周波数のいずれも変化しないこと", async () => {
-    const state = createState();
-    const baseFreqMgr = new TransceiverBaseFreqMgr();
-    baseFreqMgr.setPlainBaseFreqs(480000000, 2430000000);
-    const calcTxSpy = vi.spyOn(TransceiverDopplerCalc.prototype, "calcBaseFreqByShiftedTxFreq");
-    const calcWithAdjust = vi.fn();
-    const resolver = new TransceiverRecvFreqResolver(
-      state,
-      { tranceiverAuto: true } as never,
-      baseFreqMgr,
-      ref(new Date("2026-05-09T00:00:00.000Z")),
-      () => 1000,
-      calcWithAdjust,
-      () => 0,
-      () => FLAGS_FIXED_TX,
-      ref(true)
-    );
-
-    await resolver.applyFromTransceiver({
-      status: true,
-      data: {
-        uplinkHz: 2430999999,
-      },
-    } as unknown as ApiResponse<UplinkType | DownlinkType>);
-
-    expect(state.txFrequency.value).toBe("2430.000.000");
-    expect(calcTxSpy).not.toHaveBeenCalled();
-    expect(calcWithAdjust).not.toHaveBeenCalled();
-    expect(baseFreqMgr.getPlainBaseFreqs()).toEqual({
-      plainRxBaseFreq: 480000000,
-      plainTxBaseFreq: 2430000000,
-    });
-  });
-
-  it("送信固定モードでRx周波数を受信した場合、Rxのみ更新されTx基準周波数は変化しないこと", async () => {
+  it("Rx周波数受信かつAutoOn時、受信固定モードでもRxが更新されSumを保ったままTx基準周波数も更新されること", async () => {
     const state = createState();
     const baseFreqMgr = new TransceiverBaseFreqMgr();
     baseFreqMgr.setPlainBaseFreqs(480000000, 2430000000);
@@ -194,9 +156,8 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
       ref(new Date("2026-05-09T00:00:00.000Z")),
       () => 1000,
       calcWithAdjust,
-      () => 0,
-      () => FLAGS_FIXED_TX,
-      ref(true)
+      () => state.rxBaseFreq.value + state.txBaseFreq.value,
+      () => FLAGS_FIXED_RX
     );
 
     await resolver.applyFromTransceiver({
@@ -206,54 +167,20 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
       },
     } as unknown as ApiResponse<UplinkType | DownlinkType>);
 
+    // 受信固定モード（Rxが固定側）であっても、Rx側の無線機通知は破棄されずそのまま反映される
     expect(state.rxFrequency.value).toBe("0480.100.000");
     expect(calcWithAdjust).toHaveBeenCalled();
-    // Txは固定側のため、Sum維持のために計算された値ではなく既存値が維持される
     expect(baseFreqMgr.getPlainBaseFreqs()).toEqual({
       plainRxBaseFreq: 481000000,
-      plainTxBaseFreq: 2430000000,
+      plainTxBaseFreq: 2429000000,
     });
   });
 
-  it("受信固定モードでRx周波数を受信した場合、画面表示・基準周波数のいずれも変化しないこと", async () => {
+  it("Tx周波数受信かつAutoOn時（衛星固定モード）、Txが更新されSumを保ったままRx基準周波数も更新されること", async () => {
     const state = createState();
     const baseFreqMgr = new TransceiverBaseFreqMgr();
     baseFreqMgr.setPlainBaseFreqs(480000000, 2430000000);
-    const calcRxSpy = vi.spyOn(TransceiverDopplerCalc.prototype, "calcBaseFreqByShiftedRxFreq");
-    const calcWithAdjust = vi.fn();
-    const resolver = new TransceiverRecvFreqResolver(
-      state,
-      { tranceiverAuto: true } as never,
-      baseFreqMgr,
-      ref(new Date("2026-05-09T00:00:00.000Z")),
-      () => 1000,
-      calcWithAdjust,
-      () => 0,
-      () => FLAGS_FIXED_RX,
-      ref(true)
-    );
-
-    await resolver.applyFromTransceiver({
-      status: true,
-      data: {
-        downlinkHz: 480999999,
-      },
-    } as unknown as ApiResponse<UplinkType | DownlinkType>);
-
-    expect(state.rxFrequency.value).toBe("0480.000.000");
-    expect(calcRxSpy).not.toHaveBeenCalled();
-    expect(calcWithAdjust).not.toHaveBeenCalled();
-    expect(baseFreqMgr.getPlainBaseFreqs()).toEqual({
-      plainRxBaseFreq: 480000000,
-      plainTxBaseFreq: 2430000000,
-    });
-  });
-
-  it("受信固定モードでTx周波数を受信した場合、Txのみ更新されRx基準周波数は変化しないこと", async () => {
-    const state = createState();
-    const baseFreqMgr = new TransceiverBaseFreqMgr();
-    baseFreqMgr.setPlainBaseFreqs(480000000, 2430000000);
-    vi.spyOn(TransceiverDopplerCalc.prototype, "calcBaseFreqByShiftedTxFreq").mockResolvedValue({
+    const calcTxSpy = vi.spyOn(TransceiverDopplerCalc.prototype, "calcBaseFreqByShiftedTxFreq").mockResolvedValue({
       newRxBaseFreq: 481000000,
       newTxBaseFreq: 2429000000,
     });
@@ -265,9 +192,8 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
       ref(new Date("2026-05-09T00:00:00.000Z")),
       () => 1000,
       calcWithAdjust,
-      () => 0,
-      () => FLAGS_FIXED_RX,
-      ref(true)
+      () => state.rxBaseFreq.value + state.txBaseFreq.value,
+      () => FLAGS_FIXED_SAT
     );
 
     await resolver.applyFromTransceiver({
@@ -278,22 +204,27 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
     } as unknown as ApiResponse<UplinkType | DownlinkType>);
 
     expect(state.txFrequency.value).toBe("2429.900.000");
+    expect(calcTxSpy).toHaveBeenCalledWith(
+      480000000,
+      2430000000,
+      0,
+      2429900000,
+      new Date("2026-05-09T00:00:00.000Z"),
+      1000
+    );
     expect(calcWithAdjust).toHaveBeenCalled();
-    // Rxは固定側のため、Sum維持のために計算された値ではなく既存値が維持される
+    // 衛星固定モードのため、Sum維持のために再計算されたRx側の値もそのまま採用される
     expect(baseFreqMgr.getPlainBaseFreqs()).toEqual({
-      plainRxBaseFreq: 480000000,
+      plainRxBaseFreq: 481000000,
       plainTxBaseFreq: 2429000000,
     });
   });
 
-  it("受信固定モードでもサテライトモードOFF時はRx周波数受信を破棄せず画面表示を更新すること", async () => {
+  it("送信固定モードでTx周波数を受信した場合、無線機側の自動変化を取り込まず画面表示・基準周波数のいずれも変化しないこと", async () => {
     const state = createState();
     const baseFreqMgr = new TransceiverBaseFreqMgr();
     baseFreqMgr.setPlainBaseFreqs(480000000, 2430000000);
-    const calcRxSpy = vi.spyOn(TransceiverDopplerCalc.prototype, "calcBaseFreqByShiftedRxFreq").mockResolvedValue({
-      newRxBaseFreq: 481000000,
-      newTxBaseFreq: 2429000000,
-    });
+    const calcTxSpy = vi.spyOn(TransceiverDopplerCalc.prototype, "calcBaseFreqByShiftedTxFreq");
     const calcWithAdjust = vi.fn();
     const resolver = new TransceiverRecvFreqResolver(
       state,
@@ -303,20 +234,56 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
       () => 1000,
       calcWithAdjust,
       () => 0,
-      () => FLAGS_FIXED_RX,
-      ref(false)
+      () => FLAGS_FIXED_TX
     );
 
     await resolver.applyFromTransceiver({
       status: true,
       data: {
-        downlinkHz: 480999999,
+        uplinkHz: 2430999999,
       },
     } as unknown as ApiResponse<UplinkType | DownlinkType>);
 
-    // サテライトモードOFF時はRxは固定側とみなさず、通常通り反映される
-    expect(state.rxFrequency.value).toBe("0480.999.999");
-    expect(calcRxSpy).toHaveBeenCalled();
-    expect(calcWithAdjust).toHaveBeenCalled();
+    // Rxダイヤル操作に伴う無線機側の自動変化を想定し、Tx側の無線機通知は取り込まずRST側の値を維持する
+    expect(state.txFrequency.value).toBe("2430.000.000");
+    expect(calcTxSpy).not.toHaveBeenCalled();
+    expect(calcWithAdjust).not.toHaveBeenCalled();
+    expect(baseFreqMgr.getPlainBaseFreqs()).toEqual({
+      plainRxBaseFreq: 480000000,
+      plainTxBaseFreq: 2430000000,
+    });
+  });
+
+  it("受信固定モードでTx周波数を受信した場合も、無線機側の自動変化を取り込まず画面表示・基準周波数のいずれも変化しないこと", async () => {
+    const state = createState();
+    const baseFreqMgr = new TransceiverBaseFreqMgr();
+    baseFreqMgr.setPlainBaseFreqs(480000000, 2430000000);
+    const calcTxSpy = vi.spyOn(TransceiverDopplerCalc.prototype, "calcBaseFreqByShiftedTxFreq");
+    const calcWithAdjust = vi.fn();
+    const resolver = new TransceiverRecvFreqResolver(
+      state,
+      { tranceiverAuto: true } as never,
+      baseFreqMgr,
+      ref(new Date("2026-05-09T00:00:00.000Z")),
+      () => 1000,
+      calcWithAdjust,
+      () => 0,
+      () => FLAGS_FIXED_RX
+    );
+
+    await resolver.applyFromTransceiver({
+      status: true,
+      data: {
+        uplinkHz: 2429900000,
+      },
+    } as unknown as ApiResponse<UplinkType | DownlinkType>);
+
+    expect(state.txFrequency.value).toBe("2430.000.000");
+    expect(calcTxSpy).not.toHaveBeenCalled();
+    expect(calcWithAdjust).not.toHaveBeenCalled();
+    expect(baseFreqMgr.getPlainBaseFreqs()).toEqual({
+      plainRxBaseFreq: 480000000,
+      plainTxBaseFreq: 2430000000,
+    });
   });
 });
