@@ -1,6 +1,6 @@
 {
   "frequency": {
-    "lastUpdateTime": 1786743570642,
+    "lastUpdateTime": 1790028100743,
     "satellites": [
       {
         "noradId": "43017",
@@ -1280,6 +1280,42 @@
         "downlink1": {
           "downlinkHz": 437250000,
           "downlinkMode": "FM-D"
+        },
+        "downlink2": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "downlink3": {
+          "downlinkHz": null,
+          "downlinkMode": ""
+        },
+        "beacon": {
+          "beaconHz": null,
+          "beaconMode": ""
+        },
+        "enableSatelliteMode": false,
+        "satelliteMode": "NORMAL",
+        "toneHz": null,
+        "outline": ""
+      },
+      {
+        "noradId": "100610",
+        "satelliteName": "FRAMSAT-1",
+        "uplink1": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "uplink2": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "uplink3": {
+          "uplinkHz": null,
+          "uplinkMode": ""
+        },
+        "downlink1": {
+          "downlinkHz": 435141000,
+          "downlinkMode": "FM"
         },
         "downlink2": {
           "downlinkHz": null,
