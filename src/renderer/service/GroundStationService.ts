@@ -752,11 +752,14 @@ class GroundStationService {
         return;
       }
       // 人工衛星が可視の場合の探索結果をキャッシュ配列に格納する
+      // TODO: altitudeとvisibilityの値を計算して格納する
       this._passesCache.push({
         aos: this._setPassData(tempPassCache.aos?.date, tempPassCache.aos?.elevation),
         maxEl: this._setPassData(tempPassCache.maxEl.date, tempPassCache.maxEl.elevation),
         los: this._setPassData(tempPassCache.los?.date, tempPassCache.los?.elevation),
         durationMs: tempPassCache.los?.date.getTime() - tempPassCache.aos?.date.getTime(),
+        altitude: null,
+        visibility: false,
       });
     } else if (this._isVisible === VisibilityType.ALWAYS_VISIBLE) {
       // 人工衛星が常に可視の場合の探索結果をキャッシュ配列に格納する
@@ -766,6 +769,8 @@ class GroundStationService {
           maxEl: this._setPassData(tempPassCache.maxEl.date, tempPassCache.maxEl.elevation),
           los: null,
           durationMs: null,
+          altitude: null,
+          visibility: false,
         });
       }
     }

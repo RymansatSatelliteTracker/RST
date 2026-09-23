@@ -31,6 +31,11 @@
       <div class="main_left_radar">
         <Radar :current-date="currentDate" />
       </div>
+
+      <!-- AOS/LOS時刻 -->
+      <div class="main_left_aoslist">
+        <AosList :current-date="currentDate" />
+      </div>
     </div>
 
     <!-- 右側 -->
@@ -42,6 +47,7 @@
 
 <script setup lang="ts">
 import Aos from "@/renderer/components/organisms/Aos/Aos.vue";
+import AosList from "@/renderer/components/organisms/AosList/AosList.vue";
 import Map from "@/renderer/components/organisms/Map/Map.vue";
 import Menu from "@/renderer/components/organisms/Menu/Menu.vue";
 import NowTime from "@/renderer/components/organisms/NowTime/NowTime.vue";

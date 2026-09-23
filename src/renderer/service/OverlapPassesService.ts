@@ -198,6 +198,7 @@ class OverlapPassesService extends GroundStationService {
               overlapMaxEl1 = this._recalculateMaxElInRangeAsync(overlapStartDate.getTime(), overlapEndDate.getTime());
             }
             // 重複するパスを返却する
+            // TODO: altitudeとvisibilityの値を計算して格納する
             return {
               aos: {
                 date: overlapStartDate,
@@ -211,6 +212,8 @@ class OverlapPassesService extends GroundStationService {
                 satLocation: endTargetLocation,
               } as PassData,
               durationMs: (overlapEndDate.getTime() - overlapStartDate.getTime()) as number | null,
+              altitude: null as number | null,
+              visibility: false,
             };
           }
         });
