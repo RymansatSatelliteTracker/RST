@@ -460,7 +460,10 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       const recvDataMainFreq = await this.sendAndSyncRecv(this.cmdMaker.makeGetFreq(), "GET_FREQ");
       await this.handleRecvData(recvDataMainFreq);
 
-      if (recvDataMainFreq === "TIMEOUT" && this.state.isRxReadPending) {
+      // 有効なRxを処理できたか（GET_FREQの応答があり、かつ追加のGET_BANDでメインバンドと判定できたか）
+      // memo: GET_BANDがタイムアウトすると、取得値がTxとして通知されRxはRSTに反映されない
+      const isRxReceived = recvDataMainFreq !== "TIMEOUT" && this.state.isMain;
+      if (!isRxReceived && this.state.isRxReadPending) {
         // 読み取り待ち中に有効なRx応答を得られなかった場合は、保留を維持して次の周期で再試行する
         // （RSTの古い周波数要求で、無線機側のRxを上書きしないため）
         const isGiveUp = this.state.failRxRead();
@@ -1008,10 +1011,15 @@ export default class TransceiverIcomController extends TransceiverSerialControll
           await this.procRecvFreqData(comId, trimedData);
         }
 
-        // サブバンド（Tx）のダイヤル操作ではRxも変化するが、Rxはトランシーブで通知されない。
-        // 待機解除後にRxを無線機から読み取るまで、RST側の古い周波数要求で上書きしないよう保留状態にする
-        if (this.state.isSatelliteMode && !this.state.isMain) {
-          this.state.startRxReadPending();
+        if (this.state.isSatelliteMode) {
+          if (this.state.isMain) {
+            // メインバンド（Rx）の操作に移った場合は、Rx値を受信済みのため読み取り待ちを解除する
+            this.state.endRxReadPending();
+          } else {
+            // サブバンド（Tx）のダイヤル操作ではRxも変化するが、Rxはトランシーブで通知されない。
+            // 待機解除後にRxを無線機から読み取るまで、RST側の古い周波数要求で上書きしないよう保留状態にする
+            this.state.startRxReadPending();
+          }
         }
 
         res.data = true;

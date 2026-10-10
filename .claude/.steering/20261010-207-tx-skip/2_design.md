@@ -157,12 +157,13 @@
 ### B-3-2. `src/main/service/transceiver/controller/TransceiverIcomController.ts`
 
 1. `handleRecvData` の周波数トランシーブ（`case "00"`）で、`procRecvFreqData` の後、サテライトモードかつサブバンド（`!this.state.isMain`）の場合のみ `this.state.startRxReadPending()` を呼ぶ。
+   - サテライトモードかつメインバンド（Rx）のトランシーブだった場合は、Rx値を受信済みのため `endRxReadPending()` で保留を解除する（直前にTxのトランシーブで保留が立っていた場合に、不要な保留が残らないようにする）。
    - `case "03"`（読み出し応答）では呼ばない。定期ループ自身の読み出しで保留を立てないため。
    - RX（メイン）のトランシーブでは呼ばない。RX値は通知済みで、読み取りが不要なため。
 2. `setFreq` の先頭（シリアル接続確認後）で、`this.state.isRxReadPending` が true なら、要求を設定せずに処理を終了する。破棄したことをデバッグログに残す。
 3. `sendAndRecvForMainForLoop` のRx読み取り（`GET_FREQ`）の結果で保留を制御する。
-   - 応答を受信できた場合: `isRecvRxFreqUpdate = false`、`endRxReadPending()`。
-   - `TIMEOUT` かつ保留中の場合: `failRxRead()` で再試行を予約し、保留を維持する（警告ログを出力）。上限に達した場合のみ保留を解除する。
+   - 有効なRxを処理できた場合（`GET_FREQ` の応答があり、かつ追加の `GET_BAND` でメインバンドと判定できた場合）: `isRecvRxFreqUpdate = false`、`endRxReadPending()`。
+   - 有効なRxを処理できなかった場合（`GET_FREQ` のタイムアウト、または `GET_BAND` の失敗で `isMain=false` となり、取得値がTxとして通知された場合）かつ保留中: `failRxRead()` で再試行を予約し、保留を維持する（警告ログを出力）。上限に達した場合のみ保留を解除する。
    - `startRxReadPending()` がRx読み取りを予約するため、保留中は必ず `isRxUpdate()` が true となり、読み取りなしで保留だけ解除されることはない。
 4. 状態の取りこぼし防止として、`setSatelliteMode(false)` 実行時と `stop()` でも `endRxReadPending()`（または `resetAll()` 相当）を呼ぶ。
 

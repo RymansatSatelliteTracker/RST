@@ -83,6 +83,7 @@
   - [x] `setFreq` で `isRxReadPending` が true の場合は要求を設定せず、デバッグログを出して終了する
   - [x] `sendAndRecvForMainForLoop` のRx読み取り結果で保留を制御する（応答あり: 解除、`TIMEOUT`: 再試行、連続3回失敗: 解除）
   - [x] （Copilotレビュー対応）`startRxReadPending()` でRx読み取りを予約し、`failRxRead()` を追加
+  - [x] （Copilotレビュー対応）メインバンド（Rx）のトランシーブ受信時は保留を解除し、Rx取得の成否判定に `GET_BAND` の結果（`isMain`）を含める
   - [x] `setSatelliteMode(false)` 実行時と `stop()` でも保留を解除する
 
 ## B-2. テスト変更
