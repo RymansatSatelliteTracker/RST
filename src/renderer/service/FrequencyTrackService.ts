@@ -75,29 +75,6 @@ export default class FrequencyTrackService {
   }
 
   /**
-   * 無線機のTx周波数とドップラーファクターを元に基準周波数を算出する（逆ヘテロダイン）
-   * 無線機周波数 = (Tx基準周波数 + Tx補正値) × ドップラーファクタ
-   * → Tx基準周波数 = 無線機周波数 / ドップラーファクタ - Tx補正値
-   * @param plainBaseFreqSum 基準周波数の和（補正値なし）
-   * @param txAdjustFreq Tx補正値
-   * @param txFreq 無線機のTx周波数（補正値・ドップラーシフト適用済み）
-   * @param txDopplerFactor Txドップラーファクター
-   */
-  public calcInvHeteroBaseFreqByTxFreq(
-    plainBaseFreqSum: number,
-    txAdjustFreq: number,
-    txFreq: number,
-    txDopplerFactor: number
-  ): { rxBaseFreq: number; txBaseFreq: number } {
-    // 無線機周波数をドップラーファクターで割り戻して補正値を引き、Tx基準周波数を算出する
-    const txBaseFreq = txFreq / txDopplerFactor - txAdjustFreq;
-    // Rx基準周波数は、送受信基準周波数の和からTx基準周波数を引いて算出する
-    const rxBaseFreq = plainBaseFreqSum - txBaseFreq;
-
-    return { rxBaseFreq: Math.round(rxBaseFreq), txBaseFreq: Math.round(txBaseFreq) };
-  }
-
-  /**
    * 距離の変化量から速度を算出する
    * 観測者に向かう方が正の値
    * @param {Date} nowDate 現在日時

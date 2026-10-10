@@ -27,6 +27,9 @@ export default class TransceiverIcomState {
   public isRecvTxFreqUpdate = false;
   public isRecvRxFreqUpdate = false;
 
+  // サブバンド（Tx）のトランシーブ受信後、連動して変化したRx周波数を無線機から読み取るまでの間はtrue
+  public isRxReadPending = false;
+
   // 現在の運用モード
   public currentTxOpeMode = "";
   public currentRxOpeMode = "";
@@ -172,11 +175,32 @@ export default class TransceiverIcomState {
   }
 
   /**
+   * Rx周波数の読み取り待ちを開始する
+   * 無線機側のTxダイヤル操作に連動してRxが変化しているため、RST側の古い周波数要求を破棄する。
+   * 要求値も未設定に戻し、解除後に同じ値が再要求されても重複判定でスキップされないようにする。
+   */
+  public startRxReadPending(): void {
+    this.isRxReadPending = true;
+    this.isReqTxFreqUpdate = false;
+    this.isReqRxFreqUpdate = false;
+    this.reqTxFreqHz = 0;
+    this.reqRxFreqHz = 0;
+  }
+
+  /**
+   * Rx周波数の読み取り待ちを解除する
+   */
+  public endRxReadPending(): void {
+    this.isRxReadPending = false;
+  }
+
+  /**
    * 周波数、モードの更新状態をリセットする
    */
   public resetAll(): void {
     this.resetRx();
     this.resetTx();
+    this.endRxReadPending();
   }
 
   // Getter

@@ -121,7 +121,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
         // 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機する
         if (this.isWaitSendFreq) {
-          AppMainLogger.debug(`定期送受信 スキップ（無線機への送信を一時停止中）`);
+          // AppMainLogger.debug(`定期送受信 スキップ（無線機への送信を一時停止中）`);
           return;
         }
 
@@ -171,6 +171,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       clearTimeout(this.transceiveWaitTimer);
       this.transceiveWaitTimer = null;
     }
+
+    this.state.endRxReadPending();
   }
 
   /**
@@ -435,6 +437,18 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    * （メインループ向け）メインバンドの周波数の設定／取得、およびモードの設定／取得を行う
    */
   private async sendAndRecvForMainForLoop(comId: number) {
+    try {
+      await this.sendAndRecvForMainBand(comId);
+    } finally {
+      // この周期でRx周波数の読み取りを行ったため、成否にかかわらず読み取り待ちを解除する
+      this.state.endRxReadPending();
+    }
+  }
+
+  /**
+   * （メインループ向け）メインバンドの周波数、モードの設定／取得の実行部
+   */
+  private async sendAndRecvForMainBand(comId: number) {
     // メイン（Rx）の周波数、モードの更新がない場合は処理終了
     if (!this.state.isRxUpdate()) {
       return;
@@ -558,6 +572,12 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // シリアル未接続の場合は処理終了
     if (!this.serial?.isOpen()) {
       AppMainLogger.warn("シリアル未接続のため、処理を終了します。");
+      return Promise.resolve();
+    }
+
+    // Rx周波数の読み取り待ち中は、RST側の周波数要求が古い値となるため破棄する
+    if (this.state.isRxReadPending) {
+      AppMainLogger.debug(`Rx周波数の読み取り待ちのため、RSTからの周波数要求を破棄します。`);
       return Promise.resolve();
     }
 
@@ -686,6 +706,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     }
     // サテライトモードの設定を保持する
     this.state.isSatelliteMode = isSatelliteMode;
+    this.state.endRxReadPending();
 
     // データ送信
     const cmdData = this.cmdMaker.makeSetSatelliteMode(isSatelliteMode);
@@ -983,6 +1004,12 @@ export default class TransceiverIcomController extends TransceiverSerialControll
           AppMainLogger.debug(`${comId}：トランシーブ受信 周波数データ（00）`);
           // 無線機から受信した周波数データを処理する
           await this.procRecvFreqData(comId, trimedData);
+        }
+
+        // サブバンド（Tx）のダイヤル操作ではRxも変化するが、Rxはトランシーブで通知されない。
+        // 待機解除後にRxを無線機から読み取るまで、RST側の古い周波数要求で上書きしないよう保留状態にする
+        if (this.state.isSatelliteMode && !this.state.isMain) {
+          this.state.startRxReadPending();
         }
 
         res.data = true;
