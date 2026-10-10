@@ -1557,7 +1557,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
   /**
    * メインバンドへ制御を切り替える
-   * @returns メインバンドに切り替わっている場合はtrue（切り替えコマンドがタイムアウトした場合はfalse）
+   * @returns メインバンドに切り替わっている場合はtrue（切り替えコマンドが成功応答（FB）でなかった場合はfalse）
    */
   private async switchMainBand(): Promise<boolean> {
     if (this.state.isMain) return true;
@@ -1565,8 +1565,9 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     AppMainLogger.debug(`制御切り替え メインバンドへ`);
     this.state.isMain = true;
     const res = await this.sendAndSyncRecv(this.cmdMaker.makeSwitchToMainBand(), "SWITCH");
-    if (res === "TIMEOUT") {
-      // 切り替えを確認できなかった場合は、メインバンド状態を戻して次回切り替えを再試行できるようにする
+    // コマンド部がFB（OK）以外は、タイムアウトやNG（FA）などで切り替えを確認できていない
+    if (res.substring(8, 10) !== "fb") {
+      // メインバンド状態を戻して、次回切り替えを再試行できるようにする
       // memo: IC-910はバンドを無線機に問い合わせられず、この値を現在のバンドとして扱うため
       this.state.isMain = false;
       return false;
