@@ -196,8 +196,12 @@ export default class TransceiverIcomState {
 
   /**
    * Rx周波数の読み取り待ちを解除する
+   * 読み取り待ちの間に予約されていたRxの読み取りも取り消す（読み取り済み、またはRx値を受信済みで不要となるため）。
    */
   public endRxReadPending(): void {
+    if (this.isRxReadPending) {
+      this.isRecvRxFreqUpdate = false;
+    }
     this.isRxReadPending = false;
     this.rxReadFailCount = 0;
   }
@@ -213,15 +217,15 @@ export default class TransceiverIcomState {
       return false;
     }
 
-    // 再試行のため、Rxの読み取りを再度予約する
-    this.isRecvRxFreqUpdate = true;
     this.rxReadFailCount += 1;
-    if (this.rxReadFailCount < MAX_RX_READ_RETRY_COUNT) {
-      return false;
+    if (this.rxReadFailCount >= MAX_RX_READ_RETRY_COUNT) {
+      this.endRxReadPending();
+      return true;
     }
 
-    this.endRxReadPending();
-    return true;
+    // 再試行のため、Rxの読み取りを再度予約する
+    this.isRecvRxFreqUpdate = true;
+    return false;
   }
 
   /**

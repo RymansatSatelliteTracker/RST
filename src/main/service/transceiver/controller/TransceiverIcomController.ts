@@ -457,6 +457,14 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       // Rx周波数を無線機から取得
       // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、周波数の取得は行わない
       AppMainLogger.debug(`sendAndRecvForMainForLoop Rx周波数取得要求`);
+
+      // 読み取り待ちからの読み取りでは、先にレンダラのドップラーシフト補正を待機させる。
+      // 読み取ったRxがレンダラで基準周波数へ反映される前に、レンダラの周期処理が古い基準周波数で要求を出し、
+      // 読み取り待ちの解除後に受け付けられてしまうのを防ぐため
+      if (this.state.isRxReadPending) {
+        this.notifyDopplerShiftWaiting();
+      }
+
       const recvDataMainFreq = await this.sendAndSyncRecv(this.cmdMaker.makeGetFreq(), "GET_FREQ");
       await this.handleRecvData(recvDataMainFreq);
 
@@ -1511,6 +1519,19 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   private fireSerialNotConnectedMsg() {
     const msg = I18nUtil4Main.getMsg(I18nMsgs.SERIAL_NOT_CONNECTED_TRANSCEIVER);
     fireIpcEvent("onNoticeMessage", new MessageModel(Constant.GlobalEvent.NOTICE_ERR, msg));
+  }
+
+  /**
+   * レンダラ側のドップラーシフト補正を待機させる
+   */
+  private notifyDopplerShiftWaiting() {
+    if (!this.isDopplerShiftWaitingCallback) {
+      return;
+    }
+
+    const res = new ApiResponse<boolean>(true);
+    res.data = true;
+    this.isDopplerShiftWaitingCallback(res);
   }
 
   /**

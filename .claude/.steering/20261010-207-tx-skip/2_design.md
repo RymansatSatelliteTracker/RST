@@ -150,8 +150,8 @@
     - `switchBandIfNeed` は要求値が0の場合は入れ替えを行わないため、副作用はない。
   - Rxの読み取りを予約する（`isRecvRxFreqUpdate = true`）。受信したTx周波数が前回と同一で `setRecvTxFreqHz()` がフラグを立てなかった場合でも、必ず読み取りが行われるようにする。
   - 失敗回数をリセットする。
-- メソッド追加: `endRxReadPending(): void` — `isRxReadPending = false`、失敗回数をリセット
-- メソッド追加: `failRxRead(): boolean` — 読み取り失敗を記録する。保留中であれば `isRecvRxFreqUpdate = true` に戻して再試行を予約する。失敗が上限（3回）に達した場合は保留を解除し、`true` を返す。
+- メソッド追加: `endRxReadPending(): void` — 保留中であれば、保留中に予約されたRx読み取り（`isRecvRxFreqUpdate`）も取り消し、`isRxReadPending = false`、失敗回数をリセット。保留中でない場合は通常のトランシーブで立ったフラグを変更しない。
+- メソッド追加: `failRxRead(): boolean` — 読み取り失敗を記録する。保留中であれば `isRecvRxFreqUpdate = true` に戻して再試行を予約する。失敗が上限（3回）に達した場合は、読み取りを再予約せずに保留を解除し（`endRxReadPending()`）、`true` を返す。
 - `resetAll()` で `isRxReadPending = false` も解除する。
 
 ### B-3-2. `src/main/service/transceiver/controller/TransceiverIcomController.ts`
@@ -164,6 +164,7 @@
 3. `sendAndRecvForMainForLoop` のRx読み取り（`GET_FREQ`）の結果で保留を制御する。
    - 有効なRxを処理できた場合（`GET_FREQ` の応答があり、かつ追加の `GET_BAND` でメインバンドと判定できた場合）: `isRecvRxFreqUpdate = false`、`endRxReadPending()`。
    - 有効なRxを処理できなかった場合（`GET_FREQ` のタイムアウト、または `GET_BAND` の失敗で `isMain=false` となり、取得値がTxとして通知された場合）かつ保留中: `failRxRead()` で再試行を予約し、保留を維持する（警告ログを出力）。上限に達した場合のみ保留を解除する。
+   - 保留中のRx読み取りの直前に、レンダラへドップラーシフト待機を通知する（`notifyDopplerShiftWaiting()`）。読み取ったRxがレンダラで基準周波数へ反映される前に、レンダラの周期処理が古い基準周波数で要求を出し、保留の解除後に受け付けられるのを防ぐ（待機通知は、Rx通知より先にレンダラへ届く）。
    - `startRxReadPending()` がRx読み取りを予約するため、保留中は必ず `isRxUpdate()` が true となり、読み取りなしで保留だけ解除されることはない。
 4. 状態の取りこぼし防止として、`setSatelliteMode(false)` 実行時と `stop()` でも `endRxReadPending()`（または `resetAll()` 相当）を呼ぶ。
 
