@@ -1,6 +1,6 @@
 # 改修タスクリスト
 
-本書は「要求A（実装済み）」と「要求B（未実装）」の2部構成。要求Bは本書の末尾を参照。
+本書は「要求A（実装済み）」と「要求B（実装済み・一部実機確認未実施）」の2部構成。要求Bは本書の末尾を参照。
 
 ---
 
@@ -57,7 +57,7 @@
 
 ---
 
-# 要求B: TXダイヤル操作後のRX読み取り（実装済み・実機確認待ち）
+# 要求B: TXダイヤル操作後のRX読み取り（実装済み・一部実機確認未実施）
 
 `2_design.md` の要求B（B-1〜B-8）に基づく。**実機ログの確認（B-0）の結果によっては、方針を見直す。**
 
@@ -81,7 +81,8 @@
 - [x] B-1-2. `src/main/service/transceiver/controller/TransceiverIcomController.ts`
   - [x] `handleRecvData` の `case "00"` で、サテライトモードかつサブバンドの場合のみ `startRxReadPending()` を呼ぶ
   - [x] `setFreq` で `isRxReadPending` が true の場合は要求を設定せず、デバッグログを出して終了する
-  - [x] `sendAndRecvForMainForLoop` を `try / finally` で包み、`finally` で `endRxReadPending()` を呼ぶ（早期returnでも解除されるようにする）
+  - [x] `sendAndRecvForMainForLoop` のRx読み取り結果で保留を制御する（応答あり: 解除、`TIMEOUT`: 再試行、連続3回失敗: 解除）
+  - [x] （Copilotレビュー対応）`startRxReadPending()` でRx読み取りを予約し、`failRxRead()` を追加
   - [x] `setSatelliteMode(false)` 実行時と `stop()` でも保留を解除する
 
 ## B-2. テスト変更

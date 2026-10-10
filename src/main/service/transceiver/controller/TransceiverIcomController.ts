@@ -437,18 +437,6 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    * （メインループ向け）メインバンドの周波数の設定／取得、およびモードの設定／取得を行う
    */
   private async sendAndRecvForMainForLoop(comId: number) {
-    try {
-      await this.sendAndRecvForMainBand(comId);
-    } finally {
-      // この周期でRx周波数の読み取りを行ったため、成否にかかわらず読み取り待ちを解除する
-      this.state.endRxReadPending();
-    }
-  }
-
-  /**
-   * （メインループ向け）メインバンドの周波数、モードの設定／取得の実行部
-   */
-  private async sendAndRecvForMainBand(comId: number) {
     // メイン（Rx）の周波数、モードの更新がない場合は処理終了
     if (!this.state.isRxUpdate()) {
       return;
@@ -471,7 +459,21 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       AppMainLogger.debug(`sendAndRecvForMainForLoop Rx周波数取得要求`);
       const recvDataMainFreq = await this.sendAndSyncRecv(this.cmdMaker.makeGetFreq(), "GET_FREQ");
       await this.handleRecvData(recvDataMainFreq);
-      this.state.isRecvRxFreqUpdate = false;
+
+      if (recvDataMainFreq === "TIMEOUT" && this.state.isRxReadPending) {
+        // 読み取り待ち中に有効なRx応答を得られなかった場合は、保留を維持して次の周期で再試行する
+        // （RSTの古い周波数要求で、無線機側のRxを上書きしないため）
+        const isGiveUp = this.state.failRxRead();
+        AppMainLogger.warn(
+          isGiveUp
+            ? `Rx周波数の読み取りに失敗し続けたため、読み取り待ちを解除します。`
+            : `Rx周波数の読み取りに失敗したため、次の周期で再試行します。`
+        );
+      } else {
+        this.state.isRecvRxFreqUpdate = false;
+        // 有効なRx応答を処理できたため、読み取り待ちを解除する
+        this.state.endRxReadPending();
+      }
     }
 
     // 無線機へ送信する運用モードの設定

@@ -1,3 +1,6 @@
+// Rx周波数の読み取りに失敗した場合に再試行する上限回数（超えた場合は保留を解除し、RSTからの要求を再開する）
+const MAX_RX_READ_RETRY_COUNT = 3;
+
 /**
  * RSTとICOM無線機の周波数とモードの値と更新状態を保持するクラス
  */
@@ -29,6 +32,7 @@ export default class TransceiverIcomState {
 
   // サブバンド（Tx）のトランシーブ受信後、連動して変化したRx周波数を無線機から読み取るまでの間はtrue
   public isRxReadPending = false;
+  private rxReadFailCount = 0;
 
   // 現在の運用モード
   public currentTxOpeMode = "";
@@ -176,15 +180,18 @@ export default class TransceiverIcomState {
 
   /**
    * Rx周波数の読み取り待ちを開始する
-   * 無線機側のTxダイヤル操作に連動してRxが変化しているため、RST側の古い周波数要求を破棄する。
+   * 無線機側のTxダイヤル操作に連動してRxが変化しているため、RST側の古い周波数要求を破棄し、Rxの読み取りを予約する。
    * 要求値も未設定に戻し、解除後に同じ値が再要求されても重複判定でスキップされないようにする。
    */
   public startRxReadPending(): void {
     this.isRxReadPending = true;
+    this.rxReadFailCount = 0;
     this.isReqTxFreqUpdate = false;
     this.isReqRxFreqUpdate = false;
     this.reqTxFreqHz = 0;
     this.reqRxFreqHz = 0;
+    // 受信したTx周波数が前回と同一でも、Rxの読み取りが必ず行われるようにする
+    this.isRecvRxFreqUpdate = true;
   }
 
   /**
@@ -192,6 +199,29 @@ export default class TransceiverIcomState {
    */
   public endRxReadPending(): void {
     this.isRxReadPending = false;
+    this.rxReadFailCount = 0;
+  }
+
+  /**
+   * Rx周波数の読み取り失敗を記録する
+   * 上限回数に達するまでは読み取り待ちを維持し、次の周期で再試行する。上限に達した場合は、RSTからの要求を
+   * 破棄し続けないよう読み取り待ちを解除する。
+   * @returns 上限に達して読み取り待ちを解除した場合はtrue
+   */
+  public failRxRead(): boolean {
+    if (!this.isRxReadPending) {
+      return false;
+    }
+
+    // 再試行のため、Rxの読み取りを再度予約する
+    this.isRecvRxFreqUpdate = true;
+    this.rxReadFailCount += 1;
+    if (this.rxReadFailCount < MAX_RX_READ_RETRY_COUNT) {
+      return false;
+    }
+
+    this.endRxReadPending();
+    return true;
   }
 
   /**
