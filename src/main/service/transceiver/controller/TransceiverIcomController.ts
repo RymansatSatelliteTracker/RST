@@ -443,7 +443,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     }
 
     // メインへ切り替え
-    await this.switchMainBand();
+    const isMainSwitched = await this.switchMainBand();
 
     // メインバンドの周波数を元に、必要であればメインとサブの周波数帯の入れ替えを行う
     await this.switchBandIfNeed();
@@ -468,9 +468,10 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       const recvDataMainFreq = await this.sendAndSyncRecv(this.cmdMaker.makeGetFreq(), "GET_FREQ");
       await this.handleRecvData(recvDataMainFreq);
 
-      // 有効なRxを処理できたか（GET_FREQの応答があり、かつ追加のGET_BANDでメインバンドと判定できたか）
-      // memo: GET_BANDがタイムアウトすると、取得値がTxとして通知されRxはRSTに反映されない
-      const isRxReceived = recvDataMainFreq !== "TIMEOUT" && this.state.isMain;
+      // 有効なRxを処理できたか（メインバンドへ切り替わり、GET_FREQの応答があり、かつ追加のGET_BANDでメインバンドと判定できたか）
+      // memo: 切り替えやGET_BANDがタイムアウトすると、取得値がTxとして通知される、またはTx値をRxと誤判定するため、
+      //       Rxは取得できていないものとして扱う
+      const isRxReceived = isMainSwitched && recvDataMainFreq !== "TIMEOUT" && this.state.isMain;
       if (!isRxReceived && this.state.isRxReadPending) {
         // 読み取り待ち中に有効なRx応答を得られなかった場合は、保留を維持して次の周期で再試行する
         // （RSTの古い周波数要求で、無線機側のRxを上書きしないため）
@@ -1556,13 +1557,22 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
   /**
    * メインバンドへ制御を切り替える
+   * @returns メインバンドに切り替わっている場合はtrue（切り替えコマンドがタイムアウトした場合はfalse）
    */
-  private async switchMainBand() {
-    if (this.state.isMain) return;
+  private async switchMainBand(): Promise<boolean> {
+    if (this.state.isMain) return true;
 
     AppMainLogger.debug(`制御切り替え メインバンドへ`);
     this.state.isMain = true;
-    await this.sendAndSyncRecv(this.cmdMaker.makeSwitchToMainBand(), "SWITCH");
+    const res = await this.sendAndSyncRecv(this.cmdMaker.makeSwitchToMainBand(), "SWITCH");
+    if (res === "TIMEOUT") {
+      // 切り替えを確認できなかった場合は、メインバンド状態を戻して次回切り替えを再試行できるようにする
+      // memo: IC-910はバンドを無線機に問い合わせられず、この値を現在のバンドとして扱うため
+      this.state.isMain = false;
+      return false;
+    }
+
+    return true;
   }
 
   /**

@@ -85,6 +85,7 @@
   - [x] （Copilotレビュー対応）`startRxReadPending()` でRx読み取りを予約し、`failRxRead()` を追加
   - [x] （Copilotレビュー対応）メインバンド（Rx）のトランシーブ受信時は保留を解除し、Rx取得の成否判定に `GET_BAND` の結果（`isMain`）を含める
   - [x] （Copilotレビュー対応）保留解除時にRx読み取りの予約も取り消す。読み取り前にレンダラへドップラーシフト待機を通知する（`notifyDopplerShiftWaiting`）
+  - [x] （Copilotレビュー対応）`switchMainBand()` が成否を返すようにし、切り替え失敗時は `isMain` を戻してRx取得の成否判定に含める（IC-910は実機がなく未検証）
   - [x] `setSatelliteMode(false)` 実行時と `stop()` でも保留を解除する
 
 ## B-2. テスト変更

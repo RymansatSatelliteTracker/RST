@@ -162,8 +162,9 @@
    - RX（メイン）のトランシーブでは呼ばない。RX値は通知済みで、読み取りが不要なため。
 2. `setFreq` の先頭（シリアル接続確認後）で、`this.state.isRxReadPending` が true なら、要求を設定せずに処理を終了する。破棄したことをデバッグログに残す。
 3. `sendAndRecvForMainForLoop` のRx読み取り（`GET_FREQ`）の結果で保留を制御する。
-   - 有効なRxを処理できた場合（`GET_FREQ` の応答があり、かつ追加の `GET_BAND` でメインバンドと判定できた場合）: `isRecvRxFreqUpdate = false`、`endRxReadPending()`。
-   - 有効なRxを処理できなかった場合（`GET_FREQ` のタイムアウト、または `GET_BAND` の失敗で `isMain=false` となり、取得値がTxとして通知された場合）かつ保留中: `failRxRead()` で再試行を予約し、保留を維持する（警告ログを出力）。上限に達した場合のみ保留を解除する。
+   - 有効なRxを処理できた場合（メインバンドへの切り替えに成功し、`GET_FREQ` の応答があり、かつ追加の `GET_BAND` でメインバンドと判定できた場合）: `isRecvRxFreqUpdate = false`、`endRxReadPending()`。
+   - 有効なRxを処理できなかった場合（メインバンドへの切り替えのタイムアウト、`GET_FREQ` のタイムアウト、または `GET_BAND` の失敗で `isMain=false` となり、取得値がTxとして通知された場合）かつ保留中: `failRxRead()` で再試行を予約し、保留を維持する（警告ログを出力）。上限に達した場合のみ保留を解除する。
+   - `switchMainBand()` は成否を返し、切り替えコマンドがタイムアウトした場合は `isMain` を元に戻す。IC-910は `GET_BAND` に対応せず、`isMain` のキャッシュ値を現在のバンドとして扱うため、切り替えに失敗したままTx値をRxと誤判定するのを防ぐ（IC-910は実機がなく未検証）。
    - 保留中のRx読み取りの直前に、レンダラへドップラーシフト待機を通知する（`notifyDopplerShiftWaiting()`）。読み取ったRxがレンダラで基準周波数へ反映される前に、レンダラの周期処理が古い基準周波数で要求を出し、保留の解除後に受け付けられるのを防ぐ（待機通知は、Rx通知より先にレンダラへ届く）。
    - `startRxReadPending()` がRx読み取りを予約するため、保留中は必ず `isRxUpdate()` が true となり、読み取りなしで保留だけ解除されることはない。
 4. 状態の取りこぼし防止として、`setSatelliteMode(false)` 実行時と `stop()` でも `endRxReadPending()`（または `resetAll()` 相当）を呼ぶ。
