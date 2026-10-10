@@ -5,7 +5,6 @@ import TransceiverUtil from "@/common/util/TransceiverUtil.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc.js";
 import type TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
-import type { DopplerShiftCorrectionFlags } from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverDopplerModeResolver.js";
 import type { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
 import emitter from "@/renderer/util/EventBus.js";
@@ -15,12 +14,8 @@ import type { Ref } from "vue";
  * 無線機からの周波数受信時の画面状態
  */
 export interface RecvFreqResolverState {
-  /** アップリンク周波数 */
-  txFrequency: Ref<string>;
   /** ダウンリンク周波数 */
   rxFrequency: Ref<string>;
-  /** Tx周波数補正値 */
-  txFrequencyAdjustment: Ref<string>;
   /** Rx周波数補正値 */
   rxFrequencyAdjustment: Ref<string>;
   /** Tx基準周波数 */
@@ -44,7 +39,6 @@ export default class TransceiverRecvFreqResolver {
    * @param getAutoTrackingIntervalMsec - 自動追尾更新間隔を返す関数
    * @param calcBaseFreqWithAdjust - 補正値反映後の基準周波数算出関数
    * @param getBaseFreqSum - 補正値反映後の基準周波数和を返す関数
-   * @param getCorrectionFlags - 現在のDopplerモードにおけるTx/Rxの補正要否フラグを返す関数
    */
   public constructor(
     private state: RecvFreqResolverState,
@@ -53,8 +47,7 @@ export default class TransceiverRecvFreqResolver {
     private currentDate: Ref<Date>,
     private getAutoTrackingIntervalMsec: () => number,
     private calcBaseFreqWithAdjust: () => void,
-    private getBaseFreqSum: () => number,
-    private getCorrectionFlags: () => DopplerShiftCorrectionFlags
+    private getBaseFreqSum: () => number
   ) {
     this.dopplerCalc = new TransceiverDopplerCalc();
   }
@@ -74,7 +67,7 @@ export default class TransceiverRecvFreqResolver {
     }
 
     if ("uplinkHz" in freqData && freqData.uplinkHz != null) {
-      await this.applyTxFromTransceiver(freqData.uplinkHz);
+      this.discardTxFromTransceiver();
       return;
     }
 
@@ -84,46 +77,11 @@ export default class TransceiverRecvFreqResolver {
   }
 
   /**
-   * 無線機から受信したTx周波数を反映する
+   * 無線機から受信したTx周波数は、モードにかかわらず取り込まない
+   * Tx周波数の同期はRST→無線機の一方向のみとするため、RST側の値を常に正とする
    */
-  private async applyTxFromTransceiver(recvTxFreq: number): Promise<void> {
-    // 衛星固定モード以外（送信固定・受信固定）では、Rxダイヤル操作に伴う無線機側の自動追尾処理により
-    // Tx周波数が意図せず変化することがあるため、Tx側の無線機通知は取り込まずRST側の値を常に正とする
-    if (this.autoStore.tranceiverAuto && !this.isFixedSatMode(this.getCorrectionFlags())) {
-      this.logDiscardTxNotification();
-      return;
-    }
-
-    AppRendererLogger.debug(`Tx周波数（無線機→RST） ${recvTxFreq}`);
-
-    const recvTxFreqFmt = TransceiverUtil.formatWithDot(recvTxFreq);
-    if (this.state.txFrequency.value === recvTxFreqFmt) {
-      this.logSkipBaseFreqUpdate("Tx");
-      return;
-    }
-
-    this.state.txFrequency.value = recvTxFreqFmt;
-
-    // AutoOff時は基準周波数を再算出しない
-    if (!this.autoStore.tranceiverAuto) {
-      return;
-    }
-
-    const adjustTxFreq = TransceiverUtil.parseNumber(this.state.txFrequencyAdjustment.value);
-    const { plainRxBaseFreq, plainTxBaseFreq } = this.baseFreqMgr.getPlainBaseFreqs();
-    const { newRxBaseFreq, newTxBaseFreq } = await this.dopplerCalc.calcBaseFreqByShiftedTxFreq(
-      plainRxBaseFreq,
-      plainTxBaseFreq,
-      adjustTxFreq,
-      recvTxFreq,
-      this.currentDate.value,
-      this.getAutoTrackingIntervalMsec()
-    );
-
-    this.baseFreqMgr.setPlainBaseFreqs(newRxBaseFreq, newTxBaseFreq);
-
-    this.calcBaseFreqWithAdjust();
-    this.logUpdatedBaseFreq();
+  private discardTxFromTransceiver(): void {
+    AppRendererLogger.debug("Tx周波数の無線機→RST反映は行わない。無線機からのTX周波数通知を破棄します。");
   }
 
   /**
@@ -134,7 +92,7 @@ export default class TransceiverRecvFreqResolver {
 
     const recvRxFreqFmt = TransceiverUtil.formatWithDot(recvRxFreq);
     if (this.state.rxFrequency.value === recvRxFreqFmt) {
-      this.logSkipBaseFreqUpdate("Rx");
+      this.logSkipBaseFreqUpdate();
       return;
     }
 
@@ -163,27 +121,10 @@ export default class TransceiverRecvFreqResolver {
   }
 
   /**
-   * 衛星固定モードかどうかを判定する
-   * Tx/Rxとも補正対象（execフラグが両方true）となるのは衛星固定モードのみ
-   */
-  private isFixedSatMode(flags: DopplerShiftCorrectionFlags): boolean {
-    return flags.execTxDopplerShiftCorrection && flags.execRxDopplerShiftCorrection;
-  }
-
-  /**
-   * 衛星固定モード以外のためTx側の無線機通知を破棄した理由をログ出力する
-   */
-  private logDiscardTxNotification(): void {
-    AppRendererLogger.debug(
-      "Txは送信固定・受信固定モードではダイヤル操作の反映対象外のため、無線機からの周波数通知を破棄します。"
-    );
-  }
-
-  /**
    * 基準周波数更新をスキップした理由をログ出力する
    */
-  private logSkipBaseFreqUpdate(freqLabel: "Tx" | "Rx"): void {
-    AppRendererLogger.debug(`RSTの${freqLabel}周波数と同一のため基準周波数の更新をスキップします。`);
+  private logSkipBaseFreqUpdate(): void {
+    AppRendererLogger.debug("RSTのRx周波数と同一のため基準周波数の更新をスキップします。");
     AppRendererLogger.debug(
       `基準周波数 Rx:${this.state.rxBaseFreq.value} Tx:${this.state.txBaseFreq.value} Sum:${this.getBaseFreqSum()}`
     );

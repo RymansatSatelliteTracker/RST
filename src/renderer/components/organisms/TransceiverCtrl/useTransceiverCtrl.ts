@@ -168,9 +168,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   // 無線機からの周波数受信値を画面状態と基準周波数へ反映
   const recvFreqResolver = new TransceiverRecvFreqResolver(
     {
-      txFrequency,
       rxFrequency,
-      txFrequencyAdjustment,
       rxFrequencyAdjustment,
       txBaseFreq,
       rxBaseFreq,
@@ -180,8 +178,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     currentDate,
     () => coordinator.autoTrackingIntervalMsec,
     calcBaseFreqWithAdjust,
-    getBaseFreqSum,
-    () => dopplerModeResolver.resolveCorrectionFlags(dopplerShiftMode.value)
+    getBaseFreqSum
   );
 
   /**

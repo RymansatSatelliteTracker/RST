@@ -121,7 +121,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
         // 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機する
         if (this.isWaitSendFreq) {
-          AppMainLogger.debug(`定期送受信 スキップ（無線機への送信を一時停止中）`);
+          // AppMainLogger.debug(`定期送受信 スキップ（無線機への送信を一時停止中）`);
           return;
         }
 
@@ -171,6 +171,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       clearTimeout(this.transceiveWaitTimer);
       this.transceiveWaitTimer = null;
     }
+
+    this.state.endRxReadPending();
   }
 
   /**
@@ -441,7 +443,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     }
 
     // メインへ切り替え
-    await this.switchMainBand();
+    const isMainSwitched = await this.switchMainBand();
 
     // メインバンドの周波数を元に、必要であればメインとサブの周波数帯の入れ替えを行う
     await this.switchBandIfNeed();
@@ -455,9 +457,35 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       // Rx周波数を無線機から取得
       // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、周波数の取得は行わない
       AppMainLogger.debug(`sendAndRecvForMainForLoop Rx周波数取得要求`);
+
+      // 読み取り待ちからの読み取りでは、先にレンダラのドップラーシフト補正を待機させる。
+      // 読み取ったRxがレンダラで基準周波数へ反映される前に、レンダラの周期処理が古い基準周波数で要求を出し、
+      // 読み取り待ちの解除後に受け付けられてしまうのを防ぐため
+      if (this.state.isRxReadPending) {
+        this.notifyDopplerShiftWaiting();
+      }
+
       const recvDataMainFreq = await this.sendAndSyncRecv(this.cmdMaker.makeGetFreq(), "GET_FREQ");
       await this.handleRecvData(recvDataMainFreq);
-      this.state.isRecvRxFreqUpdate = false;
+
+      // 有効なRxを処理できたか（メインバンドへ切り替わり、GET_FREQの応答があり、かつ追加のGET_BANDでメインバンドと判定できたか）
+      // memo: 切り替えやGET_BANDがタイムアウトすると、取得値がTxとして通知される、またはTx値をRxと誤判定するため、
+      //       Rxは取得できていないものとして扱う
+      const isRxReceived = isMainSwitched && recvDataMainFreq !== "TIMEOUT" && this.state.isMain;
+      if (!isRxReceived && this.state.isRxReadPending) {
+        // 読み取り待ち中に有効なRx応答を得られなかった場合は、保留を維持して次の周期で再試行する
+        // （RSTの古い周波数要求で、無線機側のRxを上書きしないため）
+        const isGiveUp = this.state.failRxRead();
+        AppMainLogger.warn(
+          isGiveUp
+            ? `Rx周波数の読み取りに失敗し続けたため、読み取り待ちを解除します。`
+            : `Rx周波数の読み取りに失敗したため、次の周期で再試行します。`
+        );
+      } else {
+        this.state.isRecvRxFreqUpdate = false;
+        // 有効なRx応答を処理できたため、読み取り待ちを解除する
+        this.state.endRxReadPending();
+      }
     }
 
     // 無線機へ送信する運用モードの設定
@@ -558,6 +586,12 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // シリアル未接続の場合は処理終了
     if (!this.serial?.isOpen()) {
       AppMainLogger.warn("シリアル未接続のため、処理を終了します。");
+      return Promise.resolve();
+    }
+
+    // Rx周波数の読み取り待ち中は、RST側の周波数要求が古い値となるため破棄する
+    if (this.state.isRxReadPending) {
+      AppMainLogger.debug(`Rx周波数の読み取り待ちのため、RSTからの周波数要求を破棄します。`);
       return Promise.resolve();
     }
 
@@ -686,6 +720,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     }
     // サテライトモードの設定を保持する
     this.state.isSatelliteMode = isSatelliteMode;
+    this.state.endRxReadPending();
 
     // データ送信
     const cmdData = this.cmdMaker.makeSetSatelliteMode(isSatelliteMode);
@@ -983,6 +1018,17 @@ export default class TransceiverIcomController extends TransceiverSerialControll
           AppMainLogger.debug(`${comId}：トランシーブ受信 周波数データ（00）`);
           // 無線機から受信した周波数データを処理する
           await this.procRecvFreqData(comId, trimedData);
+        }
+
+        if (this.state.isSatelliteMode) {
+          if (this.state.isMain) {
+            // メインバンド（Rx）の操作に移った場合は、Rx値を受信済みのため読み取り待ちを解除する
+            this.state.endRxReadPending();
+          } else {
+            // サブバンド（Tx）のダイヤル操作ではRxも変化するが、Rxはトランシーブで通知されない。
+            // 待機解除後にRxを無線機から読み取るまで、RST側の古い周波数要求で上書きしないよう保留状態にする
+            this.state.startRxReadPending();
+          }
         }
 
         res.data = true;
@@ -1477,6 +1523,19 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   }
 
   /**
+   * レンダラ側のドップラーシフト補正を待機させる
+   */
+  private notifyDopplerShiftWaiting() {
+    if (!this.isDopplerShiftWaitingCallback) {
+      return;
+    }
+
+    const res = new ApiResponse<boolean>(true);
+    res.data = true;
+    this.isDopplerShiftWaitingCallback(res);
+  }
+
+  /**
    * 無線機への周波数の送信一時停止状態にする
    */
   private startTransceiveWaitTimer(waitMs: number) {
@@ -1498,13 +1557,23 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
   /**
    * メインバンドへ制御を切り替える
+   * @returns メインバンドに切り替わっている場合はtrue（切り替えコマンドが成功応答（FB）でなかった場合はfalse）
    */
-  private async switchMainBand() {
-    if (this.state.isMain) return;
+  private async switchMainBand(): Promise<boolean> {
+    if (this.state.isMain) return true;
 
     AppMainLogger.debug(`制御切り替え メインバンドへ`);
     this.state.isMain = true;
-    await this.sendAndSyncRecv(this.cmdMaker.makeSwitchToMainBand(), "SWITCH");
+    const res = await this.sendAndSyncRecv(this.cmdMaker.makeSwitchToMainBand(), "SWITCH");
+    // コマンド部がFB（OK）以外は、タイムアウトやNG（FA）などで切り替えを確認できていない
+    if (res.substring(8, 10) !== "fb") {
+      // メインバンド状態を戻して、次回切り替えを再試行できるようにする
+      // memo: IC-910はバンドを無線機に問い合わせられず、この値を現在のバンドとして扱うため
+      this.state.isMain = false;
+      return false;
+    }
+
+    return true;
   }
 
   /**

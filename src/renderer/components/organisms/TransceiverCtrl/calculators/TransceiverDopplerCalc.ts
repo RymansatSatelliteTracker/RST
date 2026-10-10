@@ -103,41 +103,4 @@ export default class TransceiverDopplerCalc {
 
     return { newRxBaseFreq: rxBaseFreq, newTxBaseFreq: txBaseFreq };
   }
-
-  /**
-   * 無線機で変更されたTx周波数を元に、補正値なしのRx・Tx基準周波数を再算出する
-   * @param plainRxBaseFreq 現在のRx基準周波数（補正値なし）
-   * @param plainTxBaseFreq 現在のTx基準周波数（補正値なし）
-   * @param txAdjustFreq Tx周波数補正値
-   * @param txFreq 無線機から受信したTx周波数（補正値・ドップラーシフト適用済み）
-   * @param currentDate 現在日時
-   * @param intervalMs 計算に使用する時間間隔（ミリ秒）
-   * @returns 再算出されたRx・Tx基準周波数（FrequencyTrackService未取得の場合は両方0）
-   */
-  public async calcBaseFreqByShiftedTxFreq(
-    plainRxBaseFreq: number,
-    plainTxBaseFreq: number,
-    txAdjustFreq: number,
-    txFreq: number,
-    currentDate: Date,
-    intervalMs: number
-  ): Promise<{ newRxBaseFreq: number; newTxBaseFreq: number }> {
-    const frequencyTrackService = ActiveSatServiceHub.getInstance().getFrequencyTrackService();
-    if (!frequencyTrackService) {
-      return { newRxBaseFreq: 0, newTxBaseFreq: 0 };
-    }
-
-    // Txのドップラーファクターを計算する
-    const txDopplerFactor = await frequencyTrackService.calcUplinkDopplerFactor(currentDate, intervalMs);
-
-    // 逆ヘテロダイン方式でRx・Tx基準周波数を再算出する
-    const { rxBaseFreq, txBaseFreq } = frequencyTrackService.calcInvHeteroBaseFreqByTxFreq(
-      plainRxBaseFreq + plainTxBaseFreq,
-      txAdjustFreq,
-      txFreq,
-      txDopplerFactor
-    );
-
-    return { newRxBaseFreq: rxBaseFreq, newTxBaseFreq: txBaseFreq };
-  }
 }
