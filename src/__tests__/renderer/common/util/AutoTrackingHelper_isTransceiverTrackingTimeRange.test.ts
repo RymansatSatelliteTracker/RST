@@ -9,13 +9,14 @@ function makePass(aosDate: Date, losDate: Date): PassesCache {
   const dummyLookAngles = { elevation: 30, azimuth: 180 };
   const dummySatLocation = { latitude: 0, longitude: 0, height: 0 };
   return {
-    aos: { date: aosDate, lookAngles: dummyLookAngles, satLocation: dummySatLocation },
+    aos: { date: aosDate, lookAngles: dummyLookAngles, satLocation: dummySatLocation, shadowFraction: 0 },
     maxEl: {
       date: new Date((aosDate.getTime() + losDate.getTime()) / 2),
       lookAngles: dummyLookAngles,
       satLocation: dummySatLocation,
+      shadowFraction: 0,
     },
-    los: { date: losDate, lookAngles: dummyLookAngles, satLocation: dummySatLocation },
+    los: { date: losDate, lookAngles: dummyLookAngles, satLocation: dummySatLocation, shadowFraction: 0 },
     durationMs: losDate.getTime() - aosDate.getTime(),
   };
 }
@@ -61,6 +62,7 @@ describe("AutoTrackingHelper", () => {
           date: LOS,
           lookAngles: { elevation: 30, azimuth: 180 },
           satLocation: { latitude: 0, longitude: 0, height: 0 },
+          shadowFraction: 0,
         },
         durationMs: null,
       });
@@ -77,6 +79,7 @@ describe("AutoTrackingHelper", () => {
           date: AOS,
           lookAngles: { elevation: 30, azimuth: 180 },
           satLocation: { latitude: 0, longitude: 0, height: 0 },
+          shadowFraction: 0,
         },
         maxEl: null,
         los: null,
