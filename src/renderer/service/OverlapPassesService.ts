@@ -187,7 +187,16 @@ class OverlapPassesService extends GroundStationService {
             const startTargetLookAngles = this._groundStation1.getSatelliteLookAngles(overlapStartDate);
             // 重複するパスの日時期間(終了)から地上局1(自局)で観測できる人工衛星の仰角/方位角を取得する
             const endTargetLookAngles = this._groundStation1.getSatelliteLookAngles(overlapEndDate);
-            if (!startTargetLocation || !endTargetLocation) {
+            // 重複するパスの日時期間(開始)から人工衛星の日照状態を取得する
+            const startShadowFraction = this._satelliteService.getShadowFraction(overlapStartDate);
+            // 重複するパスの日時期間(終了)から人工衛星の日照状態を取得する
+            const endShadowFraction = this._satelliteService.getShadowFraction(overlapEndDate);
+            if (
+              !startTargetLocation ||
+              !endTargetLocation ||
+              startShadowFraction === null ||
+              endShadowFraction === null
+            ) {
               // 人工衛星が消滅した場合はnullを返却する
               return null;
             }
@@ -203,12 +212,14 @@ class OverlapPassesService extends GroundStationService {
                 date: overlapStartDate,
                 lookAngles: startTargetLookAngles,
                 satLocation: startTargetLocation,
+                shadowFraction: startShadowFraction,
               } as PassData,
               maxEl: overlapMaxEl1,
               los: {
                 date: overlapEndDate,
                 lookAngles: endTargetLookAngles,
                 satLocation: endTargetLocation,
+                shadowFraction: endShadowFraction,
               } as PassData,
               durationMs: (overlapEndDate.getTime() - overlapStartDate.getTime()) as number | null,
             };
