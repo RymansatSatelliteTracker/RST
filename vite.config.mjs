@@ -10,7 +10,13 @@ export default defineConfig({
       "@": path.resolve(import.meta.dirname, "src"),
     },
   },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: "esnext",
+    },
+  },
   build: {
+    target: "esnext",
     // ビルド時の「Some chunks are larger than 500 kB after minification.」の警告を抑制する
     chunkSizeWarningLimit: 1000000,
   },
