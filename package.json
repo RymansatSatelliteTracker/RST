@@ -162,8 +162,5 @@
   "engines": {
     "node": ">=22",
     "npm": ">=11.10"
-  },
-  "allowScripts": {
-    "electron@41.10.7": true
   }
 }
