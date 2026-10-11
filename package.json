@@ -119,7 +119,7 @@
     "mitt": "^3.0.1",
     "pinia": "^2.3.1",
     "pinia-plugin-persistedstate": "^3.2.3",
-    "satellite.js": "^6.0.2",
+    "satellite.js": "^7.1.0",
     "serialport": "^12.0.0",
     "vue": "^3.5.34",
     "vuetify": "^3.12.6",
@@ -162,5 +162,8 @@
   "engines": {
     "node": ">=22",
     "npm": ">=11.10"
+  },
+  "allowScripts": {
+    "electron@41.10.7": true
   }
 }
