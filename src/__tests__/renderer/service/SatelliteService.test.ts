@@ -317,6 +317,30 @@ describe("[正常系]人工衛星の軌道周期が1恒星日以上か判定で�
 });
 
 /**
+ * [正常系]
+ * 人工衛星の日照状態が取得できる
+ */
+describe("[正常系]人工衛星の日照状態が取得できる", () => {
+  it("人工衛星が完全に日光を受けている場合は0を返す", () => {
+    const result = TleDataHelper.Satellite.ISS.getShadowFraction(new Date("2024-09-12T00:00:00Z"));
+
+    expect(result).toBe(0);
+  });
+
+  it("人工衛星が完全に地球の影に入っている場合は1を返す", () => {
+    const result = TleDataHelper.Satellite.ISS.getShadowFraction(new Date("2024-09-12T00:15:00Z"));
+
+    expect(result).toBe(1);
+  });
+
+  it("人工衛星が部分的に日光を受けている場合は0から1の間の値を返す", () => {
+    const result = TleDataHelper.Satellite.ISS.getShadowFraction(new Date("2024-09-12T13:00:00Z"));
+
+    expect(result).toBeCloseTo(0.0252970997);
+  });
+});
+
+/**
  * 準正常系テスト
  */
 describe("準正常系テスト", () => {
