@@ -56,13 +56,13 @@ class SatelliteService {
       );
     }
 
-    // 人工衛星の軌道傾斜角が0.0Rad、かつ、離心率が0.0、かつ、軌道周期が1恒星日の場合、静止衛星と判定する（定数の偏差を許容）
+    // 人工衛星の軌道傾斜角が0.0Rad、かつ、離心率が0.0、かつ、軌道周期が1恒星日の場合、静止衛星と判定する（定数で定めた許容誤差を考慮）
     this._isGeostationaryOrbit =
       Math.abs(this._satRec.inclo) <= 2 * Math.PI * Constant.OrbitCalculation.DEVIATION_PERCENTAGE &&
       this.getEccentricity() <= Constant.OrbitCalculation.DEVIATION_PERCENTAGE &&
       Math.abs(this.getOrbitalPeriodInMin() - Constant.Astronomy.MINUTES_IN_SIDEREAL_DAY) <=
         Constant.Astronomy.MINUTES_IN_SIDEREAL_DAY * Constant.OrbitCalculation.DEVIATION_PERCENTAGE;
-    // 人工衛星の軌道周期が1恒星日以上か判定する（定数の偏差を許容）
+    // 人工衛星の軌道周期が1恒星日以上か判定する（定数で定めた許容誤差を考慮）
     this._isOverSiderealDay =
       this.getOrbitalPeriodInMin() >=
       Constant.Astronomy.MINUTES_IN_SIDEREAL_DAY -
