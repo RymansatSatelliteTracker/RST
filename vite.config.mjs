@@ -20,6 +20,11 @@ export default defineConfig({
     // ビルド時の「Some chunks are larger than 500 kB after minification.」の警告を抑制する
     chunkSizeWarningLimit: 1000000,
   },
+  worker: {
+    // satellite.jsのビルド時にエラーが出るため、ESモジュール形式で出力するように設定する
+    // https://github.com/shashwatak/satellite-js/issues/165
+    format: "es",
+  },
   server: {
     hmr: {
       overlay: false,
