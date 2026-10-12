@@ -101,24 +101,31 @@ class CanvasUtil {
 
   /**
    * 人工衛星の日照状態の文字列を取得する
-   * @param {number | null | undefined} shadowFraction 日照状態の数値
+   * @param {number | null | undefined} aosShadowFraction AOS時の日照状態
+   * @param {number | null | undefined} losShadowFraction LOS時の日照状態
    * @returns {string} 文字列
    */
-  public static getIlluminationState = (shadowFraction: number | null | undefined): string => {
-    if (shadowFraction == null) {
+  public static getIlluminationState = (
+    aosShadowFraction: number | null | undefined,
+    losShadowFraction: number | null | undefined
+  ): string => {
+    if (aosShadowFraction == null || losShadowFraction == null) {
       return I18nUtil.getMsg(I18nMsgs.GCOM_NA);
     }
 
-    if (shadowFraction === 0) {
-      // 0: 人工衛星が完全に日光を受けている状態
-      return I18nUtil.getMsg(I18nMsgs.G31_ILLUMINATION_SUNLIT);
-    } else if (shadowFraction === 1) {
-      // 1: 人工衛星が完全に地球の影に入っている状態
-      return I18nUtil.getMsg(I18nMsgs.G31_ILLUMINATION_UMBRA);
-    } else {
-      // 0-1: 人工衛星が部分的に日光を受けている状態
-      return I18nUtil.getMsg(I18nMsgs.G31_ILLUMINATION_PENUMBRA);
+    const sunlit = I18nUtil.getMsg(I18nMsgs.G31_ILLUMINATION_SUNLIT);
+    const umbra = I18nUtil.getMsg(I18nMsgs.G31_ILLUMINATION_UMBRA);
+
+    // 0: 人工衛星が完全に日光を受けている状態
+    // 0以外: 人工衛星が地球の影に入っている状態
+    const aosState = aosShadowFraction === 0 ? sunlit : umbra;
+    const losState = losShadowFraction === 0 ? sunlit : umbra;
+
+    if (aosState === losState) {
+      return aosState;
     }
+
+    return `${aosState} -> ${losState}`;
   };
 }
 

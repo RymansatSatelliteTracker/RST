@@ -32,7 +32,9 @@
             </td>
             <td>{{ DateUtil.formatMsToHHMMSS(item.durationMs) }}</td>
             <td>{{ CommonUtil.numFormat(item.maxEl?.satLocation.height, 2) }}</td>
-            <td>{{ CanvasUtil.getIlluminationState(item.maxEl?.shadowFraction) }}</td>
+            <td>
+              {{ CanvasUtil.getIlluminationState(item.aos?.shadowFraction, item.los?.shadowFraction) }}
+            </td>
           </tr>
         </tbody>
 
@@ -56,7 +58,7 @@
             </td>
             <td>{{ DateUtil.formatMsToHHMMSS(item.durationMs) }}</td>
             <td>{{ CommonUtil.numFormat(item.maxEl?.satLocation.height, 2) }}</td>
-            <td>{{ CanvasUtil.getIlluminationState(item.maxEl?.shadowFraction) }}</td>
+            <td>{{ CanvasUtil.getIlluminationState(item.aos?.shadowFraction, item.los?.shadowFraction) }}</td>
           </tr>
         </tbody>
       </table>
