@@ -779,8 +779,10 @@ class GroundStationService {
    */
   protected _setPassData = (date: Date, elevation: number): PassData => {
     // 日時から人工衛星の位置を取得する
-    const targetLocation = date ? this._satelliteService.getTargetPolarLocationInRadian(date) : null;
-    return targetLocation
+    const targetLocation = this._satelliteService.getTargetPolarLocationInRadian(date);
+    // 日時から人工衛星の日照状態を取得する
+    const shadowFraction = this._satelliteService.getShadowFraction(date);
+    return targetLocation && shadowFraction !== null // shadowFractionは(数値0=falsy)を取ることがあるため厳密にnullチェックする必要がある
       ? {
           date: date,
           lookAngles: {
@@ -792,6 +794,7 @@ class GroundStationService {
             elevation: elevation,
           },
           satLocation: targetLocation,
+          shadowFraction: shadowFraction,
         }
       : null; // 人工衛星が消滅した場合はnullを返却する
   };

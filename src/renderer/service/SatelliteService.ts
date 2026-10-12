@@ -5,6 +5,7 @@ import type { OmmItem } from "@/common/model/OmmModel.js";
 import type { EcefLocation, Location3 } from "@/renderer/types/location-type.js";
 import type { MeanElements, TargetPolarLocation } from "@/renderer/types/satellite-type.js";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
+import AstronomyUtil from "@/renderer/util/AstronomyUtil";
 import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil.js";
 import DateUtil from "@/renderer/util/DateUtil.js";
 import type { OMMJsonObject, SatRec } from "satellite.js";
@@ -55,13 +56,13 @@ class SatelliteService {
       );
     }
 
-    // 人工衛星の軌道傾斜角が0.0Rad、かつ、離心率が0.0、かつ、軌道周期が1恒星日の場合、静止衛星と判定する（定数の偏差を許容）
+    // 人工衛星の軌道傾斜角が0.0Rad、かつ、離心率が0.0、かつ、軌道周期が1恒星日の場合、静止衛星と判定する（定数で定めた許容誤差を考慮）
     this._isGeostationaryOrbit =
       Math.abs(this._satRec.inclo) <= 2 * Math.PI * Constant.OrbitCalculation.DEVIATION_PERCENTAGE &&
       this.getEccentricity() <= Constant.OrbitCalculation.DEVIATION_PERCENTAGE &&
       Math.abs(this.getOrbitalPeriodInMin() - Constant.Astronomy.MINUTES_IN_SIDEREAL_DAY) <=
         Constant.Astronomy.MINUTES_IN_SIDEREAL_DAY * Constant.OrbitCalculation.DEVIATION_PERCENTAGE;
-    // 人工衛星の軌道周期が1恒星日以上か判定する（定数の偏差を許容）
+    // 人工衛星の軌道周期が1恒星日以上か判定する（定数で定めた許容誤差を考慮）
     this._isOverSiderealDay =
       this.getOrbitalPeriodInMin() >=
       Constant.Astronomy.MINUTES_IN_SIDEREAL_DAY -
@@ -405,6 +406,28 @@ class SatelliteService {
       Constant.Astronomy.EARTH_EQUATOR_RADIUS_KM / (Constant.Astronomy.EARTH_EQUATOR_RADIUS_KM + location.height)
     );
   };
+
+  /**
+   * 人工衛星の日照状態を取得する
+   * @param {Date} date 計算日時
+   * @returns {(number | null)} 0: 人工衛星が完全に日光を受けている状態,
+   *                            0-1: 人工衛星が部分的に日光を受けている状態,
+   *                            1: 人工衛星が完全に地球の影に入っている状態
+   */
+  public getShadowFraction(date: Date): number | null {
+    const propagate = satellite.propagate(this._satRec, date);
+    if (!propagate) {
+      // 人工衛星が消滅した場合はnullを返却する
+      return null;
+    }
+
+    // 指定日時におけるユリウス通日を計算する
+    const julianDate = AstronomyUtil.getJulianDate(date);
+    // 指定日時における太陽の位置ベクトルを計算する
+    const rsun = satellite.sunPos(julianDate).rsun;
+    // 指定日時における人工衛星の日照状態を取得する
+    return satellite.shadowFraction(rsun, propagate.position);
+  }
 }
 
 export default SatelliteService;
