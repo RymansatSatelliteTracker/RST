@@ -338,6 +338,12 @@ export default class I18nMsgs {
   public static readonly G31_SATELLITE_GROUP: I18nMsgItem = { en: "Satellite Group", ja: "衛星グループ" };
   public static readonly G31_GROUP: I18nMsgItem = { en: "Group", ja: "グループ" };
   public static readonly G31_SEARCH: I18nMsgItem = { en: "Satellite Name/ NORAD ID", ja: "衛星名/NORAD ID" };
+  public static readonly G31_ILLUMINATION_SUNLIT: I18nMsgItem = { en: "Sunlit", ja: "日照" };
+  public static readonly G31_ILLUMINATION_PENUMBRA: I18nMsgItem = {
+    en: "Penumbra",
+    ja: "半影",
+  };
+  public static readonly G31_ILLUMINATION_UMBRA: I18nMsgItem = { en: "Umbra", ja: "本影" };
   // 画面項目系／衛星設定画面 衛星情報編集
   public static readonly G31_INTERNATIONAL_NAME: I18nMsgItem = { en: "International Name", ja: "国際呼称" };
   public static readonly G31_NORADID: I18nMsgItem = { en: "NORAD ID", ja: "NORAD ID" };

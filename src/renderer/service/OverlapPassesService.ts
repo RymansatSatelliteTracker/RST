@@ -223,8 +223,6 @@ class OverlapPassesService extends GroundStationService {
                 shadowFraction: endShadowFraction,
               } as PassData,
               durationMs: (overlapEndDate.getTime() - overlapStartDate.getTime()) as number | null,
-              altitude: null as number | null,
-              visibility: false,
             };
           }
         });

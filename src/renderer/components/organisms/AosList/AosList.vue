@@ -13,7 +13,7 @@
             <th>LOS</th>
             <th>Duration</th>
             <th>Altitude</th>
-            <th>Visibility</th>
+            <th>ShadowFraction</th>
           </tr>
         </thead>
 
@@ -31,8 +31,8 @@
               {{ DateUtil.formatDateTime(item.los?.date, { hour: "2-digit", minute: "2-digit" }) }}
             </td>
             <td>{{ DateUtil.formatMsToHHMMSS(item.durationMs) }}</td>
-            <td>{{ item.altitude }}</td>
-            <td>{{ item.visibility }}</td>
+            <td>{{ CommonUtil.numFormat(item.maxEl?.satLocation.height, 2) }}</td>
+            <td>{{ CanvasUtil.getIlluminationState(item.maxEl?.shadowFraction) }}</td>
           </tr>
         </tbody>
 
@@ -55,8 +55,8 @@
               {{ DateUtil.formatDateTime(item.los?.date, { hour: "2-digit", minute: "2-digit" }) }}
             </td>
             <td>{{ DateUtil.formatMsToHHMMSS(item.durationMs) }}</td>
-            <td>{{ item.altitude }}</td>
-            <td>{{ item.visibility }}</td>
+            <td>{{ CommonUtil.numFormat(item.maxEl?.satLocation.height, 2) }}</td>
+            <td>{{ CanvasUtil.getIlluminationState(item.maxEl?.shadowFraction) }}</td>
           </tr>
         </tbody>
       </table>
@@ -64,6 +64,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import CommonUtil from "@/common/CommonUtil";
 import I18nMsgs from "@/common/I18nMsgs";
 import I18nUtil from "@/renderer/common/util/I18nUtil";
 import useOrbitalPassList from "@/renderer/components/organisms/AosList/useOrbitalPassList";
