@@ -54,7 +54,7 @@ import { mdiArrowDownBold, mdiArrowUpBold, mdiDelete, mdiPlusCircle } from "@mdi
 import type { ComponentExposed } from "vue-component-type-helpers";
 
 // 衛星リスト
-const satellites = defineModel<DefaultSatelliteType[]>("satellites", { default: [] });
+const satellites = defineModel<DefaultSatelliteType[]>("satellites", { default: () => [] });
 
 // 選択されたアイテム
 const selectedSatelliteItem = ref<DefaultSatelliteType>(createDefaultSatellite(-1, "", ""));

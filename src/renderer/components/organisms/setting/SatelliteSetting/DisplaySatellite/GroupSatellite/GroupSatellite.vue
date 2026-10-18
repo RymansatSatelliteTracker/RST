@@ -92,7 +92,7 @@ const isShow = defineModel<boolean>("isShow", {
 // グループ名編集用ダイアログ用
 const isDialogShow = ref<boolean>(false);
 // 衛星グループリスト
-const satelliteGroups = defineModel<AppConfigSatelliteGroupForSatSetting[]>("satelliteGroups", { default: [] });
+const satelliteGroups = defineModel<AppConfigSatelliteGroupForSatSetting[]>("satelliteGroups", { default: () => [] });
 // 衛星グループリスト(画面内)
 const satelliteGroupsLocal = ref<AppConfigSatelliteGroupForSatSetting[]>([]);
 // リストの関数を使用するためのref

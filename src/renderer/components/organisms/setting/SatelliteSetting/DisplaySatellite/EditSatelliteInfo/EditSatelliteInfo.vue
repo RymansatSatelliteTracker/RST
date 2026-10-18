@@ -34,7 +34,7 @@ const isShow = defineModel<boolean>("isShow", {
 });
 // 親からもらう衛星識別情報
 const selectedItem = defineModel<SatelliteIdentiferType>("selectedItem", {
-  default: { satelliteId: -1, satelliteName: "", userRegistered: false, noradId: "" },
+  default: () => ({ satelliteId: -1, satelliteName: "", userRegistered: false, noradId: "" }),
 });
 // 衛星追加用の親のグループ
 const selectedGroupId = defineModel<number>("selectedGroupId", {

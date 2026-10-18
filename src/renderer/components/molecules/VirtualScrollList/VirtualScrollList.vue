@@ -21,7 +21,7 @@
 import { computed, ref, watch } from "vue";
 
 // コンポーネントに渡された源泉のアイテム
-const srcItems = defineModel<T[]>("items", { default: [] });
+const srcItems = defineModel<T[]>("items", { default: () => [] });
 // 表示対象のアイテム
 const items = ref<T[]>([]);
 const itemName = defineModel<string>("itemName", { default: "" });

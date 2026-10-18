@@ -180,14 +180,14 @@ const isShow = defineModel<boolean>("isShow", {
 });
 // 親画面で選択した衛星
 const selectedSatelliteItem = defineModel<SatelliteIdentiferType>("selectedSatelliteItem", {
-  default: { satelliteId: -1, satelliteName: "", userRegistered: false, noradId: "" },
+  default: () => ({ satelliteId: -1, satelliteName: "", userRegistered: false, noradId: "" }),
 });
 // 衛星追加用の親のグループ
 const selectedGroupId = defineModel<number>("selectedGroupId", {
   default: Constant.SatSetting.DEFAULT_SATELLITE_GROUP_ID,
 });
 // 衛星追加用の親の衛星リスト
-const selectedSatellites = defineModel<SatelliteIdentiferType[]>("selectedSatellites", { default: [] });
+const selectedSatellites = defineModel<SatelliteIdentiferType[]>("selectedSatellites", { default: () => [] });
 // 親に通知用のイベント
 const emits = defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
 
