@@ -3,6 +3,6 @@
  */
 export type SelectOption = {
   title: string | number | object;
-  value: any;
-  props?: object;
+  value: string | number;
+  props?: { disabled?: boolean };
 };

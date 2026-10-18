@@ -8,7 +8,7 @@ import AppMainLogger from "@/main/util/AppMainLogger.js";
  * ローテーターのコントローラ親クラス
  */
 export default abstract class RotatorControllerBase {
-  protected callback: Function | null = null;
+  protected callback: ((res: ApiResponse<AntennaPositionModel>) => void) | null = null;
 
   /**
    * ローテーターの監視、操作を開始する
@@ -31,19 +31,24 @@ export default abstract class RotatorControllerBase {
       return;
     }
 
-    this.doSetPosition(pos);
+    // ローテーター位置の設定（実装側の呼び出し）
+    void Promise.resolve()
+      .then(() => this.doSetPosition(pos))
+      .catch((err: unknown) => {
+        AppMainLogger.error("ローテーター位置設定に失敗しました。", err);
+      });
   }
 
   /**
    * ローテーター位置を設定する
    * MEMO: 子クラスでローテーター位置をシリアル送信するなどの実行を行う
    */
-  public abstract doSetPosition(pos: AntennaPositionModel): void;
+  public abstract doSetPosition(pos: AntennaPositionModel): void | Promise<void>;
 
   /**
    * アンテナ位置の変化を呼び出し側に伝播させるためのコールバックを設定する
    */
-  public setCallback(callback: Function): void {
+  public setCallback(callback: (res: ApiResponse<AntennaPositionModel>) => void): void {
     this.callback = callback;
   }
 

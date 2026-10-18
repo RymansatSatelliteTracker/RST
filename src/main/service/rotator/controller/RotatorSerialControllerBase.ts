@@ -30,8 +30,8 @@ export default abstract class RotatorSerialControllerBase extends RotatorControl
       this.rotatorConfig.port,
       parseInt(this.rotatorConfig.baudrateBps),
       true,
-      this.onRecv,
-      this.onSerialClose
+      this.onRecv.bind(this),
+      this.onSerialClose.bind(this)
     );
     return await this.serial.open();
   }
@@ -39,7 +39,7 @@ export default abstract class RotatorSerialControllerBase extends RotatorControl
   /**
    * データ受信
    */
-  protected onRecv(data: Buffer): void {}
+  protected onRecv(_data: Buffer): void {}
 
   /**
    * シリアル切断イベント

@@ -48,10 +48,10 @@ export default class WebClient {
         const queryStr = querystring.stringify(query);
         url = `${url}?${queryStr}`;
       }
-      const response = await this.axios.get(url, config);
+      const response = await this.axios.get<string>(url, config);
       return new AppHttpResponse(response.status, response.statusText, response.data);
     } catch (e) {
-      if (Axios.isAxiosError(e) && e.response) {
+      if (Axios.isAxiosError<string>(e) && e.response) {
         const response = e.response;
         return new AppHttpResponse(response.status, response.statusText, response.data);
       }
@@ -68,12 +68,12 @@ export default class WebClient {
    * @param config
    * @returns
    */
-  public async post(url: string, data?: any, config?: AxiosRequestConfig) {
+  public async post(url: string, data?: unknown, config?: AxiosRequestConfig) {
     try {
-      const response = await this.axios.post(url, data, config);
+      const response = await this.axios.post<string>(url, data, config);
       return new AppHttpResponse(response.status, response.statusText, response.data);
     } catch (e) {
-      if (Axios.isAxiosError(e) && e.response) {
+      if (Axios.isAxiosError<string>(e) && e.response) {
         const response = e.response;
         return new AppHttpResponse(response.status, response.statusText, response.data);
       }

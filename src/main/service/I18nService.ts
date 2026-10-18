@@ -8,7 +8,7 @@ export default class I18nService {
   /**
    * 指定の表示言語をアプリ設定に保存する
    */
-  public async changeLang(lang: LangType) {
+  public changeLang(lang: LangType) {
     // 指定の表示言語をアプリ設定に設定
     const appConfig = AppConfigUtil.getConfig();
     appConfig.lang = lang;

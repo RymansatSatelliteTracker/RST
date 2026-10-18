@@ -1,9 +1,11 @@
+import type { OmmJsonModel } from "@/common/model/OmmModel.js";
 import OmmService from "@/main/service/OmmService.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 import FileUtil from "@/main/util/FileUtil.js";
 import fs from "fs";
 import os from "os";
 import * as path from "path";
+import { describe, expect, it } from "vitest";
 
 /**
  * OmmService - migrateFromTleJsonIfNeeded のテスト
@@ -45,7 +47,7 @@ describe("OmmService - migrateFromTleJsonIfNeeded", () => {
     // Assert
     const ommPath = path.join(workDir, "omm.json");
     expect(FileUtil.exists(ommPath)).toBe(true);
-    const ommJson = FileUtil.readJson(ommPath);
+    const ommJson = FileUtil.readJson(ommPath) as OmmJsonModel;
     expect(ommJson.ommItemMap["25544"].objectName).toBe("ISS (ZARYA)");
     expect(ommJson.ommItemMap["25544"].noradCatId).toBe("25544");
     expect(ommJson.ommItemMap["25544"].meanMotion).toBeCloseTo(15.49333088, 8);

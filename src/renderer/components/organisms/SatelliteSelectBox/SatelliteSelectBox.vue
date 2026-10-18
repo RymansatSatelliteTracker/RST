@@ -26,7 +26,7 @@ const { selectedSatId, updateAppConfig } = useSatelliteSelectBox(items);
  * indexを親コンポーネントに連携する
  * @param {number} satId 選択された衛星ID
  */
-async function updateIndex(satId: number) {
+function updateIndex(satId: number) {
   // アクティブ衛星をAppConifgに保存
   void updateAppConfig(String(satId));
 }

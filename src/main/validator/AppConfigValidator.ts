@@ -11,7 +11,7 @@ export default class AppConfigValidator {
    * @returns == 0: エラーなしの場合
    *          > 0: エラー有りの場合は、ValidatorResultのリストを返す
    */
-  public exec(data: any): ValidatorResultModel[] {
+  public exec(data: unknown): ValidatorResultModel[] {
     const result = schemaAppConfig.safeParse(data);
 
     // エラー有りの場合は、ValidatorResultのリストを返す

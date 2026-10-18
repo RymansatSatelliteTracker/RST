@@ -50,16 +50,20 @@ export default class ApiTransceiver {
 
   /**
    * 指定の周波数に変更する
+   * @param frequencyModel 周波数設定
+   * @param isForce 強制設定（同一周波数でも強制的に無線機へ送信する場合はtrueを指定する）
    */
-  public static async setTransceiverFrequency(frequencyModel: UplinkType | DownlinkType) {
-    await window.rstApi.setTransceiverFrequency(frequencyModel);
+  public static async setTransceiverFrequency(frequencyModel: UplinkType | DownlinkType, isForce: boolean = false) {
+    await window.rstApi.setTransceiverFrequency(frequencyModel, isForce);
   }
 
   /**
    * 周波数の変更イベント
    */
-  public static async onChangeTransceiverFrequency(callback: Function) {
-    await window.rstApi.onChangeTransceiverFrequency(callback);
+  public static onChangeTransceiverFrequency(
+    callback: (res: ApiResponse<UplinkType | DownlinkType>) => void | Promise<void>
+  ) {
+    window.rstApi.onChangeTransceiverFrequency(callback);
   }
 
   /**
@@ -72,8 +76,8 @@ export default class ApiTransceiver {
   /**
    * 運用モードの変更イベント
    */
-  public static async onChangeTransceiverMode(callback: Function) {
-    await window.rstApi.onChangeTransceiverMode(callback);
+  public static onChangeTransceiverMode(callback: (res: ApiResponse<UplinkType | DownlinkType>) => void) {
+    window.rstApi.onChangeTransceiverMode(callback);
   }
 
   /**
@@ -86,14 +90,14 @@ export default class ApiTransceiver {
   /**
    * ドップラーシフト待機イベント
    */
-  public static async dopplerShiftWaitingCallback(callback: Function) {
-    await window.rstApi.dopplerShiftWaitingCallback(callback);
+  public static dopplerShiftWaitingCallback(callback: (res: ApiResponse<boolean>) => void) {
+    window.rstApi.dopplerShiftWaitingCallback(callback);
   }
 
   /**
    * 無線機周波数保存イベント
    */
-  public static async onSaveTransceiverFrequency(callback: Function) {
-    await window.rstApi.onSaveTransceiverFrequency(callback);
+  public static onSaveTransceiverFrequency(callback: () => void | Promise<void>) {
+    window.rstApi.onSaveTransceiverFrequency(callback);
   }
 }

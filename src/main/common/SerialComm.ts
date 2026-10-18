@@ -9,8 +9,8 @@ import { SerialPort } from "serialport";
  */
 export default class SerialComm {
   private port: SerialPort | null = null;
-  private recvCallback: Function | null = null;
-  private closeCallback: Function | null = null;
+  private recvCallback: ((data: Buffer) => void | Promise<void>) | null = null;
+  private closeCallback: (() => void) | null = null;
 
   // シリアルポート接続がアクティブかどうか
   private active = false;
@@ -23,8 +23,8 @@ export default class SerialComm {
     comName: string,
     baudRate: number,
     useReadlineParsar: boolean = false,
-    recvCallback: Function | null = null,
-    closeCallback: Function | null = null
+    recvCallback: ((data: Buffer) => void | Promise<void>) | null = null,
+    closeCallback: (() => void) | null = null
   ) {
     if (CommonUtil.isEmpty(comName)) {
       AppMainLogger.warn(`シリアルポートが未指定のため、接続は行いません。`);
@@ -38,20 +38,20 @@ export default class SerialComm {
     this.port = this.createSerialPort(comName, baudRate);
 
     // イベント設定
-    this.port.on("close", async () => {
+    this.port.on("close", () => {
       this.onClose();
     });
-    this.port.on("error", async (err: Error) => this.onError(err));
+    this.port.on("error", (err: Error) => this.onError(err));
 
     // 受信単位が改行の場合
     if (useReadlineParsar) {
       const parser = this.port.pipe(new ReadlineParser({ delimiter: "\n" }));
-      parser.on("data", async (data: Buffer) => this.onReceive(data));
+      parser.on("data", (data: Buffer) => this.onReceive(data));
       return;
     }
 
     // 上記以外
-    this.port.on("data", async (data: Buffer) => this.onReceive(data));
+    this.port.on("data", (data: Buffer) => this.onReceive(data));
   }
 
   /**
@@ -76,7 +76,7 @@ export default class SerialComm {
    */
   static async getPortList() {
     const portInfos = await SerialPort.list();
-    const ports = portInfos.map((portInfo) => portInfo.path);
+    const ports = portInfos.map((portInfo: { path: string }) => portInfo.path);
     return ports.toSorted();
   }
 
@@ -106,7 +106,7 @@ export default class SerialComm {
             }
           });
         });
-      } catch (error) {
+      } catch {
         // オープンに失敗した場合に例外が発生する場合もあるのでキャッチして処理を続行
         return false;
       }
@@ -185,20 +185,20 @@ export default class SerialComm {
       const result = await new Promise<boolean>((resolve, reject) => {
         if (!this.port || !this.isOpen()) {
           AppMainLogger.error(`シリアルポートがオープンされていません。`);
-          reject(false);
+          reject(new Error("シリアルポートがオープンされていません。"));
           return;
         }
 
         const res = this.port.write(data, (err) => {
           if (err) {
             AppMainLogger.error(`シリアルポートへの書き込みに失敗しました。 ${this.port?.path}`, err);
-            reject(false);
+            reject(new Error(`シリアルポートへの書き込みに失敗しました。 ${this.port?.path}`));
             return;
           }
         });
         if (!res) {
           AppMainLogger.error(`シリアルポートへの書き込みに失敗しました。 ${this.port?.path}`);
-          reject(false);
+          reject(new Error(`シリアルポートへの書き込みに失敗しました。 ${this.port?.path}`));
           return;
         }
 
@@ -211,7 +211,7 @@ export default class SerialComm {
         this.port.drain((drainErr) => {
           if (drainErr) {
             AppMainLogger.error(`シリアルポートへの書き込み(drain)に失敗しました。 ${this.port?.path}`, drainErr);
-            reject(false);
+            reject(new Error(`シリアルポートへの書き込み(drain)に失敗しました。 ${this.port?.path}`));
             return;
           }
 
@@ -228,8 +228,8 @@ export default class SerialComm {
    * 指定のFunctionを排他的にsynchronizedで実行する
    */
   @synchronized()
-  private async doProcess(taget: Function): Promise<any> {
-    return await taget();
+  private async doProcess<T>(target: () => Promise<T>): Promise<T> {
+    return await target();
   }
 
   /**
@@ -242,7 +242,7 @@ export default class SerialComm {
       return;
     }
 
-    this.recvCallback(data);
+    void this.recvCallback(data);
   }
 
   /**

@@ -1,6 +1,7 @@
 import { GROUND_STATION } from "@/__tests__/renderer/service/GroundStationService.test.js";
 import Constant from "@/common/Constant.js";
 import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil.js";
+import { describe, expect, it } from "vitest";
 
 /**
  * [正常系]

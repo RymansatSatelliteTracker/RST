@@ -52,6 +52,6 @@ const { satelliteLocation, updateAppConfig } = useSatelliteLocation(currentDate,
  */
 const handleClick = (index: number) => {
   // 選択された衛星をアクティブ衛星として更新する
-  updateAppConfig(index);
+  void updateAppConfig(index);
 };
 </script>

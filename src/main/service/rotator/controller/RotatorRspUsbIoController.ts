@@ -66,14 +66,14 @@ export default class RotatorRspUsbIoController extends RotatorControllerBase {
   /**
    * アンテナ位置の取得を開始する
    */
-  public override async start(): Promise<ApiResponse<void>> {
-    return new ApiResponse();
+  public override start(): Promise<ApiResponse<void>> {
+    return Promise.resolve(new ApiResponse());
   }
 
   /**
    * アンテナ位置の変化を呼び出し側に伝播させるためのコールバックを設定する
    */
-  public override setCallback(callback: Function): void {
+  public override setCallback(callback: (res: ApiResponse<AntennaPositionModel>) => void): void {
     this.callback = callback;
   }
 
@@ -101,7 +101,7 @@ export default class RotatorRspUsbIoController extends RotatorControllerBase {
 
     // 未実行状態の場合は、送信ワーカーを起動する
     if (!this.isRunning) {
-      this.manualSendWorker();
+      void this.manualSendWorker();
     }
   }
 
@@ -148,7 +148,9 @@ export default class RotatorRspUsbIoController extends RotatorControllerBase {
     const pos = new AntennaPositionModel(azDeg, elDeg);
 
     // コールバック呼び出し
-    this.callback(pos);
+    const res = new ApiResponse<AntennaPositionModel>(true);
+    res.data = pos;
+    this.callback(res);
   };
 
   /**
@@ -209,8 +211,8 @@ export default class RotatorRspUsbIoController extends RotatorControllerBase {
 
       // 方位角、仰角ともに有効化されていなければ、目標に達しているので処理終了
       if (
-        (data & ANTENNA_AZIMATH_VALID) != ANTENNA_AZIMATH_VALID &&
-        (data & ANTENNA_ELEVETION_VALID) != ANTENNA_ELEVETION_VALID
+        (data & ANTENNA_AZIMATH_VALID) !== ANTENNA_AZIMATH_VALID &&
+        (data & ANTENNA_ELEVETION_VALID) !== ANTENNA_ELEVETION_VALID
       ) {
         // UP/DOWNのフラグをOff状態にする
         this.sendAntennaControl(ANTENNA_NEUTRAL);
@@ -281,7 +283,7 @@ export default class RotatorRspUsbIoController extends RotatorControllerBase {
 
     const byteData = Buffer.from([data]);
 
-    this.serial?.send(byteData);
+    void this.serial?.send(byteData);
     // this.serial.flush()
   }
 }

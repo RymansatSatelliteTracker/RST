@@ -18,11 +18,13 @@ export default function useTracking(activeSat: Ref<SatAzEl | null>, currentDate:
   /**
    * 衛星の追跡を開始する
    */
-  async function startTraking() {
+  function startTraking() {
     if (intervalId) {
       clearInterval(intervalId);
     }
-    intervalId = setInterval(refreshSatPos, 1000);
+    intervalId = setInterval(() => {
+      void refreshSatPos();
+    }, 1000);
   }
 
   /**

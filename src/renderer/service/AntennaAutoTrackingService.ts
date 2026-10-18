@@ -1,6 +1,5 @@
 import Constant from "@/common/Constant.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
-import type { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
 import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
 import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
 import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking.js";
@@ -45,8 +44,8 @@ export default class AntennaAutoTrackingService {
     const controller = await RotatorControllerFactory.getController(rotDevice);
 
     // 1秒ごとにローテータ位置の更新を要求する
-    this.timerId = setInterval(async () => {
-      this.doTracking(controller, date);
+    this.timerId = setInterval(() => {
+      void this.doTracking(controller, date);
     }, 1000);
 
     return true;
@@ -74,7 +73,7 @@ export default class AntennaAutoTrackingService {
     }
 
     // アンテナを衛星位置に向ける
-    controller.setPosition(pos);
+    void controller.setPosition(pos);
   }
 
   /**
@@ -109,13 +108,13 @@ export default class AntennaAutoTrackingService {
       azimuth: appConfig.rotator.parkPosAz,
       elevation: appConfig.rotator.parkPosEl,
     };
-    controller.setPosition(pos);
+    void controller.setPosition(pos);
   }
 
   /**
    * 表示中の衛星グループが変更された場合のイベントハンドラ
    */
-  public onChangeActiveSat(satGrp: ActiveSatelliteGroupModel) {
+  public onChangeActiveSat() {
     this.stop();
   }
 

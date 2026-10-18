@@ -45,17 +45,17 @@ export default class FileUtil {
   /**
    * yamlファイルを読み込みオブジェクトで返す
    */
-  public static readYaml(filepath: string) {
+  public static readYaml<T = unknown>(filepath: string): T {
     const text = FileUtil.readText(filepath);
-    return YAML.parse(text);
+    return YAML.parse(text) as T;
   }
 
   /**
    * JSONファイルを読み込みオブジェクトで返す
    */
-  public static readJson(filepath: string) {
+  public static readJson<T = unknown>(filepath: string): T {
     const text = this.readText(filepath);
-    return JSON.parse(text);
+    return JSON.parse(text) as T;
   }
 
   /**
@@ -74,9 +74,12 @@ export default class FileUtil {
       const fileDescriptor = fs.openSync(filePath, "r+");
       fs.closeSync(fileDescriptor);
       return false; // ファイルはロックされていない
-    } catch (err: any) {
-      if (err?.code === "EBUSY" || err?.code === "EPERM" || err?.code === "EACCES") {
-        return true; // ファイルはロックされている
+    } catch (err) {
+      if (err instanceof Error && "code" in err) {
+        const code = (err as NodeJS.ErrnoException).code;
+        if (code === "EBUSY" || code === "EPERM" || code === "EACCES") {
+          return true; // ファイルはロックされている
+        }
       }
       throw err; // その他のエラーは再スロー
     }

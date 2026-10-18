@@ -74,7 +74,9 @@ export default function useVisibilityDashRange(currentDate: Ref<Date>, offsetLon
     ActiveSatServiceHub.getInstance().addOnChangeActiveSat(onChangeSatGrp);
 
     // 1秒ごとに可視範囲を更新する
-    intervalId = window.setInterval(updateVisibilityRange, 1000) as number;
+    intervalId = window.setInterval(() => {
+      void updateVisibilityRange();
+    }, 1000) as number;
   });
 
   /**

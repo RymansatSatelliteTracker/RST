@@ -41,10 +41,10 @@ import { onMounted, ref } from "vue";
 import { useLoadTLETabValidate, validSchemaLoadTLETab } from "./useLoadTLETabValidate.js";
 
 // リストに表示するデータ
-const items = defineModel<AppConfigTleUrl[]>("tleUrls", { default: [] });
+const items = defineModel<AppConfigTleUrl[]>("tleUrls", { default: () => [] });
 
 // 選択されたアイテムのインデックス
-const selectedItem = ref(null);
+const selectedItem = ref<number | null>(null);
 
 // 画面表示時の初期設定値
 const initialItems: AppConfigTleUrl[] = [];
@@ -75,7 +75,7 @@ async function onOk(): Promise<string> {
   if (items.value.length === 0) return I18nUtil.getMsg(I18nMsgs.CHK_ERR_NO_URL);
 
   // バリデーションチェック
-  for await (const item of items.value) {
+  for (const item of items.value) {
     const result = await validateForm(item);
     if (!result) {
       // validateFormではerrorsの方に設定されるのでこちらからメッセージを取る
@@ -114,7 +114,7 @@ function removeSelectedItem() {
  * 指定されたアイテムを選択する
  * @param index リスト内のインデックス
  */
-function selectItem(index: any) {
+function selectItem(index: number) {
   selectedItem.value = index;
 }
 

@@ -43,7 +43,8 @@ import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
 import VirtualScrollList from "@/renderer/components/molecules/VirtualScrollList/VirtualScrollList.vue";
 import EditSatelliteInfo from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/EditSatelliteInfo/EditSatelliteInfo.vue";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, useTemplateRef } from "vue";
+import type { ComponentExposed } from "vue-component-type-helpers";
 
 type DisplaySatelliteItem = {
   satelliteId: number;
@@ -62,7 +63,7 @@ const filterText = ref("");
 // リストに表示するアイテム
 const items = ref<DisplaySatelliteItem[]>([]);
 // リストの関数を使用するためのref
-const listRef = ref<InstanceType<typeof VirtualScrollList> | null>(null);
+const listRef = useTemplateRef<ComponentExposed<typeof VirtualScrollList<DisplaySatelliteItem>>>("listRef");
 
 /**
  * コンポーネントのマウント時にデフォルト衛星定義を読み込む
@@ -113,8 +114,12 @@ function onCloseEditSatelliteInfo() {
 }
 
 // 親に公開する
+// memo: env.d.tsの"*.vue"shimの都合上、ESLintの型解析ではVirtualScrollListの公開プロパティの型を解決できないため無効化する
+// （vue-tscでは正しく型付けされていることを確認済み）
+// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 const selectedItems = computed(() => listRef.value?.selectedItems ?? []);
 function clearSelect() {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   listRef.value?.clearSelect();
 }
 

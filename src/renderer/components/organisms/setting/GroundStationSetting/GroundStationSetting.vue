@@ -248,15 +248,15 @@ const emits = defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
 const groundStationSettingForm = ref<GroundStationSettingForm>(new GroundStationSettingForm());
 
 // 入力チェック関係
-const { validateForm, errors } = useGroundStationSettingValidate();
+const { validateForm } = useGroundStationSettingValidate();
 
 // 親画面からの表示指示を監視し、表示時はデータを再取得する
-watch(isShow, async (newValue) => {
+watch(isShow, (newValue) => {
   if (!newValue) {
     return;
   }
 
-  reloadConfig();
+  void reloadConfig();
 });
 
 /**
@@ -328,7 +328,7 @@ async function onOk() {
 /**
  * キャンセルクリック
  */
-async function cancelClick() {
+function cancelClick() {
   // 親へ通知
   emits("onCancel");
 }
@@ -369,7 +369,7 @@ async function clickGroundStationGeoLocation(): Promise<void> {
       groundStationSettingForm.value.groundStationSetting.lat = data.latitude.toString();
       groundStationSettingForm.value.groundStationSetting.lon = data.longitude.toString();
     }
-  } catch (error) {
+  } catch {
     emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.ERR_GEO_LOCATION_NOT_FOUND));
   }
 }
@@ -386,7 +386,7 @@ async function clickGroundStation2GeoLocation(): Promise<void> {
       groundStationSettingForm.value.groundStation2Setting.lat = data.latitude.toString();
       groundStationSettingForm.value.groundStation2Setting.lon = data.longitude.toString();
     }
-  } catch (error) {
+  } catch {
     emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.ERR_GEO_LOCATION_NOT_FOUND));
   }
 }

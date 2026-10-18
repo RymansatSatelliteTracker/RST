@@ -116,7 +116,7 @@ export default function useDrawSatPass(
     // 現在の衛星グループとアクティブ衛星
     const satGrp = await ApiActiveSat.getActiveSatelliteGroup();
     const activeSatIndex = ActiveSatServiceHub.getInstance().getActiveSatIndex();
-    if (!(await needRefresh(currentAosDate, pass.aos.date, satGrp, activeSatIndex))) {
+    if (!needRefresh(currentAosDate, pass.aos.date, satGrp, activeSatIndex)) {
       return;
     }
 
@@ -177,12 +177,12 @@ export default function useDrawSatPass(
    *  ・衛星グループが変更されている場合
    *  ・アクティブ衛星が変更されている場合
    */
-  async function needRefresh(
+  function needRefresh(
     currentAosDate: Date,
     aosDate: Date,
     satGrp: ActiveSatelliteGroupModel,
     activeSatIndex: number
-  ): Promise<boolean> {
+  ): boolean {
     // 表示中のAOS日時と引数のAOS日時が異なる場合は更新要
     const tmpCurTime = Math.trunc(currentAosDate.getTime() / 1000);
     const tmpAosTime = Math.trunc(aosDate.getTime() / 1000);

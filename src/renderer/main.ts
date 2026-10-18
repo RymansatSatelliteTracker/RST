@@ -67,7 +67,7 @@ app.mount("#app");
 const dispLangStore = useStoreDispLang();
 
 // 起動時の処理
-startUp();
+void startUp();
 
 /**
  * 起動時の処理
@@ -96,9 +96,13 @@ async function startUp() {
  */
 function setupGlobalErrorHandlers() {
   // 同期エラーのキャッチ
-  window.onerror = (message, source, lineno, colno, error) => {
-    AppRendererLogger.error(`Message: ${message} Source: ${source} Line: ${lineno}, Column: ${colno}`);
-    emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.SYSTEM_UNEXPECTED_ERROR) + "\n" + message);
+  window.onerror = (message, source, lineno, colno, _error) => {
+    const messageText = typeof message === "string" ? message : message.type;
+    AppRendererLogger.error(`Message: ${messageText} Source: ${source} Line: ${lineno}, Column: ${colno}`);
+    emitter.emit(
+      Constant.GlobalEvent.NOTICE_ERR,
+      I18nUtil.getMsg(I18nMsgs.SYSTEM_UNEXPECTED_ERROR) + "\n" + messageText
+    );
   };
 
   // 非同期エラーのキャッチ

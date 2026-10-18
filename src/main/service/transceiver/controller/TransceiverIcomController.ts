@@ -66,7 +66,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
   // 無線機からの受信コールバック制御用
   private recvCallbackType: RecvCallBackType | null = null;
-  private recvCallback: Function | null = null;
+  private recvCallback: ((recvData: string, recvCmdType: string) => void) | null = null;
 
   // RST側と無線機側の周波数、モードの状態の保持
   private state = new TransceiverIcomState();
@@ -108,43 +108,46 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     // メインバンドの処理を設定値（autoTrackingIntervalSec）秒ごとに行う。
     // 無線機側の周波数変更操作への影響を最小限にするため、サブバンドへの切り替えはメインの処理前に一瞬だけ行う
     const interval = parseFloat(this.transceiverConfig.autoTrackingIntervalSec) * 1000;
-    this.sendAndRecvTimer = setInterval(async () => {
-      // 無線機との接続が準備完了でない場合は処理終了
-      if (!this.isReady()) {
-        // シリアル未接続メッセージをレンダラ側へ通知
-        this.fireSerialNotConnectedMsg();
-        // 定期コマンド送信を停止
-        this.cancelTimer();
-        return;
-      }
-
-      // 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機する
-      if (this.isWaitSendFreq) {
-        return;
-      }
-
-      // 前回処理が終わっていない場合はスキップ
-      if (this.isProcessing) {
-        return;
-      }
-
-      this.comId += 1;
-      const comId = this.comId;
-
-      try {
-        // ロック取得
-        await this.getLock(comId);
-
-        // サテライトモードの場合のみ、サブの処理を一瞬だけ実行
-        if (this.state.isSatelliteMode) {
-          await this.sendAndRecvForLoop(comId, false);
+    this.sendAndRecvTimer = setInterval(() => {
+      void (async () => {
+        // 無線機との接続が準備完了でない場合は処理終了
+        if (!this.isReady()) {
+          // シリアル未接続メッセージをレンダラ側へ通知
+          this.fireSerialNotConnectedMsg();
+          // 定期コマンド送信を停止
+          this.cancelTimer();
+          return;
         }
 
-        // メインの処理を実行
-        await this.sendAndRecvForLoop(comId, true);
-      } finally {
-        this.releaseLock();
-      }
+        // 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機する
+        if (this.isWaitSendFreq) {
+          // AppMainLogger.debug(`定期送受信 スキップ（無線機への送信を一時停止中）`);
+          return;
+        }
+
+        // 前回処理が終わっていない場合はスキップ
+        if (this.isProcessing) {
+          return;
+        }
+
+        this.comId += 1;
+        const comId = this.comId;
+
+        try {
+          // ロック取得
+          await this.getLock(comId);
+
+          // サテライトモードの場合のみ、サブの処理を一瞬だけ実行
+          if (this.state.isSatelliteMode) {
+            await this.sendAndRecvForLoop(comId, false);
+          }
+
+          // メインの処理を実行
+          await this.sendAndRecvForLoop(comId, true);
+        } finally {
+          this.releaseLock();
+        }
+      })();
     }, interval);
 
     AppMainLogger.info(`無線機の監視と送信準備完了。制御間隔：${this.transceiverConfig.autoTrackingIntervalSec}Sec`);
@@ -168,6 +171,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       clearTimeout(this.transceiveWaitTimer);
       this.transceiveWaitTimer = null;
     }
+
+    this.state.endRxReadPending();
   }
 
   /**
@@ -438,22 +443,49 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     }
 
     // メインへ切り替え
-    await this.switchMainBand();
+    const isMainSwitched = await this.switchMainBand();
 
     // メインバンドの周波数を元に、必要であればメインとサブの周波数帯の入れ替えを行う
     await this.switchBandIfNeed();
 
     // 無線機へ送信するRx周波数の設定
     if (this.state.isReqRxFreqUpdate) {
+      AppMainLogger.debug(`${comId}：Rx周波数（RST→無線機） ${this.state.getReqRxFreqHz()}`);
       await this.sendFreq(this.state.getReqRxFreqHz());
       this.state.isReqRxFreqUpdate = false;
     } else if (this.state.isRecvRxFreqUpdate) {
       // Rx周波数を無線機から取得
       // memo: RST側から設定した直後は、基本的に同じ値が返ってくるため、周波数の取得は行わない
       AppMainLogger.debug(`sendAndRecvForMainForLoop Rx周波数取得要求`);
+
+      // 読み取り待ちからの読み取りでは、先にレンダラのドップラーシフト補正を待機させる。
+      // 読み取ったRxがレンダラで基準周波数へ反映される前に、レンダラの周期処理が古い基準周波数で要求を出し、
+      // 読み取り待ちの解除後に受け付けられてしまうのを防ぐため
+      if (this.state.isRxReadPending) {
+        this.notifyDopplerShiftWaiting();
+      }
+
       const recvDataMainFreq = await this.sendAndSyncRecv(this.cmdMaker.makeGetFreq(), "GET_FREQ");
       await this.handleRecvData(recvDataMainFreq);
-      this.state.isRecvRxFreqUpdate = false;
+
+      // 有効なRxを処理できたか（メインバンドへ切り替わり、GET_FREQの応答があり、かつ追加のGET_BANDでメインバンドと判定できたか）
+      // memo: 切り替えやGET_BANDがタイムアウトすると、取得値がTxとして通知される、またはTx値をRxと誤判定するため、
+      //       Rxは取得できていないものとして扱う
+      const isRxReceived = isMainSwitched && recvDataMainFreq !== "TIMEOUT" && this.state.isMain;
+      if (!isRxReceived && this.state.isRxReadPending) {
+        // 読み取り待ち中に有効なRx応答を得られなかった場合は、保留を維持して次の周期で再試行する
+        // （RSTの古い周波数要求で、無線機側のRxを上書きしないため）
+        const isGiveUp = this.state.failRxRead();
+        AppMainLogger.warn(
+          isGiveUp
+            ? `Rx周波数の読み取りに失敗し続けたため、読み取り待ちを解除します。`
+            : `Rx周波数の読み取りに失敗したため、次の周期で再試行します。`
+        );
+      } else {
+        this.state.isRecvRxFreqUpdate = false;
+        // 有効なRx応答を処理できたため、読み取り待ちを解除する
+        this.state.endRxReadPending();
+      }
     }
 
     // 無線機へ送信する運用モードの設定
@@ -493,6 +525,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
     // 無線機へ送信するTx周波数の設定
     if (this.state.isReqTxFreqUpdate) {
+      AppMainLogger.debug(`Tx周波数（RST→無線機） ${this.state.getReqTxFreqHz()}`);
       await this.sendFreq(this.state.getReqTxFreqHz());
       this.state.isReqTxFreqUpdate = false;
     } else if (this.state.isRecvTxFreqUpdate) {
@@ -547,21 +580,29 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   /**
    * 無線機に周波数を設定するコマンドを送信する
    * @param {(UplinkType | DownlinkType)} freqModel 周波数設定
+   * @param {boolean} isForce 強制設定（同一周波数でも強制的に無線機へ送信する場合はtrueを指定する）
    */
-  public override async setFreq(freqModel: UplinkType | DownlinkType): Promise<void> {
+  public override setFreq(freqModel: UplinkType | DownlinkType, isForce: boolean = false): Promise<void> {
     // シリアル未接続の場合は処理終了
     if (!this.serial?.isOpen()) {
       AppMainLogger.warn("シリアル未接続のため、処理を終了します。");
-      return;
+      return Promise.resolve();
+    }
+
+    // Rx周波数の読み取り待ち中は、RST側の周波数要求が古い値となるため破棄する
+    if (this.state.isRxReadPending) {
+      AppMainLogger.debug(`Rx周波数の読み取り待ちのため、RSTからの周波数要求を破棄します。`);
+      return Promise.resolve();
     }
 
     if ("uplinkHz" in freqModel && freqModel.uplinkHz) {
       // アップリンク周波数を取得する
-      this.state.setReqTxFreqHz(freqModel.uplinkHz);
+      this.state.setReqTxFreqHz(freqModel.uplinkHz, isForce);
     } else if ("downlinkHz" in freqModel && freqModel.downlinkHz) {
       // ダウンリンク周波数を取得する
-      this.state.setReqRxFreqHz(freqModel.downlinkHz);
+      this.state.setReqRxFreqHz(freqModel.downlinkHz, isForce);
     }
+    return Promise.resolve();
   }
 
   /**
@@ -569,11 +610,11 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    * memo: 設定したい値の設定のみが行われる。無線機への送信は一定時間間隔で別メソッドにて行われる。
    * @param {(UplinkType | DownlinkType)} modeModel 運用モード設定
    */
-  public override async setMode(modeModel: UplinkType | DownlinkType): Promise<void> {
+  public override setMode(modeModel: UplinkType | DownlinkType): Promise<void> {
     // シリアル未接続の場合は処理終了
     if (!this.serial?.isOpen()) {
       AppMainLogger.warn("シリアル未接続のため、処理を終了します。");
-      return;
+      return Promise.resolve();
     }
 
     if ("uplinkMode" in modeModel) {
@@ -583,7 +624,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
       // 運用モードの値が取得できない場合は処理終了
       if (modeValue === null) {
-        return;
+        return Promise.resolve();
       }
 
       // 無線機に設定したいモードをセット
@@ -596,13 +637,14 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
       // 運用モードの値が取得できない場合は処理終了
       if (modeValue === null) {
-        return;
+        return Promise.resolve();
       }
 
       // 無線機に設定したいモードをセット
       AppMainLogger.debug(`Rx運用モード設定要求：${mode}(${modeValue}/${dataMode})`);
       this.state.setReqRxMode(modeValue, dataMode);
     }
+    return Promise.resolve();
   }
 
   /**
@@ -678,6 +720,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     }
     // サテライトモードの設定を保持する
     this.state.isSatelliteMode = isSatelliteMode;
+    this.state.endRxReadPending();
 
     // データ送信
     const cmdData = this.cmdMaker.makeSetSatelliteMode(isSatelliteMode);
@@ -725,11 +768,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
    */
   @synchronized()
   private async sendAndSyncRecv(cmdData: Uint8Array, targetCmdType: CommandType): Promise<string> {
-    return new Promise(async (resolve, reject) => {
-      if (!(await this.checkRecvTimeout())) {
-        return;
-      }
-
+    return new Promise((resolve, _reject) => {
       let timeout: NodeJS.Timeout;
 
       const resetCallback = () => {
@@ -737,59 +776,73 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         clearTimeout(timeout);
       };
 
-      // データ受信
-      const onData = (recvData: string, recvCmdType: string) => {
-        if (!this.recvCallbackType) {
+      void (async () => {
+        try {
+          if (!(await this.checkRecvTimeout())) {
+            resolve("TIMEOUT");
+            return;
+          }
+
+          // データ受信
+          const onData = (recvData: string, recvCmdType: string) => {
+            if (!this.recvCallbackType) {
+              resetCallback();
+              resolve(recvData);
+              return;
+            }
+
+            // AppMainLogger.debug(`onData: recv=${recvCmdType}, data=${recvData}`);
+
+            // 待ち受けがGET系だが、他のデータが飛んできた場合は無視
+            if (targetCmdType.startsWith("GET") && recvCmdType !== targetCmdType) {
+              return;
+            }
+
+            // 送信に対する受信が来たので、応答を返す
+            resetCallback();
+            resolve(recvData);
+          };
+
+          // コールバック制御データの作成
+          this.recvCallbackType = this.makeRecvCallback(targetCmdType);
+          this.recvCallback = null;
+          // 応答アリのコマンドの場合は、コールバックを設定する
+          if (this.recvCallbackType.isResponsive) {
+            this.recvCallback = onData;
+          }
+
+          // 応答ありのコマンドはタイムアウト設定を行う
+          if (this.recvCallbackType.isResponsive) {
+            timeout = setTimeout(() => {
+              // 応答タイムアウトは発生しうるためログ出力を行い、処理は継続する
+              // MEMO: 必要に応じてコメント解除してください
+              // AppMainLogger.warn(
+              //   `無線機からの応答タイムアウトが発生しました。 ${targetCmdType} コマンド：${Buffer.from(cmdData).toString("hex")}`
+              // );
+
+              resetCallback();
+              // タイムアウト応答
+              resolve("TIMEOUT");
+            }, RECV_TIMEOUT_MSEC);
+          }
+
+          // AppMainLogger.debug(`データ送信（RST→無線機） ${targetCmdType} ${Buffer.from(cmdData).toString("hex")}`);
+
+          // データ送信
+          await super.sendSerial(cmdData);
+
+          // 応答なしのコマンドは、送信後に処理を終了する
+          if (!this.recvCallbackType.isResponsive) {
+            resetCallback();
+            resolve("");
+          }
+        } catch (e) {
+          // 送信失敗時もPromiseがpendingのまま残らないよう、タイムアウト扱いとして解決する
+          AppMainLogger.warn(`${targetCmdType}のデータ送信に失敗しました。 ${String(e)}`);
           resetCallback();
-          resolve(recvData);
-          return;
-        }
-
-        // AppMainLogger.debug(`onData: recv=${recvCmdType}, data=${recvData}`);
-
-        // 待ち受けがGET系だが、他のデータが飛んできた場合は無視
-        if (targetCmdType.startsWith("GET") && recvCmdType !== targetCmdType) {
-          return;
-        }
-
-        // 送信に対する受信が来たので、応答を返す
-        resetCallback();
-        resolve(recvData);
-      };
-
-      // コールバック制御データの作成
-      this.recvCallbackType = this.makeRecvCallback(targetCmdType);
-      this.recvCallback = null;
-      // 応答アリのコマンドの場合は、コールバックを設定する
-      if (this.recvCallbackType.isResponsive) {
-        this.recvCallback = onData;
-      }
-
-      // 応答ありのコマンドはタイムアウト設定を行う
-      if (this.recvCallbackType.isResponsive) {
-        timeout = setTimeout(() => {
-          // 応答タイムアウトは発生しうるためログ出力を行い、処理は継続する
-          // MEMO: 必要に応じてコメント解除してください
-          // AppMainLogger.warn(
-          //   `無線機からの応答タイムアウトが発生しました。 ${targetCmdType} コマンド：${Buffer.from(cmdData).toString("hex")}`
-          // );
-
-          resetCallback();
-          // タイムアウト応答
           resolve("TIMEOUT");
-        }, RECV_TIMEOUT_MSEC);
-      }
-
-      // AppMainLogger.debug(`データ送信（RST→無線機） ${targetCmdType} ${Buffer.from(cmdData).toString("hex")}`);
-
-      // データ送信
-      await super.sendSerial(cmdData);
-
-      // 応答なしのコマンドは、送信後に処理を終了する
-      if (!this.recvCallbackType.isResponsive) {
-        resetCallback();
-        resolve("");
-      }
+        }
+      })();
     });
   }
 
@@ -872,6 +925,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       // 周波数データの設定（トランシーブ）
       case "00":
       // 表示周波数の取得
+      // falls through
       case "03":
         if (trimedData.length === 22) {
           this.recvCallback(trimedData, "GET_FREQ");
@@ -881,6 +935,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       // 運用モードの設定（トランシーブ）
       case "01":
       // 運用モードの取得
+      // falls through
       case "04":
         if (trimedData.length === 16) {
           this.recvCallback(trimedData, "GET_MODE");
@@ -932,7 +987,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     }
 
     // 無線機からの周波数データ(トランシーブ)受信があった場合の戻り値
-    const res = new ApiResponse(true);
+    const res = new ApiResponse<boolean>(true);
 
     // コマンド部により処理を切り替え
     const cmd = trimedData.substring(8, 10);
@@ -944,6 +999,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       // 周波数データ（00：トランシーブ）
       case "00":
       // 運用モードの設定（01:トランシーブ）
+      // falls through
       case "01":
         this.state.isMain = await this.isCurrentMainBand();
         AppMainLogger.debug(`選択バンド（Main/Sub）を無線機と同期しました。 isMain=${this.state.isMain}`);
@@ -962,6 +1018,17 @@ export default class TransceiverIcomController extends TransceiverSerialControll
           AppMainLogger.debug(`${comId}：トランシーブ受信 周波数データ（00）`);
           // 無線機から受信した周波数データを処理する
           await this.procRecvFreqData(comId, trimedData);
+        }
+
+        if (this.state.isSatelliteMode) {
+          if (this.state.isMain) {
+            // メインバンド（Rx）の操作に移った場合は、Rx値を受信済みのため読み取り待ちを解除する
+            this.state.endRxReadPending();
+          } else {
+            // サブバンド（Tx）のダイヤル操作ではRxも変化するが、Rxはトランシーブで通知されない。
+            // 待機解除後にRxを無線機から読み取るまで、RST側の古い周波数要求で上書きしないよう保留状態にする
+            this.state.startRxReadPending();
+          }
         }
 
         res.data = true;
@@ -1056,7 +1123,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
     // 受信データをパースして周波数部を読み取る
     const freqHz = TransceiverIcomRecvParser.parseFreq(recvData);
-    const res = new ApiResponse(true);
+    const res = new ApiResponse<UplinkType | DownlinkType>(true);
 
     // 現在のバンドを再取得
     // memo: 無線機側でメイン／サブの切り替えが行われている可能性があるため、更新ターゲットを再取得する
@@ -1095,7 +1162,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       return;
     }
 
-    const res = new ApiResponse(true);
+    const res = new ApiResponse<UplinkType | DownlinkType>(true);
     // 無線機から受信したデータから運用モードを取得する
     const recvModeText = TransceiverIcomRecvParser.parseMode(recvData);
     if (!recvModeText) {
@@ -1184,7 +1251,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
       return;
     }
 
-    const res = new ApiResponse(true);
+    const res = new ApiResponse<UplinkType | DownlinkType>(true);
     // 無線機から受信したデータからデータモードを取得する
     const recvDataMode = TransceiverIcomRecvParser.parseDataMode(recvData);
     if (!recvDataMode) {
@@ -1326,11 +1393,11 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
     // コールバック呼び出し
     if (this.freqCallback) {
-      const res = new ApiResponse(false, I18nMsgs.SYSTEM_TRANSCEIVER_SERIAL_RECV_TIMEOUT);
+      const res = new ApiResponse<UplinkType | DownlinkType>(false, I18nMsgs.SYSTEM_TRANSCEIVER_SERIAL_RECV_TIMEOUT);
       this.freqCallback(res);
     }
     if (this.modeCallback) {
-      const res = new ApiResponse(false, I18nMsgs.SYSTEM_TRANSCEIVER_SERIAL_RECV_TIMEOUT);
+      const res = new ApiResponse<UplinkType | DownlinkType>(false, I18nMsgs.SYSTEM_TRANSCEIVER_SERIAL_RECV_TIMEOUT);
       this.modeCallback(res);
     }
 
@@ -1456,10 +1523,24 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   }
 
   /**
+   * レンダラ側のドップラーシフト補正を待機させる
+   */
+  private notifyDopplerShiftWaiting() {
+    if (!this.isDopplerShiftWaitingCallback) {
+      return;
+    }
+
+    const res = new ApiResponse<boolean>(true);
+    res.data = true;
+    this.isDopplerShiftWaitingCallback(res);
+  }
+
+  /**
    * 無線機への周波数の送信一時停止状態にする
    */
   private startTransceiveWaitTimer(waitMs: number) {
     this.isWaitSendFreq = true;
+    AppMainLogger.debug(`無線機への送信を一時停止します（${waitMs}ms）`);
 
     // 既存のタイマーがあればクリア
     if (this.transceiveWaitTimer) {
@@ -1470,18 +1551,29 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     this.transceiveWaitTimer = setTimeout(() => {
       this.isWaitSendFreq = false;
       this.transceiveWaitTimer = null;
+      AppMainLogger.debug(`無線機への送信の一時停止を解除しました`);
     }, waitMs);
   }
 
   /**
    * メインバンドへ制御を切り替える
+   * @returns メインバンドに切り替わっている場合はtrue（切り替えコマンドが成功応答（FB）でなかった場合はfalse）
    */
-  private async switchMainBand() {
-    if (this.state.isMain) return;
+  private async switchMainBand(): Promise<boolean> {
+    if (this.state.isMain) return true;
 
     AppMainLogger.debug(`制御切り替え メインバンドへ`);
     this.state.isMain = true;
-    await this.sendAndSyncRecv(this.cmdMaker.makeSwitchToMainBand(), "SWITCH");
+    const res = await this.sendAndSyncRecv(this.cmdMaker.makeSwitchToMainBand(), "SWITCH");
+    // コマンド部がFB（OK）以外は、タイムアウトやNG（FA）などで切り替えを確認できていない
+    if (res.substring(8, 10) !== "fb") {
+      // メインバンド状態を戻して、次回切り替えを再試行できるようにする
+      // memo: IC-910はバンドを無線機に問い合わせられず、この値を現在のバンドとして扱うため
+      this.state.isMain = false;
+      return false;
+    }
+
+    return true;
   }
 
   /**

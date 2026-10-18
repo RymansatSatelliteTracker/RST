@@ -56,7 +56,9 @@ const useOverlapPassList = (currentDate: Ref<Date>) => {
     ActiveSatServiceHub.getInstance().addOnChangeActiveSat(onChangeSatGrp);
 
     // 10秒ごとに重複する可視時間リストを更新する
-    intervalId = window.setInterval(updateOverlapPassList, 10000) as number;
+    intervalId = window.setInterval(() => {
+      void updateOverlapPassList();
+    }, 10000) as number;
   });
 
   // currentDateの変更を監視して1500ms以上増減した場合は重複する可視時間リストを更新する

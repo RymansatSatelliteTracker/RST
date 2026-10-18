@@ -1,5 +1,7 @@
 import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc.js";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import type FrequencyTrackService from "@/renderer/service/FrequencyTrackService.js";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 describe("TransceiverDopplerCalc", () => {
   afterEach(() => {
@@ -25,7 +27,7 @@ describe("TransceiverDopplerCalc", () => {
       const hubInstance = ActiveSatServiceHub.getInstance();
       vi.spyOn(hubInstance, "getFrequencyTrackService").mockReturnValue({
         calcDownlinkDopplerFactor: vi.fn().mockResolvedValue(1.0),
-      } as any);
+      } as unknown as FrequencyTrackService);
 
       const result = await calc.calcNewRxFreqWithDoppler(currentDate, rxBaseFreq, intervalMs);
       // 480000000 * 1.0 = 480000000 ↁE"0480.000.000"

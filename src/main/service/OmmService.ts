@@ -20,6 +20,15 @@ export default class OmmService {
   private static cachedOmmJsonModel: OmmJsonModel | null = null;
 
   /**
+   * omm.jsonの静的キャッシュをクリアする
+   * memo: テストでファイルを差し替えた際に、mtimeの解像度不足でキャッシュが無効化されないケースを回避するために使用する
+   */
+  public static resetCache(): void {
+    OmmService.ommFileUpdateDate = 0;
+    OmmService.cachedOmmJsonModel = null;
+  }
+
+  /**
    * OMM JSONを読み込む
    */
   private readOmmJson(): OmmJsonModel {

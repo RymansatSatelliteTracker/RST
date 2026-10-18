@@ -29,7 +29,7 @@ export default abstract class TransceiverSerialControllerBase extends Transceive
       this.transceiverConfig.port,
       parseInt(this.transceiverConfig.baudrateBps),
       false,
-      this.onRecv
+      this.onRecv.bind(this)
     );
     return await this.serial.open();
   }
@@ -37,8 +37,8 @@ export default abstract class TransceiverSerialControllerBase extends Transceive
   /**
    * データ受信
    */
-  protected onRecv(data: Buffer): Promise<void> {
-    // console.log(`受信データ: ${data.toString()}`);
+  protected onRecv(_data: Buffer): Promise<void> {
+    // console.log(`受信データ: ${_data.toString()}`);
     return Promise.resolve();
   }
 

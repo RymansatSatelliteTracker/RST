@@ -7,6 +7,15 @@ import {
 } from "@/common/util/DefaultSatelliteUtil.js";
 
 /**
+ * デフォルト衛星定義のファイルデータ
+ */
+export type DefaultSatelliteFileData = {
+  defaultSatellites?: DefaultSatelliteType[];
+  maxSatelliteId?: number;
+  registeredNoradIds?: string[];
+};
+
+/**
  * アプリケーション内で管理しておく対象衛星のデフォルト情報
  */
 export class DefaultSatelliteModel {
@@ -40,7 +49,7 @@ export class DefaultSatelliteModel {
    * @param data
    * @returns
    */
-  public static getInitializedModelFromData(data: any): DefaultSatelliteModel {
+  public static getInitializedModelFromData(data: DefaultSatelliteFileData): DefaultSatelliteModel {
     if (data.defaultSatellites && data.registeredNoradIds && data.maxSatelliteId) {
       return Object.assign(new DefaultSatelliteModel(), {
         defaultSatellites: initializeDefaultSatellites(data.defaultSatellites),

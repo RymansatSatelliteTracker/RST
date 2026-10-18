@@ -25,7 +25,7 @@ refreshSerialPort();
  * 選択肢をリフレッシュする
  */
 function refreshSerialPort() {
-  getActiveSerialPorts();
+  void getActiveSerialPorts();
 }
 
 // 外部に公開するもの

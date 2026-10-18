@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { AppConfigRotator } from "@/common/model/AppConfigModel.js";
 import RotatorHelper from "@/common/util/RotatorHelper.js";
 

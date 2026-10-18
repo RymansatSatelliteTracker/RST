@@ -1,16 +1,21 @@
 // https://www.typescriptlang.org/tsconfig/
 {
-  "include": ["./src/**/*"] /* TypeScriptのコンパイル対象に含めるファイルやパターンを指定する */,
-  "exclude": ["./src/__tests__/**/*"] /* テストファイルはVitestが直接変換するため、tscのコンパイル対象から除外する */,
-
+  "include": [
+    "./src/**/*"
+  ] /* TypeScriptのコンパイル対象に含めるファイルやパターンを指定する */,
+  "exclude": [
+    "./src/__tests__/**/*"
+  ] /* テストファイルはVitestが直接変換するため、tscのコンパイル対象から除外する */,
   "compilerOptions": {
     /* この設定ファイルの詳細は公式ドキュメントを参照 */
-
     /* 基本設定 */
-    // "incremental": true,                   /* ビルド情報（.tsbuildinfo）を保存し、次回以降のビルドを高速化する */
+    "incremental": true /* ビルド情報（.tsbuildinfo）を保存し、次回以降のビルドを高速化する */,
     "target": "es2023" /* 出力するJavaScriptのECMAScriptバージョンを指定する（lib指定で標準ライブラリも調整可能） */,
     "module": "esnext" /* 生成するモジュール形式（ES Modulesなど）を指定する */,
-    "lib": ["es2023", "dom"] /* 実行環境（ES機能やDOMなど）を表す型定義ライブラリを指定する */,
+    "lib": [
+      "es2023",
+      "dom"
+    ] /* 実行環境（ES機能やDOMなど）を表す型定義ライブラリを指定する */,
     // "allowJs": true,                       /* JavaScriptファイルもコンパイル対象に含める */
     // "checkJs": true,                       /* JavaScriptファイルも型チェック対象にする */
     // "jsx": "preserve",                     /* JSXコードの出力方法を指定する */
@@ -21,14 +26,13 @@
     "outDir": "dist/electron" /* コンパイル後のファイルの出力先ディレクトリを指定する */,
     "rootDir": "./src" /* ソースコードのルートディレクトリを指定する */,
     // "composite": true,                     /* プロジェクト参照で使うための制約を有効化する */
-    // "tsBuildInfoFile": "./",               /* incrementalビルド情報ファイルの出力先を指定する */
+    "tsBuildInfoFile": "./node_modules/.cache/tsconfig.tsbuildinfo" /* incrementalビルド情報ファイルの出力先を指定する */,
     // "removeComments": true,                /* 出力時にコメントを削除する */
     // "noEmit": true,                        /* コンパイル結果のファイル出力を行わない */
     // "importHelpers": true,                 /* ヘルパー関数をtslibからインポートして使用する */
     // "downlevelIteration": true,            /* 古いJS向けにfor-ofなどの処理を互換性の高い形で出力する */
     "isolatedModules": true /* 各ファイルを独立してトランスパイル可能にし、Babel や esbuild など型情報を使わないツールでも安全に変換できるようにする */,
     "useDefineForClassFields": true /* クラスフィールドをECMAScript標準（define semantics）で初期化する。従来の代入方式と挙動が異なる場合がある */,
-
     /* 厳格な型チェック設定 */
     "strict": true /* すべての厳格な型チェックオプションを有効にする */,
     // "noImplicitAny": true,                 /* 暗黙的にany型になる場合にエラーにする */
@@ -38,37 +42,36 @@
     // "strictPropertyInitialization": true,  /* クラスプロパティの初期化を必須にする */
     // "noImplicitThis": true,                /* thisが暗黙的にanyになる場合にエラーにする */
     // "alwaysStrict": true,                  /* 常にstrictモードとして解析し、"use strict"を出力する */
-
     /* 追加チェック */
     // "noUnusedLocals": true,                /* 未使用のローカル変数をエラーにする */
     // "noUnusedParameters": true,            /* 未使用の引数をエラーにする */
     // "noImplicitReturns": true,             /* すべての分岐でreturnされない場合にエラーにする */
     // "noFallthroughCasesInSwitch": true,    /* switch文のfallthroughをエラーにする */
-
     /* モジュール解決設定 */
     "moduleResolution": "bundler" /* ViteやWebpackなどのバンドラと同様のモジュール解決戦略を使用する */,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     } /* importパスのエイリアスを定義する（baseUrl基準） */,
     // "rootDirs": [],                        /* 複数ディレクトリを仮想的に1つのルートとして扱う */
     // "typeRoots": [],                       /* 型定義の検索先ディレクトリを指定する（@types代替） */
-    "types": ["vitest/globals"] /* グローバルに読み込む型定義パッケージを限定する（指定したもののみ有効） */,
+    "types": [
+      "vitest/globals"
+    ] /* グローバルに読み込む型定義パッケージを限定する（指定したもののみ有効） */,
     // "allowSyntheticDefaultImports": true,  /* default exportがないモジュールのdefault importを型上許可 */
     "esModuleInterop": true /* CommonJSとES Modulesの相互運用を改善し、default importを型的・実行時ともに扱いやすくする */,
     // "preserveSymlinks": true,              /* シンボリックリンクを実パスに解決しない */
     // "allowUmdGlobalAccess": true,          /* モジュールからUMDグローバルへアクセス可能にする */
     "resolveJsonModule": true /* JSONファイルをモジュールとしてimportできるようにする */,
-
     /* ソースマップ設定 */
     // "sourceRoot": "",                      /* デバッガが元ソースを見つけるためのルートパス */
     // "mapRoot": "",                         /* ソースマップの配置場所を指定する */
     "inlineSourceMap": true /* ソースマップ情報をJSファイル内に埋め込む */,
     "inlineSources": true /* ソースマップ内に元のTypeScriptコードも含める（inlineSourceMapまたはsourceMapが必要） */,
-
     /* 実験的機能 */
     "experimentalDecorators": true /* デコレータ（旧仕様）の実験的サポートを有効化する */,
     "emitDecoratorMetadata": true /* デコレータ対象の型情報メタデータを出力する（reflect-metadata系で利用） */,
-
     /* 高度な設定 */
     "skipLibCheck": true /* 外部ライブラリ（.d.ts）の型チェックをスキップしてビルドを高速化する */
     // "forceConsistentCasingInFileNames": true, /* import時のファイル名の大文字小文字を厳密に一致させる */

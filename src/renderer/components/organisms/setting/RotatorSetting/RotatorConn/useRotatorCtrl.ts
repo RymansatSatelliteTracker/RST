@@ -168,16 +168,16 @@ export default function useRotatorCtrl(
    * テスト／上
    * memo: 本メソッドのコール時に長押し想定のsetIntervalも設定される。解除はstopAntennaMoveで行う。
    */
-  async function startElUp() {
+  function startElUp() {
     // setTargetPosAndMove()にて無効値は正常値に強制変更しているため、エラーをクリア
     clearValidateError();
 
     // 現在の位置指定に対して、定数値分移動
-    setTargetPosAndMove(0, Constant.Rotator.Setting.MOVE_TEST_VAL_DEGREE);
+    void setTargetPosAndMove(0, Constant.Rotator.Setting.MOVE_TEST_VAL_DEGREE);
 
     // 長押しの場合は、クリック時点の位置に対して、定数値分移動
-    moveIntevalObj = setInterval(async () => {
-      setTargetPosAndMove(0, Constant.Rotator.Setting.MOVE_TEST_VAL_DEGREE);
+    moveIntevalObj = setInterval(() => {
+      void setTargetPosAndMove(0, Constant.Rotator.Setting.MOVE_TEST_VAL_DEGREE);
     }, Constant.Rotator.Setting.MOVE_TEST_INTERVAL_MS);
   }
 
@@ -185,16 +185,16 @@ export default function useRotatorCtrl(
    * テスト／下
    * memo: 本メソッドのコール時に長押し想定のsetIntervalも設定される。解除はstopAntennaMoveで行う。
    */
-  async function startElDown() {
+  function startElDown() {
     // setTargetPosAndMove()にて無効値は正常値に強制変更しているため、エラーをクリア
     clearValidateError();
 
     // 現在の位置指定に対して、定数値分移動
-    setTargetPosAndMove(0, Constant.Rotator.Setting.MOVE_TEST_VAL_DEGREE * -1);
+    void setTargetPosAndMove(0, Constant.Rotator.Setting.MOVE_TEST_VAL_DEGREE * -1);
 
     // 長押しの場合は、クリック時点の位置に対して、定数値分移動
-    moveIntevalObj = setInterval(async () => {
-      setTargetPosAndMove(0, Constant.Rotator.Setting.MOVE_TEST_VAL_DEGREE * -1);
+    moveIntevalObj = setInterval(() => {
+      void setTargetPosAndMove(0, Constant.Rotator.Setting.MOVE_TEST_VAL_DEGREE * -1);
     }, Constant.Rotator.Setting.MOVE_TEST_INTERVAL_MS);
   }
 
@@ -202,16 +202,16 @@ export default function useRotatorCtrl(
    * テスト／右
    * memo: 本メソッドのコール時に長押し想定のsetIntervalも設定される。解除はstopAntennaMoveで行う。
    */
-  async function startAzUp() {
+  function startAzUp() {
     // setTargetPosAndMove()にて無効値は正常値に強制変更しているため、エラーをクリア
     clearValidateError();
 
     // 現在の位置指定に対して、定数値分移動
-    setTargetPosAndMove(Constant.Rotator.Setting.MOVE_TEST_VAL_DEGREE, 0);
+    void setTargetPosAndMove(Constant.Rotator.Setting.MOVE_TEST_VAL_DEGREE, 0);
 
     // 長押しの場合は、クリック時点の位置に対して、定数値分移動
-    moveIntevalObj = setInterval(async () => {
-      setTargetPosAndMove(Constant.Rotator.Setting.MOVE_TEST_VAL_DEGREE, 0);
+    moveIntevalObj = setInterval(() => {
+      void setTargetPosAndMove(Constant.Rotator.Setting.MOVE_TEST_VAL_DEGREE, 0);
     }, Constant.Rotator.Setting.MOVE_TEST_INTERVAL_MS);
   }
 
@@ -219,16 +219,16 @@ export default function useRotatorCtrl(
    * テスト／左
    * memo: 本メソッドのコール時に長押し想定のsetIntervalも設定される。解除はstopAntennaMoveで行う。
    */
-  async function startAzDown() {
+  function startAzDown() {
     // setTargetPosAndMove()にて無効値は正常値に強制変更しているため、エラーをクリア
     clearValidateError();
 
     // 現在の位置指定に対して、定数値分移動
-    setTargetPosAndMove(Constant.Rotator.Setting.MOVE_TEST_VAL_DEGREE * -1, 0);
+    void setTargetPosAndMove(Constant.Rotator.Setting.MOVE_TEST_VAL_DEGREE * -1, 0);
 
     // 長押しの場合は、クリック時点の位置に対して、定数値分移動
-    moveIntevalObj = setInterval(async () => {
-      setTargetPosAndMove(Constant.Rotator.Setting.MOVE_TEST_VAL_DEGREE * -1, 0);
+    moveIntevalObj = setInterval(() => {
+      void setTargetPosAndMove(Constant.Rotator.Setting.MOVE_TEST_VAL_DEGREE * -1, 0);
     }, Constant.Rotator.Setting.MOVE_TEST_INTERVAL_MS);
   }
 

@@ -1,8 +1,9 @@
+import { AppConfigModel } from "@/common/model/AppConfigModel.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
 import { FileTransaction } from "@/main/util/FileTransaction.js";
 import FileUtil from "@/main/util/FileUtil.js";
 import TransactionRegistry from "@/main/util/TransactionRegistry.js";
-import type { MockInstance } from "vitest";
+import { beforeAll, describe, expect, it, vi, type MockInstance } from "vitest";
 
 describe("FileTransaction", () => {
   let wirteTextSpy: MockInstance;
@@ -10,16 +11,16 @@ describe("FileTransaction", () => {
     vi.spyOn(AppConfigUtil, "getConfigPath").mockImplementation(() => {
       return "/path/to/config.json";
     });
-    vi.spyOn(FileUtil, "copyFile").mockImplementation((sourcePath, tempFilePath) => {
+    vi.spyOn(FileUtil, "copyFile").mockImplementation((_sourcePath, _tempFilePath) => {
       return;
     });
-    vi.spyOn(FileUtil, "exists").mockImplementation((tempFilePath) => {
+    vi.spyOn(FileUtil, "exists").mockImplementation((_tempFilePath) => {
       return true;
     });
-    wirteTextSpy = vi.spyOn(FileUtil, "writeText").mockImplementation((tempFilePath, text) => {
+    wirteTextSpy = vi.spyOn(FileUtil, "writeText").mockImplementation((_tempFilePath, _text) => {
       return;
     });
-    vi.spyOn(FileUtil, "deleteFile").mockImplementation((tempFilePath) => {
+    vi.spyOn(FileUtil, "deleteFile").mockImplementation((_tempFilePath) => {
       return;
     });
   });
@@ -40,7 +41,7 @@ describe("FileTransaction", () => {
     const fileType = "appConfig";
     const transaction = new FileTransaction(fileType);
     // 実行
-    transaction.update({ some: "data" });
+    transaction.update(new AppConfigModel());
     // 検証
     expect(wirteTextSpy).toHaveBeenCalledTimes(1);
   });

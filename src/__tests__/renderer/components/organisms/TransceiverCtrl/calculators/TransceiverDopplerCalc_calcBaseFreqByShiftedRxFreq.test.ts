@@ -1,5 +1,7 @@
 import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc.js";
 import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import type FrequencyTrackService from "@/renderer/service/FrequencyTrackService.js";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 describe("TransceiverDopplerCalc", () => {
   afterEach(() => {
@@ -35,7 +37,7 @@ describe("TransceiverDopplerCalc", () => {
           rxBaseFreq: 480000000,
           txBaseFreq: 2430000000,
         }),
-      } as any);
+      } as unknown as FrequencyTrackService);
 
       const result = await calc.calcBaseFreqByShiftedRxFreq(
         480000000,

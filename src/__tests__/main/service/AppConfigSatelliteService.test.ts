@@ -1,9 +1,10 @@
-import { AppConfigSatellite } from "@/common/model/AppConfigModel.js";
+import { AppConfigSatellite, type AppConfigModel } from "@/common/model/AppConfigModel.js";
 import { DefaultSatelliteModel } from "@/common/model/DefaultSatelliteModel.js";
 import { createDefaultSatellite } from "@/common/util/DefaultSatelliteUtil.js";
 import AppConfigSatelliteService from "@/main/service/AppConfigSatelliteService.js";
 import DefaultSatelliteService from "@/main/service/DefaultSatelliteService.js";
 import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 const DEFAULT_SATELLITE_ID = 0;
 const DEFAULT_NORAD_ID = "00000";
@@ -34,7 +35,7 @@ describe("AppConfigSatelliteService", () => {
       sat3.satelliteId = APPCONFIG_SATELLITE_ID;
       sat3.noradId = APPCONFIG_NORAD_ID3;
       sat3.groupId = -1;
-      return { satellites: [sat1, sat2, sat3] } as any;
+      return { satellites: [sat1, sat2, sat3] } as unknown as AppConfigModel;
     });
   });
   it("デフォルト衛星を取得", () => {

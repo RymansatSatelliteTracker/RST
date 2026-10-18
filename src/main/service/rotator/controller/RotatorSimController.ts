@@ -23,15 +23,16 @@ export default class RotatorSimController extends RotatorControllerBase {
   /**
    * ローテーターの監視、操作を開始する
    */
-  public override async start(): Promise<ApiResponse<void>> {
-    return new ApiResponse();
+  public override start(): Promise<ApiResponse<void>> {
+    return Promise.resolve(new ApiResponse());
   }
 
   /**
    * ローテーターの監視、操作を終了する
    */
-  public override async stop(): Promise<void> {
+  public override stop(): Promise<void> {
     this.unsetCallback();
+    return Promise.resolve();
   }
 
   /**
@@ -45,7 +46,7 @@ export default class RotatorSimController extends RotatorControllerBase {
   /**
    * アンテナ位置の変化を呼び出し側に伝播させるためのコールバックを設定する
    */
-  public override setCallback(callback: Function): void {
+  public override setCallback(callback: (res: ApiResponse<AntennaPositionModel>) => void): void {
     this.callback = callback;
 
     // 既に本メソッドが呼び出されている場合は、コールバックのタイマを解放する

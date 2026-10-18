@@ -1,4 +1,5 @@
 import TransceiverUtil from "@/common/util/TransceiverUtil.js";
+import { describe, expect, it } from "vitest";
 
 describe("TransceiverUtil.analizeAmateurBandRangeのテスト", () => {
   it("null_undefined系", () => {

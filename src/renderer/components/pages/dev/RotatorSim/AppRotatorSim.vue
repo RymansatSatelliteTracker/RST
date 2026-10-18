@@ -8,7 +8,7 @@
 import router from "@/renderer/router/router.js";
 
 // ローテーター シミュレータ画面を初期表示
-router.push("/dev/rotator-sim");
+void router.push("/dev/rotator-sim");
 </script>
 
 <style module lang="scss"></style>

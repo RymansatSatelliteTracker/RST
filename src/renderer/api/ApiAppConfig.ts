@@ -1,3 +1,4 @@
+import type { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
 import type { AppConfigMainDisplay, AppConfigModel } from "@/common/model/AppConfigModel.js";
 import type { AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel.js";
 import type { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
@@ -39,8 +40,8 @@ export default class ApiAppConfig {
   /**
    * メイン表示する衛星グループ、衛星ID情報が保存された場合の変更イベント
    */
-  public static async onChangeActiveSatelliteGroup(callback: Function) {
-    await window.rstApi.onChangeActiveSatelliteGroup(callback);
+  public static onChangeActiveSatelliteGroup(callback: (satGrpModel: ActiveSatelliteGroupModel) => void) {
+    window.rstApi.onChangeActiveSatelliteGroup(callback);
   }
 
   /**

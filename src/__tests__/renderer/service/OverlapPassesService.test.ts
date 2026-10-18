@@ -1,5 +1,6 @@
 import TleDataHelper from "@/__tests__/renderer/service/TleDataHelper.js";
 import OverlapPassesService from "@/renderer/service/OverlapPassesService.js";
+import { describe, expect, it } from "vitest";
 import { GROUND2_STATION, GROUND_STATION } from "./GroundStationService.test.js";
 
 /**
@@ -12,8 +13,11 @@ describe("[正常系]2か所の地上局から観測できる人工衛星の可�
     const oneDayLaterDate = new Date(nowDate.getTime() + 24 * 60 * 60 * 1000);
 
     // 宮本工場(東京都江戸川区)と種子島宇宙センターで同時に観測できる可視時間リストを取得する
+    // MEMO: nowDateが実行時の現在日時のため、静的なTLE（TleDataHelper.Satellite.ISS）は
+    //       TLEのエポックから時間が経過するほどSGP4の伝播誤差が大きくなり可視パスが求まらなくなる。
+    //       そのためエポックを現在日時に合わせて動的に生成するISS_ORBITを使用する。
     const issOverlapPasses = new OverlapPassesService(
-      TleDataHelper.Satellite.ISS,
+      TleDataHelper.Satellite.ISS_ORBIT,
       GROUND_STATION.latitudeDeg,
       GROUND_STATION.longitudeDeg,
       GROUND2_STATION.latitudeDeg,
@@ -26,6 +30,10 @@ describe("[正常系]2か所の地上局から観測できる人工衛星の可�
     expect(issResult && issResult[0].maxEl).not.toBe(null);
     expect(issResult && issResult[0].los).not.toBe(null);
     expect(issResult && issResult[0].durationMs).not.toBe(null);
+    // 可視時間リストに付随する日照時間も取得ができることを確認する
+    expect(issResult && issResult[0].aos?.shadowFraction).toBe(1);
+    expect(issResult && issResult[0].maxEl?.shadowFraction).toBe(1);
+    expect(issResult && issResult[0].los?.shadowFraction).toBe(1);
   });
 
   // MEMO: TLEをもとに計算した衛星軌道は長時間が経過すると、赤道面に対して横移動してしまうため？以下ケースはテストが失敗する。

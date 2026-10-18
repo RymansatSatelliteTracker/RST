@@ -63,5 +63,6 @@ const { visibilityDashRangeList } = useVisibilityDashRange(currentDate, offsetLo
 //       l-polygonのlat-lngsにそのままでは渡せない。
 //       以下で、anyにキャストしてしてl-polygonのlat-lngsに設定する。
 //       また、l-polygonのlat-lngsは座標のリスト（１次元配列）であるが、複数の座標リストを渡すことになるが、問題なく動作する。
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const visibilityDashRangeListRaw = ref<any>(visibilityDashRangeList);
 </script>

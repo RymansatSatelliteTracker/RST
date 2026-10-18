@@ -106,15 +106,16 @@ export default class RotatorService {
 
   /**
    * データ受信ハンドラ
+   * @param this 疑似引数
    */
-  private onPosChange(res: ApiResponse<AntennaPositionModel>) {
+  private onPosChange(this: void, res: ApiResponse<AntennaPositionModel>) {
     getMainWindow().webContents.send("onChangeAntennaPosition", res);
   }
 
   /**
    * アンテナ位置の変動コールバックを設定する
    */
-  public setCallback(callback: Function) {
+  public setCallback(callback: (res: ApiResponse<AntennaPositionModel>) => void) {
     if (!this.isReady()) {
       return;
     }

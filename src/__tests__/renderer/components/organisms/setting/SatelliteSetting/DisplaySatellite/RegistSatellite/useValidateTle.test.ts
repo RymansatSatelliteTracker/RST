@@ -2,6 +2,7 @@ import {
   parseTle,
   validateParsedTle,
 } from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/RegistSatellite/useValidateTle.js";
+import { expect, it } from "vitest";
 
 /**
  * [正常系]TLEチェック

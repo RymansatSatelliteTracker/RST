@@ -519,9 +519,11 @@ export class AppConfigUtil {
    * @param source コピー元オブジェクト
    */
   public static copyMatchingProperties<T extends object, U extends object>(target: T, source: U): void {
+    const targetRecord = target as Record<string, unknown>;
+    const sourceRecord = source as Record<string, unknown>;
     Object.keys(source).forEach((key) => {
       if (key in target) {
-        (target as any)[key] = (source as any)[key]; // 型安全のため `any` を使用
+        targetRecord[key] = sourceRecord[key];
       }
     });
   }

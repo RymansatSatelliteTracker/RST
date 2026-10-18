@@ -19,21 +19,21 @@ export default class AppMainLogger {
     log.transports.file.fileName = Constant.Logger.LOG_FILENAME;
   }
 
-  public static debug(text: any) {
-    log.debug(`${PREFIX} ${text}`);
+  public static debug(text: unknown) {
+    log.debug(PREFIX, text);
   }
-  public static info(text: any) {
-    log.info(`${PREFIX} ${text}`);
+  public static info(text: unknown) {
+    log.info(PREFIX, text);
   }
-  public static warn(text: any) {
-    log.warn(`${PREFIX} ${text}`);
+  public static warn(text: unknown) {
+    log.warn(PREFIX, text);
   }
-  public static error(text: any, err: any = null) {
+  public static error(text: unknown, err: unknown = null) {
     if (err) {
-      log.error(`${PREFIX} ${text}`, err);
+      log.error(PREFIX, text, err);
       return;
     }
 
-    log.error(`${PREFIX} ${text}`);
+    log.error(PREFIX, text);
   }
 }

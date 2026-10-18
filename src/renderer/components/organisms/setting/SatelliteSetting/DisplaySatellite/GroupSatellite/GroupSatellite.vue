@@ -82,7 +82,8 @@ import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
 import VirtualScrollList from "@/renderer/components/molecules/VirtualScrollList/VirtualScrollList.vue";
 import { mdiArrowDownBold, mdiArrowUpBold, mdiDelete, mdiPencil } from "@mdi/js";
-import { computed, onMounted, ref, toRaw } from "vue";
+import { computed, onMounted, ref, toRaw, useTemplateRef } from "vue";
+import type { ComponentExposed } from "vue-component-type-helpers";
 
 // ダイアログ表示用
 const isShow = defineModel<boolean>("isShow", {
@@ -91,11 +92,12 @@ const isShow = defineModel<boolean>("isShow", {
 // グループ名編集用ダイアログ用
 const isDialogShow = ref<boolean>(false);
 // 衛星グループリスト
-const satelliteGroups = defineModel<AppConfigSatelliteGroupForSatSetting[]>("satelliteGroups", { default: [] });
+const satelliteGroups = defineModel<AppConfigSatelliteGroupForSatSetting[]>("satelliteGroups", { default: () => [] });
 // 衛星グループリスト(画面内)
 const satelliteGroupsLocal = ref<AppConfigSatelliteGroupForSatSetting[]>([]);
 // リストの関数を使用するためのref
-const listRef = ref<InstanceType<typeof VirtualScrollList> | null>(null);
+const listRef =
+  useTemplateRef<ComponentExposed<typeof VirtualScrollList<AppConfigSatelliteGroupForSatSetting>>>("listRef");
 
 // 入力するグループ名
 const inputGroupName = ref<string>("");
@@ -106,7 +108,9 @@ const emits = defineEmits<{
 }>();
 
 onMounted(() => {
-  satelliteGroupsLocal.value = JSON.parse(JSON.stringify(toRaw(satelliteGroups.value)));
+  satelliteGroupsLocal.value = JSON.parse(
+    JSON.stringify(toRaw(satelliteGroups.value))
+  ) as AppConfigSatelliteGroupForSatSetting[];
 });
 
 /**
@@ -125,6 +129,9 @@ function addItem() {
  * アイテムを編集
  */
 function editItems() {
+  // memo: env.d.tsの"*.vue"shimの都合上、ESLintの型解析ではVirtualScrollListの公開プロパティの型を解決できないため無効化する
+  // （vue-tscでは正しく型付けされていることを確認済み）
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   if (listRef.value?.selectedItems[0]) {
     isDialogShow.value = true;
   }
@@ -138,17 +145,22 @@ const canAdd = computed(() => {
 });
 
 // 衛星リストから選択したアイテムのインデックス
+// memo: env.d.tsの"*.vue"shimの都合上、ESLintの型解析ではVirtualScrollListの公開プロパティの型を解決できないため無効化する
+// （vue-tscでは正しく型付けされていることを確認済み）
 const selectedItemIndex = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
   return listRef.value?.selectedItemIndexes[0] ?? -1;
 });
 
 // 編集可能かどうか（条件はdeleteの共通の条件と同じ）
 const canEdit = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return listRef.value?.canDelete;
 });
 
 // 削除可能かどうか（この画面では1件未満にならないようにする）
 const canDelete = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return listRef.value?.canDelete && satelliteGroupsLocal.value.length > 1;
 });
 
@@ -188,19 +200,24 @@ async function onOk() {
   }
 
   // 設定
-  setSettingModel.satelliteGroupsForSatSetting = JSON.parse(JSON.stringify(toRaw(satelliteGroupsLocal.value)));
+  setSettingModel.satelliteGroupsForSatSetting = JSON.parse(
+    JSON.stringify(toRaw(satelliteGroupsLocal.value))
+  ) as AppConfigSatelliteGroupForSatSetting[];
 
   // 保存
-  ApiAppConfig.storeAppSatSettingConfig(setSettingModel);
+  void ApiAppConfig.storeAppSatSettingConfig(setSettingModel);
 
   // 親に通知(ダイアログクローズ)
-  emits("onOk", JSON.parse(JSON.stringify(toRaw(satelliteGroupsLocal.value))));
+  emits(
+    "onOk",
+    JSON.parse(JSON.stringify(toRaw(satelliteGroupsLocal.value))) as AppConfigSatelliteGroupForSatSetting[]
+  );
 }
 
 /**
  * ダイアログを閉じるボタンで閉じる
  */
-async function onCancel() {
+function onCancel() {
   // 親に通知(ダイアログクローズ)
   emits("onCancel");
 }

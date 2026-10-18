@@ -10,6 +10,7 @@ import TransceiverFreqCoordinator from "@/renderer/components/organisms/Transcei
 import TransceiverModeCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator.js";
 import TransceiverSyncCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverSyncCoordinator.js";
 import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
+import TransceiverDopplerModeResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverDopplerModeResolver.js";
 import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver.js";
 import TransceiverModeStateResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeStateResolver.js";
 import TransceiverOpeModeResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver.js";
@@ -77,6 +78,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   const autoStore = useStoreAutoState();
   // サテライトモード切替時の状態保存/復元管理
   const { save, load } = useModeStateManager();
+
+  // 直前のupdateFreq()でドップラーシフト待機中だったかどうか（ダイヤル操作終了の検出用）
+  let wasDopplerWaiting = false;
+
   const modeStateResolver = new TransceiverModeStateResolver(
     {
       rxFrequency,
@@ -105,8 +110,10 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   const dopplerWaitCoordinator = new TransceiverDopplerWaitCoordinator(autoStore);
   // 基準周波数（補正値なし）の管理
   const baseFreqMgr = new TransceiverBaseFreqMgr();
-  // モードごとの周波数・運用モード解決
+  // モードごとの周波数・運用モード管理
   const modeSettingResolver = new TransceiverModeSettingResolver();
+  // ドップラーシフトモードから補正要否フラグ管理
+  const dopplerModeResolver = new TransceiverDopplerModeResolver();
   // 周波数の初期化・送信・ドップラー補正更新
   const freqCoordinator = new TransceiverFreqCoordinator(
     {
@@ -117,6 +124,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     },
     currentDate
   );
+
   /**
    * 周波数更新インターバルを開始する
    * @param {number} intervalMs 時間間隔[単位：ミリ秒]
@@ -124,8 +132,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   async function startUpdateFreqInterval(intervalMs: number) {
     const appConfig = await ApiAppConfig.getAppConfig();
     coordinator.setTimerId(
-      setInterval(async () => {
-        await updateFreq(appConfig);
+      setInterval(() => {
+        void updateFreq(appConfig);
       }, intervalMs)
     );
   }
@@ -156,12 +164,11 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     calcBaseFreqWithAdjust,
     startUpdateFreqInterval
   );
+
   // 無線機からの周波数受信値を画面状態と基準周波数へ反映
   const recvFreqResolver = new TransceiverRecvFreqResolver(
     {
-      txFrequency,
       rxFrequency,
-      txFrequencyAdjustment,
       rxFrequencyAdjustment,
       txBaseFreq,
       rxBaseFreq,
@@ -324,7 +331,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   /**
    * 画面でTx補正値が変更された場合
    */
-  watch(txFrequencyAdjustment, async (newFreq) => {
+  watch(txFrequencyAdjustment, async (_newFreq) => {
     // 基準周波数を更新する
     calcBaseFreqWithAdjust();
 
@@ -334,7 +341,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   /**
    * 画面でTx周波数が変更された場合
    */
-  watch(diffTxFrequency, async (newDiffFrequency) => {
+  watch(diffTxFrequency, (newDiffFrequency) => {
     if (newDiffFrequency === 0.0) {
       // 変化量が0の場合は何もしない
       return;
@@ -377,7 +384,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   /**
    * 画面でRx補正値が変更された場合に、補正値を反映した周波数を無線機に送信する
    */
-  watch(rxFrequencyAdjustment, async (newFreq) => {
+  watch(rxFrequencyAdjustment, async (_newFreq) => {
     // サテライトモードがOFFの場合はなにもしない
     if (!isSatelliteMode.value) {
       return;
@@ -392,7 +399,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   /**
    * 画面でRx周波数が変更された場合
    */
-  watch(diffRxFrequency, async (newDiffFrequency) => {
+  watch(diffRxFrequency, (newDiffFrequency) => {
     onDiffRxFrequencyChanged(newDiffFrequency);
   });
 
@@ -449,21 +456,33 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   async function updateFreq(appConfig: AppConfigModel) {
     // Autoモード中でない場合は何もしない
     if (!autoStore.tranceiverAuto) {
+      wasDopplerWaiting = false;
       return;
     }
 
     // 人工衛星がドップラーシフトが有効となる範囲外の場合は処理終了
+    // MEMO: 範囲外に出た時点で待機状態は意味を失うため、待機中フラグも合わせてリセットする
+    //       （リセットしないと、次に範囲内に戻った際に無関係な過去の操作に起因する固定側再送信が誤発火する）
     if (!(await freqCoordinator.isWithinDopplerShiftActiveRange(appConfig))) {
+      wasDopplerWaiting = false;
       return;
     }
 
     // ドップラーシフト待機フラグが有効の場合は処理を中断する
     if (dopplerWaitCoordinator.isWaiting) {
+      wasDopplerWaiting = true;
       return;
     }
 
     // ドップラーシフト補正を実行するかどうかのフラグを更新
     updateDopplerShiftCorrectionFlags();
+
+    // ダイヤル操作終了直後は、無線機側でズレた可能性のある固定側の周波数をRST側の値で上書き送信する
+    if (wasDopplerWaiting) {
+      await resendFixedSideFreqToTransceiver();
+      wasDopplerWaiting = false;
+    }
+
     // ドップラーシフト補正を実行する
     await applyDopplerShiftCorrections();
 
@@ -471,15 +490,34 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   }
 
   /**
+   * 送信固定モードの固定側（Tx）の周波数を無線機へ再送信する
+   * ダイヤル操作（Rx側）によりSum維持のためTx基準周波数が更新されても、
+   * Txは周期処理の対象外のため画面表示・無線機側とも反映されないままとなる。
+   * そのため、ダイヤル操作終了直後に明示的に算出して無線機へ送信する。
+   * RST側の周波数表示自体は変化する場合があるが、無線機側は前回送信時の値のまま変化していない可能性があるため、
+   * 通常の送信では同一値として送信がスキップされないよう、無線機への送信を強制する（isForce: true）
+   *
+   * 受信固定モードの固定側（Rx）は、ダイヤル操作時に`applyRxFromTransceiver`で直接画面表示へ反映済みであり、
+   * 周期処理の対象外のためダイヤル操作終了後も値が変化しない。そのため再送信は不要（現在時刻のドップラー式で
+   * 再算出すると、ダイヤル操作からの経過時間の分だけ実際の値からズレてしまうため、あえて何もしない）。
+   * Tx側は周期処理の対象（execTxDopplerShiftCorrection: true）のため、直後の`applyDopplerShiftCorrections()`で
+   * 更新されたTx基準周波数から自動的に反映される。
+   */
+  async function resendFixedSideFreqToTransceiver() {
+    if (!execTxDopplerShiftCorrection.value) {
+      await freqCoordinator.updateTxFreqByInvertingHeterodyne(coordinator.autoTrackingIntervalMsec);
+      AppRendererLogger.debug(`ダイヤル操作終了検知：固定側(Tx)の周波数を再送信します。 ${txFrequency.value}`);
+      await freqCoordinator.sendTxFreq(TransceiverUtil.parseNumber(txFrequency.value), true);
+    }
+  }
+
+  /**
    * ドップラーシフト補正を実行するかどうかのフラグを更新する
    */
   function updateDopplerShiftCorrectionFlags() {
-    execTxDopplerShiftCorrection.value =
-      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_SAT ||
-      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_RX;
-    execRxDopplerShiftCorrection.value =
-      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_SAT ||
-      dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_TX;
+    const flags = dopplerModeResolver.resolveCorrectionFlags(dopplerShiftMode.value);
+    execTxDopplerShiftCorrection.value = flags.execTxDopplerShiftCorrection;
+    execRxDopplerShiftCorrection.value = flags.execRxDopplerShiftCorrection;
   }
 
   /**

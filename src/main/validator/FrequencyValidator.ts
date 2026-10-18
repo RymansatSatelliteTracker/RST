@@ -11,7 +11,7 @@ export default class FrequencyValidator {
    * @returns == 0: エラーなしの場合
    *          > 0: エラー有りの場合は、ValidatorResultのリストを返す
    */
-  public exec(data: any): ValidatorResultModel[] {
+  public exec(data: unknown): ValidatorResultModel[] {
     const result = schemaFrequencyModel.safeParse(data);
 
     // エラー有りの場合は、ValidatorResultのリストを返す
@@ -20,7 +20,7 @@ export default class FrequencyValidator {
     }
 
     // エラーがなければ相関チェックの結果を返す
-    return this.validateCorrelation(data);
+    return this.validateCorrelation(result.data);
   }
 
   /**
@@ -30,9 +30,9 @@ export default class FrequencyValidator {
    * @param data
    * @returns
    */
-  private validateCorrelation(data: any): ValidatorResultModel[] {
+  private validateCorrelation(data: zod.infer<typeof schemaFrequencyModel>): ValidatorResultModel[] {
     const results: ValidatorResultModel[] = [];
-    data.frequency.satellites.forEach((sat: any) => {
+    data.frequency.satellites.forEach((sat) => {
       const uplink1IsBothFill = sat.uplink1.uplinkHz && sat.uplink1.uplinkMode;
       const uplink2IsBothFill = sat.uplink2.uplinkHz && sat.uplink2.uplinkMode;
       const downlink1IsBothFill = sat.downlink1.downlinkHz && sat.downlink1.downlinkMode;

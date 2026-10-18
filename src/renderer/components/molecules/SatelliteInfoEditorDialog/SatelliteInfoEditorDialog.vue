@@ -311,9 +311,9 @@ const props = defineProps({
 // ダイアログ表示用
 const isShow = defineModel<boolean>("isShow", { default: false });
 // フォーム
-const form = defineModel<SatelliteInfoEditorDialogForm>("form", { default: new SatelliteInfoEditorDialogForm() });
+const form = defineModel<SatelliteInfoEditorDialogForm>("form", { default: () => new SatelliteInfoEditorDialogForm() });
 // 入力エラー
-const errors = defineModel<Record<string, string | undefined>>("errors", { default: {} });
+const errors = defineModel<Record<string, string | undefined>>("errors", { default: () => ({}) });
 // タイトル表示用
 const title = defineModel<string>("title", { default: "" });
 // 画面を使って設定をしたかどうか

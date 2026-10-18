@@ -299,7 +299,7 @@ class OmmUtil {
    * OMM標準キーワードのフィールドをOmmItemに変換する
    * JSON/KVN/CSVで共通のキーワード(OBJECT_NAME, NORAD_CAT_IDなど)を使用する
    */
-  private static fieldsToOmmItem(fields: StringMap<any>): OmmItem {
+  private static fieldsToOmmItem(fields: StringMap<unknown>): OmmItem {
     const item = new OmmItem();
     item.objectName = CommonUtil.toString(fields.OBJECT_NAME).trim();
     item.objectId = CommonUtil.toString(fields.OBJECT_ID).trim();
@@ -341,8 +341,8 @@ class OmmUtil {
       .replace(/&gt;/g, ">")
       .replace(/&apos;/g, "'")
       .replace(/&quot;/g, '"')
-      .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
-      .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
+      .replace(/&#x([0-9a-fA-F]+);/g, (_: string, hex: string) => String.fromCodePoint(parseInt(hex, 16)))
+      .replace(/&#(\d+);/g, (_: string, dec: string) => String.fromCodePoint(parseInt(dec, 10)))
       .replace(/&amp;/g, "&");
   }
 
@@ -362,10 +362,17 @@ class OmmUtil {
   /**
    * 文字列または数値を数値に変換する
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private static toNum(value: any): number {
-    if (typeof value === "number") return value;
-    if (value === undefined || value === null || value === "") return 0;
+  private static toNum(value: unknown): number {
+    if (typeof value === "number") {
+      return value;
+    }
+    if (value === undefined || value === null || value === "") {
+      return 0;
+    }
+    if (typeof value !== "string" && typeof value !== "boolean" && typeof value !== "bigint") {
+      return 0;
+    }
+
     const num = parseFloat(String(value));
     return isNaN(num) ? 0 : num;
   }

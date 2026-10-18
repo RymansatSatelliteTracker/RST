@@ -2,6 +2,7 @@ import TleDataHelper from "@/__tests__/renderer/service/TleDataHelper.js";
 import Constant from "@/common/Constant.js";
 import { InvalidArgumentError } from "@/common/exceptions.js";
 import GroundStationService, { VisibilityType } from "@/renderer/service/GroundStationService.js";
+import { describe, expect, it } from "vitest";
 
 // 地上局位置設定1：リーマンサット地上局の座標
 export const GROUND_STATION = {
@@ -481,6 +482,123 @@ describe("[正常系]人工衛星の可視時間が一つ取得できる", () =>
     expect(heoResult && heoResult.maxEl).not.toBe(null);
     expect(heoResult && heoResult.los).not.toBe(null);
     expect(heoResult && heoResult.durationMs).not.toBe(null);
+  });
+});
+
+/**
+ * [正常系]
+ * 人工衛星の日照状態が取得できる
+ */
+describe("[正常系]人工衛星の日照状態が取得できる", () => {
+  // テスト日時を設定する
+  const currentDate = new Date("2024-10-01T00:00:00Z");
+
+  it("ISSの日照状態が取得できる", async () => {
+    // given 前提条件
+    const issGroundStation = new GroundStationService(
+      TleDataHelper.Satellite.ISS,
+      GROUND_STATION.latitudeDeg,
+      GROUND_STATION.longitudeDeg,
+      0.0,
+      0.0,
+      currentDate
+    );
+    // when 実行
+    const issResult = await issGroundStation.getOrbitPassAsync(currentDate);
+    // then 結果
+    expect(issResult && issResult.aos?.shadowFraction).toBe(0);
+    expect(issResult && issResult.maxEl?.shadowFraction).toBe(0);
+    expect(issResult && issResult.los?.shadowFraction).toBe(0);
+  });
+
+  it("だいち4号機の日照状態が取得できる", async () => {
+    // given 前提条件
+    const daichiGroundStation = new GroundStationService(
+      TleDataHelper.Satellite.DAICHI,
+      GROUND_STATION.latitudeDeg,
+      GROUND_STATION.longitudeDeg,
+      0.0,
+      0.0,
+      currentDate
+    );
+    // when 実行
+    const daichiResult = await daichiGroundStation.getOrbitPassAsync(currentDate);
+    // then 結果
+    expect(daichiResult && daichiResult.aos?.shadowFraction).toBe(0);
+    expect(daichiResult && daichiResult.maxEl?.shadowFraction).toBe(0);
+    expect(daichiResult && daichiResult.los?.shadowFraction).toBe(0);
+  });
+
+  it("ひまわり8号機の日照状態が取得できる", async () => {
+    // given 前提条件
+    const himawariGroundStation = new GroundStationService(
+      TleDataHelper.Satellite.HIMAWARI8_20241001,
+      GROUND_STATION.latitudeDeg,
+      GROUND_STATION.longitudeDeg,
+      0.0,
+      0.0,
+      currentDate
+    );
+    // when 実行
+    const himawariResult = await himawariGroundStation.getOrbitPassAsync(currentDate);
+    // then 結果
+    expect(himawariResult && himawariResult.aos?.shadowFraction).toBe(undefined);
+    expect(himawariResult && himawariResult.maxEl?.shadowFraction).toBe(0); // ひまわり8号機は常時可視のためAOS/LOSなし
+    expect(himawariResult && himawariResult.los?.shadowFraction).toBe(undefined);
+  });
+
+  it("みちびきの日照状態が取得できる", async () => {
+    // given 前提条件
+    const michibikiGroundStation = new GroundStationService(
+      TleDataHelper.Satellite.MICHIBIKI,
+      GROUND_STATION.latitudeDeg,
+      GROUND_STATION.longitudeDeg,
+      0.0,
+      0.0,
+      currentDate
+    );
+    // when 実行
+    const michibikiResult = await michibikiGroundStation.getOrbitPassAsync(currentDate);
+    // then 結果
+    expect(michibikiResult && michibikiResult.aos?.shadowFraction).toBe(undefined);
+    expect(michibikiResult && michibikiResult.maxEl?.shadowFraction).toBe(0); // みちびきは常時可視のためAOS/LOSなし
+    expect(michibikiResult && michibikiResult.los?.shadowFraction).toBe(undefined);
+  });
+
+  it("モルニア軌道の日照状態が取得できる", async () => {
+    // given 前提条件
+    const molniyaGroundStation = new GroundStationService(
+      TleDataHelper.Satellite.MOLNIYA,
+      GROUND_STATION.latitudeDeg,
+      GROUND_STATION.longitudeDeg,
+      0.0,
+      0.0,
+      currentDate
+    );
+    // when 実行
+    const molniyaResult = await molniyaGroundStation.getOrbitPassAsync(currentDate);
+    // then 結果
+    expect(molniyaResult && molniyaResult.aos?.shadowFraction).toBe(0);
+    expect(molniyaResult && molniyaResult.maxEl?.shadowFraction).toBe(0);
+    expect(molniyaResult && molniyaResult.los?.shadowFraction).toBe(0);
+  });
+
+  it("TESSの日照状態が取得できる", async () => {
+    // given 前提条件
+    const heoGroundStation = new GroundStationService(
+      TleDataHelper.Satellite.HEO,
+      GROUND_STATION.latitudeDeg,
+      GROUND_STATION.longitudeDeg,
+      0.0,
+      0.0,
+      currentDate
+    );
+    // when 実行
+    const heoResult = await heoGroundStation.getOrbitPassAsync(currentDate);
+    // then 結果
+    expect(heoResult && heoResult.aos?.shadowFraction).toBe(0);
+    expect(heoResult && heoResult.maxEl?.shadowFraction).toBe(0);
+    expect(heoResult && heoResult.los?.shadowFraction).toBe(0);
   });
 });
 

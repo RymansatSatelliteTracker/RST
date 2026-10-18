@@ -18,13 +18,13 @@ export default class I18nUtil {
     const dispLangStore = useStoreDispLang();
 
     // ストアで保持している表示言語を元にして、メッセージを取得する
-    const msg = (msgItem as any)[dispLangStore.getLang()] as string;
+    const msg = msgItem[dispLangStore.getLang()];
     if (!msg) {
       AppRendererLogger.error(`message not found: ${dispLangStore.getLang()} ${JSON.stringify(msgItem)}`);
       return "";
     }
 
     // メッセージ内の {} で囲まれた部分を置換する
-    return msg.replace(/{(\d+)}/g, (_, index) => args[index] || "");
+    return msg.replace(/{(\d+)}/g, (_: string, index: string) => args[Number(index)] || "");
   }
 }

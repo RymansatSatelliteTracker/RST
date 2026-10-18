@@ -1,7 +1,12 @@
 import type { TargetPolarLocation } from "@/renderer/types/satellite-type.js";
 
 // AOS/LOS/Melのキャッシュ
-export type PassData = { date: Date; lookAngles: LookAngles; satLocation: TargetPolarLocation } | null;
+export type PassData = {
+  date: Date;
+  lookAngles: LookAngles;
+  satLocation: TargetPolarLocation;
+  shadowFraction: number;
+} | null;
 export type PassesCache = {
   aos: PassData;
   maxEl: PassData;

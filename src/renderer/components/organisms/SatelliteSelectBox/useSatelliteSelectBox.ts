@@ -20,9 +20,9 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
   const prevSelectedSatIdMap: { [key: number]: number } = {};
   let prevItems: SelectOption[] = [];
 
-  onMounted(async () => {
+  onMounted(() => {
     // 初期表示時のアクティブ衛星グループで衛星SeceletBoxを更新
-    await onChangeSatGrp();
+    onChangeSatGrp();
 
     // 表示中の衛星グループが変更された場合のコールバックを設定
     ActiveSatServiceHub.getInstance().addOnChangeActiveSat(onChangeSatGrp);
@@ -31,9 +31,9 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
   /**
    * 表示中の衛星グループが変更された場合のイベントハンドラ
    */
-  async function onChangeSatGrp() {
+  function onChangeSatGrp() {
     // 新しい衛星グループでSelectBoxのデータを更新
-    updateSatItems();
+    void updateSatItems();
   }
 
   /**
@@ -70,12 +70,12 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
       // memo: 衛星リストが空の場合はsatId=-1で返ってくるので、その場合は更新不要（次の有効な衛星リストが来たら更新される）
       if (satId >= 0 && selectedSatId.value !== satId) {
         selectedSatId.value = satId;
-        updateAppConfig(selectedSatId.value.toString());
+        void updateAppConfig(selectedSatId.value.toString());
       }
     }
 
     // 前回選択肢として現在の衛星リストを保持
-    prevItems = JSON.parse(JSON.stringify(items.value));
+    prevItems = JSON.parse(JSON.stringify(items.value)) as SelectOption[];
 
     // 現在の衛星グループIDを保持
     currentSatGroupId = satGrp.activeSatelliteGroupId;
@@ -120,7 +120,7 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
     }
 
     // 一旦、先頭を候補にしておく
-    let satId = items[0].value;
+    let satId = Number(items[0].value);
 
     // 衛星グループごとの前回選択された衛星IDが存在する場合は、その衛星を選択
     if (activeSatGrp.activeSatelliteGroupId in prevSelectedSatIdMap) {
@@ -130,7 +130,7 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
     // ただし、選択肢に当該衛星が存在しない（削除された)場合は、先頭の衛星を選択する
     const index = items.findIndex((item) => item.value === satId);
     if (index < 0) {
-      satId = items[0].value;
+      satId = Number(items[0].value);
     }
 
     return satId;

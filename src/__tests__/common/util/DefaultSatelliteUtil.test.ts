@@ -1,8 +1,10 @@
+import type { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
 import {
   createDefaultSatellite,
   initializeDefaultSatellites,
   normalizeData,
 } from "@/common/util/DefaultSatelliteUtil.js";
+import { describe, expect, it } from "vitest";
 
 describe("DefaultSatelliteUtil", () => {
   it("空のデフォルト衛星情報を生成できる", () => {
@@ -32,7 +34,7 @@ describe("DefaultSatelliteUtil", () => {
     ];
 
     // 実行
-    const result = initializeDefaultSatellites(satellites);
+    const result = initializeDefaultSatellites(satellites as DefaultSatelliteType[]);
 
     // 検証
     expect(result).toHaveLength(1);

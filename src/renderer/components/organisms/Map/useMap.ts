@@ -21,14 +21,14 @@ const useMap = () => {
   /**
    * 表示中の地上局が変更された場合のイベントハンドラ
    */
-  async function onChangeGroundStation() {
-    await updateGroundStation();
+  function onChangeGroundStation() {
+    updateGroundStation();
   }
 
   /**
    * 地上局情報を更新する
    */
-  async function updateGroundStation() {
+  function updateGroundStation() {
     // 地上局1(自局)の位置を取得
     const activeGroundStation = ActiveSatServiceHub.getInstance().getGroundStation();
     if (activeGroundStation) {
@@ -53,7 +53,7 @@ const useMap = () => {
     tilePath.value = await ApiCommon.getTilesPath();
 
     // 初期表示時の地上局で画面を更新
-    await onChangeGroundStation();
+    onChangeGroundStation();
 
     // 地上局が変更された場合のコールバックを設定
     ActiveSatServiceHub.getInstance().addOnChangeActiveSat(onChangeGroundStation);

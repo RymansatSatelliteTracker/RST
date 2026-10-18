@@ -56,13 +56,13 @@ class OrbitLineService {
    * @param {Date[]} [splitDates=[]] 軌道分割する日時配列
    * @returns {Promise<{ resultOrbitLine: [number,number][][]; resultOrbitDashLine: [number,number][][] }>} 軌道配列
    */
-  public getOrbitLineListAsync = async (
+  public getOrbitLineListAsync = (
     currentDate: Date,
     splitDates: Date[] = []
   ): Promise<{ resultOrbitLine: [number, number][][]; resultOrbitDashLine: [number, number][][] }> => {
     if (this._satelliteService.isGeostationaryOrbit()) {
       // 人工衛星が静止衛星の場合は空配列を返却する
-      return { resultOrbitLine: [], resultOrbitDashLine: [] };
+      return Promise.resolve({ resultOrbitLine: [], resultOrbitDashLine: [] });
     }
 
     // 軌道始端の日時を取得する
@@ -80,7 +80,7 @@ class OrbitLineService {
           Constant.Time.MILLISECONDS_IN_MINUTE
     );
     // 軌道始端から軌道終端までの軌道キャッシュ配列を取得する
-    return await this._getOrbitLineCachesAsync(startDate, endDate, splitDates);
+    return Promise.resolve(this._getOrbitLineCachesAsync(startDate, endDate, splitDates));
   };
 
   /**
@@ -90,11 +90,11 @@ class OrbitLineService {
    * @param {Date[]} splitDates 軌道分割する日時配列
    * @returns {Promise<{ resultOrbitLine: [number,number][][]; resultOrbitDashLine: [number,number][][] }>} 軌道キャッシュ配列
    */
-  private _getOrbitLineCachesAsync = async (
+  private _getOrbitLineCachesAsync = (
     startDate: Date,
     endDate: Date,
     splitDates: Date[]
-  ): Promise<{ resultOrbitLine: [number, number][][]; resultOrbitDashLine: [number, number][][] }> => {
+  ): { resultOrbitLine: [number, number][][]; resultOrbitDashLine: [number, number][][] } => {
     // 軌道始端の日時から1軌道ピッチ分を削った日時を取得する
     const startTime = startDate.getTime() + this._orbitPitchMin * Constant.Time.MILLISECONDS_IN_MINUTE;
     // 軌道終端の日時から1軌道ピッチ分を削った日時を取得する
@@ -102,7 +102,7 @@ class OrbitLineService {
 
     if (this._orbitLinesCache.length === 0) {
       // 初回実行時の場合は、指定した日時期間で人工衛星の軌道キャッシュ配列を更新する
-      await this._updateOrbitLineListAsync(startTime, endTime);
+      this._updateOrbitLineListAsync(startTime, endTime);
     } else {
       // 2回目以降実行時の場合は、指定した日時期間の不足分の人工衛星の軌道キャッシュ配列を更新する
       this._orbitLinesCache = [...this._orbitLinesCache].filter(
@@ -111,7 +111,7 @@ class OrbitLineService {
 
       if (this._orbitLinesCache.length === 0) {
         // 人工衛星の軌道キャッシュ配列が空になった場合は指定した日時期間の人工衛星の緯度/経度を取得する
-        await this._updateOrbitLineListAsync(startTime, endTime);
+        this._updateOrbitLineListAsync(startTime, endTime);
       } else {
         // 人工衛星の軌道キャッシュ配列要素から一番過去の日時を取得する
         let earliestTime = Math.min(...this._orbitLinesCache.map((cache) => cache.time));
@@ -127,14 +127,14 @@ class OrbitLineService {
           earliestTime - startTime >= this._orbitPitchMin * Constant.Time.MILLISECONDS_IN_MINUTE
         ) {
           // 人工衛星の軌道キャッシュ配列に存在しない過去日時期間の人工衛星の緯度/経度を取得する
-          await this._updateOrbitLineListAsync(startTime, earliestTime);
+          this._updateOrbitLineListAsync(startTime, earliestTime);
         }
         if (
           latestTime < endTime &&
           endTime - latestTime >= this._orbitPitchMin * Constant.Time.MILLISECONDS_IN_MINUTE
         ) {
           // 人工衛星の軌道キャッシュ配列に存在しない未来日時期間の人工衛星の緯度/経度を取得する
-          await this._updateOrbitLineListAsync(latestTime, endTime);
+          this._updateOrbitLineListAsync(latestTime, endTime);
         }
       }
     }
@@ -184,10 +184,10 @@ class OrbitLineService {
 
     if (splitDates.length !== 0) {
       // 軌道分割する日時配列が存在する場合は軌道配列の一時キャッシュを指定した日時で分割する
-      tempOrbitLinesCache = await this._splitDateOrbitLineAsync(tempOrbitLinesCache[0], splitDates);
+      tempOrbitLinesCache = this._splitDateOrbitLineAsync(tempOrbitLinesCache[0], splitDates);
     }
     // 人工衛星の軌道がラップアラウンドや大気圏再突入する場合は軌道配列の一時キャッシュを分割して返却する
-    return await this._splitOrbitLineAsync(tempOrbitLinesCache);
+    return this._splitOrbitLineAsync(tempOrbitLinesCache);
   };
 
   /**
@@ -196,10 +196,10 @@ class OrbitLineService {
    * @param {Date[]} splitDates 軌道分割日時配列
    * @returns {Promise<OrbitLineCache[][]>} 分割された軌道配列の一時キャッシュ
    */
-  private _splitDateOrbitLineAsync = async (
+  private _splitDateOrbitLineAsync = (
     tempOrbitLinesCache: OrbitLineCache[],
     splitDates: Date[]
-  ): Promise<OrbitLineCache[][]> => {
+  ): OrbitLineCache[][] => {
     if (tempOrbitLinesCache.length === 0 || splitDates.length === 0) {
       // 対象の軌道分割日時配列が存在しない場合は終了する
       return [tempOrbitLinesCache];
@@ -272,9 +272,9 @@ class OrbitLineService {
    * @param {OrbitLineCache[][]} tempOrbitLinesCache 軌道配列の一時キャッシュ
    * @returns {Promise<{ resultOrbitLine: [number,number][][]; resultOrbitDashLine: [number,number][][] }>} 分割された軌道配列の一時キャッシュ
    */
-  private _splitOrbitLineAsync = async (
+  private _splitOrbitLineAsync = (
     tempOrbitLinesCache: OrbitLineCache[][]
-  ): Promise<{ resultOrbitLine: [number, number][][]; resultOrbitDashLine: [number, number][][] }> => {
+  ): { resultOrbitLine: [number, number][][]; resultOrbitDashLine: [number, number][][] } => {
     // 実線表示の軌道配列
     const resultOrbitLine: [number, number][][] = [[]];
     // 点線表示の軌道配列
@@ -459,7 +459,7 @@ class OrbitLineService {
    * @param {number} startTime 探索開始日時
    * @param {number} endTime 探索終了日時
    */
-  private _updateOrbitLineListAsync = async (startTime: number, endTime: number) => {
+  private _updateOrbitLineListAsync = (startTime: number, endTime: number) => {
     // 探索終了日時を設定する
     const searchEndMin = (endTime - startTime) / Constant.Time.MILLISECONDS_IN_MINUTE;
     for (let i = 0; i <= searchEndMin; i += this._orbitPitchMin) {

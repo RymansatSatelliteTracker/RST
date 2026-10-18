@@ -33,7 +33,7 @@ import SatelliteChoiceMinElSelect from "@/renderer/components/molecules/Satellit
 import { AppConfigSatelliteSetting } from "@/common/model/AppConfigModel.js";
 
 const satelliteSetting = defineModel<AppConfigSatelliteSetting>("satelliteSetting", {
-  default: AppConfigSatelliteSetting,
+  default: () => new AppConfigSatelliteSetting(),
 });
 </script>
 <style lang="scss" scoped>

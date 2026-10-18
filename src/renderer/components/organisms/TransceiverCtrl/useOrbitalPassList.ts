@@ -53,7 +53,9 @@ const useOrbitalPassList = (currentDate: Ref<Date>) => {
     ActiveSatServiceHub.getInstance().addOnChangeActiveSat(onChangeSatGrp);
 
     // 10秒ごとにAOSリストを更新する
-    intervalId = window.setInterval(updatePassList, 10000) as number;
+    intervalId = window.setInterval(() => {
+      void updatePassList();
+    }, 10000) as number;
   });
 
   // currentDateの変更を監視して1500ms以上増減した場合はAOSリストを更新する
