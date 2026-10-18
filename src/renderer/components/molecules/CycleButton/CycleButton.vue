@@ -10,7 +10,7 @@ import Button from "@/renderer/components/atoms/Button/Button.vue";
 import { ref, watch } from "vue";
 
 const mode = defineModel<string>("mode", { required: true, default: "" });
-const modeRange = defineModel<string[]>("modeRange", { default: ["", ""], required: true });
+const modeRange = defineModel<string[]>("modeRange", { default: () => ["", ""], required: true });
 const emit = defineEmits(["update:mode"]);
 
 const mainText = ref<string>("");

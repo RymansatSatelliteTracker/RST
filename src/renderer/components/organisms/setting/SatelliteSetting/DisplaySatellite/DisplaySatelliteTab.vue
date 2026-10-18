@@ -42,7 +42,7 @@ import { computed, ref, useTemplateRef } from "vue";
 import type { ComponentExposed } from "vue-component-type-helpers";
 
 // 衛星グループリスト
-const satelliteGroups = defineModel<AppConfigSatelliteGroupForSatSetting[]>("satelliteGroups", { default: [] });
+const satelliteGroups = defineModel<AppConfigSatelliteGroupForSatSetting[]>("satelliteGroups", { default: () => [] });
 
 // 右側のリストに表示しているアイテム
 const rightItems = ref<SatelliteIdentiferType[]>([]);

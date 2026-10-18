@@ -105,7 +105,7 @@ import { mdiArrowDownBold, mdiArrowUpBold, mdiDelete } from "@mdi/js";
 import type { ComponentExposed } from "vue-component-type-helpers";
 
 // 衛星グループリスト
-const satelliteGroups = defineModel<AppConfigSatelliteGroupForSatSetting[]>("satelliteGroups", { default: [] });
+const satelliteGroups = defineModel<AppConfigSatelliteGroupForSatSetting[]>("satelliteGroups", { default: () => [] });
 // 選択されたグループ
 const selectedGroup = ref<AppConfigSatelliteGroupForSatSetting>({
   groupName: "",
@@ -113,7 +113,7 @@ const selectedGroup = ref<AppConfigSatelliteGroupForSatSetting>({
   satellites: [],
 } as AppConfigSatelliteGroupForSatSetting);
 // グループに所属する衛星リスト
-const selectedSatellites = defineModel<SatelliteIdentiferType[]>("selectedSatellites", { default: [] });
+const selectedSatellites = defineModel<SatelliteIdentiferType[]>("selectedSatellites", { default: () => [] });
 // 衛星リストから選択したアイテムのインデックス
 const selectedItemIndex = ref<number | null>(null);
 
