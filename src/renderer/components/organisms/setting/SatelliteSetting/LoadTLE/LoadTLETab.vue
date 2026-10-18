@@ -41,7 +41,7 @@ import { onMounted, ref } from "vue";
 import { useLoadTLETabValidate, validSchemaLoadTLETab } from "./useLoadTLETabValidate.js";
 
 // リストに表示するデータ
-const items = defineModel<AppConfigTleUrl[]>("tleUrls", { default: [] });
+const items = defineModel<AppConfigTleUrl[]>("tleUrls", { default: () => [] });
 
 // 選択されたアイテムのインデックス
 const selectedItem = ref<number | null>(null);
