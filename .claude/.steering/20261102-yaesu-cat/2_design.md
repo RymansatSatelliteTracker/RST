@@ -5,21 +5,23 @@
 ## 0. 設計方針（要約）
 
 本改修は2フェーズで実施する。
-- **フェーズ1：現状のリファクタリング**（§12）。ICOM実装の挙動は変えず、YAESUでも共通利用できる部分（ロック、待機タイマー、通知処理）を切り出す。
-- **フェーズ2：CAT対応**（§1〜§10、§13、§14）。フェーズ1で切り出した部品を使ってYAESUコントローラを追加する。
+- **フェーズ1：現状のリファクタリング**（§11）。ICOM実装の挙動は変えず、YAESUでも共通利用できる部分（ロック、待機タイマー、通知処理）を切り出す。
+- **フェーズ2：CAT対応**（§1〜§10、§12、§13）。フェーズ1で切り出した部品を使ってYAESUコントローラを追加する。
 
 §1〜§10 は、フェーズ1が完了している前提で記述する。
 
 1. 既存の `TransceiverControllerBase`（上位IF）は変更せず、YAESU用コントローラ `TransceiverYaesuController` を追加し、`TransceiverControllerFactory` のYAESU分岐を有効化する。レンダラ側（ドップラー補正、`TransceiverCtrl`配下）は変更しない。
 2. 機種ごとにCATの体系が大きく異なる（FT-991：ASCII／AI通知あり、FT-897：5バイトバイナリ／通知なし／VFO切替方式）ため、**制御フロー（スケジューリング・状態管理・待機制御）は共通のController**、**ワイヤレベルのコマンド生成・応答解析は機種別のProtocolクラス**に分離する（Strategyパターン）。FTM/FT-8xx系の追加は、Protocolクラスを追加するだけで済む構造にする。
-3. 既存のICOM実装（`TransceiverIcom*`）は、**フェーズ1の範囲（§12）を除いて変更しない**（リグレッション回避）。共通化する処理は、ロックと待機タイマーを部品クラス（継承ではなく合成）に切り出し、通知系のヘルパーを基底クラスへ引き上げるものに限る。ICOMのコマンド送受信（`sendAndSyncRecv`）やバンド制御は共通化せず、YAESU側は `TransceiverYaesuSerialIo` で新規に用意する。
-4. 設定画面は、既にメーカー選択・機種選択・ボーレート選択が機種定義ファイル（`transceiver.json`）駆動のため、定義追加とCI-V欄の出し分け、ストップビット対応のみを行う。
+3. 既存のICOM実装（`TransceiverIcom*`）は、**フェーズ1の範囲（§11）を除いて変更しない**（リグレッション回避）。共通化する処理は、ロックと待機タイマーを部品クラス（継承ではなく合成）に切り出し、通知系のヘルパーを基底クラスへ引き上げるものに限る。ICOMのコマンド送受信（`sendAndSyncRecv`）やバンド制御は共通化せず、YAESU側は `TransceiverYaesuSerialIo` で新規に用意する。
+4. 設定画面は、既にメーカー選択・機種選択・ボーレート選択が機種定義ファイル（`transceiver.json`）駆動のため、定義追加とCI-V欄の出し分け、ストップビット対応を行う。あわせて、運用モードの選択肢を機種ごとに絞り込み・表示ラベルを切り替える（§12）。
 
 ### 0.1 既存実装の調査で分かった前提（設計に影響する点）
 
 - `transceiver.json`（機種定義）は **起動ごとに初期データで上書き**される（`AppConfigUtil.initTransceiverJson`）。定義の追加は既存ユーザーにも自動反映される。
+- `AppConfigUtil.getTransceiverConfig()` は `JSON.parse(...) as AppConfigTransceiverModel` で**型変換するだけ**で、クラスのインスタンスを生成しない。そのため、機種定義クラスのフィールドに初期値を書いても、JSONで省略した項目には反映されない（`undefined` になる）。機種定義に追加する項目は optional とし、使用側で既定値を補う。
+- ICOMの `setSatelliteMode(false)` は「同じ値ならスキップ」し、状態の初期値がOFFのため、**起動時にサテライトモードOFFのコマンドは実際には送信されない**（現状の挙動。ICOMの特性テストではこの挙動を固定する）。YAESUでは起動時の状態を確定させるため、Protocolの `init` でSPLIT OFFを明示的に送信する（§4.3、§5.2）。
 - `transceiver.json` には YAESU(`makerId=2`)に FT-847（`transceiverId=1`）が既にあるが、コントローラ未実装のためYAESUを選ぶと `InvalidArgumentError` になる状態。
-- `SerialComm` は **ストップビットが 1 固定**（`createSerialPort`）。FT-897は**ストップビット2**が必須のため、対応が必須。
+- `SerialComm` は **ストップビットが 1 固定**（`createSerialPort`）。FT-991・FT-897はともに**ストップビット2**が必須のため、対応が必須。
 - 設定画面のCI-Vアドレス欄は現状「ICOM以外は `disabled`」で、非表示ではない。接続テスト（`ApiSirial.tryOpen`→`SerialTrialService.open`→`SerialComm`）も別経路でシリアルを開くため、ストップビットの受け渡しが必要。
 - 20261010-207-tx-skip の改修により、**無線機→RSTのTx周波数通知はレンダラ側で常に破棄**される。そのため、YAESUコントローラは無線機側のTx周波数・Txモードを読み取る必要がない（FT-897でTx VFOの読み取りにVFO切替が必要な問題が回避できる）。ただしRx側の周波数・モードは読み取りが必要。
 
@@ -28,7 +30,7 @@
 ```
 TransceiverControllerBase（既存・変更なし）
   └ TransceiverSerialControllerBase（既存・stopBits引数を追加）
-       ├ TransceiverIcomController（既存・変更なし）
+       ├ TransceiverIcomController（既存・フェーズ1で共通部品を利用する形に変更）
        └ TransceiverYaesuController（新規）… スケジューリング／状態／待機制御
               │ uses
               ├ TransceiverYaesuState（新規）…… RST側の要求値・無線機側の取得値の保持
@@ -98,6 +100,13 @@ export interface TransceiverYaesuProtocol {
   /** Rx側（Rx VFO）の周波数・モードを読み取る。失敗時はnull */
   readRx(io: TransceiverYaesuSerialIo): Promise<YaesuRxStatus | null>;
 
+  /** Tx周波数を無線機へ送信する最小の変化量（Hz）。前回送信値との差がこれ未満の場合は送信しない（0は毎回送信） */
+  getTxFreqSendThresholdHz(modeText: string): number;
+  /** 定期読み取り（readRx）を何周期に1回行うか（1＝毎周期）。AIの再有効化もこの周期で行う */
+  readonly pollEveryCycles: number;
+  /** 定期読み取りの周期で、自動通知を再有効化する（AI非対応の機種は何もしない） */
+  refreshAutoInfo(io: TransceiverYaesuSerialIo): Promise<void>;
+
   /** 受信バッファから1フレームずつ切り出す（FT-991：`;`区切り、FT-897：応答長固定のため応答待ち側で処理） */
   extractFrames(buffer: Buffer): { frames: Buffer[]; rest: Buffer };
   /** 自動通知フレームを解析する（通知非対応の機種は空配列） */
@@ -138,49 +147,80 @@ ICOMの `TransceiverIcomState` から、YAESUでは不要な概念（メイン/�
 
 #### start()
 
-1. `openSerial()`（`stopBits` は機種定義から取得して渡す。§6.1、§6.3）。
-2. `protocol.init(io)`。
-3. `setSatelliteMode(false)`（SPLIT OFF）、`readRx` で初期の周波数・モードを取得して通知する（ICOMの`initTranceiver`相当）。
+1. `openSerial()`（`stopBits` は機種定義の `stopBits ?? 1` を渡す。§6.1、§6.3）。
+2. `protocol.init(io)`（SPLIT OFFを明示的に送信。状態 `isSatelliteMode` もOFFで初期化する）。ICOMの `setSatelliteMode(false)` は同じ値だとスキップされ、起動時に送信されない（§0.1）ため、YAESUでは `setSatelliteMode` を経由せず `init` で送信する。
+3. `readRx` で初期の周波数・モードを取得して通知する（ICOMの`initTranceiver`相当）。
 4. `autoTrackingIntervalSec` 間隔で定期処理（§3.4.1）を開始する。
 
-#### 3.4.1 定期処理（ICOMと同様に `isProcessing` ロックで多重実行を防止）
+#### 3.4.1 定期処理（`TransceiverLock` で多重実行を防止）
 
 ```
 ループ（autoTrackingIntervalSec間隔）:
   1. 無線機接続が準備完了でない → シリアル未接続を通知し、タイマー停止
   2. 前回処理中 → スキップ
-  3. 無線機側ダイヤル操作の待機中（isWaitSendFreq）:
+  3. 無線機側ダイヤル操作の待機中（waitTimer.isWaiting()）:
        - FT-991（AI）：送信せず終了（通知受信で待機タイマーが更新される）
        - FT-897（ポーリング）：送信は行わず、readRx のみ実行し、変化があれば待機を延長（§3.4.3）
   4. Rxの更新要求あり → Rx周波数、Rxモードを設定（setFreq / setMode、band="RX"）
   5. サテライトモードON かつ Txの更新要求あり → Tx周波数、Txモードを設定（band="TX"）
-  6. 更新要求がない場合のみ（FT-897のみ）、readRx でRx周波数・モードを取得して変化を検知（§3.4.3）
+       - Tx周波数は、前回送信値との差が getTxFreqSendThresholdHz 未満なら送信しない（§3.4.1.1）
+  6. 定期読み取りの周期（pollEveryCycles）に当たり、かつ今周期にRxの設定を送っていない場合、
+     readRx でRx周波数・モードを取得して変化を検知する（§3.4.2.1、§3.4.3）
+       - FT-897：毎周期（pollEveryCycles=1）
+       - FT-991：5周期に1回（pollEveryCycles=5）。あわせて refreshAutoInfo（AI1;再送）を行う
 ```
 
 - 設定コマンドを送った直後は、読み取りで同じ値が返る前提で読み取りは行わない（ICOMの「RST側から設定した直後は取得しない」と同じ方針）。
 - FT-991のTx側は、周波数は `FB`で直接設定、**モード・トーンはVFO入替（`SV;`）方式**（§4.2）のため、Txモード・トーンが変化したときのみ入替する。周波数の更新のみで入替しない。
 - 設定が失敗した場合（`setFreq`/`setMode` が false）、更新フラグは下ろさず次周期で再試行する。リトライは最大3回（`MAX_CMD_SEND_RETRY_COUNT`、ICOMと同値）。
 
-#### 3.4.1.1 起動時の応答タイムアウト判定
+#### 3.4.1.1 Tx周波数の送信間引き
+
+FT-897はTx周波数の設定にVFO切替（`81`→設定→`81`）が必要で、切替の間は受信がTx周波数に移る。ドップラー補正中はアップリンク周波数が毎周期変化するため、毎周期送信すると受信が周期的に途切れる。そこで、**前回無線機へ送信したTx周波数との差が閾値以上になったときだけ送信する**。
+
+- 閾値はProtocolが運用モードに応じて返す（`getTxFreqSendThresholdHz(modeText)`）。初期値（実機で調整、§10-13）：
+
+  | 機種 | SSB / CW / DIG系（LSB・USB・CW・LSB-D・USB-D） | FM系（FM・FM-D・AM） |
+  | --- | --- | --- |
+  | FT-897 | 50Hz | 500Hz |
+  | FT-991 | 0Hz（毎回送信。`FB`で直接設定でき受信に影響しないため） | 0Hz |
+
+- 前回送信値は `TransceiverYaesuState.lastSentTxFreqHz` に保持する。以下の場合は閾値によらず送信する：`initAutoOn`、`setFreq(..., isForce=true)`、サテライトモードの切替直後、Txモードの変更時、前回送信値が未設定（0）の場合。
+- 差が閾値未満のまま残った分（最大で閾値未満）は、運用上の誤差として許容する（SSBで50Hz未満、FMで500Hz未満）。
+
+#### 3.4.1.2 起動時の応答タイムアウト判定
 
 ICOMの `checkRecvTimeout` と同様に、接続直後（`RECV_TIMEOUT_SEC_FOR_BOOT`＝2秒）に無線機から一度も応答（FT-991はAI通知含む、FT-897は`03`の応答）がない場合は、ボーレートの設定違いや無線機の電源オフとみなし、以下を行う。
 
 - 定期処理を停止し、シリアルをクローズする。
-- `freqCallback` / `modeCallback` に失敗（`SYSTEM_TRANSCEIVER_SERIAL_RECV_TIMEOUT`）を通知する。この通知処理は、フェーズ1で基底クラスの共通メソッド `notifyRecvTimeoutError()` に切り出したものを使う（§12）。
+- `freqCallback` / `modeCallback` に失敗（`SYSTEM_TRANSCEIVER_SERIAL_RECV_TIMEOUT`）を通知する。この通知処理は、フェーズ1で基底クラスの共通メソッド `notifyRecvTimeoutError()` に切り出したものを使う（§11）。
 
 #### 3.4.2 FT-991：AI通知の処理（無線機側操作の検知）
 
 - `io.onNotify` で `protocol.parseNotify(frame)` を呼び、結果を処理する。
   - `FREQ`/`MODE` 通知 → ICOMの`procRecvFreqData`/`procRecvOpeMode`相当の処理でRSTへ通知（`freqCallback`/`modeCallback`）。
-  - 通知を受けたら `isDopplerShiftWaitingCallback(true)` を呼び、`startTransceiveWaitTimer(TRANSCEIVE_WAIT_MS)`（周波数）／`TRANSCEIVE_MODE_WAIT_MS`（モード）で送信を一時停止する（ICOMと同じ定数を使用）。
+  - 通知を受けたら `notifyDopplerShiftWaiting()` を呼び、`waitTimer.start(TRANSCEIVE_WAIT_MS)`（周波数）／`waitTimer.start(TRANSCEIVE_MODE_WAIT_MS)`（モード）で送信を一時停止する（ICOMと同じ定数を使用）。
 - **RST自身の設定による通知の除外**：RSTがCATで設定した周波数・モードが、AIで通知として戻ってくるかは実機で確認が必要（§10）。戻ってくる場合に備え、「直近にRSTが設定した値と同一の通知は、一定時間（500ms）無視する」判定をStateに持たせる（実機で戻ってこないと確認できれば削除可）。
 - **VFO入替中（§4.2）の通知は全て除外する**（入替中フラグON中と、解除後500ms間）。
 - 通知対象は **Rx側（VFO-A）のみ**（`FA`、`MD0`、`IF`）を処理し、VFO-B（Tx）の通知（`FB`、`OI`）は破棄する（レンダラ側でも破棄されるため）。`?;`（エラー応答）は警告ログのみ。
 
+#### 3.4.2.1 FT-991：定期読み取りとAIの再有効化
+
+AIは無線機の電源を切るとOFFになる（マニュアル記載）。接続中に無線機の電源を入れ直すと、以降は無線機側の操作が通知されなくなる。また、Setコマンドに応答がないため、設定が反映されたかを確認する手段がない。そこで、FT-991でも低頻度の定期読み取りを行う。
+
+- 5周期に1回（`pollEveryCycles=5`。既定の制御間隔1秒なら5秒ごと）、`IF;` でRx（VFO-A）の周波数・モードを読み取り、`AI1;` を再送する（`refreshAutoInfo`）。
+- 読み取った値の扱いはFT-897のポーリング（§3.4.3）と同じ：RSTが直近に設定した値と異なれば、無線機側の操作として通知し、送信を一時停止する。
+- 今周期にRxの設定を送った場合は読み取りを次周期に回す（設定直後の読み取りで、反映前の値を「無線機側の操作」と誤認しないため）。
+
 #### 3.4.3 FT-897：ポーリングによる検知
 
 - `readRx`（`03`コマンド）で取得した周波数・モードを、`state.recvRxFreqHz` / `state.currentRxMode` と比較する。
-- **変化あり**（＝無線機側のダイヤル／モード操作）：ICOMのトランシーブ受信と同様に、`freqCallback`/`modeCallback` で通知し、`isDopplerShiftWaitingCallback(true)` ＋ `startTransceiveWaitTimer`。
+- **変化あり**（＝無線機側のダイヤル／モード操作）：ICOMのトランシーブ受信と同様に、`freqCallback`/`modeCallback` で通知し、`notifyDopplerShiftWaiting()` ＋ `waitTimer.start(...)`。
+- **ただし、前回値からアマチュアバンドをまたぐ変化は「VFOずれ」とみなし、RSTへ通知しない**（FT-897で運用中にVFOが手動で切り替えられると、`03`がTx VFOの周波数を返し、それをRxとしてRSTへ通知してしまうため）。
+  - 判定：読み取り値のバンド区分（`TransceiverUtil.analizeAmateurBandRange`：`144`／`430`／`1200`／`""`（帯域外））が、**前回の読み取り値とも、RSTが直近に要求したRx周波数（`reqRxFreqHz`）とも異なる**場合にVFOずれとする。前回値が未取得（0）の場合は判定しない。
+  - RSTの要求値も比較するのは、衛星の切り替え等でRST自身がRxを別のバンドへ設定した直後の読み取り（前回値とはバンドが異なるが、要求値とは一致する）を、VFOずれと誤判定しないため。
+  - VFOずれと判定した場合は、警告ログを出し、取得値を状態に反映しない（自動修復はしない。誤ったVFO切替で状況を悪化させないため）。ユーザーが元のVFOに戻せば、次の読み取りで前回値と同じバンドに戻り、通常の処理に復帰する。
+  - 同じ規則をFT-991の定期読み取り（§3.4.2.1）にも適用する（`SV;`入替の取り残しなどへの備え）。
 - **変化なし**かつ待機中でない場合：何もしない。待機中に変化が止まった場合は、待機タイマー満了で自動的に再開する（ICOMと同じ）。
 - 周波数分解能：FT-897のCAT周波数は10Hz単位。RST側から設定した値は10Hz単位に丸められるため、比較は10Hz単位に丸めた値で行う（丸めによる誤検知を防止）。
 
@@ -217,7 +257,7 @@ ASCII、`;`終端。マニュアル（`FT-991_CAT_OM_J.pdf` p.2〜18）で確認
 | CTCSS方式 | `CT0` + P2 + `;` | P2：`2`=CTCSS ENC、`0`=OFF |
 | CTCSSトーン番号 | `CN00` + 3桁番号 + `;`（P1=`0`、P2=`0`(CTCSS)、P3=3桁） | 番号は `Constant.Transceiver.ToneFrequency` のインデックス（50種で同じ並び、`000`〜`049`）。周波数ではなく番号で指定する |
 
-- **Setコマンドに応答はない**。エラー時のみ `?;` が返る。そのため、Setコマンドは `io.send`（応答待ちなし）で送信し、後続の `?;` 受信（`onNotify` 経由）を警告ログとして出力する。重要な設定（Rx周波数等）は、次周期の読み取りで値が反映されていることを確認する（ICOMの「設定直後の読み取りを省略」とは異なり、FT-991は応答がないため、設定後の最初の読み取りで確認する）。
+- **Setコマンドに応答はない**。エラー時のみ `?;` が返る。そのため、Setコマンドは `io.send`（応答待ちなし）で送信し、後続の `?;` 受信（`onNotify` 経由）を警告ログとして出力する。設定が反映されているかは、定期読み取り（§3.4.2.1、5周期に1回の `IF;`）で確認する。
 - モードのマッピング（`TransceiverYaesuFt991CmdMaker.modeTextToCode` / `RecvParser.codeToModeText`）：
 
   | RST | MD | 備考 |
@@ -251,8 +291,10 @@ setMode(band="TX") / setTone(...) の処理:
 
 ### 4.3 `init` / `term`
 
-- `init`：`AI1;` 送信（以降、無線機側操作が自動通知される）、`FT2;`（SPLIT OFF）。
+- `init`：`AI1;` 送信（以降、無線機側操作が自動通知される）、`FT2;`（SPLIT OFF。RSTのサテライトモードの初期状態OFFと一致させる）。
 - `term`：`AI0;` 送信。
+- `refreshAutoInfo`：`AI1;` を再送する（定期読み取りの周期で呼ばれる。§3.4.2.1）。
+- `getTxFreqSendThresholdHz`：常に0（`FB`で直接設定でき、受信に影響しないため毎回送信）。`pollEveryCycles`：5。
 
 ### 4.4 受信フレーム
 
@@ -279,7 +321,7 @@ setMode(band="TX") / setTone(...) の処理:
 | 周波数・モード読み取り | `00 00 00 00 03` | 応答5バイト |
 | 送信ステータス読み取り | `00 00 00 00 F7` | 応答1バイト（bit7 PTT：0=送信中） |
 
-- 周波数の丸め：`Math.round(hz / 10)` を8桁BCDへ。入力範囲外（0以下、1GHz以上）は送信しない。
+- 周波数の丸め：`Math.round(hz / 10)` を8桁BCDへ。範囲外（30kHz未満、または470MHz超。FT-897の受信範囲の上限は470MHz）は送信せず警告ログ（FT-991と同じ範囲判定）。
 - モードのマッピング：
 
   | RST | 送信（P1） | 受信時の読み替え |
@@ -310,8 +352,10 @@ FT-897は「現在表示中のVFOの周波数・モードの設定／読み取�
 - `setTone`：Txに対する設定のため、`ensureVfo("TX")` → `0A`/`0B` → `ensureVfo("RX")`（同様に送信中はスキップ）。
 - `setSplit(true)`：`02`、`setSplit(false)`：`82`。
 - `readRx`：`ensureVfo("RX")` → `03`。応答5バイトを `TransceiverYaesuFt897RecvParser.parseFreqAndMode` で解析。
-- 例外が発生した場合や応答タイムアウトで `81` が不確実になった場合の自己修復：`81` 送信後、次に `readRx` で周波数が期待値（Rx VFOの値）と大きく異なる場合は、VFOがずれたと判断して警告ログを出す（無線機側のVFO手動切替の可能性）。自動修復は行わない（誤動作防止）。
-- `init`：何も送信しない（VFOは変更しない）。
+- `81` の送信後に応答タイムアウト等で切替が不確実になった場合や、ユーザーがVFOを手動で切り替えた場合は、次の `readRx` で前回値からバンドをまたぐ値が返る。この場合は §3.4.3 の「VFOずれ」として扱い、警告ログを出してRSTへは通知しない。自動修復は行わない（誤動作防止）。
+- `init`：`82`（SPLIT OFF）を送信し、RSTのサテライトモードの初期状態（OFF）と一致させる。VFOは変更しない（表示中のVFOをRx VFOとする）。
+- `refreshAutoInfo`：何もしない。`pollEveryCycles`：1（毎周期）。
+- `getTxFreqSendThresholdHz`：SSB/CW/DIG系 50Hz、FM系 500Hz（§3.4.1.1）。
 
 ### 5.3 受信フレーム
 
@@ -327,7 +371,7 @@ FT-897は「現在表示中のVFOの周波数・モードの設定／読み取�
 
 ### 6.1 `SerialComm`（`src/main/common/SerialComm.ts`）
 
-- フェーズ1（§12）で追加した末尾引数 `options?: { stopBits?: 1 | 2 }` を使用する（ここでは変更なし）。
+- フェーズ1（§11）で追加した末尾引数 `options?: { stopBits?: 1 | 2 }` を使用する（ここでは変更なし）。
 
 ### 6.2 `TransceiverSerialControllerBase`
 
@@ -337,8 +381,9 @@ FT-897は「現在表示中のVFOの周波数・モードの設定／読み取�
 
 接続テストは `ApiSirial.tryOpen`→IPC `openSerialPortTry`→`SerialTrialService.open`→`SerialComm` の経路で、現状ストップビットを渡していない。
 
-- 機種定義に `stopBits` を持たせる：`AppConfigTransceiverDevice`（`src/common/model/AppConfigTransceiverModel.ts`）に `public stopBits: 1 | 2 = 1`（省略時1）を追加し、`transceiver.json` のFT-991とFT-897に `"stopBits": 2` を指定する（§6.6。マニュアルでどちらもストップビット2と確認済み）。
-- 無線機コントローラは `AppConfigUtil.findTransceiverDeviceById(makerId, transceiverId).stopBits` を、接続テストは設定画面で取得済みの機種定義（`ApiAppConfig.getTransceiverConfig()`）から、それぞれ取得する。
+- 機種定義に `stopBits` を持たせる：`AppConfigTransceiverDevice`（`src/common/model/AppConfigTransceiverModel.ts`）に `public stopBits?: 1 | 2` を追加し、`transceiver.json` のFT-991とFT-897に `"stopBits": 2` を指定する（§6.6。マニュアルでどちらもストップビット2と確認済み）。ICOMの機種は省略する。
+- 機種定義はJSONを型変換するだけでインスタンス化されないため（§0.1）、クラスに初期値は書かず、**使用側で `device.stopBits ?? 1` と既定値を補う**。
+- 無線機コントローラは `AppConfigUtil.findTransceiverDeviceById(makerId, transceiverId).stopBits ?? 1` を、接続テストは設定画面で取得済みの機種定義（`ApiAppConfig.getTransceiverConfig()`）の `stopBits ?? 1` を、それぞれ使用する。
 - `ApiSirial.tryOpen(comName, baudRate, stopBits = 1)`、`preload.ts`（`openSerialPortTry`）、`initializeIpcEvent.ts`（`openSerialPortTry`）、`SerialTrialService.open` に `stopBits` 引数を追加（末尾・省略可）。
 - `useTransceiverTestConnect.ts`：選択中の機種の `stopBits` を渡す。
 - ローテータ側の呼び出し（`useRotatorTestConnect.ts`）は変更なし（既定値1）。
@@ -385,7 +430,9 @@ YAESU(`makerId=2`)の devices を以下にする。
 
 - `TransceiverConn.vue`：CI-Vアドレス欄を `v-if="form.makerId === Constant.Transceiver.MakerId.ICOM"` で**ICOM選択時のみ表示**に変更（現状は `disabled`）。ラベル・入力欄を含む `div` ごとの出し分け。
 - ボーレート選択（`BorateSelect`）はそのまま（YAESU用の選択肢は既存の `4800/9600/19200/38400` に含まれる）。CATレートの設定はユーザーが無線機のメニューと合わせる。
-- 無線機側のメニュー設定の案内：設定画面に説明文（注記）を追加する（`I18nMsgs`に追加）。FT-897は `No-020 CAT/LIN/TUN=CAT`、`No-019 CAT RATE`、FT-991は `031 CAT RATE`（USBケーブル使用時。RS-232C使用時は `029 232C RATE`）。いずれも無線機側のメニューの設定値とRSTのボーレート設定を一致させる必要がある（FT-991の工場出荷時は4800bps）。
+- 無線機側のメニュー設定の案内：設定画面に説明文（注記）を追加する（`I18nMsgs`に日英で追加）。選択中の機種に応じて表示する。
+  - FT-991：`031 CAT RATE`（USBケーブル使用時。RS-232C使用時は `029 232C RATE`）をRSTのボーレートと一致させる（工場出荷時は4800bps）。
+  - FT-897：`No-001 EXT MENU=ON`、`No-020 CAT/LIN/TUN=CAT`、`No-019 CAT RATE` をRSTのボーレートと一致させる。**USB-D/LSB-D（DIG）の側波帯はメニュー`No-038 DIG MODE`（USB-Dは`USER-U`等の`-U`、LSB-Dは`USER-L`等の`-L`）で決まり、RSTからは指定できない**。FM-D（PKT）の速度はメニュー`No-073 PKT RATE`で設定する。運用中はVFOの切替操作を行わない。
 - `useTransceiverTestConnect.ts`、`useTransceiverCtrl.ts`、`TransceiverSetting.vue` は、CI-Vアドレスの扱いが既に「ICOMのみ」で処理されているため変更不要（確認済み）。
 - `AppConfigValidator`：CI-Vアドレスは `zod.string()`（必須チェックなし）のため、YAESU選択時（空文字）でも通る。変更不要。
 
@@ -396,7 +443,7 @@ YAESU(`makerId=2`)の devices を以下にする。
 
 ## 8. テスト設計
 
-`src/__tests__/main/service/transceiver/controller/` 配下に、既存ICOMテストと同じ命名（`クラス名/クラス名_メソッド名.test.ts`）で追加する。
+`src/__tests__/main/service/transceiver/controller/yaesu/` 配下に（`TransceiverControllerFactory` は既存の配置にあわせて `controller/` 直下）、既存ICOMテストと同じ命名（`クラス名/クラス名_メソッド名.test.ts`）で追加する。
 
 | 対象 | ケース |
 | --- | --- |
@@ -405,12 +452,13 @@ YAESU(`makerId=2`)の devices を以下にする。
 | `TransceiverYaesuFt897CmdMaker` | BCD変換（10Hz単位、丸め、境界値、範囲外）、モード変換、トーン周波数のBCD（0.1Hz単位）、固定コマンド（VFO切替、SPLIT等） |
 | `TransceiverYaesuFt897RecvParser` | `03`応答解析（正常、BCD不正、長さ不正）、モード読み替え（`03`/`88`/`06`/`0A`/`0C`）、`F7`のPTT判定 |
 | `TransceiverYaesuFt897Protocol`（IOをモック） | TX設定時にVFO切替(`81`)が「Tx→設定→Rx」の順で送られる、送信中はスキップしてfalse、`readRx`時にRx VFOへ戻る |
-| `TransceiverYaesuState` | ICOM Stateと同様：`setReqRxFreqHz`/`setReqTxFreqHz`（同一値は更新しない、`isForce`）、`setReqRxMode`/`setReqTxMode`、`isRxUpdate`/`isTxUpdate`、`resetAll` |
+| `TransceiverYaesuState` | ICOM Stateと同様：`setReqRxFreqHz`/`setReqTxFreqHz`（同一値は更新しない、`isForce`）、`setReqRxMode`/`setReqTxMode`、`isRxUpdate`/`isTxUpdate`、`resetAll`。Tx送信間引きの判定（閾値未満は送信不要、閾値以上・`isForce`・前回値未設定は送信要） |
+| `TransceiverYaesuController`（FakeSerialComm＋Protocolモック） | Tx周波数の送信間引き（閾値未満で送らない、閾値以上で送る、`initAutoOn`では必ず送る）、VFOずれ判定（バンドをまたぐ変化は通知しない、同一バンド内の変化は通知して待機する）、FT-991の定期読み取り周期（5周期に1回`IF;`と`AI1;`、Rx設定を送った周期は読み取らない）、起動時の応答タイムアウト |
 | `TransceiverControllerFactory` | YAESU＋FT-991/FT-897→対応Controller、YAESU＋未対応機種→`InvalidArgumentError` |
 | `TransceiverYaesuFt991Protocol`（IOモック） | Tx（VFO-B）のモード設定が `TX;`確認→`SV;`→`MD0x;`→`SV;` の順で送られる、送信中はスキップしてfalse、入替中のAI通知が除外される、Txモード・トーンが変化していない場合は入替しない、範囲外周波数（470MHz超）は送信しない |
 | `transceiver.json` | FT-991とFT-897のみ `stopBits=2`、他は省略（1）であること（定義ファイルの内容テスト） |
 
-フェーズ1で追加する部品（`TransceiverLock`、`TransceiverWaitTimer`、`SerialComm`のstopBits）のテストは §12.4 を参照。
+フェーズ1で追加する部品（`TransceiverLock`、`TransceiverWaitTimer`、`SerialComm`のstopBits）のテストは §11.5 を参照。
 
 - 実機確認（FT-991 / FT-897）はタスクリスト末尾の手順に従い手動で実施する（Controller本体の統合動作は実機で確認する方針）。
 
@@ -419,8 +467,10 @@ YAESU(`makerId=2`)の devices を以下にする。
 - FT-897：運用中にユーザーがVFOを手動で切り替えると、RSTのRx/Txの対応がずれる。RSTでの運用中はVFOの切替操作を行わない。
 - FT-897：Txの周波数・モードは無線機から読み取らない（RST→無線機の一方向）。
 - FT-897：送信中（PTT ON）はTx側の設定を行わない（次周期に再試行する）。
+- FT-897：Tx周波数は、前回送信値から一定以上（SSB系50Hz、FM系500Hz。初期値）変化したときだけ送信する。Tx周波数の設定のたびに受信が一瞬Tx周波数へ移るため、その頻度を抑えるための措置。閾値未満の誤差は残る。
+- FT-897：運用中にVFOが切り替えられ、読み取った周波数がバンドをまたいで変化した場合は「VFOずれ」とみなし、RSTへは反映しない（警告ログのみ）。元のVFOに戻すと通常の動作に復帰する。
 - FT-897：デジタル系モードのうち、LSB-D/USB-DはDIG、FM-DはPKTに割り当てる。**DIGの側波帯（LSB/USB）は無線機のメニュー`No-038 DIG MODE`（`USER-L`/`USER-U`等）で決まり、RSTからは指定できない**。USB-Dで運用する場合は`-U`、LSB-Dの場合は`-L`にあらかじめ設定しておく（RSTは不一致を検知できない）。PKTの速度（1200/9600bps）はメニュー`No-073 PKT RATE`で設定する。RTTY/DVは設定できない。
-- FT-991：AI通知を使用するため、接続中は無線機側の周波数・モード変更が自動的にRSTへ反映される。
+- FT-991：AI通知を使用するため、接続中は無線機側の周波数・モード変更が自動的にRSTへ反映される。無線機の電源を入れ直すとAIがOFFになるが、5周期に1回の定期読み取りでAIを再有効化し、その間の変化も検知する（最大で約5秒の遅れ）。
 - FT-991：周波数範囲は30kHz〜470MHz。1200MHz帯の衛星運用には対応できない（範囲外の周波数は設定せず、警告ログを出力する）。
 - FT-991：Tx側のモード・トーンを変更する際、VFOを一時的に入れ替える（数十〜数百ms）。この間、受信周波数が一時的に変わる。送信中は入れ替えを行わない。
 
@@ -440,8 +490,11 @@ YAESU(`makerId=2`)の devices を以下にする。
 | 10 | FT-991：`SV;`入替中の受信音への影響、入替に必要な時間（コマンド間隔）、`SV;`2回でVFO-A/Bの内容（周波数・モード・トーン）が完全に元に戻るか | 間隔50ms、AI通知除外500ms | 実機で確認（値は定数化） |
 | 11 | FT-991：Setコマンドの後、AIでRST自身の設定が通知されるか（§3.4.2） | 通知される前提で除外 | 実機で確認 |
 | 12 | FT-991：1200MHz帯（範囲外）の扱い | 設定せず警告ログ | 仕様どおり（470MHzまで）。必要ならUIで警告表示を検討（今回の対象外） |
+| 13 | FT-897：Tx周波数の送信間引きの閾値（§3.4.1.1）。VFO切替による受信の途切れが運用上許容できるか | SSB/CW/DIG系 50Hz、FM系 500Hz | 実機で、ドップラー補正中の受信音と、閾値による周波数誤差を確認して調整（定数化） |
+| 14 | FT-991：定期読み取りの周期（§3.4.2.1） | 5周期に1回 | 実機で、電源の入れ直し後にAIが再有効化されること、CATの負荷を確認 |
+| 15 | VFOずれ判定（§3.4.3）が、通常のダイヤル操作（同一バンド内）を誤って除外しないこと | アマチュアバンドの区分が変わった場合のみVFOずれとする | 実機で、VFOの手動切替とダイヤル操作の両方を確認 |
 
-## 12. フェーズ1：現状のリファクタリング
+## 11. フェーズ1：現状のリファクタリング
 
 **目的**：YAESU追加の前に、ICOMコントローラ内の汎用処理を部品として切り出し、YAESUで重複実装せずに済む状態にする。**ICOMの動作は変えない**（挙動維持のリファクタリング）。
 
@@ -449,12 +502,12 @@ YAESU(`makerId=2`)の devices を以下にする。
 
 **ICOM特性テストの方式（1-0）**：`SerialComm` をフェイク（`FakeSerialComm`）に差し替え、ICOM無線機の応答を模擬するシミュレータ（`IcomRadioSimulator`）を用意する。コントローラの公開メソッド（`start` / `setFreq` / `setMode` / `initAutoOn` 等）の呼び出しと、受信データの注入に対する、送信コマンド列とコールバック呼び出しを検証する。フェイクタイマーで時間経過を制御する。テスト用ヘルパーはフェーズ2のYAESUテストでも再利用する。実機でしか確認できない項目（実シリアルの挙動、機種固有の応答の癖、本体操作との干渉）は対象外とする。
 
-### 12.1 `SerialComm`：オプション引数の追加
+### 11.1 `SerialComm`：オプション引数の追加
 
 - コンストラクタの末尾に `options?: { stopBits?: 1 | 2 }` を追加し、`createSerialPort` の `stopBits` に反映する（省略時1）。位置引数の並びは変更しない（既存の呼び出し4か所は変更不要）。
 - 接続ログにストップビットを出力する。
 
-### 12.2 `TransceiverLock`（新規、`controller/TransceiverLock.ts`）
+### 11.2 `TransceiverLock`（新規、`controller/TransceiverLock.ts`）
 
 ICOMの `getLock` / `releaseLock` / `isProcessing` を切り出す。
 
@@ -472,7 +525,7 @@ export default class TransceiverLock {
 
 - ICOM側：`private isProcessing` / `getLock` / `releaseLock` を削除し、`private lock = new TransceiverLock()` に置き換える。呼び出し箇所（定期処理、`initAutoOn`、`autoOff`）と `if (this.isProcessing)` を `lock.acquire` / `lock.release` / `lock.isLocked()` に変更する。
 
-### 12.3 `TransceiverWaitTimer`（新規、`controller/TransceiverWaitTimer.ts`）
+### 11.3 `TransceiverWaitTimer`（新規、`controller/TransceiverWaitTimer.ts`）
 
 ICOMの `isWaitSendFreq` / `transceiveWaitTimer` / `startTransceiveWaitTimer` を切り出す。
 
@@ -494,7 +547,7 @@ export default class TransceiverWaitTimer {
   - 定期処理の `if (this.isWaitSendFreq)` → `if (this.waitTimer.isWaiting())`
 - 挙動維持の確認点：元の実装は `isWaitSendFreq=false` にしてもタイマー自体は残る（後で満了して再度falseにするだけ）。新しい `release()` はタイマーもクリアするが、動作上の差は生じない（新しい待機は常に `start()` で既存タイマーをクリアするため）。
 
-### 12.4 通知系ヘルパーの基底クラスへの引き上げ
+### 11.4 通知系ヘルパーの基底クラスへの引き上げ
 
 ICOMの private メソッドのうち、ICOM固有でないものを基底クラスへ移す（ICOM側は削除）。
 
@@ -507,7 +560,7 @@ ICOMの private メソッドのうち、ICOM固有でないものを基底クラ
 - ICOMの `checkRecvTimeout` は、タイマー停止・シリアルクローズ後に `notifyRecvTimeoutError()` を呼ぶ形に変更する（判定ロジックはICOMに残す）。
 - 基底クラスに同名のprotectedメソッドを追加するため、ICOMの同名privateメソッドは**同じ変更で必ず削除する**（残すとTypeScriptの型エラーになる）。
 
-### 12.5 テスト（フェーズ1）
+### 11.5 テスト（フェーズ1）
 
 | 対象 | ケース |
 | --- | --- |
@@ -515,22 +568,22 @@ ICOMの private メソッドのうち、ICOM固有でないものを基底クラ
 | `TransceiverWaitTimer` | `start`で待機状態になり指定時間後に解除される、再`start`でタイマーが延長される、`release`で即時解除（フェイクタイマー） |
 | `SerialComm` | `stopBits`の既定値1、指定値2が`SerialPort`に渡される（`serialport`をモック） |
 
-### 12.6 フェーズ1の完了条件
+### 11.6 フェーズ1の完了条件
 
 - `npm run test`、型チェック（`npm run ts`）、lintがエラーなく通る。
 - ICOM実機（IC-910/IC-9700等、あれば）で、接続、Rx/Tx周波数・モード設定、無線機側ダイヤル操作後の待機と再開、AutoOn/Off（トーン含む）が、リファクタリング前と同等に動作する。ICOM実機がない場合は、完了条件を満たしたうえでユーザー報告での確認とする旨を、PR説明に明記する。
 
-## 13. 運用モード選択肢の機種別表示
+## 12. 運用モード選択肢の機種別表示
 
 **目的**：無線機の機種によって、設定できる運用モードや、実際に無線機へ送られるモードが異なる（FT-897：USB-D/LSB-DはDIG、FM-DはPKT、RTTY不可 等）。そこで、衛星設定・メイン画面の運用モード選択肢を、選択中の無線機に応じて**絞り込み、表示ラベルを切り替える**。
 
-### 13.1 方針
+### 12.1 方針
 
 - **保存値は変更しない**。衛星設定には従来どおりRST共通のモード名（`USB-D` など）を保存する。既存データの移行は不要。変更するのは画面の**選択肢**と**表示ラベル**のみ。
 - 機種定義（`transceiver.json`）に、使えるモードと表示ラベルを持たせる（データ駆動）。ICOMなど定義がない機種は、従来どおり（DV以外の全モード、ラベルなし）とする。
 - DIGの側波帯（`No-038 DIG MODE`依存）など、表示では解決できない制約は、設定画面の注記（`I18nMsgs`）で案内する（§6.7）。
 
-### 13.2 機種定義の追加項目（`AppConfigTransceiverDevice`）
+### 12.2 機種定義の追加項目（`AppConfigTransceiverDevice`）
 
 ```ts
 // 使用できる運用モード（RSTのモード名）。省略時は従来どおり全モード（DVを除く）
@@ -550,26 +603,28 @@ public modeLabels?: Record<string, string>;
 - `supportedModes` / `modeLabels` のキー・値は `Constant.Transceiver.OpeMode` の値と一致している必要がある（定義ファイルの内容テストで検証する）。
 - DV は、従来どおり選択肢に出さない（無線機からの受信時のみ設定される）。
 
-### 13.3 画面（`OpeModeSelect.vue`）
+### 12.3 画面（`OpeModeSelect.vue`）
 
 - `OpeModeSelect` は、選択中の無線機の機種定義（`ApiAppConfig.getAppConfig()` の `transceiver.makerId`/`transceiverId` ＋ `ApiAppConfig.getTransceiverConfig()`）を取得し、選択肢を組み立てる。無線機が未設定の場合は、従来どおりの全モード（DVを除く）・ラベルなしとする。
 - 選択肢の組み立ては、画面から切り離した純粋関数 `OpeModeItemsUtil.buildItems(device, currentValue)`（`src/renderer/common/util/`）に実装し、単体テストできるようにする。
   - 返す項目：`{ title: ラベル, value: RSTのモード名 }`。
   - `supportedModes` が指定されている場合は、その順序・内容のみ。
-  - **保存済みの値が `supportedModes` に含まれない場合**（例：以前の設定でRTTYを保存、別の機種に切り替えた）は、その値を選択肢の末尾に `RTTY（非対応）` として追加し、選択状態が空表示にならないようにする（保存値は変更しない）。
+  - **保存済みの値が `supportedModes` に含まれない場合**（例：以前の設定でRTTYを保存、別の機種に切り替えた）の扱い：Vuetify 3 の `v-select` は、選択肢に無い値もそのまま表示する想定のため、選択肢には追加しない（保存値は変更しない）。実装時にVuetifyの挙動を確認し、空表示になる場合のみ、その値を選択肢の末尾に `RTTY（非対応）` として追加する。
+  - **DV（無線機からの受信時のみ設定される値）は、この扱いの対象外**とし、従来どおりの表示を維持する（ICOMの表示を変えないため）。
 - 幅が狭い画面（メイン画面の `TransceiverCtrl`）でも崩れないよう、**ドロップダウンの一覧のみ括弧付きのラベル**を表示し、選択後の表示（`v-select` の `#selection` スロット）は、RSTのモード名（`USB-D`）のみとする。衛星設定ダイアログ（`SatelliteInfoEditorDialog`）も同じ `OpeModeSelect` を使うため、同じ挙動となる。
 - 無線機の設定を変更した後（`TransceiverSetting` のOK後）に、選択肢が更新されるよう、機種定義の取得は共有のリアクティブ状態（composable `useCurrentTransceiverDevice`）に持たせ、設定保存時に再読込する。再読込の呼び出し箇所は実装時に確認する。
 
-### 13.4 テスト
+### 12.4 テスト
 
 | 対象 | ケース |
 | --- | --- |
-| `OpeModeItemsUtil.buildItems` | 機種定義なし（全モード、DV除外）、`supportedModes`指定（絞り込みと順序）、`modeLabels`指定（title切替、valueは不変）、保存済みの値が非対応の場合の末尾追加、空文字（未設定）の値 |
+| `OpeModeItemsUtil.buildItems` | 機種定義なし（全モード、DV除外。従来と同じ選択肢になること）、`supportedModes`指定（絞り込みと順序）、`modeLabels`指定（title切替、valueは不変）、保存済みの値が非対応の場合の扱い（§12.3の確認結果に従う）、DVが選択肢に追加されないこと、空文字（未設定）の値 |
 | `transceiver.json` | `supportedModes`/`modeLabels`の値が`Constant.Transceiver.OpeMode`に存在すること、`modeLabels`のキーが`supportedModes`に含まれること |
 
 
-## 14. ドキュメント更新（`/doc`）
+## 13. ドキュメント更新（`/doc`）
 
 - `doc/10_アーキテクチャ/10_アーキテクチャ.md`：無線機制御の構成図に YAESU コントローラ（Protocol構成）を追加（罫線図は全角文字でずれないよう調整）。
-- `doc/30_画面設計/G4-1_無線機設定（接続設定タブ）.md`：CI-Vアドレス欄は「ICOM選択時のみ表示」、YAESU選択時の機種リスト、無線機メニューのCATレート設定の注記、接続テストのストップビット（FT-897=2）を追記。
+- `doc/30_画面設計/G4-1_無線機設定（接続設定タブ）.md`：CI-Vアドレス欄は「ICOM選択時のみ表示」、YAESU選択時の機種リスト、無線機メニューのCATレート設定の注記、接続テストのストップビット（FT-991・FT-897=2）、機種別の注記（§6.7）を追記。
+- 運用モード選択（`OpeModeSelect`）の機種別の絞り込み・ラベル表示（§12）を、衛星設定／メイン画面の画面設計書に追記。
 - 無線機制御の仕様（YAESU）のドキュメントを `doc/` 配下に新設するか、アーキテクチャ文書に節を追加する（対象機種、Rx/Txの対応、制限事項§9）。
