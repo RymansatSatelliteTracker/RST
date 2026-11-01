@@ -25,110 +25,123 @@ ICOMコントローラ内の汎用処理を部品として切り出す。**ICOM�
 
 配置先：`src/__tests__/main/service/transceiver/controller/helpers/`（`.test.ts` ではないため、テストとしては実行されない。フェーズ2のYAESUテストでも再利用する）
 
-- [ ] 1-0-1-1. `FakeSerialComm.ts`：`SerialComm` の代替クラス。送信データ（Uint8Array）を履歴として記録し、`open` / `close` / `isOpen` / `send` を提供する。コンストラクタ引数の `recvCallback`（`onRecv`）を保持し、テストから受信データを注入できる（`emitRecv(hex)`）。送信時に応答生成関数（シミュレータ）を呼び出して、応答を自動注入できる
-- [ ] 1-0-1-2. `IcomRadioSimulator.ts`：ICOM無線機の簡易シミュレータ。送信されたCI-Vコマンドに対し、設定系は `FB`（OK）、取得系（周波数／モード／データモード／バンド／サテライトモード）は保持している状態に応じた応答を返す。応答の無効化（タイムアウト再現）、NG（`FA`）応答、他のCI-Vアドレス宛ての応答も指定できる。周波数／モード／メイン・サブ状態を内部で保持する
-- [ ] 1-0-1-3. `mockControllerDeps.ts`（または各テスト内の `vi.mock`）：`@/main/common/SerialComm.js` をFakeSerialCommに、`@/main/main.js`（`fireIpcEvent`、`getMainWindow`）、`@/main/util/AppMainLogger.js`、`@/main/util/I18nUtil4Main.js` をモックする。フェイクタイマー（`vi.useFakeTimers`）の準備と後始末（`stop()` の呼び出し、保留中の `@synchronized` が残らないこと）を行う
-- [ ] 1-0-1-4. 既存テストの方針（`vi.mock` を使用した例が `src/__tests__/main` に無い）を踏まえ、`vitest.config` のエイリアス（`@/`）下で `vi.mock` が動作することを最小のテストで確認する
+- [x] 1-0-1-1. `FakeSerialComm.ts`：`SerialComm` の代替クラス。送信データ（Uint8Array）を履歴として記録し、`open` / `close` / `isOpen` / `send` を提供する。コンストラクタ引数の `recvCallback`（`onRecv`）を保持し、テストから受信データを注入できる（`emitRecv(hex)`）。送信時に応答生成関数（シミュレータ）を呼び出して、応答を自動注入できる
+- [x] 1-0-1-2. `IcomRadioSimulator.ts`：ICOM無線機の簡易シミュレータ。送信されたCI-Vコマンドに対し、設定系は `FB`（OK）、取得系（周波数／モード／データモード／バンド／サテライトモード）は保持している状態に応じた応答を返す。応答の無効化（タイムアウト再現）、NG（`FA`）応答、他のCI-Vアドレス宛ての応答も指定できる。周波数／モード／メイン・サブ状態を内部で保持する
+- [x] 1-0-1-3. （実装：`icomControllerTestUtil.ts` にフェイクタイマーの準備・後始末、各テストファイルに `vi.mock` を記述）`mockControllerDeps.ts`（または各テスト内の `vi.mock`）：`@/main/common/SerialComm.js` をFakeSerialCommに、`@/main/main.js`（`fireIpcEvent`、`getMainWindow`）、`@/main/util/AppMainLogger.js`、`@/main/util/I18nUtil4Main.js` をモックする。フェイクタイマー（`vi.useFakeTimers`）の準備と後始末（`stop()` の呼び出し、保留中の `@synchronized` が残らないこと）を行う
+- [x] 1-0-1-4. 既存テストの方針（`vi.mock` を使用した例が `src/__tests__/main` に無い）を踏まえ、`vitest.config` のエイリアス（`@/`）下で `vi.mock` が動作することを最小のテストで確認する
 
 ### 1-0-2. `TransceiverIcomRecvParser`（純粋関数）
 
 配置先：`src/__tests__/main/service/transceiver/controller/TransceiverIcomRecvParser/`
 
-- [ ] 1-0-2-1. `parseFreq`：BCD周波数の解析（各桁、0、最大値）
-- [ ] 1-0-2-2. `parseMode`：モードコード→RSTモードの値（全コード、不明コードは`null`）
-- [ ] 1-0-2-3. `getValueFromDataMode` / `parseDataMode`：データモードの解析（On/Off、不正データ）
-- [ ] 1-0-2-4. `parseCurrentBand`：メイン／サブの判定
-- [ ] 1-0-2-5. `parseSatelliteMode`：サテライトモードOn/Offの判定
-- [ ] 1-0-2-6. `trimRecvData`：先頭`00`の読み捨て、プリアンブル位置からの切り出し
+- [x] 1-0-2-1. `parseFreq`：BCD周波数の解析（各桁、0、最大値）
+- [x] 1-0-2-2. `parseMode`：モードコード→RSTモードの値（全コード、不明コードは`null`）
+- [x] 1-0-2-3. `getValueFromDataMode` / `parseDataMode`：データモードの解析（On/Off、不正データ）
+- [x] 1-0-2-4. `parseCurrentBand`：メイン／サブの判定
+- [x] 1-0-2-5. `parseSatelliteMode`：サテライトモードOn/Offの判定
+- [x] 1-0-2-6. `trimRecvData`：先頭`00`の読み捨て、プリアンブル位置からの切り出し
 
 ### 1-0-3. `TransceiverIcomCmdMaker`（純粋関数）
 
 配置先：`src/__tests__/main/service/transceiver/controller/TransceiverIcomCmdMaker/`（既存の `geneToneHzStr` テストは変更しない）
 
-- [ ] 1-0-3-1. 共通プレフィックス（プリアンブル、CI-Vアドレス、PCアドレス）とポストアンブルの付与（各`make*`のバイト列）
-- [ ] 1-0-3-2. `makeSetFreq`：BCDエンコード（桁、0、境界値）
-- [ ] 1-0-3-3. `makeSetOpeMode` / `makeSetDataMode` / `makeGetMode` / `makeGetDataMode`
-- [ ] 1-0-3-4. `makeSwitchVfoA` / `makeGetBand` / `makeSwitchToMainBand` / `makeSwitchToSubBand` / `makeSetInvertBand` / `makeSetTranceive`
-- [ ] 1-0-3-5. `makeSetSatelliteMode` / `makeGetSatelliteMode`：IC-910とそれ以外でコマンドが異なること
-- [ ] 1-0-3-6. `makeSetToneCmd` / `makeSetToneFreqCmd`：On/Off、トーン周波数のバイト列
+- [x] 1-0-3-1. 共通プレフィックス（プリアンブル、CI-Vアドレス、PCアドレス）とポストアンブルの付与（各`make*`のバイト列）
+- [x] 1-0-3-2. `makeSetFreq`：BCDエンコード（桁、0、境界値）
+- [x] 1-0-3-3. `makeSetOpeMode` / `makeSetDataMode` / `makeGetMode` / `makeGetDataMode`
+- [x] 1-0-3-4. `makeSwitchVfoA` / `makeGetBand` / `makeSwitchToMainBand` / `makeSwitchToSubBand` / `makeSetInvertBand` / `makeSetTranceive`
+- [x] 1-0-3-5. `makeSetSatelliteMode` / `makeGetSatelliteMode`：IC-910とそれ以外でコマンドが異なること
+- [x] 1-0-3-6. `makeSetToneCmd` / `makeSetToneFreqCmd`：On/Off、トーン周波数のバイト列
 
 ### 1-0-4. `TransceiverIcomState`（既存テストの不足分）
 
 配置先：`src/__tests__/main/service/transceiver/controller/TransceiverIcomState/`（既存ファイルは変更しない）
 
-- [ ] 1-0-4-1. `setReqRxMode` / `setReqTxMode`：null無視、同一値で更新しない、`isForce`、`current*`への反映
-- [ ] 1-0-4-2. `setRecvRxFreqHz` / `setRecvTxFreqHz`：同一値で更新しない、Tx側の更新フラグ連動
-- [ ] 1-0-4-3. `isRxUpdate` / `isTxUpdate`
-- [ ] 1-0-4-4. `resetRx` / `resetTx`
+- [x] 1-0-4-1. `setReqRxMode` / `setReqTxMode`：null無視、同一値で更新しない、`isForce`、`current*`への反映
+- [x] 1-0-4-2. `setRecvRxFreqHz` / `setRecvTxFreqHz`：同一値で更新しない、Tx側の更新フラグ連動
+- [x] 1-0-4-3. `isRxUpdate` / `isTxUpdate`
+- [x] 1-0-4-4. `resetRx` / `resetTx`
 
 ### 1-0-5. `TransceiverIcomController`（FakeSerialComm＋シミュレータ）
 
 配置先：`src/__tests__/main/service/transceiver/controller/TransceiverIcomController/`（1シナリオ1ファイル、`TransceiverIcomController_メソッド・機能名.test.ts`）。コールバック（`freqCallback` / `modeCallback` / `isDopplerShiftWaitingCallback`）は `vi.fn()` で受ける。
 
-- [ ] 1-0-5-1. `start` / `stop` / `isReady`
-  - [ ] 起動時の初期化コマンド順（VFO-A切替、トランシーブOn、周波数・モード取得）
-  - [ ] 起動時に**サテライトモードOffのコマンドが送信されない**こと（状態の初期値がOffで、`setSatelliteMode(false)` が「同じ値」としてスキップされる現状の挙動を固定する。`2_design.md` §0.1）
-  - [ ] 起動時に取得した周波数・モードの状態への反映
-  - [ ] `stop`：シリアルクローズ、コールバック解除、タイマー停止、読み取り待ちの解除
-  - [ ] `isReady`：シリアルのオープン／クローズ状態
-- [ ] 1-0-5-2. `setFreq` / `setMode`（要求値の保持と定期処理での送信）
-  - [ ] 呼び出しただけではコマンドが送信されず、定期処理（インターバル経過）で送信されること
-  - [ ] 同一値は再送されない、`isForce=true`は再送される
-  - [ ] モード文字列（LSB / USB / AM / CW / RTTY / FM / USB-D / LSB-D / FM-D / DV）→運用モード・データモードの変換、不定値のデフォルト（LSB）
-  - [ ] シリアル未接続の場合は何もしない
-  - [ ] Rx読み取り待ち中のRST周波数要求の破棄
-- [ ] 1-0-5-3. 定期処理のメイン／サブ制御（サテライトモードOn/Off）
-  - [ ] サテライトモードOffではメインのみ処理、Onではサブ→メインの順で処理されること
-  - [ ] 更新がない場合はコマンドを送信しない
-  - [ ] Rx周波数／モードの要求時の送信（データモード含む）、要求がない場合の取得
-  - [ ] 前回処理が終わっていない場合のスキップ
-  - [ ] シリアルが閉じられた場合、未接続メッセージ通知と定期処理の停止
-- [ ] 1-0-5-4. `setSatelliteMode`
-  - [ ] On/Offの切替コマンドと、切替後の周波数・モード取得
-  - [ ] 同じ値の再設定はスキップ
-  - [ ] シリアル未接続時は`false`を返し、未接続メッセージを通知
-- [ ] 1-0-5-5. `initAutoOn` / `autoOff`
-  - [ ] サテライトモードOffのときのRxのみの設定順序
-  - [ ] サテライトモードOnのときのRx→Txの設定順序（メイン／サブ切替、周波数、モード、データモード）
-  - [ ] トーン：FM / FM-DでトーンHzありの場合のOn＋周波数、トーンHzなしの場合のOff、FM系以外の場合のOff
-  - [ ] `autoOff`：サブ→メインの順でトーンOffが送信されること
-- [ ] 1-0-5-6. バンド入れ替え（`switchBandIfNeed`）
-  - [ ] RSTとICOMのRxが異なるバンド帯（144／430／1200MHz）の場合に入れ替えコマンドが送信され、再取得されること
-  - [ ] 同一バンド帯、周波数未設定、アマチュアバンド外では入れ替えないこと
-  - [ ] サテライトモードOffでは入れ替えないこと
-- [ ] 1-0-5-7. 受信処理（`onRecv` / `dispatchRecvData`）
-  - [ ] バイト列の分割受信（`fd`終端まで蓄積）、1回の受信に複数フレームが含まれる場合
-  - [ ] 先頭`00`の読み捨て
-  - [ ] 他のCI-Vアドレス宛てのデータは無視される
-  - [ ] `FB`（OK）/`FA`（NG）、周波数、モード、バンド、データモードの応答種別の振り分け
-  - [ ] 応答待ちでない受信（無線機起点のデータ）の処理
-- [ ] 1-0-5-8. 無線機起点のデータ受信（トランシーブ）の処理（`handleRecvData`）
-  - [ ] 周波数（`00`）：サテライトモードOn/Offおよびメイン／サブに応じて、`freqCallback`に uplink／downlink で通知されること
-  - [ ] 運用モード（`01`）/モード取得応答（`04`）/データモード（`1a`）：`modeCallback`への通知、同一値のスキップ
-  - [ ] RSTからの運用モード更新要求がある場合は、無線機→RSTの反映をスキップすること
-  - [ ] `isDopplerShiftWaitingCallback`が通知されること（周波数トランシーブ時`true`、取得応答時`false`）
-- [ ] 1-0-5-9. 無線機側操作後の送信一時停止
-  - [ ] 周波数トランシーブ受信後、`TRANSCEIVE_WAIT_MS`の間は定期処理が送信せず、経過後に再開すること
-  - [ ] モードトランシーブ受信後は`TRANSCEIVE_MODE_WAIT_MS`の間、一時停止すること
-  - [ ] 一時停止中に再度受信した場合、待機時間が延長されること
-  - [ ] 取得応答（`03`/`04`/`1a`）の受信で一時停止が解除されること
-- [ ] 1-0-5-10. Rx読み取り待ち（サブバンド（Tx）操作後のRx再取得）
-  - [ ] サテライトモードOnでサブ（Tx）のトランシーブ受信後に読み取り待ちになり、次周期でRxが取得されて解除されること
-  - [ ] 取得に失敗した場合の再試行、上限（3回）での解除
-- [ ] 1-0-5-11. タイムアウト・リトライ
-  - [ ] 応答ありコマンドが無応答の場合、100ms後にタイムアウトとして処理が継続すること
-  - [ ] モード設定／データモード設定が無応答の場合、最大3回リトライされること
-  - [ ] 起動時（2秒）に一度も受信がない場合、定期処理が停止し、`freqCallback` / `modeCallback`に失敗（受信タイムアウト）が通知されること
-- [ ] 1-0-5-12. IC-910固有の挙動
-  - [ ] 現在のバンドを無線機に問い合わせず、RST側保持の値（`isMain`）を使うこと
-  - [ ] メインバンド切替の応答が`FB`でない場合、`isMain`を戻して次回再試行されること
+- [x] 1-0-5-1. `start` / `stop` / `isReady`
+  - [x] 起動時の初期化コマンド順（VFO-A切替、トランシーブOn、周波数・モード取得）
+  - [x] 起動時に**サテライトモードOffのコマンドが送信されない**こと（状態の初期値がOffで、`setSatelliteMode(false)` が「同じ値」としてスキップされる現状の挙動を固定する。`2_design.md` §0.1）
+  - [x] 起動時に取得した周波数・モードの状態への反映
+  - [x] `stop`：シリアルクローズ、コールバック解除、タイマー停止、読み取り待ちの解除
+  - [x] `isReady`：シリアルのオープン／クローズ状態
+- [x] 1-0-5-2. `setFreq` / `setMode`（要求値の保持と定期処理での送信）
+  - [x] 呼び出しただけではコマンドが送信されず、定期処理（インターバル経過）で送信されること
+  - [x] 同一値は再送されない、`isForce=true`は再送される
+  - [x] モード文字列（LSB / USB / AM / CW / RTTY / FM / USB-D / LSB-D / FM-D / DV）→運用モード・データモードの変換、不定値のデフォルト（LSB）
+  - [x] シリアル未接続の場合は何もしない
+  - [x] Rx読み取り待ち中のRST周波数要求の破棄
+- [x] 1-0-5-3. 定期処理のメイン／サブ制御（サテライトモードOn/Off）
+  - [x] サテライトモードOffではメインのみ処理、Onではサブ→メインの順で処理されること
+  - [x] 更新がない場合はコマンドを送信しない
+  - [x] Rx周波数／モードの要求時の送信（データモード含む）、要求がない場合の取得
+  - [x] 前回処理が終わっていない場合のスキップ
+  - [x] シリアルが閉じられた場合、未接続メッセージ通知と定期処理の停止
+- [x] 1-0-5-4. `setSatelliteMode`
+  - [x] On/Offの切替コマンドと、切替後の周波数・モード取得
+  - [x] 同じ値の再設定はスキップ
+  - [x] シリアル未接続時は`false`を返し、未接続メッセージを通知
+- [x] 1-0-5-5. `initAutoOn` / `autoOff`
+  - [x] サテライトモードOffのときのRxのみの設定順序
+  - [x] サテライトモードOnのときのRx→Txの設定順序（メイン／サブ切替、周波数、モード、データモード）
+  - [x] トーン：FM / FM-DでトーンHzありの場合のOn＋周波数、トーンHzなしの場合のOff、FM系以外の場合のOff
+  - [x] `autoOff`：サブ→メインの順でトーンOffが送信されること
+- [x] 1-0-5-6. バンド入れ替え（`switchBandIfNeed`）
+  - [x] RSTとICOMのRxが異なるバンド帯（144／430／1200MHz）の場合に入れ替えコマンドが送信され、再取得されること
+  - [x] 同一バンド帯、周波数未設定、アマチュアバンド外では入れ替えないこと
+  - [x] サテライトモードOffでは入れ替えないこと
+- [x] 1-0-5-7. 受信処理（`onRecv` / `dispatchRecvData`）
+  - [x] バイト列の分割受信（`fd`終端まで蓄積）、1回の受信に複数フレームが含まれる場合
+  - [x] 先頭`00`の読み捨て
+  - [x] 他のCI-Vアドレス宛てのデータは無視される
+  - [x] `FB`（OK）/`FA`（NG）、周波数、モード、バンド、データモードの応答種別の振り分け
+  - [x] 応答待ちでない受信（無線機起点のデータ）の処理
+- [x] 1-0-5-8. 無線機起点のデータ受信（トランシーブ）の処理（`handleRecvData`）
+  - [x] 周波数（`00`）：サテライトモードOn/Offおよびメイン／サブに応じて、`freqCallback`に uplink／downlink で通知されること
+  - [x] 運用モード（`01`）/モード取得応答（`04`）/データモード（`1a`）：`modeCallback`への通知、同一値のスキップ
+  - [x] RSTからの運用モード更新要求がある場合は、無線機→RSTの反映をスキップすること
+  - [x] `isDopplerShiftWaitingCallback`が通知されること（周波数トランシーブ時`true`、取得応答時`false`）
+- [x] 1-0-5-9. 無線機側操作後の送信一時停止
+  - [x] 周波数トランシーブ受信後、`TRANSCEIVE_WAIT_MS`の間は定期処理が送信せず、経過後に再開すること
+  - [x] モードトランシーブ受信後は`TRANSCEIVE_MODE_WAIT_MS`の間、一時停止すること
+  - [x] 一時停止中に再度受信した場合、待機時間が延長されること
+  - [x] 取得応答（`03`/`04`/`1a`）の受信で一時停止が解除されること
+- [x] 1-0-5-10. Rx読み取り待ち（サブバンド（Tx）操作後のRx再取得）
+  - [x] サテライトモードOnでサブ（Tx）のトランシーブ受信後に読み取り待ちになり、次周期でRxが取得されて解除されること
+  - [x] 取得に失敗した場合の再試行、上限（3回）での解除
+- [x] 1-0-5-11. タイムアウト・リトライ
+  - [x] 応答ありコマンドが無応答の場合、100ms後にタイムアウトとして処理が継続すること
+  - [x] モード設定／データモード設定が無応答の場合、最大3回リトライされること
+  - [x] 起動時（2秒）に一度も受信がない場合、定期処理が停止し、`freqCallback` / `modeCallback`に失敗（受信タイムアウト）が通知されること
+- [x] 1-0-5-12. IC-910固有の挙動
+  - [x] 現在のバンドを無線機に問い合わせず、RST側保持の値（`isMain`）を使うこと
+  - [x] メインバンド切替の応答が`FB`でない場合、`isMain`を戻して次回再試行されること
 
 ### 1-0-6. 確認
 
-- [ ] 1-0-6-1. 1-0-1〜1-0-5のテストを、**リファクタリング前の現状コードで全てパスさせる**（テスト作成中に見つかった既存の不具合は修正せず、特性としてテストに記録し、別途報告する）
-- [ ] 1-0-6-2. `npm run test` で全テストがパスすることを確認（PowerShellで実行）
-- [ ] 1-0-6-3. カバレッジレポートで `TransceiverIcom*` の網羅状況を確認し、実機でしか確認できない項目をPR説明に記載する
+- [x] 1-0-6-1. 1-0-1〜1-0-5のテストを、**リファクタリング前の現状コードで全てパスさせる**（テスト作成中に見つかった既存の不具合は修正せず、特性としてテストに記録し、別途報告する）
+- [x] 1-0-6-2. `npm run test` で全テストがパスすることを確認（PowerShellで実行）
+- [x] 1-0-6-3. カバレッジレポートで `TransceiverIcom*` の網羅状況を確認し、実機でしか確認できない項目をPR説明に記載する
 - [ ] 1-0-6-4. 1-0のコミット（リファクタリングとは分ける）
+
+#### 1-0 実施メモ
+- 成果物：`helpers/`（`FakeSerialComm.ts`、`IcomRadioSimulator.ts`、`icomControllerTestUtil.ts`）、RecvParser 6ファイル、CmdMaker 1ファイル、State 4ファイル、Controller 10ファイル（計191テスト、`src/__tests__/main/service/transceiver` 配下）。
+- `vi.mock` は `@/` エイリアス下でも問題なく動作することを確認済み（1-0-1-4）。
+- カバレッジ（transceiver配下のテストのみで計測）：`TransceiverIcomController.ts` 命令網羅90%、分岐81%、`TransceiverControllerBase.ts` 89%。
+- テストの有効性確認として、ICOMコントローラを一時的に3通り改変（Rx読み取り待ち中の要求破棄の無効化、サテライトモード時のサブ→メインの処理順の入れ替え、トランシーブ後の待機時間の短縮）し、いずれもテストが失敗することを確認後、元に戻した。
+- 特性として固定した現状の挙動（不具合の可能性があるもの。修正は今回の対象外）：
+  - 起動時にサテライトモードOffのコマンドは送信されない。
+  - 起動から2秒以上受信がなくても、RSTからの要求（`setFreq`等）がなければ受信タイムアウトは通知されない。
+  - IC-910でメインバンドへの切り替えに失敗しても、Rx周波数の設定は送信され、サブバンド（Tx）側に設定される。
+  - `initAutoOn`（サテライトモードOn）の後は、サブバンドが選択されたままになる。
+  - サテライトモードOffでは、Tx（アップリンク）周波数の要求は無線機へ送信されない。
+- 既存の失敗テスト（1-0とは無関係）：`OverlapPassesService.test.ts` の1件（日照時間の判定）が、変更前から失敗している。
 
 ## 1-A. `SerialComm` のオプション引数追加
 
