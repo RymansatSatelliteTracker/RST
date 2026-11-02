@@ -1,8 +1,12 @@
+import Constant from "@/common/Constant.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
 import type { AppConfigTransceiver } from "@/common/model/AppConfigModel.js";
+import { MessageModel } from "@/common/model/MessageModel.js";
 import { ApiResponse } from "@/common/types/types.js";
 import SerialComm from "@/main/common/SerialComm.js";
+import { fireIpcEvent } from "@/main/main.js";
 import TransceiverControllerBase from "@/main/service/transceiver/controller/TransceiverControllerBase.js";
+import I18nUtil4Main from "@/main/util/I18nUtil4Main.js";
 
 /**
  * 無線機コントローラの親クラス
@@ -66,5 +70,13 @@ export default abstract class TransceiverSerialControllerBase extends Transceive
     // AppMainLogger.debug(`Serial 送信データ：${byteData.toString("hex")}`);
 
     return new ApiResponse(result);
+  }
+
+  /**
+   * シリアル未接続メッセージをレンダラ側へ通知する
+   */
+  protected fireSerialNotConnectedMsg(): void {
+    const msg = I18nUtil4Main.getMsg(I18nMsgs.SERIAL_NOT_CONNECTED_TRANSCEIVER);
+    fireIpcEvent("onNoticeMessage", new MessageModel(Constant.GlobalEvent.NOTICE_ERR, msg));
   }
 }

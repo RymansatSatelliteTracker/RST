@@ -1,19 +1,17 @@
 import CommonUtil from "@/common/CommonUtil.js";
 import Constant from "@/common/Constant.js";
 import { synchronized } from "@/common/decorator/synchronized.js";
-import I18nMsgs from "@/common/I18nMsgs.js";
 import { AppConfigTransceiver } from "@/common/model/AppConfigModel.js";
-import { MessageModel } from "@/common/model/MessageModel.js";
 import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
 import { ApiResponse } from "@/common/types/types.js";
 import TransceiverUtil from "@/common/util/TransceiverUtil.js";
-import { fireIpcEvent } from "@/main/main.js";
 import TransceiverIcomCmdMaker, { CivCommand } from "@/main/service/transceiver/controller/TransceiverIcomCmdMaker.js";
 import TransceiverIcomRecvParser from "@/main/service/transceiver/controller/TransceiverIcomRecvParser.js";
 import TransceiverIcomState from "@/main/service/transceiver/controller/TransceiverIcomState.js";
+import TransceiverLock from "@/main/service/transceiver/controller/TransceiverLock.js";
+import TransceiverWaitTimer from "@/main/service/transceiver/controller/TransceiverWaitTimer.js";
 import TransceiverSerialControllerBase from "@/main/service/transceiver/controller/TransceiverSerialControllerBase.js";
 import AppMainLogger from "@/main/util/AppMainLogger.js";
-import I18nUtil4Main from "@/main/util/I18nUtil4Main.js";
 
 // 受信タイムアウト（秒）（起動時）
 const RECV_TIEOUT_SEC_FOR_BOOT = 2;
@@ -47,7 +45,7 @@ type RecvCallBackType = {
  */
 export default class TransceiverIcomController extends TransceiverSerialControllerBase {
   // 無線機との送受信の排他制御用
-  private isProcessing = false;
+  private lock = new TransceiverLock();
 
   // 通信管理ID
   private comId = 0;
@@ -75,10 +73,8 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   private startSec = 0;
   private isReceived = false;
 
-  // 無線機からの周波数データ(トランシーブ)受信があった場合にRSTからの周波数送信を一時停止するためのフラグ
-  private isWaitSendFreq = false;
-  // 周波数データ(トランシーブ)受信時の待機用タイマー
-  private transceiveWaitTimer: NodeJS.Timeout | null = null;
+  // 無線機からのデータ(トランシーブ)受信があった場合に、RSTからの送信を一時停止するためのタイマー
+  private waitTimer = new TransceiverWaitTimer();
 
   public constructor(transceiverConfig: AppConfigTransceiver) {
     super(transceiverConfig);
@@ -120,13 +116,13 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         }
 
         // 無線機からの周波数データ(トランシーブ)受信があった場合はドップラーシフトを待機する
-        if (this.isWaitSendFreq) {
+        if (this.waitTimer.isWaiting()) {
           // AppMainLogger.debug(`定期送受信 スキップ（無線機への送信を一時停止中）`);
           return;
         }
 
         // 前回処理が終わっていない場合はスキップ
-        if (this.isProcessing) {
+        if (this.lock.isLocked()) {
           return;
         }
 
@@ -135,7 +131,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
         try {
           // ロック取得
-          await this.getLock(comId);
+          await this.lock.acquire(comId);
 
           // サテライトモードの場合のみ、サブの処理を一瞬だけ実行
           if (this.state.isSatelliteMode) {
@@ -145,7 +141,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
           // メインの処理を実行
           await this.sendAndRecvForLoop(comId, true);
         } finally {
-          this.releaseLock();
+          this.lock.release();
         }
       })();
     }, interval);
@@ -167,10 +163,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     await super.stop();
 
     // 周波数データ(トランシーブ)受信時のタイマーを停止
-    if (this.transceiveWaitTimer) {
-      clearTimeout(this.transceiveWaitTimer);
-      this.transceiveWaitTimer = null;
-    }
+    this.waitTimer.release();
 
     this.state.endRxReadPending();
   }
@@ -198,12 +191,12 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   ): Promise<void> {
     try {
       // ロック取得
-      await this.getLock(-1);
+      await this.lock.acquire(-1);
 
       // AutoOn時の初期処理を実行する
       await this.initAutoOnExec(txFreqHz, rxFreqHz, txModeText, rxModeText, toneHz);
     } finally {
-      this.releaseLock();
+      this.lock.release();
     }
   }
 
@@ -289,12 +282,12 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   public override async autoOff(): Promise<void> {
     try {
       // ロック取得
-      await this.getLock(-1);
+      await this.lock.acquire(-1);
 
       // AutoOff処理を実行する
       await this.autoOffExec();
     } finally {
-      this.releaseLock();
+      this.lock.release();
     }
   }
 
@@ -1037,7 +1030,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         // 無線機への周波数の送信を一時停止する
         // MEMO: 無線機のダイアルなどでの周波数変更時、
         //       RSTから周波数の変更を行うと無線機での操作と混線状態になることを防止するため、一時停止が必要
-        this.startTransceiveWaitTimer(Constant.Transceiver.TRANSCEIVE_WAIT_MS);
+        this.waitTimer.start(Constant.Transceiver.TRANSCEIVE_WAIT_MS);
         return;
 
       // 表示周波数の取得
@@ -1049,7 +1042,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         }
         res.data = false;
         this.isDopplerShiftWaitingCallback(res);
-        this.isWaitSendFreq = false;
+        this.waitTimer.release();
         return;
 
       // 運用モードの設定（01:トランシーブ）
@@ -1068,7 +1061,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
         // 無線機への周波数の送信一時停止状態にする
         // MEMO: 無線機のモード変更時、RSTからバンド切り替えが発生すると、
         //       意図したバンドのモード設定操作が困難となることを防止するため、一時停止が必要
-        this.startTransceiveWaitTimer(Constant.Transceiver.TRANSCEIVE_MODE_WAIT_MS);
+        this.waitTimer.start(Constant.Transceiver.TRANSCEIVE_MODE_WAIT_MS);
         return;
       // 運用モードの設定（04:要求に対する応答）
       case "04":
@@ -1082,7 +1075,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
         res.data = false;
         this.isDopplerShiftWaitingCallback(res);
-        this.isWaitSendFreq = false;
+        this.waitTimer.release();
         return;
       // データモードの取得
       case "1a":
@@ -1096,7 +1089,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
 
         res.data = false;
         this.isDopplerShiftWaitingCallback(res);
-        this.isWaitSendFreq = false;
+        this.waitTimer.release();
         return;
     }
 
@@ -1392,14 +1385,7 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     await super.stop();
 
     // コールバック呼び出し
-    if (this.freqCallback) {
-      const res = new ApiResponse<UplinkType | DownlinkType>(false, I18nMsgs.SYSTEM_TRANSCEIVER_SERIAL_RECV_TIMEOUT);
-      this.freqCallback(res);
-    }
-    if (this.modeCallback) {
-      const res = new ApiResponse<UplinkType | DownlinkType>(false, I18nMsgs.SYSTEM_TRANSCEIVER_SERIAL_RECV_TIMEOUT);
-      this.modeCallback(res);
-    }
+    this.notifyRecvTimeoutError();
 
     return false;
   }
@@ -1515,47 +1501,6 @@ export default class TransceiverIcomController extends TransceiverSerialControll
   }
 
   /**
-   * シリアル未接続メッセージをレンダラ側へ通知する
-   */
-  private fireSerialNotConnectedMsg() {
-    const msg = I18nUtil4Main.getMsg(I18nMsgs.SERIAL_NOT_CONNECTED_TRANSCEIVER);
-    fireIpcEvent("onNoticeMessage", new MessageModel(Constant.GlobalEvent.NOTICE_ERR, msg));
-  }
-
-  /**
-   * レンダラ側のドップラーシフト補正を待機させる
-   */
-  private notifyDopplerShiftWaiting() {
-    if (!this.isDopplerShiftWaitingCallback) {
-      return;
-    }
-
-    const res = new ApiResponse<boolean>(true);
-    res.data = true;
-    this.isDopplerShiftWaitingCallback(res);
-  }
-
-  /**
-   * 無線機への周波数の送信一時停止状態にする
-   */
-  private startTransceiveWaitTimer(waitMs: number) {
-    this.isWaitSendFreq = true;
-    AppMainLogger.debug(`無線機への送信を一時停止します（${waitMs}ms）`);
-
-    // 既存のタイマーがあればクリア
-    if (this.transceiveWaitTimer) {
-      clearTimeout(this.transceiveWaitTimer);
-    }
-
-    // 指定ミリ秒後、無線機への周波数の送信一時停止を解除する
-    this.transceiveWaitTimer = setTimeout(() => {
-      this.isWaitSendFreq = false;
-      this.transceiveWaitTimer = null;
-      AppMainLogger.debug(`無線機への送信の一時停止を解除しました`);
-    }, waitMs);
-  }
-
-  /**
    * メインバンドへ制御を切り替える
    * @returns メインバンドに切り替わっている場合はtrue（切り替えコマンドが成功応答（FB）でなかった場合はfalse）
    */
@@ -1585,47 +1530,5 @@ export default class TransceiverIcomController extends TransceiverSerialControll
     AppMainLogger.debug(`制御切り替え サブバンドへ`);
     this.state.isMain = false;
     await this.sendAndSyncRecv(this.cmdMaker.makeSwitchToSubBand(), "SWITCH");
-  }
-
-  /**
-   * ロックを取得する
-   * isProcessingで排他制御される処理の完了を待つ。
-   */
-  @synchronized()
-  private async getLock(comId: number) {
-    // 最大待機時間
-    const MAX_WAIT_MS = 3000; // 3秒
-    // 10ms待ち
-    const WAIT_INTERVAL_MS = 10;
-
-    // 最大待機時間を超過するまで待機する
-    const startDate = new Date();
-    while (true) {
-      if (!this.isProcessing) {
-        break;
-      }
-
-      const nowDate = new Date();
-      const elapsedMs = nowDate.getTime() - startDate.getTime();
-      if (elapsedMs >= MAX_WAIT_MS) {
-        break;
-      }
-      await CommonUtil.sleep(WAIT_INTERVAL_MS);
-    }
-
-    // 待機完了後、isProcessing が解除されない場合はタイムアウトとして警告ログを出力する
-    if (this.isProcessing) {
-      AppMainLogger.warn(`${comId}: ロック取得タイムアウト`);
-    }
-
-    // タイムアウトの有無に関わらずロックを取得する
-    this.isProcessing = true;
-  }
-
-  /**
-   * ロックを開放する
-   */
-  private releaseLock() {
-    this.isProcessing = false;
   }
 }

@@ -1,5 +1,6 @@
+import I18nMsgs from "@/common/I18nMsgs.js";
 import type { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
-import type { ApiResponse } from "@/common/types/types.js";
+import { ApiResponse } from "@/common/types/types.js";
 
 /**
  * 無線機のコントローラ親クラス
@@ -87,5 +88,32 @@ export default abstract class TransceiverControllerBase {
     this.freqCallback = null;
     this.modeCallback = null;
     this.isDopplerShiftWaitingCallback = null;
+  }
+
+  /**
+   * レンダラ側のドップラーシフト補正を待機させる
+   */
+  protected notifyDopplerShiftWaiting(): void {
+    if (!this.isDopplerShiftWaitingCallback) {
+      return;
+    }
+
+    const res = new ApiResponse<boolean>(true);
+    res.data = true;
+    this.isDopplerShiftWaitingCallback(res);
+  }
+
+  /**
+   * 無線機からの受信タイムアウトを、周波数、運用モードのコールバックに失敗として通知する
+   */
+  protected notifyRecvTimeoutError(): void {
+    if (this.freqCallback) {
+      const res = new ApiResponse<UplinkType | DownlinkType>(false, I18nMsgs.SYSTEM_TRANSCEIVER_SERIAL_RECV_TIMEOUT);
+      this.freqCallback(res);
+    }
+    if (this.modeCallback) {
+      const res = new ApiResponse<UplinkType | DownlinkType>(false, I18nMsgs.SYSTEM_TRANSCEIVER_SERIAL_RECV_TIMEOUT);
+      this.modeCallback(res);
+    }
   }
 }

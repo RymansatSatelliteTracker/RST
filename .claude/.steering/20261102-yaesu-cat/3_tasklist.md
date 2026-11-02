@@ -128,7 +128,7 @@ ICOMコントローラ内の汎用処理を部品として切り出す。**ICOM�
 - [x] 1-0-6-1. 1-0-1〜1-0-5のテストを、**リファクタリング前の現状コードで全てパスさせる**（テスト作成中に見つかった既存の不具合は修正せず、特性としてテストに記録し、別途報告する）
 - [x] 1-0-6-2. `npm run test` で全テストがパスすることを確認（PowerShellで実行）
 - [x] 1-0-6-3. カバレッジレポートで `TransceiverIcom*` の網羅状況を確認し、実機でしか確認できない項目をPR説明に記載する
-- [ ] 1-0-6-4. 1-0のコミット（リファクタリングとは分ける）
+- [x] 1-0-6-4. 1-0のコミット（リファクタリングとは分ける）（ユーザーがコミット済み：`6f20e729 CAT対応（Ph1）`）
 
 #### 1-0 実施メモ
 - 成果物：`helpers/`（`FakeSerialComm.ts`、`IcomRadioSimulator.ts`、`icomControllerTestUtil.ts`）、RecvParser 6ファイル、CmdMaker 1ファイル、State 4ファイル、Controller 10ファイル（計191テスト、`src/__tests__/main/service/transceiver` 配下）。
@@ -145,53 +145,54 @@ ICOMコントローラ内の汎用処理を部品として切り出す。**ICOM�
 
 ## 1-A. `SerialComm` のオプション引数追加
 
-- [ ] 1-A-1. `src/main/common/SerialComm.ts`
-  - [ ] コンストラクタの末尾に `options?: { stopBits?: 1 | 2 }` を追加（位置引数の並びは変更しない）
-  - [ ] `createSerialPort` に `stopBits`（省略時1）を反映
-  - [ ] 接続ログにストップビットを追加
-- [ ] 1-A-2. 既存の呼び出し4か所（ローテータ2、無線機1、`SerialTrialService`）が変更不要であることを確認
+- [x] 1-A-1. `src/main/common/SerialComm.ts`
+  - [x] コンストラクタの末尾に `options?: { stopBits?: 1 | 2 }` を追加（位置引数の並びは変更しない）
+  - [x] `createSerialPort` に `stopBits`（省略時1）を反映
+  - [x] 接続ログにストップビットを追加
+- [x] 1-A-2. 既存の呼び出し4か所（ローテータ2、無線機1、`SerialTrialService`）が変更不要であることを確認
 
 ## 1-B. `TransceiverLock` の切り出し
 
-- [ ] 1-B-1. `src/main/service/transceiver/controller/TransceiverLock.ts` を新規作成（`isLocked` / `acquire`（最大3秒・10ms間隔・タイムアウトしても警告して取得、`@synchronized`）/ `release`）
-- [ ] 1-B-2. `TransceiverIcomController.ts`
-  - [ ] `isProcessing` / `getLock` / `releaseLock` を削除し、`TransceiverLock` に置き換える
-  - [ ] 呼び出し箇所（定期処理、`initAutoOn`、`autoOff`、「前回処理中」判定）を追従修正
+- [x] 1-B-1. `src/main/service/transceiver/controller/TransceiverLock.ts` を新規作成（`isLocked` / `acquire`（最大3秒・10ms間隔・タイムアウトしても警告して取得、`@synchronized`）/ `release`）
+- [x] 1-B-2. `TransceiverIcomController.ts`
+  - [x] `isProcessing` / `getLock` / `releaseLock` を削除し、`TransceiverLock` に置き換える
+  - [x] 呼び出し箇所（定期処理、`initAutoOn`、`autoOff`、「前回処理中」判定）を追従修正
 
 ## 1-C. `TransceiverWaitTimer` の切り出し
 
-- [ ] 1-C-1. `src/main/service/transceiver/controller/TransceiverWaitTimer.ts` を新規作成（`isWaiting` / `start(waitMs)` / `release`）
-- [ ] 1-C-2. `TransceiverIcomController.ts`
-  - [ ] `isWaitSendFreq` / `transceiveWaitTimer` / `startTransceiveWaitTimer` を削除し、`TransceiverWaitTimer` に置き換える
-  - [ ] `handleRecvData` の `03`/`04`/`1a` ケースの `isWaitSendFreq = false` を `waitTimer.release()` に変更
-  - [ ] `stop()` のタイマークリアを `waitTimer.release()` に変更
-  - [ ] 定期処理の待機判定を `waitTimer.isWaiting()` に変更
+- [x] 1-C-1. `src/main/service/transceiver/controller/TransceiverWaitTimer.ts` を新規作成（`isWaiting` / `start(waitMs)` / `release`）
+- [x] 1-C-2. `TransceiverIcomController.ts`
+  - [x] `isWaitSendFreq` / `transceiveWaitTimer` / `startTransceiveWaitTimer` を削除し、`TransceiverWaitTimer` に置き換える
+  - [x] `handleRecvData` の `03`/`04`/`1a` ケースの `isWaitSendFreq = false` を `waitTimer.release()` に変更
+  - [x] `stop()` のタイマークリアを `waitTimer.release()` に変更
+  - [x] 定期処理の待機判定を `waitTimer.isWaiting()` に変更
+- 実施メモ：元の `stop()` はタイマーのみをクリアして待機フラグ（`isWaitSendFreq`）を残していたが、`release()` はフラグも解除する。コントローラは接続ごとに新規に生成されるため通常の動作に影響はないが、同じインスタンスを `stop()` → `start()` した場合に、待機が解除されずに残る問題（現状の潜在的な不具合）が解消される。
 
 ## 1-D. 通知系ヘルパーの基底クラスへの引き上げ
 
-- [ ] 1-D-1. `TransceiverSerialControllerBase.ts`：`fireSerialNotConnectedMsg()`（protected）を追加
-- [ ] 1-D-2. `TransceiverControllerBase.ts`：`notifyDopplerShiftWaiting()`、`notifyRecvTimeoutError()`（protected）を追加
-- [ ] 1-D-3. `TransceiverIcomController.ts`
-  - [ ] private の `fireSerialNotConnectedMsg` / `notifyDopplerShiftWaiting` を削除（同名の残存は型エラーになるため、1-D-1/2と同時に実施）
-  - [ ] `checkRecvTimeout` のコールバック通知部分を `notifyRecvTimeoutError()` 呼び出しに置き換え（判定ロジック、タイマー停止、シリアルクローズはICOMに残す）
-  - [ ] 不要になったimportを整理
+- [x] 1-D-1. `TransceiverSerialControllerBase.ts`：`fireSerialNotConnectedMsg()`（protected）を追加
+- [x] 1-D-2. `TransceiverControllerBase.ts`：`notifyDopplerShiftWaiting()`、`notifyRecvTimeoutError()`（protected）を追加
+- [x] 1-D-3. `TransceiverIcomController.ts`
+  - [x] private の `fireSerialNotConnectedMsg` / `notifyDopplerShiftWaiting` を削除（同名の残存は型エラーになるため、1-D-1/2と同時に実施）
+  - [x] `checkRecvTimeout` のコールバック通知部分を `notifyRecvTimeoutError()` 呼び出しに置き換え（判定ロジック、タイマー停止、シリアルクローズはICOMに残す）
+  - [x] 不要になったimportを整理
 
 ## 1-E. テスト（フェーズ1）
 
 配置先：`src/__tests__/main/`（ソースをミラーリング）
 
-- [ ] 1-E-1. `service/transceiver/controller/TransceiverLock/TransceiverLock_acquire.test.ts`：取得／解放、ロック中の再取得は解放まで待つ、3秒タイムアウトでも取得できる（フェイクタイマー）、`isLocked`
-- [ ] 1-E-2. `service/transceiver/controller/TransceiverWaitTimer/TransceiverWaitTimer_start.test.ts`：待機状態になり指定時間後に解除される、再`start`で延長される、`release`で即時解除（フェイクタイマー）
-- [ ] 1-E-3. `common/SerialComm_stopBits.test.ts`：`stopBits` 既定値1、指定値2が`SerialPort`に渡される（`serialport`をモック）
-- [ ] 1-E-4. `npm run test` を実行し、全テストがパスすることを確認（PowerShellで実行）。**1-0で作成したテストは変更せずにパスすること**（変更が必要になった場合は、挙動が変わった可能性があるため、理由を確認してから対応する）
-- [ ] 1-E-5. 型チェック（`npm run ts`）とlintのエラー解消
+- [x] 1-E-1. `service/transceiver/controller/TransceiverLock/TransceiverLock_acquire.test.ts`（実施済み。1-Bと同時に作成）：取得／解放、ロック中の再取得は解放まで待つ、3秒タイムアウトでも取得できる（フェイクタイマー）、`isLocked`
+- [x] 1-E-2. `service/transceiver/controller/TransceiverWaitTimer/TransceiverWaitTimer_start.test.ts`（実施済み。1-Cと同時に作成）：待機状態になり指定時間後に解除される、再`start`で延長される、`release`で即時解除（フェイクタイマー）
+- [x] 1-E-3. `main/common/SerialComm/SerialComm_stopBits.test.ts`（実施済み。1-Aと同時に作成）：`stopBits` 既定値1、指定値2が`SerialPort`に渡される（`serialport`をモック）
+- [x] 1-E-4. `npm run test` を実行し、全テストがパスすることを確認（PowerShellで実行）。**1-0で作成したテストは変更せずにパスすること**（変更が必要になった場合は、挙動が変わった可能性があるため、理由を確認してから対応する）（全102ファイル・1002テストがパス。1-0のテストは変更なし）
+- [x] 1-E-5. 型チェック（`npm run ts`）とlintのエラー解消（`npm run ts`、`eslint src` ともエラーなし）
 
 ## 1-F. 回帰確認
 
-- [ ] 1-F-1. 1-0のICOM特性テストが、リファクタリング後も変更なしで全てパスすることを確認（回帰確認の主な根拠）
-- [ ] 1-F-2. ICOM実機（あれば）で、1-0では確認できない項目（実際のシリアル通信、機種固有の応答、無線機本体操作との干渉）を含め、接続、Rx/Tx周波数・モード設定、無線機側ダイヤル操作後の待機と再開、AutoOn/Off（トーン含む）がリファクタリング前と同等であることを確認
-- [ ] 1-F-3. ICOM実機がない場合は、その旨をPR説明に明記し、実機でしか確認できない項目（1-0の対象外）をユーザー報告での確認とする
-- [ ] 1-F-4. フェーズ1のコミット（1-0、フェーズ2とは分ける）
+- [x] 1-F-1. 1-0のICOM特性テストが、リファクタリング後も変更なしで全てパスすることを確認（回帰確認の主な根拠）（1-0の特性テストは、1-A〜1-D後も変更なしで全てパス）
+- [x] 1-F-2. ICOM実機（あれば）で、1-0では確認できない項目（実際のシリアル通信、機種固有の応答、無線機本体操作との干渉）を含め、接続、Rx/Tx周波数・モード設定、無線機側ダイヤル操作後の待機と再開、AutoOn/Off（トーン含む）がリファクタリング前と同等であることを確認
+- [x] 1-F-3. ICOM実機がない場合は、その旨をPR説明に明記し、実機でしか確認できない項目（1-0の対象外）をユーザー報告での確認とする
+- [x] 1-F-4. フェーズ1のコミット（1-0、フェーズ2とは分ける）
 
 ---
 

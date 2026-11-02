@@ -5,6 +5,14 @@ import { ReadlineParser } from "@serialport/parser-readline";
 import { SerialPort } from "serialport";
 
 /**
+ * シリアルポートのオプション
+ */
+export type SerialCommOptions = {
+  // ストップビット（省略時は1）
+  stopBits?: 1 | 2;
+};
+
+/**
  * シリアルポートクラス
  */
 export default class SerialComm {
@@ -24,18 +32,20 @@ export default class SerialComm {
     baudRate: number,
     useReadlineParsar: boolean = false,
     recvCallback: ((data: Buffer) => void | Promise<void>) | null = null,
-    closeCallback: (() => void) | null = null
+    closeCallback: (() => void) | null = null,
+    options: SerialCommOptions = {}
   ) {
     if (CommonUtil.isEmpty(comName)) {
       AppMainLogger.warn(`シリアルポートが未指定のため、接続は行いません。`);
       return;
     }
 
-    AppMainLogger.info(`シリアル接続します ${comName}, ${baudRate}`);
+    const stopBits = options.stopBits ?? 1;
+    AppMainLogger.info(`シリアル接続します ${comName}, ${baudRate}, stopBits=${stopBits}`);
     this.recvCallback = recvCallback;
     this.closeCallback = closeCallback;
 
-    this.port = this.createSerialPort(comName, baudRate);
+    this.port = this.createSerialPort(comName, baudRate, stopBits);
 
     // イベント設定
     this.port.on("close", () => {
@@ -58,14 +68,15 @@ export default class SerialComm {
    * シリアルポートをオープンし、SerialPortのインスタンスを返す
    * @param comName ポート
    * @param baudRate ボーレート
+   * @param stopBits ストップビット
    */
-  private createSerialPort(comName: string, baudRate: number): SerialPort {
+  private createSerialPort(comName: string, baudRate: number, stopBits: 1 | 2): SerialPort {
     return new SerialPort({
       path: comName,
       baudRate,
       dataBits: 8,
       parity: "none",
-      stopBits: 1,
+      stopBits,
       autoOpen: false,
     });
   }
