@@ -203,9 +203,12 @@ export function initializeIpcEvents() {
   /**
    * シリアルポートをオープンする（試行）
    */
-  ipcMain.handle("openSerialPortTry", async (_event, comName: string, baudRate: number): Promise<boolean> => {
-    return await new SerialTrialService().open(comName, baudRate);
-  });
+  ipcMain.handle(
+    "openSerialPortTry",
+    async (_event, comName: string, baudRate: number, stopBits: 1 | 2 = 1): Promise<boolean> => {
+      return await new SerialTrialService().open(comName, baudRate, stopBits);
+    }
+  );
 
   /**
    * シリアルポートをクローズする

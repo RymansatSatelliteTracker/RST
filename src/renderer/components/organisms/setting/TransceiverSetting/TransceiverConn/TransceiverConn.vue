@@ -45,16 +45,11 @@
             ></v-btn>
           </div>
 
-          <!-- CI-Vアドレス(icom無線機のみ必須) -->
-          <div class="d-flex mt-2">
+          <!-- CI-Vアドレス(icom無線機のみ必須。ICOM以外の場合は表示しない) -->
+          <div v-if="form.makerId === Constant.Transceiver.MakerId.ICOM" class="d-flex mt-2">
             <label class="label form_label">{{ I18nUtil.getMsg(I18nMsgs.G41_CIVADDRESS) }}</label>
             <div class="form_select">
-              <TextField
-                v-model="form.civAddress"
-                :disabled="form.makerId !== Constant.Transceiver.MakerId.ICOM"
-                maxlength="2"
-                :need-empty="true"
-              />
+              <TextField v-model="form.civAddress" maxlength="2" :need-empty="true" />
             </div>
           </div>
 
@@ -65,6 +60,9 @@
               <BorateSelect v-model:selected-value="form.borate" :need-empty="true" />
             </div>
           </div>
+
+          <!-- 機種ごとの、無線機側の設定の案内 -->
+          <div v-if="deviceNote" class="mt-2 device_note">{{ I18nUtil.getMsg(deviceNote) }}</div>
 
           <!-- 接続テスト -->
           <div class="d-flex mt-2">
@@ -131,7 +129,7 @@ import BorateSelect from "@/renderer/components/molecules/BorateSelect/BorateSel
 import SerialPortSelect from "@/renderer/components/molecules/SerialPortSelect/SerialPortSelect.vue";
 import TransceiverDeviceSelect from "@/renderer/components/molecules/TransceiverDeviceSelect/TransceiverDeviceSelect.vue";
 import TransceiverMakerSelect from "@/renderer/components/molecules/TransceiverMakerSelect/TransceiverMakerSelect.vue";
-import { ref, useTemplateRef, watch } from "vue";
+import { computed, ref, useTemplateRef, watch } from "vue";
 import type { ComponentExposed } from "vue-component-type-helpers";
 import type TransceiverConnForm from "./TransceiverConnForm.js";
 import { useTransceiverConnValidate, valiSchemaTransceiverSetting } from "./useTransceiverConnValidate.js";
@@ -149,6 +147,22 @@ const serialPortSelectRef = useTemplateRef<ComponentExposed<typeof SerialPortSel
 
 // 入力チェック関係
 const { validateForm, errors } = useTransceiverConnValidate();
+
+// 選択中の機種に応じた、無線機側の設定の案内メッセージ（案内がない機種の場合はnull）
+const deviceNote = computed(() => {
+  if (form.value.makerId !== Constant.Transceiver.MakerId.YAESU) {
+    return null;
+  }
+
+  switch (form.value.transceiverId) {
+    case Constant.Transceiver.TransceiverId.YAESU_FT991:
+      return I18nMsgs.G41_NOTE_FT991;
+    case Constant.Transceiver.TransceiverId.YAESU_FT897:
+      return I18nMsgs.G41_NOTE_FT897;
+    default:
+      return null;
+  }
+});
 
 // 制御系データ
 const loadingTestBtn = ref(false);

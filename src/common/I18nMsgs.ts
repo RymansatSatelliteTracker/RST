@@ -289,6 +289,14 @@ export default class I18nMsgs {
   public static readonly G41_BORATE: I18nMsgItem = { en: "Baud Rate", ja: "ボーレート" };
   public static readonly G41_CIVADDRESS: I18nMsgItem = { en: "CI-V Address", ja: "CI-Vアドレス" };
   public static readonly G41_TEST_CONNECT: I18nMsgItem = { en: "Test Connect", ja: "接続テスト" };
+  public static readonly G41_NOTE_FT991: I18nMsgItem = {
+    en: 'Set the radio menu "031 CAT RATE" ("029 232C RATE" when using an RS-232C cable) to the same value as the baud rate above.',
+    ja: "無線機のメニュー「031 CAT RATE」（RS-232Cケーブルを使用する場合は「029 232C RATE」）を、上記のボーレートと同じ値にしてください。",
+  };
+  public static readonly G41_NOTE_FT897: I18nMsgItem = {
+    en: 'Set the radio menu "001 EXT MENU" to ON, "020 CAT/LIN/TUN" to CAT, and "019 CAT RATE" to the same value as the baud rate above. The sideband of USB-D/LSB-D (DIG) is determined by the menu "038 DIG MODE" (use a -U mode for USB-D and a -L mode for LSB-D), and the speed of FM-D (PKT) by the menu "073 PKT RATE". Do not switch the VFO during operation.',
+    ja: "無線機のメニュー「001 EXT MENU」を「ON」、「020 CAT/LIN/TUN」を「CAT」にし、「019 CAT RATE」を上記のボーレートと同じ値にしてください。USB-D／LSB-D（DIG）の側波帯は、メニュー「038 DIG MODE」（USB-Dは「-U」、LSB-Dは「-L」のモード）で決まります。FM-D（PKT）の速度は、メニュー「073 PKT RATE」で設定します。運用中は、VFOを切り替えないでください。",
+  };
   public static readonly G41_IPADDRESS: I18nMsgItem = { en: "IP Address", ja: "IPアドレス" };
   public static readonly G41_IPADDRESS_PORT: I18nMsgItem = { en: "Port", ja: "Port" };
   public static readonly G41_AUTO_INTERVAL: I18nMsgItem = { en: "Freq Control Interval", ja: "周波数設定インターバル" };

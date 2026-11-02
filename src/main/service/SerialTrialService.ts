@@ -10,13 +10,13 @@ export default class SerialTrialService {
   /**
    * シリアル接続をオープンする
    */
-  public async open(comName: string, baudRate: number) {
+  public async open(comName: string, baudRate: number, stopBits: 1 | 2 = 1) {
     if (SerialTrialService.serial) {
       AppMainLogger.warn("接続中のシリアルポートに対してオープンが要求されました。切断後に再オープンを行います");
       await SerialTrialService.serial.close();
     }
 
-    SerialTrialService.serial = new SerialComm(comName, baudRate);
+    SerialTrialService.serial = new SerialComm(comName, baudRate, false, null, null, { stopBits });
     const result = await SerialTrialService.serial.open();
     if (!result) {
       SerialTrialService.serial = null;

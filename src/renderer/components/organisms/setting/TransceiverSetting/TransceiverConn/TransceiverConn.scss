@@ -11,3 +11,10 @@
 .form_select {
   width: 250px;
 }
+
+// 機種ごとの、無線機側の設定の案内
+.device_note {
+  font-size: 0.8em;
+  line-height: 1.6;
+  color: rgba(var(--v-theme-on-surface), 0.7);
+}

@@ -51,6 +51,7 @@ import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import ApiSirial from "@/renderer/api/ApiSirial.js";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import { refreshCurrentTransceiverDevice } from "@/renderer/components/molecules/OpeModeSelect/useCurrentTransceiverDevice.js";
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
 import { ref, useTemplateRef, watch } from "vue";
 import type { ComponentExposed } from "vue-component-type-helpers";
@@ -159,6 +160,9 @@ async function onOk() {
 
   // 保存
   await ApiAppConfig.storeAppConfig(transceiverConfig);
+
+  // 運用モードの選択肢（機種ごとの絞り込み、表示ラベル）に、変更後の機種を反映する
+  await refreshCurrentTransceiverDevice();
 
   // シリアル接続、無線機の状態監視開始
   // memo: OKクリック時に待たさせるのを避けるためawaitは敢えて付けてない。

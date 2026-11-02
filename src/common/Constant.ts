@@ -212,10 +212,15 @@ export default class Constant {
 
     /**
      * 機種ID
+     * memo: 機種IDはメーカー内でのみ一意（ICOMとYAESUで値が重複する）ため、必ずメーカーIDと組み合わせて判定すること
      */
     public static readonly TransceiverId = class {
       // ICOM IC-910
       static readonly ICOM_IC910 = "4";
+      // YAESU FT-991 / FT-991A
+      static readonly YAESU_FT991 = "2";
+      // YAESU FT-897 / FT-897D
+      static readonly YAESU_FT897 = "3";
     };
 
     /**

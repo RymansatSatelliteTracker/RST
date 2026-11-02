@@ -606,10 +606,10 @@ public modeLabels?: Record<string, string>;
 ### 12.3 画面（`OpeModeSelect.vue`）
 
 - `OpeModeSelect` は、選択中の無線機の機種定義（`ApiAppConfig.getAppConfig()` の `transceiver.makerId`/`transceiverId` ＋ `ApiAppConfig.getTransceiverConfig()`）を取得し、選択肢を組み立てる。無線機が未設定の場合は、従来どおりの全モード（DVを除く）・ラベルなしとする。
-- 選択肢の組み立ては、画面から切り離した純粋関数 `OpeModeItemsUtil.buildItems(device, currentValue)`（`src/renderer/common/util/`）に実装し、単体テストできるようにする。
+- 選択肢の組み立ては、画面から切り離した純粋関数 `OpeModeItemsUtil.buildItems(device)`（`src/renderer/common/util/`）に実装し、単体テストできるようにする。
   - 返す項目：`{ title: ラベル, value: RSTのモード名 }`。
   - `supportedModes` が指定されている場合は、その順序・内容のみ。
-  - **保存済みの値が `supportedModes` に含まれない場合**（例：以前の設定でRTTYを保存、別の機種に切り替えた）の扱い：Vuetify 3 の `v-select` は、選択肢に無い値もそのまま表示する想定のため、選択肢には追加しない（保存値は変更しない）。実装時にVuetifyの挙動を確認し、空表示になる場合のみ、その値を選択肢の末尾に `RTTY（非対応）` として追加する。
+  - **保存済みの値が `supportedModes` に含まれない場合**（例：以前の設定でRTTYを保存、別の機種に切り替えた）の扱い：Vuetify 3.12 の `v-select` は、選択肢にない値も、その値そのものを項目として構築して表示する（`composables/list-items.js` の `transformIn`、「Not an existing item, construct it from the model」）ことを確認した。そのため、選択肢には追加しない（保存値は変更しない）。
   - **DV（無線機からの受信時のみ設定される値）は、この扱いの対象外**とし、従来どおりの表示を維持する（ICOMの表示を変えないため）。
 - 幅が狭い画面（メイン画面の `TransceiverCtrl`）でも崩れないよう、**ドロップダウンの一覧のみ括弧付きのラベル**を表示し、選択後の表示（`v-select` の `#selection` スロット）は、RSTのモード名（`USB-D`）のみとする。衛星設定ダイアログ（`SatelliteInfoEditorDialog`）も同じ `OpeModeSelect` を使うため、同じ挙動となる。
 - 無線機の設定を変更した後（`TransceiverSetting` のOK後）に、選択肢が更新されるよう、機種定義の取得は共有のリアクティブ状態（composable `useCurrentTransceiverDevice`）に持たせ、設定保存時に再読込する。再読込の呼び出し箇所は実装時に確認する。

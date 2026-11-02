@@ -31,9 +31,28 @@
       "makerName": "Yaesu Musen",
       "devices": [
         {
-          "transceiverId": "1",
-          "deviceName": "FT-847",
-          "civAddress": ""
+          "transceiverId": "2",
+          "deviceName": "FT-991 / FT-991A",
+          "civAddress": "",
+          "stopBits": 2,
+          "supportedModes": ["LSB", "USB", "CW", "AM", "FM", "RTTY", "LSB-D", "USB-D", "FM-D"],
+          "modeLabels": {
+            "LSB-D": "LSB-D(DATA-LSB)",
+            "USB-D": "USB-D(DATA-USB)",
+            "FM-D": "FM-D(DATA-FM)"
+          }
+        },
+        {
+          "transceiverId": "3",
+          "deviceName": "FT-897 / FT-897D",
+          "civAddress": "",
+          "stopBits": 2,
+          "supportedModes": ["LSB", "USB", "CW", "AM", "FM", "LSB-D", "USB-D", "FM-D"],
+          "modeLabels": {
+            "LSB-D": "LSB-D(DIG)",
+            "USB-D": "USB-D(DIG)",
+            "FM-D": "FM-D(PKT)"
+          }
         }
       ]
     }

@@ -23,8 +23,9 @@ export default abstract class TransceiverSerialControllerBase extends Transceive
 
   /**
    * シリアル接続を開始する
+   * @param stopBits ストップビット
    */
-  protected async openSerial(): Promise<boolean> {
+  protected async openSerial(stopBits: 1 | 2 = 1): Promise<boolean> {
     if (this.serial && this.serial.isOpen()) {
       return true;
     }
@@ -33,7 +34,9 @@ export default abstract class TransceiverSerialControllerBase extends Transceive
       this.transceiverConfig.port,
       parseInt(this.transceiverConfig.baudrateBps),
       false,
-      this.onRecv.bind(this)
+      this.onRecv.bind(this),
+      null,
+      { stopBits }
     );
     return await this.serial.open();
   }

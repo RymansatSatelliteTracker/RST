@@ -107,6 +107,13 @@ export default class FakeSerialComm {
   }
 
   /**
+   * 受信データを、ASCII文字列として注入する（FT-991など、ASCIIのコマンド体系の無線機向け）
+   */
+  public async emitRecvAscii(data: string): Promise<void> {
+    await this.emitRecv(Uint8Array.from(Buffer.from(data, "ascii")));
+  }
+
+  /**
    * 送信データの履歴を16進数文字列（小文字）の配列で返す
    */
   public sentHex(): string[] {

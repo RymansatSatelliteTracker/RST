@@ -12,8 +12,8 @@ export default class ApiSirial {
   /**
    * シリアルポートをオープンする
    */
-  public static async tryOpen(comName: string, baudRate: number): Promise<boolean> {
-    return await window.rstApi.openSerialPortTry(comName, baudRate);
+  public static async tryOpen(comName: string, baudRate: number, stopBits: 1 | 2 = 1): Promise<boolean> {
+    return await window.rstApi.openSerialPortTry(comName, baudRate, stopBits);
   }
 
   /**

@@ -1,6 +1,7 @@
 import CommonUtil from "@/common/CommonUtil.js";
 import Constant from "@/common/Constant.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import ApiSirial from "@/renderer/api/ApiSirial.js";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
@@ -48,7 +49,9 @@ export default function useTransceiverTestConnect(
     isSerialOpen.value = false;
 
     loadingTestBtn.value = true;
-    const resultOpen = await ApiSirial.tryOpen(form.value.port, parseInt(form.value.borate));
+    // 選択中の機種のストップビットでオープンする
+    const stopBits = await getStopBits();
+    const resultOpen = await ApiSirial.tryOpen(form.value.port, parseInt(form.value.borate), stopBits);
     if (!resultOpen) {
       emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.ERR_SERIAL_CONNECT_ABORT));
       loadingTestBtn.value = false;
@@ -62,6 +65,16 @@ export default function useTransceiverTestConnect(
     isSerialOpen.value = true;
 
     emitter.emit(Constant.GlobalEvent.NOTICE_INFO, I18nUtil.getMsg(I18nMsgs.ERR_SERIAL_CONNECT_SUCCESS));
+  }
+
+  /**
+   * 選択中の機種のストップビットを無線機定義から取得する（定義がない場合は1）
+   */
+  async function getStopBits(): Promise<1 | 2> {
+    const config = await ApiAppConfig.getTransceiverConfig();
+    const maker = config.transceivers.find((m) => m.makerId === form.value.makerId);
+    const device = maker?.devices.find((d) => d.transceiverId === form.value.transceiverId);
+    return device?.stopBits ?? 1;
   }
 
   return { connTest, validTest };

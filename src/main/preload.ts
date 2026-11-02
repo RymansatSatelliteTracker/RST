@@ -323,8 +323,8 @@ const apiHandler = {
   /**
    * シリアルポートをオープンする（試行）
    */
-  openSerialPortTry: function (comName: string, baudRate: number): Promise<boolean> {
-    return ipcRenderer.invoke("openSerialPortTry", comName, baudRate);
+  openSerialPortTry: function (comName: string, baudRate: number, stopBits: 1 | 2 = 1): Promise<boolean> {
+    return ipcRenderer.invoke("openSerialPortTry", comName, baudRate, stopBits);
   },
   /**
    * シリアルポートをクローズする
