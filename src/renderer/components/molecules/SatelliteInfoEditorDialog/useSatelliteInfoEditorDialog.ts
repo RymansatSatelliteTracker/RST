@@ -19,6 +19,17 @@ export default function useSatelliteInfoEditorDialog() {
   }
 
   /**
+   * dopplerShiftModeを画面表示用に正規化する
+   * 衛星固定/受信固定/送信固定以外（未設定を含む）は衛星固定扱いとする
+   * @param mode dopplerShiftMode
+   * @returns 正規化したdopplerShiftMode
+   */
+  function normalizeDopplerShiftModeForUi(mode: string | null | undefined): string {
+    const modes: string[] = Object.values(Constant.Transceiver.DopplerShiftMode);
+    return mode && modes.includes(mode) ? mode : Constant.Transceiver.DopplerShiftMode.FIXED_SAT;
+  }
+
+  /**
    * 画面フォームの構造に変換する(共通部分)
    * @param targetForm
    * @param srcObj
@@ -48,6 +59,7 @@ export default function useSatelliteInfoEditorDialog() {
     targetForm.toneHz = srcObj.toneHz;
     targetForm.enableSatelliteMode = srcObj.enableSatelliteMode;
     targetForm.satelliteMode = normalizeSatelliteModeForUi(srcObj.satelliteMode);
+    targetForm.dopplerShiftMode = normalizeDopplerShiftModeForUi(srcObj.dopplerShiftMode);
     targetForm.outline = srcObj.outline;
   }
   /**
@@ -101,6 +113,7 @@ export default function useSatelliteInfoEditorDialog() {
     targetAppConfig.beacon.beaconMode = srcForm.beaconMode;
     targetAppConfig.enableSatelliteMode = srcForm.enableSatelliteMode;
     targetAppConfig.satelliteMode = srcForm.satelliteMode;
+    targetAppConfig.dopplerShiftMode = srcForm.dopplerShiftMode;
     targetAppConfig.toneHz = srcForm.toneHz ? srcForm.toneHz : null;
     targetAppConfig.outline = srcForm.outline;
   }
@@ -133,11 +146,13 @@ export default function useSatelliteInfoEditorDialog() {
     targetDefSat.beacon.beaconMode = srcForm.beaconMode;
     targetDefSat.enableSatelliteMode = srcForm.enableSatelliteMode;
     targetDefSat.satelliteMode = srcForm.satelliteMode;
+    targetDefSat.dopplerShiftMode = srcForm.dopplerShiftMode;
     targetDefSat.toneHz = srcForm.toneHz ? srcForm.toneHz : null;
     targetDefSat.outline = srcForm.outline;
   }
 
   return {
+    normalizeDopplerShiftModeForUi,
     transformAppConfigToForm,
     transformDefSatToForm,
     transformFormToAppConfig,

@@ -15,6 +15,7 @@ const createState = (): ModeCoordinatorState => ({
   satelliteMode: ref(Constant.Transceiver.SatelliteMode.UNSET),
   isSatelliteMode: ref(false),
   isSatTrackingModeNormal: ref(true),
+  dopplerShiftMode: ref(Constant.Transceiver.DopplerShiftMode.FIXED_SAT),
   savedTxFrequency: ref(""),
   savedRxFrequency: ref(""),
   savedTxOpeMode: ref(""),

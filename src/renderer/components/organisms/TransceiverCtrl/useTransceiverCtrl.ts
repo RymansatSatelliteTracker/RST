@@ -148,6 +148,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       satelliteMode,
       isSatelliteMode,
       isSatTrackingModeNormal,
+      dopplerShiftMode,
       savedTxFrequency,
       savedRxFrequency,
       savedTxOpeMode,

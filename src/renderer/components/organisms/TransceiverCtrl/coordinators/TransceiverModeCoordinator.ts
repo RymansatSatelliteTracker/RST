@@ -33,6 +33,8 @@ export interface ModeCoordinatorState {
   isSatelliteMode: Ref<boolean>;
   /** サテライトモードのトラッキングモード（true=NORMAL） */
   isSatTrackingModeNormal: Ref<boolean>;
+  /** ドップラーシフトモード（衛星固定/受信固定/送信固定） */
+  dopplerShiftMode: Ref<string>;
   /** モード移行前のTx周波数退避 */
   savedTxFrequency: Ref<string>;
   /** モード移行前のRx周波数退避 */
@@ -161,6 +163,9 @@ export default class TransceiverModeCoordinator {
 
     // サテライトモードのトラッキングモードを更新する
     this.applyTrackingModeAtAutoStart(transceiverSetting.satTrackMode);
+
+    // 衛星設定の固定モードを初期値として設定する
+    this.state.dopplerShiftMode.value = transceiverSetting.dopplerShiftMode;
 
     // 周波数と運用モードを設定、保存する
     this.setFreqAndOpeModeInModeStart();

@@ -63,6 +63,8 @@ export default class ActiveSatServiceHub {
   private satelliteMode: boolean = false;
   // アクティブ衛星のトラッキングモード
   private satTrackMode: string | null = null;
+  // アクティブ衛星の固定モード
+  private dopplerShiftMode: string = Constant.Transceiver.DopplerShiftMode.FIXED_SAT;
   // アクティブ衛星のTone周波数
   private toneHz: number | null = null;
 
@@ -293,6 +295,12 @@ export default class ActiveSatServiceHub {
     // アクティブ衛星のトラッキングモード
     this.satTrackMode = appConfigSatellite.enableSatelliteMode ? appConfigSatellite.satelliteMode : null;
 
+    // アクティブ衛星の固定モード（未設定・不正値は衛星固定）
+    const dopplerShiftModes: string[] = Object.values(Constant.Transceiver.DopplerShiftMode);
+    this.dopplerShiftMode = dopplerShiftModes.includes(appConfigSatellite.dopplerShiftMode)
+      ? appConfigSatellite.dopplerShiftMode
+      : Constant.Transceiver.DopplerShiftMode.FIXED_SAT;
+
     // アクティブ衛星のTone周波数
     this.toneHz = appConfigSatellite.toneHz;
   }
@@ -395,6 +403,7 @@ export default class ActiveSatServiceHub {
     beacon: BeaconType | null;
     satelliteMode: boolean;
     satTrackMode: string | null;
+    dopplerShiftMode: string;
     toneHz: number | null;
   } {
     return {
@@ -403,6 +412,7 @@ export default class ActiveSatServiceHub {
       beacon: this.beaconFreq,
       satelliteMode: this.satelliteMode,
       satTrackMode: this.satTrackMode,
+      dopplerShiftMode: this.dopplerShiftMode,
       toneHz: this.toneHz,
     };
   }
