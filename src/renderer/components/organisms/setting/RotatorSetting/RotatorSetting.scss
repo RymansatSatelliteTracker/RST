@@ -1,5 +1,6 @@
 @use "@/renderer/components/styles/global" as *;
 
 .dialog_box {
-  height: 650px;
+  // 最低の高さを定め、内容がそれを超えた場合は伸ばす
+  min-height: 650px;
 }

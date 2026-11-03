@@ -1,7 +1,15 @@
 @use "@/renderer/components/styles/global" as *;
 
+// 最低の高さを固定し、内容がそれを超えた場合は伸ばす
 .dialog-height {
-  height: 650px;
+  min-height: 660px;
+  display: flex;
+  flex-direction: column;
+}
+
+// タブ内容は、ダイアログの余白を埋める高さとする
+.dialog-content {
+  flex: 1 1 auto;
 }
 
 .custom-border {

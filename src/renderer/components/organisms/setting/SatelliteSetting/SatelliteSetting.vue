@@ -16,7 +16,7 @@
         </v-tabs>
 
         <!-- タブ内容 -->
-        <v-card-text class="bg-grey-darken-4 custom-border pa-8 h-75">
+        <v-card-text class="bg-grey-darken-4 custom-border pa-8 dialog-content">
           <v-tabs-window v-model="tab">
             <!-- 表示衛星 -->
             <v-tabs-window-item value="displaySatellite">
