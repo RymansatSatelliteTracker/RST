@@ -128,6 +128,11 @@ async function applyDopplerShiftCorrections() {
 - `execTx/RxDopplerShiftCorrection` フラグと `resolveCorrectionFlags` は、ダイヤル待機後の再送信判定（`resendFixedSideFreqToTransceiver`）などで引き続き使うため変更しない。
 - `resendFixedSideFreqToTransceiver`（送信固定のTx再送信）は、既存どおり `txBase × fu` で算出した値を送信し、その値が以降の `T0` になる。ここは変更しない。
 
+## レビュー対応（PR #263 Copilot指摘）
+
+- ビーコンモード中は、ビーコン周波数がトランスポンダのSum関係にないため、固定側維持の算出を適用せず従来の算出経路を使う（`!isBeaconMode.value` を条件に追加）。
+- 補正値なし基準周波数は`baseFreqMgr`ではなく、画面の基準周波数（`rxBaseFreq` / `txBaseFreq`）から補正値を除いた値を使う。画面でのホイール操作は画面の基準周波数のみを更新するため、`baseFreqMgr`を使うと次の周期で操作が元に戻る、またはNormal設定で逆方向へ動く。
+
 ## 影響範囲・リスク
 
 - 変更は周期処理の算出部分（`TransceiverDopplerCalc` / `TransceiverFreqCoordinator` / `useTransceiverCtrl.ts`）と `FrequencyTrackService` への関数復活に閉じる。無線機との通信（main側）には変更なし。
