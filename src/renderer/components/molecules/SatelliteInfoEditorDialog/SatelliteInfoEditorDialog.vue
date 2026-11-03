@@ -257,6 +257,31 @@
           </v-col>
         </v-row>
         <v-row>
+          <!-- 固定モード -->
+          <v-col cols="4">
+            <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_DOPPLER_SHIFT_MODE) }}</label>
+          </v-col>
+          <v-col cols="8">
+            <v-radio-group v-model="form.dopplerShiftMode" inline hide-details density="compact">
+              <v-radio
+                :value="Constant.Transceiver.DopplerShiftMode.FIXED_SAT"
+                class="radio"
+                :label="I18nUtil.getMsg(I18nMsgs.G2_FIXED_SAT)"
+              ></v-radio>
+              <v-radio
+                :value="Constant.Transceiver.DopplerShiftMode.FIXED_TX"
+                class="radio"
+                :label="I18nUtil.getMsg(I18nMsgs.G2_FIXED_TX)"
+              ></v-radio>
+              <v-radio
+                :value="Constant.Transceiver.DopplerShiftMode.FIXED_RX"
+                class="radio"
+                :label="I18nUtil.getMsg(I18nMsgs.G2_FIXED_RX)"
+              ></v-radio>
+            </v-radio-group>
+          </v-col>
+        </v-row>
+        <v-row>
           <!-- 概要 -->
           <v-col cols="4">
             <label class="label form__label">{{ I18nUtil.getMsg(I18nMsgs.G31_OUTLINE) }}</label>

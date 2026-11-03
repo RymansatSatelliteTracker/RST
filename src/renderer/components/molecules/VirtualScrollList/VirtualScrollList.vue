@@ -66,7 +66,7 @@ watch(
 /**
  * ユーザーがスクロールしたときに新しいアイテムをロード
  */
-function onIntersect(_entries: IntersectionObserverEntry[], _observer: IntersectionObserver, isIntersecting: boolean) {
+function onIntersect(isIntersecting: boolean, _entries: IntersectionObserverEntry[], _observer: IntersectionObserver) {
   if (isIntersecting) {
     loadItems();
   }
