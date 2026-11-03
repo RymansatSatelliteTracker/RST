@@ -296,7 +296,11 @@ export default class ActiveSatServiceHub {
     this.satTrackMode = appConfigSatellite.enableSatelliteMode ? appConfigSatellite.satelliteMode : null;
 
     // アクティブ衛星の固定モード（未設定・不正値は衛星固定）
-    const dopplerShiftModes: string[] = Object.values(Constant.Transceiver.DopplerShiftMode);
+    const dopplerShiftModes: string[] = [
+      Constant.Transceiver.DopplerShiftMode.FIXED_SAT,
+      Constant.Transceiver.DopplerShiftMode.FIXED_RX,
+      Constant.Transceiver.DopplerShiftMode.FIXED_TX,
+    ];
     this.dopplerShiftMode = dopplerShiftModes.includes(appConfigSatellite.dopplerShiftMode)
       ? appConfigSatellite.dopplerShiftMode
       : Constant.Transceiver.DopplerShiftMode.FIXED_SAT;

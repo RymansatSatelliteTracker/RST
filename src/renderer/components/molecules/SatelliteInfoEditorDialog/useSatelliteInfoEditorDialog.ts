@@ -25,7 +25,11 @@ export default function useSatelliteInfoEditorDialog() {
    * @returns 正規化したdopplerShiftMode
    */
   function normalizeDopplerShiftModeForUi(mode: string | null | undefined): string {
-    const modes: string[] = Object.values(Constant.Transceiver.DopplerShiftMode);
+    const modes: string[] = [
+      Constant.Transceiver.DopplerShiftMode.FIXED_SAT,
+      Constant.Transceiver.DopplerShiftMode.FIXED_RX,
+      Constant.Transceiver.DopplerShiftMode.FIXED_TX,
+    ];
     return mode && modes.includes(mode) ? mode : Constant.Transceiver.DopplerShiftMode.FIXED_SAT;
   }
 
