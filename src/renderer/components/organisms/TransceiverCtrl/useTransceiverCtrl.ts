@@ -187,15 +187,18 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    */
   async function onChangeSatGrp() {
     // 衛星が変更された場合は補正値をリセットする（NoradIdで判定する）
-    if (coordinator.syncCurrentNoradIdFromActiveSat()) {
+    const isSatChanged = coordinator.syncCurrentNoradIdFromActiveSat();
+    if (isSatChanged) {
       resetFreqAdj();
     }
 
     isBeaconModeAvailable.value = confirmBeaconModeAvailable();
 
     // Autoモード中の場合は、新しい衛星であらためてAutoモードを開始する
+    // MEMO: 同一衛星の設定更新（衛星設定の保存、最小仰角の更新など）でも呼ばれるため、
+    //       固定モードは衛星が変更された場合のみ設定する（手動選択した固定モードを維持する）
     if (autoStore.tranceiverAuto) {
-      await startAutoMode();
+      await startAutoMode(isSatChanged);
     }
   }
 
@@ -213,8 +216,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   /**
    * Autoモード中はアクティブ衛星で周波数/運用モードを更新する
    */
-  async function startAutoMode(): Promise<boolean> {
-    return coordinator.startAutoMode();
+  async function startAutoMode(applyDopplerShiftMode: boolean = true): Promise<boolean> {
+    return coordinator.startAutoMode(applyDopplerShiftMode);
   }
 
   /**

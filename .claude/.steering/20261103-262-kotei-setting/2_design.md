@@ -9,6 +9,7 @@
 - メイン画面への反映は、`TransceiverModeCoordinator.startAutoMode` の1か所のみで行う。
   - AutoOn開始時に設定される。
   - AutoOn状態でアクティブ衛星を切り替えた場合は、`onChangeSatGrp` から `startAutoMode` が再実行されるため、新しい衛星の値が設定される。
+  - `onChangeSatGrp` は、同一衛星の設定更新（衛星設定の保存、最小仰角の更新など）でも呼ばれる。この場合に手動選択した固定モードを上書きしないよう、`startAutoMode(applyDopplerShiftMode)` の引数で制御する。`onChangeSatGrp` は衛星が変更された場合のみ `true` を渡す（Auto ONボタンからの開始は既定の `true`）。
   - AutoOff状態でアクティブ衛星を切り替えても、メイン画面の固定モードは変更しない。
 - ドップラー補正ロジック（Resolver/Coordinator/Calc）は変更しない。
 
@@ -21,7 +22,7 @@
 | 3 | 並び順：衛星固定 → 送信固定 → 受信固定     | ラジオを画像どおりの順で記述（`Constant` の定義順は変更しない）                  |
 | 4 | AutoOn中の変更は次回AutoOn/衛星切替時に反映 | 設定変更を監視する処理は追加しない（反映箇所は `startAutoMode` のみ）            |
 | 5 | frequency.jsonの既存衛星はすべて衛星固定   | frequency.json は編集しない。`normalizeData` のテンプレート値（衛星固定）で補完  |
-| 6 | AutoOff時の衛星切替ではメイン画面は変更しない | `onChangeSatGrp` では固定モードを更新しない                                   |
+| 6 | AutoOff時の衛星切替ではメイン画面は変更しない | `onChangeSatGrp` は、衛星が変わっていない場合は `startAutoMode(false)` で固定モードを更新しない |
 
 ## 3. 変更内容
 
@@ -64,7 +65,7 @@
 | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/renderer/service/ActiveSatServiceHub.ts` | `dopplerShiftMode` フィールドを追加。アクティブ衛星設定の読み込み処理で `appConfigSatellite.dopplerShiftMode`（不正値/未定義は FIXED_SAT）を保持。`getActiveSatTransceiverSetting()` の戻り値へ追加 |
 | `coordinators/TransceiverModeCoordinator.ts`  | `ModeCoordinatorState` に `dopplerShiftMode: Ref<string>` を追加。`startAutoMode` で `transceiverSetting.dopplerShiftMode` を `state.dopplerShiftMode` へ設定                                      |
-| `useTransceiverCtrl.ts`                       | `ModeCoordinatorState` の生成箇所へ `dopplerShiftMode` を渡す（`onChangeSatGrp` は変更しない）                  |
+| `useTransceiverCtrl.ts`                       | `ModeCoordinatorState` の生成箇所へ `dopplerShiftMode` を渡す。`onChangeSatGrp` で衛星変更の有無を判定し、`startAutoMode` の `applyDopplerShiftMode` に渡す                  |
 
 反映の流れ：
 

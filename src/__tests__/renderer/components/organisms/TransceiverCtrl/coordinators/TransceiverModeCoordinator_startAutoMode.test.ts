@@ -139,4 +139,39 @@ describe("TransceiverModeCoordinator.startAutoMode", () => {
     expect(result).toBe(true);
     expect(state.dopplerShiftMode.value).toBe(dopplerShiftMode);
   });
+
+  it("固定モードを設定しない指定の場合、メイン画面の固定モードが維持されること", async () => {
+    const appConfig = new AppConfigModel();
+    appConfig.transceiver.port = "COM3";
+    appConfig.transceiver.transceiverId = "IC-9700";
+    appConfig.transceiver.baudrateBps = "9600";
+    appConfig.transceiver.autoTrackingIntervalSec = "1";
+
+    // 手動選択された固定モードを想定する
+    const state = createState();
+    state.dopplerShiftMode.value = Constant.Transceiver.DopplerShiftMode.FIXED_TX;
+    const coordinator = createCoordinator(false, state);
+
+    vi.spyOn(ApiAppConfig, "getAppConfig").mockResolvedValue(appConfig);
+    vi.spyOn(ApiTransceiver, "isReady").mockResolvedValue({ status: true, data: true, message: null });
+    vi.spyOn(ApiTransceiver, "setSatelliteMode").mockResolvedValue(true);
+    vi.spyOn(ApiTransceiver, "transceiverInitAutoOn").mockResolvedValue(undefined);
+    vi.spyOn(ActiveSatServiceHub, "getInstance").mockReturnValue({
+      getSatService: () => null,
+      getActiveSatTransceiverSetting: () => ({
+        downlink: { downlinkHz: 435633000, downlinkMode: "USB" },
+        uplink: { uplinkHz: 145970000, uplinkMode: "LSB" },
+        beacon: null,
+        satelliteMode: false,
+        satTrackMode: null,
+        dopplerShiftMode: Constant.Transceiver.DopplerShiftMode.FIXED_RX,
+        toneHz: null,
+      }),
+    } as unknown as ActiveSatServiceHub);
+
+    const result = await coordinator.startAutoMode(false);
+
+    expect(result).toBe(true);
+    expect(state.dopplerShiftMode.value).toBe(Constant.Transceiver.DopplerShiftMode.FIXED_TX);
+  });
 });

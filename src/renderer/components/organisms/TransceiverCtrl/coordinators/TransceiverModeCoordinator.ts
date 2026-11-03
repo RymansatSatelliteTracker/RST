@@ -132,9 +132,11 @@ export default class TransceiverModeCoordinator {
 
   /**
    * Autoモードを開始する
+   * @param applyDopplerShiftMode 衛星設定の固定モードをメイン画面へ設定するか
+   *   （Auto ON中の同一衛星の設定更新で再開始する場合は、手動選択した固定モードを維持するためfalseを指定する）
    * @returns {Promise<boolean>} 成功した場合はtrue
    */
-  public async startAutoMode(): Promise<boolean> {
+  public async startAutoMode(applyDopplerShiftMode: boolean = true): Promise<boolean> {
     // Autoモード開始の事前条件をチェック
     if (!(await this.validateAutoModeStart())) {
       return false;
@@ -165,7 +167,9 @@ export default class TransceiverModeCoordinator {
     this.applyTrackingModeAtAutoStart(transceiverSetting.satTrackMode);
 
     // 衛星設定の固定モードを初期値として設定する
-    this.state.dopplerShiftMode.value = transceiverSetting.dopplerShiftMode;
+    if (applyDopplerShiftMode) {
+      this.state.dopplerShiftMode.value = transceiverSetting.dopplerShiftMode;
+    }
 
     // 周波数と運用モードを設定、保存する
     this.setFreqAndOpeModeInModeStart();

@@ -14,13 +14,14 @@
 - [x] `SatelliteInfoEditorDialog.vue`：「固定モード」ラジオ（衛星固定/送信固定/受信固定、常に活性）を追加
 - [x] `ActiveSatServiceHub.ts`：`dopplerShiftMode` を保持し、`getActiveSatTransceiverSetting()` の戻り値へ追加
 - [x] `TransceiverModeCoordinator.ts`：`ModeCoordinatorState` へ `dopplerShiftMode` を追加し、`startAutoMode` で設定
-- [x] `useTransceiverCtrl.ts`：`dopplerShiftMode` を Coordinator へ渡す（`onChangeSatGrp` は変更しない）
+- [x] `useTransceiverCtrl.ts`：`dopplerShiftMode` を Coordinator へ渡す
+- [x] Copilot指摘対応：`startAutoMode(applyDopplerShiftMode)` を追加し、`onChangeSatGrp` は衛星が変更された場合のみ固定モードを設定する（同一衛星の設定更新では手動選択した固定モードを維持する）
 
 ## 単体テスト
 
 - [x] `DefaultSatelliteUtil.test.ts`：FIXED_SAT の生成と、キー無しデータの補完
 - [x] 衛星情報編集ダイアログの変換関数のテストを追加（往復、不正値/未定義の正規化）
-- [x] `TransceiverModeCoordinator_startAutoMode.test.ts`：固定モードが `state.dopplerShiftMode` へ設定される
+- [x] `TransceiverModeCoordinator_startAutoMode.test.ts`：固定モードが `state.dopplerShiftMode` へ設定される。`applyDopplerShiftMode=false` の場合は維持される
 - [ ] `ActiveSatServiceHub` の `getActiveSatTransceiverSetting` が `dopplerShiftMode` を返す（既存の単体テストが無く、セットアップが重いため未実施）
 - [x] 既存テストへの影響確認（`npm run test`）
 
