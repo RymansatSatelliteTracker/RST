@@ -1,5 +1,6 @@
 @use "@/renderer/components/styles/global" as *;
 
 .dialog_box {
-  height: 650px;
+  // 機種によって案内文の量が異なるため、高さが切り替わらないよう最低の高さを定める（内容が超える場合は伸びる）
+  min-height: 500px;
 }
