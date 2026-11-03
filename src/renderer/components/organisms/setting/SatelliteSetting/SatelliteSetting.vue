@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-dialog v-model="isShow" max-width="900" persistent>
+    <v-dialog v-model="isShow" max-width="900" persistent @keydown.esc="onEsc">
       <v-card color="grey-darken-4" class="pa-4 dialog-height">
         <!-- タブ設定 -->
         <v-tabs v-model="tab">
@@ -57,6 +57,7 @@
 </template>
 <script setup lang="ts">
 import Constant from "@/common/Constant.js";
+import OverlayUtil from "@/renderer/common/util/OverlayUtil.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import DisplaySatelliteTab from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/DisplaySatelliteTab.vue";
@@ -139,6 +140,17 @@ function onCancel() {
   emits("onCancel");
 }
 
+/**
+ * ESCキーでダイアログを閉じる（キャンセルと同じ扱い）
+ * 子ダイアログやメニューが開いている場合は、それらのみが閉じるため、本ダイアログは閉じない。
+ * @param event キーイベント
+ */
+function onEsc(event: KeyboardEvent) {
+  // 子ダイアログやメニューが開いている場合は、それらのみが閉じるため、本ダイアログは閉じない
+  if (OverlayUtil.isTopOverlay(event)) {
+    onCancel();
+  }
+}
 /**
  * アプリケーション設定取得
  */

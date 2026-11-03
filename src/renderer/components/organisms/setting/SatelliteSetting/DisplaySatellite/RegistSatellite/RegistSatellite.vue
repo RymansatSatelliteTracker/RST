@@ -1,6 +1,6 @@
 <!-- 衛星登録 -->
 <template>
-  <v-dialog v-model="isShow" persistent max-width="700">
+  <v-dialog v-model="isShow" persistent max-width="700" @keydown.esc="onEsc">
     <v-card theme="dark" outlined width="100%" height="100%" class="pa-3">
       <v-card-title class="headline" style="user-select: none">{{
         I18nUtil.getMsg(I18nMsgs.G31_REGIST_SATELLITE)
@@ -159,6 +159,7 @@
   </v-dialog>
 </template>
 <script setup lang="ts">
+import OverlayUtil from "@/renderer/common/util/OverlayUtil.js";
 import Constant from "@/common/Constant.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
 import type { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
@@ -272,6 +273,14 @@ async function onOk() {
  */
 function onCancel() {
   emits("onCancel");
+}
+/**
+ * ESCキーでダイアログを閉じる（キャンセルと同じ扱い）
+ */
+function onEsc(event: KeyboardEvent) {
+  if (OverlayUtil.isTopOverlay(event)) {
+    onCancel();
+  }
 }
 </script>
 <style lang="scss" scoped>

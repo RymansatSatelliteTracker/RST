@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="isShow" persistent max-width="600">
+  <v-dialog v-model="isShow" persistent max-width="600" @keydown.esc="onEsc">
     <v-card theme="dark" outlined width="100%" height="100%" class="pa-3">
       <v-card-title class="headline" style="user-select: none">{{ title }}</v-card-title>
       <v-divider class="mb-4"></v-divider>
@@ -289,6 +289,7 @@
 </template>
 
 <script setup lang="ts">
+import OverlayUtil from "@/renderer/common/util/OverlayUtil.js";
 import Constant from "@/common/Constant.js";
 import I18nMsgs from "@/common/I18nMsgs.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
@@ -327,6 +328,14 @@ const valiSchemaSatelliteInfoEditorDialog = computed(() =>
 
 // 親に通知用のイベント
 const emits = defineEmits<{ (e: "ok"): void; (e: "cancel"): void; (e: "reset"): void }>();
+/**
+ * ESCキーでダイアログを閉じる（キャンセルと同じ扱い）
+ */
+function onEsc(event: KeyboardEvent) {
+  if (OverlayUtil.isTopOverlay(event)) {
+    emits("cancel");
+  }
+}
 </script>
 
 <style lang="scss" scoped>
