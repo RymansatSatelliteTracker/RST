@@ -68,6 +68,86 @@ export default class TransceiverDopplerCalc {
   }
 
   /**
+   * 受信固定モード用：固定Rx周波数を維持するためのアップリンク周波数を算出する
+   * 固定Rxから下りドップラー分を割り戻してRx基準周波数を求め、Sum維持でTx基準周波数を再導出し、
+   * Txドップラーファクターを適用する（下りのドップラー変化分も見越してTxを動かす）
+   * 算出した基準周波数は一時値であり、基準周波数の管理には書き戻さない
+   * @param plainRxBaseFreq Rx基準周波数（補正値なし）
+   * @param plainTxBaseFreq Tx基準周波数（補正値なし）
+   * @param rxAdjustFreq Rx周波数補正値
+   * @param txAdjustFreq Tx周波数補正値
+   * @param fixedRxFreq 固定しているRx周波数
+   * @param currentDate 現在日時
+   * @param intervalMs 計算に使用する時間間隔（ミリ秒）
+   * @returns Tx周波数文字列（FrequencyTrackService未取得の場合はnull）
+   */
+  public async calcTxFreqKeepingRxFixed(
+    plainRxBaseFreq: number,
+    plainTxBaseFreq: number,
+    rxAdjustFreq: number,
+    txAdjustFreq: number,
+    fixedRxFreq: number,
+    currentDate: Date,
+    intervalMs: number
+  ): Promise<string | null> {
+    const freqTrackService = ActiveSatServiceHub.getInstance().getFrequencyTrackService();
+    if (!freqTrackService) {
+      return null;
+    }
+
+    const rxDopplerFactor = await freqTrackService.calcDownlinkDopplerFactor(currentDate, intervalMs);
+    const { txBaseFreq } = freqTrackService.calcInvHeteroBaseFreqByRxFreq(
+      plainRxBaseFreq + plainTxBaseFreq,
+      rxAdjustFreq,
+      fixedRxFreq,
+      rxDopplerFactor
+    );
+
+    const txDopplerFactor = await freqTrackService.calcUplinkDopplerFactor(currentDate, intervalMs);
+    return TransceiverUtil.formatWithDot((txBaseFreq + txAdjustFreq) * txDopplerFactor);
+  }
+
+  /**
+   * 送信固定モード用：固定Tx周波数を維持するためのダウンリンク周波数を算出する
+   * 固定Txから上りドップラー分を割り戻してTx基準周波数を求め、Sum維持でRx基準周波数を再導出し、
+   * Rxドップラーファクターを適用する（上りのドップラー変化分も加味してRxを動かす）
+   * 算出した基準周波数は一時値であり、基準周波数の管理には書き戻さない
+   * @param plainRxBaseFreq Rx基準周波数（補正値なし）
+   * @param plainTxBaseFreq Tx基準周波数（補正値なし）
+   * @param rxAdjustFreq Rx周波数補正値
+   * @param txAdjustFreq Tx周波数補正値
+   * @param fixedTxFreq 固定しているTx周波数
+   * @param currentDate 現在日時
+   * @param intervalMs 計算に使用する時間間隔（ミリ秒）
+   * @returns Rx周波数文字列（FrequencyTrackService未取得の場合はnull）
+   */
+  public async calcRxFreqKeepingTxFixed(
+    plainRxBaseFreq: number,
+    plainTxBaseFreq: number,
+    rxAdjustFreq: number,
+    txAdjustFreq: number,
+    fixedTxFreq: number,
+    currentDate: Date,
+    intervalMs: number
+  ): Promise<string | null> {
+    const freqTrackService = ActiveSatServiceHub.getInstance().getFrequencyTrackService();
+    if (!freqTrackService) {
+      return null;
+    }
+
+    const txDopplerFactor = await freqTrackService.calcUplinkDopplerFactor(currentDate, intervalMs);
+    const { rxBaseFreq } = freqTrackService.calcInvHeteroBaseFreqByTxFreq(
+      plainRxBaseFreq + plainTxBaseFreq,
+      txAdjustFreq,
+      fixedTxFreq,
+      txDopplerFactor
+    );
+
+    const rxDopplerFactor = await freqTrackService.calcDownlinkDopplerFactor(currentDate, intervalMs);
+    return TransceiverUtil.formatWithDot((rxBaseFreq + rxAdjustFreq) * rxDopplerFactor);
+  }
+
+  /**
    * 無線機で変更されたRx周波数を元に、補正値なしのRx・Tx基準周波数を再算出する
    * @param plainRxBaseFreq 現在のRx基準周波数（補正値なし）
    * @param plainTxBaseFreq 現在のTx基準周波数（補正値なし）
