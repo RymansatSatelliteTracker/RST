@@ -2,7 +2,16 @@ import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
 import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc.js";
+import TransceiverUtil from "@/common/util/TransceiverUtil.js";
 import type { Ref } from "vue";
+
+/**
+ * 補正値なしのRx・Tx基準周波数
+ */
+export interface PlainBaseFreqs {
+  plainRxBaseFreq: number;
+  plainTxBaseFreq: number;
+}
 
 /**
  * Coordinatorが操作する周波数関連のリアクティブ状態
@@ -91,6 +100,60 @@ export default class TransceiverFreqCoordinator {
     const newRxFreq = await this.dopplerCalc.calcNewRxFreqWithDoppler(
       this.currentDate.value,
       this.state.rxBaseFreq.value,
+      intervalMs
+    );
+    if (newRxFreq !== null) {
+      this.state.rxFrequency.value = newRxFreq;
+    }
+  }
+
+  /**
+   * 受信固定モード：固定Rxを維持するよう、アップリンク周波数をドップラーシフト補正して更新する
+   * @param plainBaseFreqs 補正値なしのRx・Tx基準周波数
+   * @param rxAdjustFreq Rx周波数補正値
+   * @param txAdjustFreq Tx周波数補正値
+   * @param intervalMs 計算に使用する時間間隔（ミリ秒）
+   */
+  public async updateTxFreqKeepingRxFixed(
+    plainBaseFreqs: PlainBaseFreqs,
+    rxAdjustFreq: number,
+    txAdjustFreq: number,
+    intervalMs: number
+  ): Promise<void> {
+    const newTxFreq = await this.dopplerCalc.calcTxFreqKeepingRxFixed(
+      plainBaseFreqs.plainRxBaseFreq,
+      plainBaseFreqs.plainTxBaseFreq,
+      rxAdjustFreq,
+      txAdjustFreq,
+      TransceiverUtil.parseNumber(this.state.rxFrequency.value),
+      this.currentDate.value,
+      intervalMs
+    );
+    if (newTxFreq !== null) {
+      this.state.txFrequency.value = newTxFreq;
+    }
+  }
+
+  /**
+   * 送信固定モード：固定Txを維持するよう、ダウンリンク周波数をドップラーシフト補正して更新する
+   * @param plainBaseFreqs 補正値なしのRx・Tx基準周波数
+   * @param rxAdjustFreq Rx周波数補正値
+   * @param txAdjustFreq Tx周波数補正値
+   * @param intervalMs 計算に使用する時間間隔（ミリ秒）
+   */
+  public async updateRxFreqKeepingTxFixed(
+    plainBaseFreqs: PlainBaseFreqs,
+    rxAdjustFreq: number,
+    txAdjustFreq: number,
+    intervalMs: number
+  ): Promise<void> {
+    const newRxFreq = await this.dopplerCalc.calcRxFreqKeepingTxFixed(
+      plainBaseFreqs.plainRxBaseFreq,
+      plainBaseFreqs.plainTxBaseFreq,
+      rxAdjustFreq,
+      txAdjustFreq,
+      TransceiverUtil.parseNumber(this.state.txFrequency.value),
+      this.currentDate.value,
       intervalMs
     );
     if (newRxFreq !== null) {

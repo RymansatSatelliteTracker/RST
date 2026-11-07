@@ -1,3 +1,4 @@
+import Constant from "@/common/Constant.js";
 import type { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes";
 import {
   createDefaultSatellite,
@@ -20,6 +21,29 @@ describe("DefaultSatelliteUtil", () => {
     expect(result.satelliteId).toBe(satelliteId);
     expect(result.satelliteName).toBe(satelliteName);
     expect(result.noradId).toBe(noradId);
+    expect(result.dopplerShiftMode).toBe(Constant.Transceiver.DopplerShiftMode.FIXED_SAT);
+  });
+
+  it("固定モードを持たないデフォルト衛星情報は衛星固定に補完される", () => {
+    // 準備
+    const satellites = [{ satelliteId: 10, satelliteName: "TEST SAT", noradId: "25544" }];
+
+    // 実行
+    const result = initializeDefaultSatellites(satellites as DefaultSatelliteType[]);
+
+    // 検証
+    expect(result[0].dopplerShiftMode).toBe(Constant.Transceiver.DopplerShiftMode.FIXED_SAT);
+  });
+
+  it("固定モードを持つデフォルト衛星情報は、その値が維持される", () => {
+    // 準備
+    const satellites = [{ satelliteId: 10, satelliteName: "TEST SAT", noradId: "25544", dopplerShiftMode: "FIXED_RX" }];
+
+    // 実行
+    const result = initializeDefaultSatellites(satellites as DefaultSatelliteType[]);
+
+    // 検証
+    expect(result[0].dopplerShiftMode).toBe(Constant.Transceiver.DopplerShiftMode.FIXED_RX);
   });
 
   it("不足項目を含むデフォルト衛星情報を正規化できる", () => {

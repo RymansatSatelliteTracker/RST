@@ -148,6 +148,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       satelliteMode,
       isSatelliteMode,
       isSatTrackingModeNormal,
+      dopplerShiftMode,
       savedTxFrequency,
       savedRxFrequency,
       savedTxOpeMode,
@@ -186,15 +187,18 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    */
   async function onChangeSatGrp() {
     // 衛星が変更された場合は補正値をリセットする（NoradIdで判定する）
-    if (coordinator.syncCurrentNoradIdFromActiveSat()) {
+    const isSatChanged = coordinator.syncCurrentNoradIdFromActiveSat();
+    if (isSatChanged) {
       resetFreqAdj();
     }
 
     isBeaconModeAvailable.value = confirmBeaconModeAvailable();
 
     // Autoモード中の場合は、新しい衛星であらためてAutoモードを開始する
+    // MEMO: 同一衛星の設定更新（衛星設定の保存、最小仰角の更新など）でも呼ばれるため、
+    //       固定モードは衛星が変更された場合のみ設定する（手動選択した固定モードを維持する）
     if (autoStore.tranceiverAuto) {
-      await startAutoMode();
+      await startAutoMode(isSatChanged);
     }
   }
 
@@ -212,8 +216,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   /**
    * Autoモード中はアクティブ衛星で周波数/運用モードを更新する
    */
-  async function startAutoMode(): Promise<boolean> {
-    return coordinator.startAutoMode();
+  async function startAutoMode(applyDopplerShiftMode: boolean = true): Promise<boolean> {
+    return coordinator.startAutoMode(applyDopplerShiftMode);
   }
 
   /**
@@ -524,6 +528,38 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    * ドップラーシフト補正を実行する
    */
   async function applyDopplerShiftCorrections() {
+    // 受信固定/送信固定（サテライトモードON時）は、固定側のドップラー変化分を反対側に反映する
+    // MEMO: 衛星固定の式のままだと、固定側のドップラー変化分だけ受信キャリアがドリフトする
+    // MEMO: ビーコンモード中のRxはトランスポンダのSum関係にないため、この算出は適用せず従来の算出経路を使う
+    if (isSatelliteMode.value && !isBeaconMode.value) {
+      const adjustRx = TransceiverUtil.parseNumber(rxFrequencyAdjustment.value);
+      const adjustTx = TransceiverUtil.parseNumber(txFrequencyAdjustment.value);
+      // 画面操作（ホイール等）で更新された基準周波数を反映するため、baseFreqMgrではなく画面の基準周波数から補正値を除いた値を使う
+      const plainBaseFreqs = {
+        plainRxBaseFreq: rxBaseFreq.value - adjustRx,
+        plainTxBaseFreq: txBaseFreq.value - adjustTx,
+      };
+
+      if (dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_RX) {
+        await freqCoordinator.updateTxFreqKeepingRxFixed(
+          plainBaseFreqs,
+          adjustRx,
+          adjustTx,
+          coordinator.autoTrackingIntervalMsec
+        );
+        return;
+      }
+      if (dopplerShiftMode.value === Constant.Transceiver.DopplerShiftMode.FIXED_TX) {
+        await freqCoordinator.updateRxFreqKeepingTxFixed(
+          plainBaseFreqs,
+          adjustRx,
+          adjustTx,
+          coordinator.autoTrackingIntervalMsec
+        );
+        return;
+      }
+    }
+
     // サテライトモードがONの場合、ダウンリンク周波数をドップラーシフト補正して更新する
     // TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時も何もしない
     if (isSatelliteMode.value && execRxDopplerShiftCorrection.value) {

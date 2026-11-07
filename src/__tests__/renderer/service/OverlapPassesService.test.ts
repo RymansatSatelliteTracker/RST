@@ -9,15 +9,18 @@ import { GROUND2_STATION, GROUND_STATION } from "./GroundStationService.test.js"
  */
 describe("[正常系]2か所の地上局から観測できる人工衛星の可視時間リストが取得できる", () => {
   it("2か所の地上局から同時に観測できる人工衛星の可視時間リストが取得できる", async () => {
-    const nowDate = new Date();
+    // MEMO: 実行時の現在日時を使うと、最初の可視パスが地球の影の中になる時間帯に日照率が0となり、
+    //       テストが不安定になる。そのため日時を固定する。
+    //       2026-11-04T12:00:00Z起点の24時間は、最初の可視パスが日照中(shadowFraction=1)となる。
+    const nowDate = new Date("2026-11-04T12:00:00Z");
     const oneDayLaterDate = new Date(nowDate.getTime() + 24 * 60 * 60 * 1000);
 
     // 宮本工場(東京都江戸川区)と種子島宇宙センターで同時に観測できる可視時間リストを取得する
-    // MEMO: nowDateが実行時の現在日時のため、静的なTLE（TleDataHelper.Satellite.ISS）は
-    //       TLEのエポックから時間が経過するほどSGP4の伝播誤差が大きくなり可視パスが求まらなくなる。
-    //       そのためエポックを現在日時に合わせて動的に生成するISS_ORBITを使用する。
+    // MEMO: 静的なTLE（TleDataHelper.Satellite.ISS）は、TLEのエポックから時間が経過するほど
+    //       SGP4の伝播誤差が大きくなり可視パスが求まらなくなる。
+    //       そのためエポックを起点日時に合わせて生成した軌道要素を使用する。
     const issOverlapPasses = new OverlapPassesService(
-      TleDataHelper.Satellite.ISS_ORBIT,
+      TleDataHelper.createIssOrbitSatellite(nowDate),
       GROUND_STATION.latitudeDeg,
       GROUND_STATION.longitudeDeg,
       GROUND2_STATION.latitudeDeg,

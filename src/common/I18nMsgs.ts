@@ -380,6 +380,7 @@ export default class I18nMsgs {
   public static readonly G31_CHECKSUM: I18nMsgItem = { en: "Checksum", ja: "チェックサム" };
   public static readonly G31_EPHEMERIS_TYPE: I18nMsgItem = { en: "Ephemeris Type", ja: "エフェメリスタイプ" };
   public static readonly G31_SATELLITE_MODE: I18nMsgItem = { en: "Satellite Mode", ja: "サテライトモード" };
+  public static readonly G31_DOPPLER_SHIFT_MODE: I18nMsgItem = { en: "Fixed Mode", ja: "固定モード" };
   // 画面項目系／衛星設定画面 その他設定
   public static readonly G33_MIN_ELEVATION: I18nMsgItem = { en: "Min. Elevation", ja: "最小仰角" };
   // 画面項目系／地上局画面
