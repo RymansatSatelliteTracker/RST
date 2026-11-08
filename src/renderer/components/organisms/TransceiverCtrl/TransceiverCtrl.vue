@@ -5,6 +5,7 @@
       style-type="primary-transparent"
       :loading="loadingAutoBtn"
       :class="{ auto_btn_on: autoStore.tranceiverAuto, auto_btn_off: !autoStore.tranceiverAuto }"
+      data-testid="auto-btn"
       @click="autoBtnClick"
       >Auto</Button
     >
@@ -14,26 +15,46 @@
       <legend class="item_group_legend">Frequency</legend>
       <!-- ドップラーシフトモード-->
       <div class="doppler_area">
-        <DopplerShiftModeSelect v-model="dopplerShiftMode" class="doppler_shift_mode_select" />
+        <!-- Beacon中は衛星固定に固定するため選択不可 -->
+        <DopplerShiftModeSelect
+          v-model="dopplerShiftMode"
+          :disabled="isBeaconMode"
+          class="doppler_shift_mode_select"
+          data-testid="doppler-shift-mode"
+        />
       </div>
       <!-- 周波数 -->
       <div class="freq_area">
         <div>
           <span :class="isRxActive ? 'freq_label_active' : 'freq_label_inactive'">Rx</span>
-          <FrequencySelect v-model:frequency="rxFrequency" v-model:diff-frequency="diffRxFrequency" class="freq_box">
+          <FrequencySelect
+            v-model:frequency="rxFrequency"
+            v-model:diff-frequency="diffRxFrequency"
+            class="freq_box"
+            data-testid="rx-frequency"
+          >
             <span class="freq_unit">Hz</span>
           </FrequencySelect>
         </div>
       </div>
       <div class="freq_area_sub">
         <div>
-          <FreqAdjustmentSelect v-model:frequency="rxFrequencyAdjustment" class="freq_box_sub"></FreqAdjustmentSelect>
+          <FreqAdjustmentSelect
+            v-model:frequency="rxFrequencyAdjustment"
+            class="freq_box_sub"
+            data-testid="rx-frequency-adjustment"
+          ></FreqAdjustmentSelect>
         </div>
       </div>
       <div class="freq_area">
         <div>
           <span :class="isTxActive ? 'freq_label_active' : 'freq_label_inactive'">Tx</span>
-          <FrequencySelect v-model:frequency="txFrequency" v-model:diff-frequency="diffTxFrequency" class="freq_box">
+          <FrequencySelect
+            v-model:frequency="txFrequency"
+            v-model:diff-frequency="diffTxFrequency"
+            class="freq_box"
+            data-testid="tx-frequency"
+          >
             <span class="freq_unit">Hz</span>
           </FrequencySelect>
         </div>
@@ -50,7 +71,9 @@
           class="beacon_btn"
           style-type="primary-transparent"
           :class="isBeaconMode ? 'mode_btn_on' : 'mode_btn_off'"
-          :disabled="!isBeaconModeAvailable"
+          :loading="loadingBeaconBtn"
+          :disabled="!canUseBeacon"
+          data-testid="beacon-btn"
           @click="beaconBtnClick()"
           >Beacon</Button
         >
@@ -61,19 +84,28 @@
     <fieldset class="fieldset_area">
       <legend class="item_group_legend">Mode</legend>
       <div class="mode_area">
-        <div><span class="mode_label">Rx</span><OpeModeSelect v-model="rxOpeMode" class="mode_select_box" /></div>
+        <div>
+          <span class="mode_label">Rx</span
+          ><OpeModeSelect v-model="rxOpeMode" class="mode_select_box" data-testid="rx-ope-mode" />
+        </div>
       </div>
       <br class="br_no_select" />
       <div class="mode_area">
-        <div><span class="mode_label">Tx</span><OpeModeSelect v-model="txOpeMode" class="mode_select_box" /></div>
+        <div>
+          <span class="mode_label">Tx</span
+          ><OpeModeSelect v-model="txOpeMode" class="mode_select_box" data-testid="tx-ope-mode" />
+        </div>
       </div>
       <br class="br_no_select" />
 
       <!-- Satelliteモード -->
+      <!-- Beacon中にサテライトモードを変更する場合は、先にBeaconをOFFにする -->
       <CycleButton
-        v-model:mode="satelliteMode"
+        :mode="satelliteMode"
         class="sat_btn"
+        data-testid="satellite-mode-btn"
         :mode-range="[Constant.Transceiver.SatelliteMode.SATELLITE, Constant.Transceiver.SatelliteMode.SPLIT]"
+        @update:mode="satelliteModeChange"
       ></CycleButton>
       <br class="br_no_select" />
       <Button
@@ -168,7 +200,6 @@ import DateTimePicker from "@/renderer/components/organisms/DateTimePicker/DateT
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
 import CanvasUtil from "@/renderer/util/CanvasUtil.js";
 import DateUtil from "@/renderer/util/DateUtil.js";
-import emitter from "@/renderer/util/EventBus.js";
 import { computed, ref, watch } from "vue";
 import useOrbitalPassList from "./useOrbitalPassList.js";
 import useOverlapPassList from "./useOverlapPassList.js";
@@ -180,6 +211,8 @@ const currentDate = ref<Date>(new Date());
 const emit = defineEmits(["date-update"]);
 // Autoモードボタンのローディングフラグ
 const loadingAutoBtn = ref<boolean>(false);
+// Beaconボタンのローディングフラグ
+const loadingBeaconBtn = ref<boolean>(false);
 
 // フック
 // 人工衛星のAOSリストを取得する
@@ -201,7 +234,9 @@ const {
   satelliteMode,
   isSatTrackingModeNormal,
   isBeaconMode,
-  isBeaconModeAvailable,
+  canUseBeacon,
+  toggleBeaconMode,
+  changeSatelliteMode,
   dopplerShiftMode,
   execTxDopplerShiftCorrection,
   execRxDopplerShiftCorrection,
@@ -221,8 +256,8 @@ function onDateChange(newDate: Date) {
  * Autoボタンクリック
  */
 async function autoBtnClick() {
-  // Auto変更中はクリックを無視する
-  if (loadingAutoBtn.value) {
+  // Auto変更中、Beacon変更中はクリックを無視する
+  if (loadingAutoBtn.value || loadingBeaconBtn.value) {
     return;
   }
   loadingAutoBtn.value = true;
@@ -235,9 +270,7 @@ async function autoBtnClick() {
     // 開始の結果をストアに反映（開始できなかった場合はfalseが返ってくる）
     autoStore.tranceiverAuto = result;
   } else {
-    // ビーコンモードをOFFにする
-    isBeaconMode.value = false;
-    // Autoモード終了
+    // Autoモード終了（Beacon中の場合はBeaconもOFFにする）
     await stopAutoMode();
     autoStore.tranceiverAuto = false;
   }
@@ -255,12 +288,27 @@ function satTrackingModeBtnClick(isNormal: boolean) {
 /**
  * ビーコンボタンクリック
  */
-function beaconBtnClick() {
-  isBeaconMode.value = !isBeaconMode.value;
-  // TODO: ビーコンモードを実装したら削除する
-  if (isBeaconMode.value) {
-    emitter.emit(Constant.GlobalEvent.NOTICE_ERR, I18nUtil.getMsg(I18nMsgs.NOTICE_UNDER_DEVELOPMENT));
+async function beaconBtnClick() {
+  // Auto変更中、Beacon変更中はクリックを無視する
+  if (loadingAutoBtn.value || loadingBeaconBtn.value) {
+    return;
   }
+  loadingBeaconBtn.value = true;
+
+  try {
+    // BeaconのON/OFFを切り替える
+    await toggleBeaconMode();
+  } finally {
+    loadingBeaconBtn.value = false;
+  }
+}
+
+/**
+ * サテライトモードボタンクリック
+ * @param newMode 変更後のサテライトモード
+ */
+async function satelliteModeChange(newMode: string) {
+  await changeSatelliteMode(newMode);
 }
 
 /**
@@ -285,9 +333,7 @@ watch(
   async (newVal, oldVal) => {
     // AutoOn(true) から AutoOff(false) になった場合
     if (oldVal && !newVal) {
-      // ビーコンモードをOFFにする
-      isBeaconMode.value = false;
-      // Autoモードを停止
+      // Autoモードを停止（Beacon中の場合はBeaconもOFFにする）
       await stopAutoMode();
     }
   }

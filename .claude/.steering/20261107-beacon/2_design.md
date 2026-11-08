@@ -153,7 +153,7 @@
 
 | # | 契機                                           | 実装箇所                                   | 処理                                                                                                                                                                       |
 | - | ---------------------------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1 | Auto OFF                                       | `useTransceiverCtrl.stopAutoMode`          | Beacon 中なら、周期処理を再開しない `stop` を実行した後に `coordinator.stopAutoMode()`。周波数は Auto OFF の処理で Auto ON 前（3.8 の場合は Beacon ON 前）の値に戻る。運用モードは従来どおり戻さない |
+| 1 | Auto OFF                                       | `useTransceiverCtrl.stopAutoMode`          | Beacon 中なら、周期処理を再開しない `stop` を実行した後に `coordinator.stopAutoMode()`。周波数は従来どおり Auto OFF の処理で戻る（3.8 の注記を参照）。運用モードは従来どおり戻さない |
 | 2 | アクティブ衛星の切替                           | `useTransceiverCtrl.onChangeSatGrp`        | 周期処理を再開しない `stop` を実行した後、Auto ON なら `startAutoMode` を実行する                                                                                          |
 | 3 | 同一衛星の無線設定の変更                       | `useTransceiverCtrl.onChangeSatGrp`        | #2 と同じ                                                                                                                                                                  |
 | 4 | サテライトモードのボタン操作                   | `TransceiverCtrl.vue` / `useTransceiverCtrl` | `stop` を実行してから `satelliteMode` を変更する。Beacon ON 前の状態に戻してから、既存のサテライトモード切替（状態の保存・読込）を動かすため                              |
@@ -182,7 +182,6 @@
 ```ts
 startAutoMode(options?: {
   applyDopplerShiftMode?: boolean;            // 既存の引数（既定 true）
-  preAutoFreq?: { tx: string; rx: string };   // Auto ON 前として記録する周波数（Beacon 中は Beacon ON 前の値）
   onBeforeAutoOn?: () => Promise<void>;       // transceiverInitAutoOn の直前に呼ぶ処理
 })
 ```
@@ -192,8 +191,11 @@ composable の `startAutoMode` は、Beacon 中の場合に以下を渡す。
 | オプション              | 渡す値                                                                                                                                   |
 | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | `applyDopplerShiftMode` | `false`（衛星固定のままにする。衛星設定の固定モードは使わず、Beacon ON 時に記録した固定モードを OFF 時の戻り先にする）                   |
-| `preAutoFreq`           | Beacon ON 前に記録した画面の Tx/Rx 周波数（Auto OFF で、Beacon・Auto のどちらも ON にする前の周波数に戻すため）                          |
 | `onBeforeAutoOn`        | `TransceiverBeaconCoordinator.resumeOnAutoStart`                                                                                         |
+
+- 当初は、Auto OFF の戻り先を Beacon ON 前の周波数にするため `preAutoFreq` オプションも予定していたが、実装時に取りやめた。
+  - 実装を確認したところ、既存の Auto OFF は「Auto ON 前の周波数」ではなく「Auto 開始時に設定した周波数（衛星設定の周波数）」に戻る動作だった（`startAutoMode` で、Auto 開始時の周波数を戻り先として保存し直している）。
+  - Beacon を使わない場合の Auto OFF の動作を変えないため、この動作を維持した。Beacon を引き継いで Auto を開始した場合も、Auto OFF では衛星設定の周波数に戻る。
 
 `resumeOnAutoStart` の処理（Auto 開始で衛星設定の周波数・運用モードが設定され、基準周波数が更新された後に呼ばれる）：
 
@@ -252,7 +254,7 @@ composable の `startAutoMode` は、Beacon 中の場合に以下を渡す。
 | `TransceiverBeaconCoordinator_start`（新規）             | Auto ON/OFF それぞれで、固定モード・Rx運用モード・Rx周波数が設定され、記録が取られる。Auto ON では周期処理の停止・再開が呼ばれる。ドップラー有効範囲外の場合 |
 | `TransceiverBeaconCoordinator_stop`（新規）              | Auto ON で、衛星固定/受信固定/送信固定の戻り方（3.5 の表）。Auto OFF で Rx が戻る。Beacon 中の調整が破棄される。周期処理を再開しないオプション            |
 | `TransceiverBeaconCoordinator_resumeOnAutoStart`（新規） | 記録が Auto 側の値で更新され、固定モードは Beacon ON 時の値のまま。Rx がビーコン側になる                                                                    |
-| `TransceiverModeCoordinator_startAutoMode`               | オプション（`preAutoFreq`、`onBeforeAutoOn`、`applyDopplerShiftMode`）。既存テストを新しい引数の形に合わせる                                               |
+| `TransceiverModeCoordinator_startAutoMode`               | オプション（`onBeforeAutoOn`、`applyDopplerShiftMode`）。既存テストを新しい引数の形に合わせる                                                              |
 | `TransceiverModeCoordinator_syncTransceiverSettingFromActiveSat`（新規） | 無線設定の変化の有無を返す                                                                                                                  |
 | `TransceiverModeSettingResolver_*`                       | `resolveOnModeStart` の引数変更に合わせて修正。`resolveWhenBeaconOffInAuto` のテストを削除。`resolveBeaconModeSetting` のテストを追加                      |
 | `TransceiverRecvFreqResolver_applyFromTransceiver`       | Beacon 中は、ビーコンのRx基準周波数が更新され、`TransceiverBaseFreqMgr` は変わらない                                                                       |

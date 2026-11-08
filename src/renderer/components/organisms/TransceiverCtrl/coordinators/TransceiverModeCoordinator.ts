@@ -39,12 +39,6 @@ export interface ModeCoordinatorState {
   savedTxFrequency: Ref<string>;
   /** モード移行前のRx周波数退避 */
   savedRxFrequency: Ref<string>;
-  /** モード移行前のTx運用モード退避 */
-  savedTxOpeMode: Ref<string>;
-  /** モード移行前のRx運用モード退避 */
-  savedRxOpeMode: Ref<string>;
-  /** ビーコンモードフラグ */
-  isBeaconMode: Ref<boolean>;
   /** TxドップラーシフトONフラグ */
   execTxDopplerShiftCorrection: Ref<boolean>;
   /** RxドップラーシフトONフラグ */
@@ -56,8 +50,25 @@ export interface ModeCoordinatorState {
 }
 
 /**
- * Auto/Beacon/Satellite モード遷移シーケンスを管理するクラス。
+ * Autoモード開始のオプション
+ */
+export interface StartAutoModeOptions {
+  /**
+   * 衛星設定の固定モードをメイン画面へ設定するか（既定：true）
+   * Auto ON中の同一衛星の設定更新で再開始する場合や、Beaconを引き継いでAutoを開始する場合はfalseを指定する
+   */
+  applyDopplerShiftMode?: boolean;
+  /**
+   * 無線機へAuto開始を連携する直前に呼ぶ処理
+   * Beaconを引き継いでAutoを開始する場合に、Rx周波数・運用モードをビーコン側へ切り替えるために使用する
+   */
+  onBeforeAutoOn?: () => Promise<void>;
+}
+
+/**
+ * Auto/Satellite モード遷移シーケンスを管理するクラス。
  * start/stop処理・タイマー管理・受信スキップフラグを集約し、useTransceiverCtrl から遷移ロジックを分離する。
+ * Beaconの遷移は TransceiverBeaconCoordinator が担当する。
  */
 export default class TransceiverModeCoordinator {
   /** 周波数更新タイマID */
@@ -71,6 +82,9 @@ export default class TransceiverModeCoordinator {
 
   /** アクティブ衛星のNoradId */
   private _currentNoradId = "";
+
+  /** アクティブ衛星の無線設定（変更判定用のJSON文字列） */
+  private _currentTransceiverSettingJson = "";
 
   /**
    * @param state - useTransceiverCtrlのリアクティブ状態オブジェクト
@@ -124,6 +138,19 @@ export default class TransceiverModeCoordinator {
   }
 
   /**
+   * アクティブ衛星の無線設定を同期し、変更があったかを返す
+   * MEMO: 衛星設定の保存や最小仰角の更新などでも onChangeSatGrp が呼ばれるため、
+   *       無線設定（周波数・運用モード・サテライトモードなど）が変わったかを判定する
+   * @returns 変更があればtrue
+   */
+  public syncTransceiverSettingFromActiveSat(): boolean {
+    const newJson = JSON.stringify(this.getActiveSatTransceiverSetting());
+    const isChanged = this._currentTransceiverSettingJson !== newJson;
+    this._currentTransceiverSettingJson = newJson;
+    return isChanged;
+  }
+
+  /**
    * 周波数更新タイマIDを設定する（useTransceiverCtrl側からsetIntervalの結果を渡す）
    */
   public setTimerId(id: NodeJS.Timeout | null): void {
@@ -132,11 +159,12 @@ export default class TransceiverModeCoordinator {
 
   /**
    * Autoモードを開始する
-   * @param applyDopplerShiftMode 衛星設定の固定モードをメイン画面へ設定するか
-   *   （Auto ON中の同一衛星の設定更新で再開始する場合は、手動選択した固定モードを維持するためfalseを指定する）
+   * @param options Autoモード開始のオプション
    * @returns {Promise<boolean>} 成功した場合はtrue
    */
-  public async startAutoMode(applyDopplerShiftMode: boolean = true): Promise<boolean> {
+  public async startAutoMode(options: StartAutoModeOptions = {}): Promise<boolean> {
+    const { applyDopplerShiftMode = true, onBeforeAutoOn } = options;
+
     // Autoモード開始の事前条件をチェック
     if (!(await this.validateAutoModeStart())) {
       return false;
@@ -171,12 +199,17 @@ export default class TransceiverModeCoordinator {
       this.state.dopplerShiftMode.value = transceiverSetting.dopplerShiftMode;
     }
 
-    // 周波数と運用モードを設定、保存する
+    // 周波数と運用モードを設定し、Autoモード終了時の戻り先として周波数を保存する
     this.setFreqAndOpeModeInModeStart();
-    this.saveFreqAndOpeModeInModeStart();
+    this.saveFreqAfterModeStart();
 
     // 基準周波数更新とドップラーシフトフラグ初期化を行う
     this.prepareBaseFreqAndDopplerFlagsAtAutoStart();
+
+    // 無線機へAuto開始を連携する前の処理（Beaconの引き継ぎなど）
+    if (onBeforeAutoOn) {
+      await onBeforeAutoOn();
+    }
 
     // Auto開始をメイン側に連携する
     await ApiTransceiver.transceiverInitAutoOn(
@@ -327,42 +360,13 @@ export default class TransceiverModeCoordinator {
   }
 
   /**
-   * ビーコンモードを開始する
-   */
-  public startBeaconMode(): Promise<void> {
-    // 周波数と運用モードを設定、保存する
-    this.setFreqAndOpeModeInModeStart();
-    this.saveFreqAndOpeModeInModeStart();
-    return Promise.resolve();
-  }
-
-  /**
-   * ビーコンモードを停止する
-   */
-  public stopBeaconMode(): Promise<void> {
-    // アクティブ衛星の周波数/運用モードを取得
-    const transceiverSetting = this.getActiveSatTransceiverSetting();
-
-    // Autoモード中じゃない場合は移行前の周波数と運用モードを復元して抜ける
-    if (!this.autoStore.tranceiverAuto) {
-      this.restoreSavedFreqAndOpeMode();
-      return Promise.resolve();
-    }
-
-    // Autoモード中の場合は、Autoモードの周波数/運用モードを優先して設定する
-    const resolved = this.modeSettingResolver.resolveWhenBeaconOffInAuto(transceiverSetting);
-    this.applyResolvedModeState(resolved);
-    return Promise.resolve();
-  }
-
-  /**
-   * ビーコンもしくはAutoのモード開始時に状態に応じて周波数と運用モードを設定する
+   * Autoモード開始時に衛星設定の周波数と運用モードを設定する
    */
   private setFreqAndOpeModeInModeStart(): void {
     // アクティブ衛星の周波数/運用モードを取得
     const transceiverSetting = this.getActiveSatTransceiverSetting();
 
-    const resolved = this.modeSettingResolver.resolveOnModeStart(this.state.isBeaconMode.value, transceiverSetting);
+    const resolved = this.modeSettingResolver.resolveOnModeStart(transceiverSetting);
     this.applyResolvedModeState(resolved);
   }
 
@@ -383,19 +387,12 @@ export default class TransceiverModeCoordinator {
   }
 
   /**
-   * ビーコンもしくはAutoのモード開始時に現在の周波数と運用モードを保存する
+   * Autoモード開始時に設定した周波数を、Autoモード終了時の戻り先として保存する
+   * MEMO: 従来の動作（Autoモード終了時は、Autoモード開始時に設定した周波数に戻る）を維持する
    */
-  private saveFreqAndOpeModeInModeStart(): void {
-    // 何もONにしていない状態でここに来たときは周波数と運用モードを保存する
-    // BeaconモードがONの状態でBeaconを開始はできない、Autoも同様、
-    // なので、どちらかがOFFということは事前状態は何もONにしていない状態
-    if (!(this.state.isBeaconMode.value && this.autoStore.tranceiverAuto)) {
-      // 事前状態が何もONにしていない状態であれば、現在の周波数と運用モードを保存する
-      this.state.savedTxFrequency.value = this.state.txFrequency.value;
-      this.state.savedRxFrequency.value = this.state.rxFrequency.value;
-      this.state.savedTxOpeMode.value = this.state.txOpeMode.value;
-      this.state.savedRxOpeMode.value = this.state.rxOpeMode.value;
-    }
+  private saveFreqAfterModeStart(): void {
+    this.state.savedTxFrequency.value = this.state.txFrequency.value;
+    this.state.savedRxFrequency.value = this.state.rxFrequency.value;
   }
 
   /**
@@ -404,15 +401,6 @@ export default class TransceiverModeCoordinator {
   private restoreSavedFreq(): void {
     this.state.txFrequency.value = this.state.savedTxFrequency.value;
     this.state.rxFrequency.value = this.state.savedRxFrequency.value;
-  }
-
-  /**
-   * 保存済みの周波数と運用モードを復元する
-   */
-  private restoreSavedFreqAndOpeMode(): void {
-    this.restoreSavedFreq();
-    this.state.txOpeMode.value = this.state.savedTxOpeMode.value;
-    this.state.rxOpeMode.value = this.state.savedRxOpeMode.value;
   }
 
   /**

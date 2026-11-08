@@ -93,6 +93,47 @@ npm run test -- ファイル名の一部 -t "name"
 例） npm run test -- CommonUtil_isEmpty -t "empty"
 ```
 
+### E2Eテスト実行（Playwright）
+
+E2Eテストは、ビルド済みのアプリ（`dist` 配下）を起動して画面を操作します。
+`npm run test:e2e` は、実行前に自動でビルド（`npm run vite:build`、`npm run ts`）を行います（`pretest:e2e` → `scripts/e2e-prebuild.mjs`）。
+ただし、前回このビルドを行ってからソースが変わっていない場合は、ビルドを省略します。
+
+- 判定の対象：`src`（`src/__tests__` を除く）、`index.html`、`vite.config.mjs`、`tsconfig.json`、`package.json`、`package-lock.json`、`public`
+- 前回のビルドの後に `dist` が別の手段（手動のビルド、`npm run app:dev` など）で更新された場合も、ビルドし直します。
+- 判定の記録は `dist/.e2e-build-stamp.json` に保存されます。
+
+```powershell
+# ビルドしてから（ソースに変更がなければビルドを省略して）、すべてのE2Eテストを実行
+npm run test:e2e
+
+# 常にビルドしてから実行する（PowerShell）
+$env:E2E_FORCE_BUILD = "1"; npm run test:e2e; Remove-Item Env:E2E_FORCE_BUILD
+
+# 以下の npx playwright test はビルドを行わないため、ソースを変更した場合は先にビルドする
+npm run vite:build
+npm run ts
+
+# ファイル指定
+npx playwright test ファイル名の一部
+例） npx playwright test beacon
+
+# テスト名指定
+npx playwright test ファイル名の一部 -g "name"
+例） npx playwright test beacon -g "E-01"
+
+# 実行せずに、対象のテストを一覧表示する
+npx playwright test ファイル名の一部 --list
+```
+
+- ファイル・テスト名を指定する場合は、`npm run test:e2e -- ファイル名の一部` ではなく `npx playwright test` を使ってください。
+  `test:e2e` にはテストフォルダ全体が指定されているため、ファイル名を追加しても絞り込まれず、すべてのテストが実行されます。
+
+- E2Eテストは、一時ディレクトリをアプリのユーザディレクトリとして起動するため、ユーザの実データ（`%APPDATA%\rst`）には影響しません。
+  起動時の設定・衛星データは、`fixtures.ts` の `testData`（`test.use` で指定）で用意します。未指定の場合は、衛星なしの基本の設定で起動します。
+- RSTを起動したままでも実行できます（ユーザディレクトリが分かれるため、二重起動の判定に当たりません）。
+- 無線機・ローテータは接続しません。無線機の接続が必要な操作（Auto ONなど）は、E2Eテストの対象外です。
+
 ### 4. デバッグ
 
 VsCodeでのデバッグ実行の方法です。

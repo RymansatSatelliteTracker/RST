@@ -5,11 +5,13 @@ import type { ApiResponse } from "@/common/types/types.js";
 import TransceiverUtil from "@/common/util/TransceiverUtil.js";
 import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
 import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
+import TransceiverBeaconCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverBeaconCoordinator.js";
 import TransceiverDopplerWaitCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverDopplerWaitCoordinator.js";
 import TransceiverFreqCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverFreqCoordinator.js";
 import TransceiverModeCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverModeCoordinator.js";
 import TransceiverSyncCoordinator from "@/renderer/components/organisms/TransceiverCtrl/coordinators/TransceiverSyncCoordinator.js";
 import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
+import TransceiverBeaconMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBeaconMgr.js";
 import TransceiverDopplerModeResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverDopplerModeResolver.js";
 import TransceiverModeSettingResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeSettingResolver.js";
 import TransceiverModeStateResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverModeStateResolver.js";
@@ -20,7 +22,7 @@ import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
 import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
 import type { Ref } from "vue";
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 
 /**
  * 無線機を制御する
@@ -55,18 +57,16 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   const isSatelliteMode = ref<boolean>(false);
   // サテライトモードのトラッキングモード
   const isSatTrackingModeNormal = ref<boolean>(true);
-  // Auto/Beaconモード移行前のTx周波数を保持する変数
+  // Autoモード終了時に戻すTx周波数を保持する変数
   const savedTxFrequency = ref<string>("");
-  // Auto/Beaconモード移行前のRx周波数を保持する変数
+  // Autoモード終了時に戻すRx周波数を保持する変数
   const savedRxFrequency = ref<string>("");
   // ビーコンモード
   const isBeaconMode = ref<boolean>(false);
-  // ビーコンモードが利用可能かどうか
+  // アクティブ衛星にビーコン設定があるかどうか
   const isBeaconModeAvailable = ref<boolean>(false);
-  // BeaconモードのTx運用モード
-  const savedTxOpeMode = ref<string>("");
-  // BeaconモードのRx運用モード
-  const savedRxOpeMode = ref<string>("");
+  // Beaconボタンを押せるかどうか（ビーコン設定あり、かつサテライトモードON）
+  const canUseBeacon = computed(() => isBeaconModeAvailable.value && isSatelliteMode.value);
   // ドップラーシフトモード（衛星固定、受信固定、送信固定）
   const dopplerShiftMode = ref<string>(Constant.Transceiver.DopplerShiftMode.FIXED_SAT);
   // Txをドップラー補正するか
@@ -110,6 +110,8 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   const dopplerWaitCoordinator = new TransceiverDopplerWaitCoordinator(autoStore);
   // 基準周波数（補正値なし）の管理
   const baseFreqMgr = new TransceiverBaseFreqMgr();
+  // Beacon ON 前の状態とビーコンのRx基準周波数の管理
+  const beaconMgr = new TransceiverBeaconMgr();
   // モードごとの周波数・運用モード管理
   const modeSettingResolver = new TransceiverModeSettingResolver();
   // ドップラーシフトモードから補正要否フラグ管理
@@ -138,7 +140,7 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     );
   }
 
-  // Auto/Beacon/Satellite モード遷移シーケンスの管理
+  // Auto/Satellite モード遷移シーケンスの管理
   const coordinator = new TransceiverModeCoordinator(
     {
       txFrequency,
@@ -151,9 +153,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       dopplerShiftMode,
       savedTxFrequency,
       savedRxFrequency,
-      savedTxOpeMode,
-      savedRxOpeMode,
-      isBeaconMode,
       execTxDopplerShiftCorrection,
       execRxDopplerShiftCorrection,
       txFrequencyAdjustment,
@@ -173,26 +172,73 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
       rxFrequencyAdjustment,
       txBaseFreq,
       rxBaseFreq,
+      isBeaconMode,
     },
     autoStore,
     baseFreqMgr,
     currentDate,
     () => coordinator.autoTrackingIntervalMsec,
     calcBaseFreqWithAdjust,
-    getBaseFreqSum
+    getBaseFreqSum,
+    beaconMgr
+  );
+
+  // Beaconモードの開始・停止とAuto開始時の引き継ぎの管理
+  const beaconCoordinator = new TransceiverBeaconCoordinator(
+    {
+      txFrequency,
+      rxFrequency,
+      rxOpeMode,
+      dopplerShiftMode,
+      isBeaconMode,
+      isSatelliteMode,
+      txBaseFreq,
+      rxBaseFreq,
+      txFrequencyAdjustment,
+      rxFrequencyAdjustment,
+    },
+    autoStore,
+    beaconMgr,
+    baseFreqMgr,
+    modeSettingResolver,
+    currentDate,
+    {
+      stopTracking: () => coordinator.stopUpdateFreq(),
+      restartTracking: () => startUpdateFreqInterval(coordinator.autoTrackingIntervalMsec),
+      calcBaseFreqWithAdjust,
+      applyDopplerShiftNow: async () => {
+        updateDopplerShiftCorrectionFlags();
+        await applyDopplerShiftCorrections();
+      },
+      getAutoTrackingIntervalMsec: () => coordinator.autoTrackingIntervalMsec,
+    }
   );
 
   /**
    * 表示中の衛星グループが変更された場合のイベントハンドラ
    */
   async function onChangeSatGrp() {
-    // 衛星が変更された場合は補正値をリセットする（NoradIdで判定する）
+    // 衛星の変更（NoradIdで判定する）と、無線設定の変更を判定する
     const isSatChanged = coordinator.syncCurrentNoradIdFromActiveSat();
+    const isSettingChanged = coordinator.syncTransceiverSettingFromActiveSat();
+
+    isBeaconModeAvailable.value = confirmBeaconModeAvailable();
+
+    // Beacon中の場合
+    if (isBeaconMode.value) {
+      // 衛星も無線設定も変わらない場合（概要のみの保存、最小仰角の変更など）は、Beaconと追尾を継続する
+      if (!isSatChanged && !isSettingChanged) {
+        return;
+      }
+
+      // 衛星または無線設定が変わった場合は、Beaconを強制OFFにする（この後にAutoを開始し直すため、周期処理は再開しない）
+      await beaconCoordinator.stop({ restartTracking: false });
+    }
+
+    // 衛星が変更された場合は補正値をリセットする
     if (isSatChanged) {
       resetFreqAdj();
     }
-
-    isBeaconModeAvailable.value = confirmBeaconModeAvailable();
 
     // Autoモード中の場合は、新しい衛星であらためてAutoモードを開始する
     // MEMO: 同一衛星の設定更新（衛星設定の保存、最小仰角の更新など）でも呼ばれるため、
@@ -215,30 +261,64 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
 
   /**
    * Autoモード中はアクティブ衛星で周波数/運用モードを更新する
+   * @param applyDopplerShiftMode 衛星設定の固定モードをメイン画面へ設定するか
    */
   async function startAutoMode(applyDopplerShiftMode: boolean = true): Promise<boolean> {
-    return coordinator.startAutoMode(applyDopplerShiftMode);
+    if (isBeaconMode.value) {
+      const transceiverSetting = ActiveSatServiceHub.getInstance().getActiveSatTransceiverSetting();
+
+      // 衛星設定のサテライトモードが無効の場合は、Beaconを使えないため、Auto開始前にBeaconを停止する
+      if (!transceiverSetting.satelliteMode) {
+        await beaconCoordinator.stop({ restartTracking: false });
+        return coordinator.startAutoMode({ applyDopplerShiftMode });
+      }
+
+      // Beaconを引き継いでAutoを開始する（固定モードは衛星固定のまま、Rxはビーコン側にする）
+      return coordinator.startAutoMode({
+        applyDopplerShiftMode: false,
+        onBeforeAutoOn: () => beaconCoordinator.resumeOnAutoStart(),
+      });
+    }
+
+    return coordinator.startAutoMode({ applyDopplerShiftMode });
   }
 
   /**
-   * Autoモードを停止する
+   * Autoモードを停止する（Beacon中の場合は先にBeaconを停止する）
    */
   async function stopAutoMode() {
+    if (isBeaconMode.value) {
+      await beaconCoordinator.stop({ restartTracking: false });
+    }
     return coordinator.stopAutoMode();
   }
 
   /**
-   * ビーコンモードを開始する
+   * BeaconモードのON/OFFを切り替える
    */
-  async function startBeaconMode() {
-    return coordinator.startBeaconMode();
+  async function toggleBeaconMode(): Promise<void> {
+    if (isBeaconMode.value) {
+      await beaconCoordinator.stop();
+      return;
+    }
+    await beaconCoordinator.start();
   }
 
   /**
-   * ビーコンモードを停止する
+   * サテライトモードを変更する（Beacon中の場合は、Beacon ON 前の状態に戻してから変更する）
+   * @param newMode 変更後のサテライトモード
    */
-  async function stopBeaconMode() {
-    return coordinator.stopBeaconMode();
+  async function changeSatelliteMode(newMode: string): Promise<void> {
+    // 変化がない場合は何もしない
+    // MEMO: CycleButtonは、親からの値の変更時にも同じ値で update:mode を発行するため
+    if (satelliteMode.value === newMode) {
+      return;
+    }
+
+    if (isBeaconMode.value) {
+      await beaconCoordinator.stop();
+    }
+    satelliteMode.value = newMode;
   }
 
   /**
@@ -254,6 +334,14 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
    */
   function onDiffRxFrequencyChanged(newDiffFrequency: number) {
     if (newDiffFrequency === 0.0) {
+      return;
+    }
+
+    // Beacon中は、ビーコンのRx基準周波数にのみ反映し、Txは連動させない
+    // MEMO: ビーコンは送受信周波数の和（Sum）の関係にないため
+    if (isBeaconMode.value) {
+      beaconMgr.shiftBeaconRxBaseFreq(newDiffFrequency);
+      diffRxFrequency.value = 0.0;
       return;
     }
 
@@ -287,19 +375,6 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
   // ──────────────────────────────────────────────
   // モード遷移 watch
   // ──────────────────────────────────────────────
-
-  /**
-   * ビーコンモード設定が変更された場合
-   */
-  watch(isBeaconMode, async (newIsBeaconMode) => {
-    if (newIsBeaconMode) {
-      // ビーコンモード開始
-      await startBeaconMode();
-    } else {
-      // ビーコンモード終了
-      await stopBeaconMode();
-    }
-  });
 
   /**
    * サテライトモード設定が変更された場合に、isSatelliteModeを更新する
@@ -561,9 +636,11 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     }
 
     // サテライトモードがONの場合、ダウンリンク周波数をドップラーシフト補正して更新する
+    // Beacon中は、ビーコンのRx基準周波数を基準にする
     // TODO: SPLITモードの場合のサーバ処理がないので、今はSPLITモードの時も何もしない
     if (isSatelliteMode.value && execRxDopplerShiftCorrection.value) {
-      await freqCoordinator.updateRxFreqWithDopplerShift(coordinator.autoTrackingIntervalMsec);
+      const rxBase = isBeaconMode.value ? beaconMgr.getBeaconRxBaseFreq() : rxBaseFreq.value;
+      await freqCoordinator.updateRxFreqWithDopplerShift(coordinator.autoTrackingIntervalMsec, rxBase);
     }
 
     // アップリンク周波数をドップラーシフト補正して更新する
@@ -676,7 +753,9 @@ const useTransceiverCtrl = (currentDate: Ref<Date>) => {
     isSatelliteMode,
     isSatTrackingModeNormal,
     isBeaconMode,
-    isBeaconModeAvailable,
+    canUseBeacon,
+    toggleBeaconMode,
+    changeSatelliteMode,
     dopplerShiftMode,
     execTxDopplerShiftCorrection,
     execRxDopplerShiftCorrection,

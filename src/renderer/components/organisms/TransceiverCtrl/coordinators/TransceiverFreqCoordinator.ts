@@ -95,13 +95,14 @@ export default class TransceiverFreqCoordinator {
 
   /**
    * ダウンリンク周波数をドップラーシフト補正して更新する
+   * @param intervalMs 計算に使用する時間間隔（ミリ秒）
+   * @param rxBaseFreq Rx基準周波数（省略時は補正値反映済みのRx基準周波数。ビーコン中はビーコンのRx基準周波数を指定する）
    */
-  public async updateRxFreqWithDopplerShift(intervalMs: number): Promise<void> {
-    const newRxFreq = await this.dopplerCalc.calcNewRxFreqWithDoppler(
-      this.currentDate.value,
-      this.state.rxBaseFreq.value,
-      intervalMs
-    );
+  public async updateRxFreqWithDopplerShift(
+    intervalMs: number,
+    rxBaseFreq: number = this.state.rxBaseFreq.value
+  ): Promise<void> {
+    const newRxFreq = await this.dopplerCalc.calcNewRxFreqWithDoppler(this.currentDate.value, rxBaseFreq, intervalMs);
     if (newRxFreq !== null) {
       this.state.rxFrequency.value = newRxFreq;
     }

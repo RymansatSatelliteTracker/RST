@@ -23,9 +23,6 @@ const createState = (): ModeCoordinatorState => ({
   dopplerShiftMode: ref(Constant.Transceiver.DopplerShiftMode.FIXED_SAT),
   savedTxFrequency: ref(""),
   savedRxFrequency: ref(""),
-  savedTxOpeMode: ref(""),
-  savedRxOpeMode: ref(""),
-  isBeaconMode: ref(false),
   execTxDopplerShiftCorrection: ref(false),
   execRxDopplerShiftCorrection: ref(false),
   txFrequencyAdjustment: ref("+000.000"),
@@ -169,9 +166,56 @@ describe("TransceiverModeCoordinator.startAutoMode", () => {
       }),
     } as unknown as ActiveSatServiceHub);
 
-    const result = await coordinator.startAutoMode(false);
+    const result = await coordinator.startAutoMode({ applyDopplerShiftMode: false });
 
     expect(result).toBe(true);
     expect(state.dopplerShiftMode.value).toBe(Constant.Transceiver.DopplerShiftMode.FIXED_TX);
+  });
+  it("onBeforeAutoOnを指定した場合、無線機へのAuto開始連携の直前に呼ばれ、その変更が連携されること", async () => {
+    const appConfig = new AppConfigModel();
+    appConfig.transceiver.port = "COM3";
+    appConfig.transceiver.transceiverId = "IC-9700";
+    appConfig.transceiver.baudrateBps = "9600";
+    appConfig.transceiver.autoTrackingIntervalSec = "1";
+
+    const state = createState();
+    const coordinator = createCoordinator(false, state);
+
+    vi.spyOn(ApiAppConfig, "getAppConfig").mockResolvedValue(appConfig);
+    vi.spyOn(ApiTransceiver, "isReady").mockResolvedValue({ status: true, data: true, message: null });
+    vi.spyOn(ApiTransceiver, "setSatelliteMode").mockResolvedValue(true);
+    const initAutoOnSpy = vi.spyOn(ApiTransceiver, "transceiverInitAutoOn").mockResolvedValue(undefined);
+    vi.spyOn(ActiveSatServiceHub, "getInstance").mockReturnValue({
+      getSatService: () => null,
+      getActiveSatTransceiverSetting: () => ({
+        downlink: { downlinkHz: 435633000, downlinkMode: "USB" },
+        uplink: { uplinkHz: 145970000, uplinkMode: "LSB" },
+        beacon: { beaconHz: 435610000, beaconMode: "CW" },
+        satelliteMode: true,
+        satTrackMode: null,
+        dopplerShiftMode: Constant.Transceiver.DopplerShiftMode.FIXED_RX,
+        toneHz: null,
+      }),
+    } as unknown as ActiveSatServiceHub);
+
+    // Beaconの引き継ぎを想定し、Rxをビーコン側へ切り替える
+    const onBeforeAutoOn = vi.fn(() => {
+      // 呼ばれた時点で衛星設定の周波数が設定済みであること
+      expect(state.rxFrequency.value).toBe("0435.633.000");
+      expect(initAutoOnSpy).not.toHaveBeenCalled();
+      state.rxFrequency.value = "0435.610.000";
+      state.rxOpeMode.value = "CW";
+      return Promise.resolve();
+    });
+
+    const result = await coordinator.startAutoMode({ applyDopplerShiftMode: false, onBeforeAutoOn });
+
+    expect(result).toBe(true);
+    expect(onBeforeAutoOn).toHaveBeenCalledTimes(1);
+    expect(initAutoOnSpy).toHaveBeenCalledWith(145970000, 435610000, "LSB", "CW", null);
+    // 固定モードは設定しない指定のため維持される
+    expect(state.dopplerShiftMode.value).toBe(Constant.Transceiver.DopplerShiftMode.FIXED_SAT);
+    // Autoモード終了時の戻り先は、衛星設定の周波数（Beaconへの切替前）
+    expect(state.savedRxFrequency.value).toBe("0435.633.000");
   });
 });
