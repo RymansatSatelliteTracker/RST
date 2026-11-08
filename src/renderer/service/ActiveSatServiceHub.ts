@@ -38,6 +38,9 @@ export default class ActiveSatServiceHub {
   // 基準時刻が変更された場合のコールバックリスト
   private baseDateChangeCallbacks: (() => void | Promise<void>)[] = [];
 
+  // アクティブ衛星情報の更新処理を直列化するためのPromiseチェーン
+  private changeSatGrpQueue: Promise<void> = Promise.resolve();
+
   // アクティブ衛星のSatelliteService
   private satService: SatelliteService | null = null;
   // 衛星グループのSatelliteServiceリスト
@@ -84,13 +87,15 @@ export default class ActiveSatServiceHub {
    * アクティブ衛星情報の取得を開始する
    */
   public async start() {
-    // 最新情報を取得
-    await this.onChangeSatGrp();
-
     // 表示中の衛星グループが変更された場合のコールバックを設定
+    // memo: 初回取得中に他コンポーネントがアクティブ衛星を変更した場合に通知を取りこぼさないよう、
+    //       初回取得より前に登録する
     ApiActiveSat.onChangeActiveSatelliteGroup(() => {
       void this.onChangeSatGrp();
     });
+
+    // 最新情報を取得
+    await this.onChangeSatGrp();
   }
 
   /**
@@ -137,8 +142,20 @@ export default class ActiveSatServiceHub {
 
   /**
    * 表示中の衛星グループが変更された場合のイベントハンドラ
+   * memo: 並行実行すると古い呼び出しの結果が後から上書きするため、直列に実行する。
+   *       各実行は開始時点のAppConfigを読み込むため、最後に積まれた実行の内容が最終状態になる。
    */
-  private async onChangeSatGrp() {
+  private onChangeSatGrp(): Promise<void> {
+    const next = this.changeSatGrpQueue.then(() => this.refreshActiveSat());
+    // 例外が発生してもチェーンが途切れないようにする（呼び出し元には例外を返す）
+    this.changeSatGrpQueue = next.catch(() => {});
+    return next;
+  }
+
+  /**
+   * 現在のアクティブ衛星で各サービスを生成しなおし、コールバックを実行する
+   */
+  private async refreshActiveSat() {
     // 現在のアクティブ衛星でSatelliteServiceを生成しなおす
     this.satService = await SatelliteServiceFactory.createByActiveSat();
     if (!this.satService) {

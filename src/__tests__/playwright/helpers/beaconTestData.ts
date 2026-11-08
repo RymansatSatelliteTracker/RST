@@ -2,7 +2,7 @@ import Constant from "@/common/Constant.js";
 import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
 import { AppConfigSatellite, AppConfigSatelliteGroup } from "@/common/model/AppConfigModel.js";
 import type { DefaultSatelliteType } from "@/common/types/satelliteSettingTypes.js";
-import { makeBaseAppConfig } from "./e2eTestData";
+import { makeBaseAppConfig, makeTle } from "./e2eTestData";
 
 /**
  * Beacon対応のE2Eテストで使用するテストデータ
@@ -29,32 +29,6 @@ export const BEACON_FREQ_TEXT = "0435.610.000";
 /** 起動時のRx/Tx周波数（画面表示形式） */
 export const INITIAL_RX_FREQ_TEXT = "0435.700.000";
 export const INITIAL_TX_FREQ_TEXT = "0145.900.000";
-
-/**
- * TLEの行末のチェックサムを算出する（数字の合計＋マイナス記号の数 の1の位）
- */
-const tleChecksum = (line: string): number => {
-  let sum = 0;
-  for (const ch of line) {
-    if (ch >= "0" && ch <= "9") {
-      sum += Number(ch);
-    } else if (ch === "-") {
-      sum += 1;
-    }
-  }
-  return sum % 10;
-};
-
-/**
- * テスト用のTLE（2行）を生成する
- * MEMO: 大気抵抗（B*）と平均運動の変化率を0にして、エポックから時間が経っても軌道計算が破綻しないようにする
- */
-const makeTle = (noradId: number): string => {
-  const id = String(noradId).padStart(5, "0");
-  const line1 = `1 ${id}U 26001A   26312.50000000  .00000000  00000-0  00000-0 0  999`;
-  const line2 = `2 ${id}  51.6416 247.4627 0006703 130.5360 325.0288 15.49815350    1`;
-  return `${line1}${tleChecksum(line1)}\n${line2}${tleChecksum(line2)}`;
-};
 
 /**
  * 無線設定（衛星B/N/S 共通の周波数・運用モード）
