@@ -28,6 +28,35 @@ export const makeBaseAppConfig = (): AppConfigModel => {
 };
 
 /**
+ * TLEの行末のチェックサムを算出する（数字の合計＋マイナス記号の数 の1の位）
+ */
+const tleChecksum = (line: string): number => {
+  let sum = 0;
+  for (const ch of line) {
+    if (ch >= "0" && ch <= "9") {
+      sum += Number(ch);
+    } else if (ch === "-") {
+      sum += 1;
+    }
+  }
+  return sum % 10;
+};
+
+/**
+ * テスト用のTLE（2行）を生成する
+ * MEMO: 大気抵抗（B*）と平均運動の変化率を0にして、エポックから時間が経っても軌道計算が破綻しないようにする
+ * @param noradId NORAD ID
+ * @param inclination 軌道傾斜角（度）
+ */
+export const makeTle = (noradId: number, inclination: number = 51.6416): string => {
+  const id = String(noradId).padStart(5, "0");
+  const inc = inclination.toFixed(4).padStart(8, " ");
+  const line1 = `1 ${id}U 26001A   26312.50000000  .00000000  00000-0  00000-0 0  999`;
+  const line2 = `2 ${id} ${inc} 247.4627 0006703 130.5360 325.0288 15.49815350    1`;
+  return `${line1}${tleChecksum(line1)}\n${line2}${tleChecksum(line2)}`;
+};
+
+/**
  * テスト用の軌道要素（OMM）を返す
  * MEMO: 大気抵抗（B*）と平均運動の変化率を0にして、エポックから時間が経っても軌道計算が破綻しないようにする
  * @param noradId NORAD ID
