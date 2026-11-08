@@ -39,6 +39,7 @@
           style="overflow-y: auto"
           :items="selectedSatellites"
           :item-name="'satelliteName'"
+          data-testid="group-satellite-list"
           :item-key="'satelliteId'"
           :height="355"
           @item-dbl-click="showEditSatelliteInfo"

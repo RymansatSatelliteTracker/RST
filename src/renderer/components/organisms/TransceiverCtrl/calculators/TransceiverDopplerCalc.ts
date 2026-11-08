@@ -68,6 +68,29 @@ export default class TransceiverDopplerCalc {
   }
 
   /**
+   * ドップラーシフト済みのRx周波数から、ドップラーシフトを除いたRx基準周波数を算出する
+   * ビーコンのRx基準周波数のように、送受信周波数の和（Sum）の関係にない基準周波数の算出に使用する
+   * @param rxFreq ドップラーシフト済みのRx周波数（無線機から受信した値など）
+   * @param currentDate 現在日時
+   * @param intervalMs 計算に使用する時間間隔（ミリ秒）
+   * @returns Rx基準周波数（FrequencyTrackService未取得の場合はnull）
+   */
+  public async calcRxBaseFreqByShiftedRxFreq(
+    rxFreq: number,
+    currentDate: Date,
+    intervalMs: number
+  ): Promise<number | null> {
+    const freqTrackService = ActiveSatServiceHub.getInstance().getFrequencyTrackService();
+    if (!freqTrackService) {
+      return null;
+    }
+
+    // 下りドップラーファクターで割り戻して基準周波数を求める
+    const rxDopplerFactor = await freqTrackService.calcDownlinkDopplerFactor(currentDate, intervalMs);
+    return rxFreq / rxDopplerFactor;
+  }
+
+  /**
    * 受信固定モード用：固定Rx周波数を維持するためのアップリンク周波数を算出する
    * 固定Rxから下りドップラー分を割り戻してRx基準周波数を求め、Sum維持でTx基準周波数を再導出し、
    * Txドップラーファクターを適用する（下りのドップラー変化分も見越してTxを動かす）

@@ -5,6 +5,7 @@ import TransceiverUtil from "@/common/util/TransceiverUtil.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc.js";
 import type TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
+import TransceiverBeaconMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBeaconMgr.js";
 import type { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
 import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
 import emitter from "@/renderer/util/EventBus.js";
@@ -22,6 +23,8 @@ export interface RecvFreqResolverState {
   txBaseFreq: Ref<number>;
   /** Rx基準周波数 */
   rxBaseFreq: Ref<number>;
+  /** ビーコンモードフラグ */
+  isBeaconMode: Ref<boolean>;
 }
 
 /**
@@ -39,6 +42,7 @@ export default class TransceiverRecvFreqResolver {
    * @param getAutoTrackingIntervalMsec - 自動追尾更新間隔を返す関数
    * @param calcBaseFreqWithAdjust - 補正値反映後の基準周波数算出関数
    * @param getBaseFreqSum - 補正値反映後の基準周波数和を返す関数
+   * @param beaconMgr - Beacon ON 前の状態とビーコンのRx基準周波数の管理
    */
   public constructor(
     private state: RecvFreqResolverState,
@@ -47,7 +51,8 @@ export default class TransceiverRecvFreqResolver {
     private currentDate: Ref<Date>,
     private getAutoTrackingIntervalMsec: () => number,
     private calcBaseFreqWithAdjust: () => void,
-    private getBaseFreqSum: () => number
+    private getBaseFreqSum: () => number,
+    private beaconMgr: TransceiverBeaconMgr = new TransceiverBeaconMgr()
   ) {
     this.dopplerCalc = new TransceiverDopplerCalc();
   }
@@ -103,6 +108,13 @@ export default class TransceiverRecvFreqResolver {
       return;
     }
 
+    // ビーコン中は、ビーコンのRx基準周波数のみ更新する
+    // MEMO: ビーコンは送受信周波数の和（Sum）の関係にないため、通常の基準周波数（Tx側を含む）は再算出しない
+    if (this.state.isBeaconMode.value) {
+      await this.applyBeaconRxFromTransceiver(recvRxFreq);
+      return;
+    }
+
     const adjustRxFreq = TransceiverUtil.parseNumber(this.state.rxFrequencyAdjustment.value);
     const { plainRxBaseFreq, plainTxBaseFreq } = this.baseFreqMgr.getPlainBaseFreqs();
     const { newRxBaseFreq, newTxBaseFreq } = await this.dopplerCalc.calcBaseFreqByShiftedRxFreq(
@@ -118,6 +130,24 @@ export default class TransceiverRecvFreqResolver {
 
     this.calcBaseFreqWithAdjust();
     this.logUpdatedBaseFreq();
+  }
+
+  /**
+   * 無線機から受信したRx周波数から、ビーコンのRx基準周波数を再算出する
+   * @param recvRxFreq 無線機から受信したRx周波数（ドップラーシフト適用済み）
+   */
+  private async applyBeaconRxFromTransceiver(recvRxFreq: number): Promise<void> {
+    const newBeaconRxBaseFreq = await this.dopplerCalc.calcRxBaseFreqByShiftedRxFreq(
+      recvRxFreq,
+      this.currentDate.value,
+      this.getAutoTrackingIntervalMsec()
+    );
+    if (newBeaconRxBaseFreq === null) {
+      return;
+    }
+
+    this.beaconMgr.setBeaconRxBaseFreq(newBeaconRxBaseFreq);
+    AppRendererLogger.debug(`ビーコンのRx基準周波数（更新） ${newBeaconRxBaseFreq}`);
   }
 
   /**

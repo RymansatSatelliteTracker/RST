@@ -22,6 +22,7 @@
     "ts": "tsc && npm run app:import-replace",
     "watch": "tsc -w",
     "test": "vitest run --coverage",
+    "pretest:e2e": "node scripts/e2e-prebuild.mjs",
     "test:e2e": "playwright test src/__tests__/playwright",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
