@@ -1,16 +1,17 @@
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import { MessageModel } from "@/common/model/MessageModel";
-import { LangType } from "@/common/types/types";
-import EnvUtil from "@/common/util/EnvUtil";
-import { fireIpcEvent, getMainWindow } from "@/main/main";
-import AppConfigExportSerivce from "@/main/service/AppConfigExportSerivce";
-import AppConfigImportSerivce from "@/main/service/AppConfigImportSerivce";
-import DefaultSatelliteService from "@/main/service/DefaultSatelliteService";
-import I18nService from "@/main/service/I18nService";
-import I18nUtil4Main from "@/main/util/I18nUtil4Main";
-import { app, BaseWindow, BrowserWindow, Menu, MenuItem, shell } from "electron";
-import { MenuItemConstructorOptions } from "electron/main";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { MessageModel } from "@/common/model/MessageModel.js";
+import type { LangType } from "@/common/types/types.js";
+import EnvUtil from "@/common/util/EnvUtil.js";
+import { fireIpcEvent, getMainWindow } from "@/main/main.js";
+import AppConfigExportSerivce from "@/main/service/AppConfigExportSerivce.js";
+import AppConfigImportSerivce from "@/main/service/AppConfigImportSerivce.js";
+import DefaultSatelliteService from "@/main/service/DefaultSatelliteService.js";
+import I18nService from "@/main/service/I18nService.js";
+import I18nUtil4Main from "@/main/util/I18nUtil4Main.js";
+import type { BaseWindow, BrowserWindow, MenuItem } from "electron";
+import { app, Menu, shell } from "electron";
+import type { MenuItemConstructorOptions } from "electron/main";
 
 // Mac用の定義
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
@@ -44,6 +45,13 @@ function onLangClick(lang: LangType) {
 
   // Rendererプロセスに通知
   getMainWindow().webContents.send("onDispLangChange", lang);
+}
+
+/**
+ * Frequency JSON Editor を開く
+ */
+function onOpenFrequencyEditorClick() {
+  getMainWindow().webContents.send("openFrequencyEditor");
 }
 
 // Aboutパネル
@@ -85,17 +93,19 @@ export function makeElectronMenu(): Electron.Menu {
         // 設定インポート
         {
           label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_IMPORT_CONFIG),
+          enabled: false, // MEMO: 一時的に無効化
           click: () => new AppConfigImportSerivce().importAppConfig(),
         },
         // 設定エクスポート
         {
           label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_EXPORT_CONFIG),
+          enabled: false, // MEMO: 一時的に無効化
           click: () => new AppConfigExportSerivce().exportAppConfig(),
         },
 
         { type: "separator" },
         // TLE更新
-        { label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_UPDATE_TLE), click: () => onUpdateTleClick() },
+        { label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_UPDATE_TLE), click: () => void onUpdateTleClick() },
       ],
     });
 
@@ -122,17 +132,19 @@ export function makeElectronMenu(): Electron.Menu {
         // 設定インポート
         {
           label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_IMPORT_CONFIG),
+          enabled: false, // MEMO: 一時的に無効化
           click: () => new AppConfigImportSerivce().importAppConfig(),
         },
         // 設定エクスポート
         {
           label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_EXPORT_CONFIG),
+          enabled: false, // MEMO: 一時的に無効化
           click: () => new AppConfigExportSerivce().exportAppConfig(),
         },
 
         { type: "separator" },
         // TLE更新
-        { label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_UPDATE_TLE), click: () => onUpdateTleClick() },
+        { label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_UPDATE_TLE), click: () => void onUpdateTleClick() },
         // 終了
         {
           label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_QUIT),
@@ -170,7 +182,7 @@ export function makeElectronMenu(): Electron.Menu {
           label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_HELP),
           click: () => {
             // ヘルプはブラウザで開く
-            shell.openExternal(Constant.Manual.HELP_URL);
+            void shell.openExternal(Constant.Manual.HELP_URL);
           },
         },
       ],
@@ -187,7 +199,7 @@ export function makeElectronMenu(): Electron.Menu {
           label: I18nUtil4Main.getMsg(I18nMsgs.GCOM_MENU_HELP),
           click: () => {
             // ヘルプはブラウザで開く
-            shell.openExternal(Constant.Manual.HELP_URL);
+            void shell.openExternal(Constant.Manual.HELP_URL);
           },
         },
         // バージョン
@@ -211,6 +223,10 @@ export function makeElectronMenu(): Electron.Menu {
           },
         },
         { role: "toggleDevTools", label: "DevTools" },
+        {
+          label: "Frequency JSON Editor",
+          click: () => onOpenFrequencyEditorClick(),
+        },
       ],
     });
   }

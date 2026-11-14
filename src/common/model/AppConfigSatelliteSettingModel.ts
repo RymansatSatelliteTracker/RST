@@ -1,5 +1,5 @@
-import { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes";
-import { AppConfigModel } from "./AppConfigModel";
+import type { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
+import { AppConfigModel } from "./AppConfigModel.js";
 /**
  * 衛星設定画面用の設定ファイル
  */

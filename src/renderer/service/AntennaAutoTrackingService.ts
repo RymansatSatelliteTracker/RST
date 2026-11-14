@@ -1,19 +1,18 @@
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel";
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import { AppConfigModel } from "@/common/model/AppConfigModel";
-import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
-import GroundStationHelper from "@/renderer/common/util/GroundStationHelper";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import RotatorControllerBase from "@/renderer/service/rotator/RotatorControllerBase";
-import RotatorControllerFactory from "@/renderer/service/rotator/RotatorControllerFactory";
-import { AppConfigUtil } from "@/renderer/util/AppConfigUtil";
-import emitter from "@/renderer/util/EventBus";
-import { Ref } from "vue";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper.js";
+import GroundStationHelper from "@/renderer/common/util/GroundStationHelper.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import type RotatorControllerBase from "@/renderer/service/rotator/RotatorControllerBase.js";
+import RotatorControllerFactory from "@/renderer/service/rotator/RotatorControllerFactory.js";
+import { AppConfigUtil } from "@/renderer/util/AppConfigUtil.js";
+import emitter from "@/renderer/util/EventBus.js";
+import type { Ref } from "vue";
 
 /**
  * アンテナ（ローテータ）の自動衛星追尾サービス
@@ -40,13 +39,13 @@ export default class AntennaAutoTrackingService {
     }
 
     // 表示中の衛星グループが変更された場合のコールバックを設定
-    ActiveSatServiceHub.getInstance().addOnChangeActiveSat(this.onChangeActiveSat);
+    ActiveSatServiceHub.getInstance().addOnChangeActiveSat(this.onChangeActiveSat.bind(this));
 
     const controller = await RotatorControllerFactory.getController(rotDevice);
 
     // 1秒ごとにローテータ位置の更新を要求する
-    this.timerId = setInterval(async () => {
-      this.doTracking(controller, date);
+    this.timerId = setInterval(() => {
+      void this.doTracking(controller, date);
     }, 1000);
 
     return true;
@@ -74,7 +73,7 @@ export default class AntennaAutoTrackingService {
     }
 
     // アンテナを衛星位置に向ける
-    controller.setPosition(pos);
+    void controller.setPosition(pos);
   }
 
   /**
@@ -109,13 +108,13 @@ export default class AntennaAutoTrackingService {
       azimuth: appConfig.rotator.parkPosAz,
       elevation: appConfig.rotator.parkPosEl,
     };
-    controller.setPosition(pos);
+    void controller.setPosition(pos);
   }
 
   /**
    * 表示中の衛星グループが変更された場合のイベントハンドラ
    */
-  public onChangeActiveSat(satGrp: ActiveSatelliteGroupModel) {
+  public onChangeActiveSat() {
     this.stop();
   }
 

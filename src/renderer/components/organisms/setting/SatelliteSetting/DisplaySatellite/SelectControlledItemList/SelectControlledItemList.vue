@@ -18,15 +18,15 @@
       </v-col>
       <!-- グループボタン -->
       <v-col cols="3" class="d-flex flex-column align-center justify-center">
-        <v-btn @click="showGroupSatellite" variant="outlined" size="small">
+        <v-btn variant="outlined" size="small" @click="showGroupSatellite">
           {{ I18nUtil.getMsg(I18nMsgs.G31_GROUP) }}
         </v-btn>
         <GroupSatellite
           v-if="enableGroupSatellite"
-          :isShow="enableGroupSatellite"
-          :satelliteGroups="satelliteGroups"
-          @onOk="onOkShowGroupSatellite"
-          @onCancel="onCloseShowGroupSatellite"
+          :is-show="enableGroupSatellite"
+          :satellite-groups="satelliteGroups"
+          @on-ok="onOkShowGroupSatellite"
+          @on-cancel="onCloseShowGroupSatellite"
         />
       </v-col>
     </v-row>
@@ -35,22 +35,23 @@
     <v-row>
       <v-col cols="9">
         <VirtualScrollList
+          ref="listRef"
           style="overflow-y: auto"
           :items="selectedSatellites"
-          :itemName="'satelliteName'"
-          :itemKey="'satelliteId'"
+          :item-name="'satelliteName'"
+          data-testid="group-satellite-list"
+          :item-key="'satelliteId'"
           :height="355"
-          @itemDblClick="showEditSatelliteInfo"
-          ref="listRef"
+          @item-dbl-click="showEditSatelliteInfo"
         ></VirtualScrollList>
         <!-- ダブルクリックしたら衛星情報を表示 -->
         <EditSatelliteInfo
           v-if="enableEditSatelliteInfo"
-          :isShow="enableEditSatelliteInfo"
-          :selectedItem="selectedSatelliteItem"
-          :selectedGroupId="selectedGroup.groupId"
-          @onOk="onCloseEditSatelliteInfo"
-          @onCancel="onCloseEditSatelliteInfo"
+          :is-show="enableEditSatelliteInfo"
+          :selected-item="selectedSatelliteItem"
+          :selected-group-id="selectedGroup.groupId"
+          @on-ok="onCloseEditSatelliteInfo"
+          @on-cancel="onCloseEditSatelliteInfo"
         />
       </v-col>
 
@@ -65,21 +66,21 @@
             />
             <RegistSatellite
               v-if="enableRegistSatellite"
-              :isShow="enableRegistSatellite"
-              :selectedSatelliteItem="selectedSatelliteItem"
-              :selectedGroupId="selectedGroup.groupId"
-              :selectedSatellites="selectedSatellites"
-              @onOk="onCloseRegistSatellite"
-              @onCancel="onCloseRegistSatellite"
+              :is-show="enableRegistSatellite"
+              :selected-satellite-item="selectedSatelliteItem"
+              :selected-group-id="selectedGroup.groupId"
+              :selected-satellites="selectedSatellites"
+              @on-ok="onCloseRegistSatellite"
+              @on-cancel="onCloseRegistSatellite"
             />
           </div>
-          <v-btn icon @click="listRef?.moveItemUp" :disabled="!listRef?.canMoveUp" variant="plain">
+          <v-btn icon :disabled="!listRef?.canMoveUp" variant="plain" @click="listRef?.moveItemUp">
             <v-icon size="30" :icon="mdiArrowUpBold"></v-icon>
           </v-btn>
-          <v-btn icon @click="listRef?.moveItemDown" :disabled="!listRef?.canMoveDown" variant="plain">
+          <v-btn icon :disabled="!listRef?.canMoveDown" variant="plain" @click="listRef?.moveItemDown">
             <v-icon size="30" :icon="mdiArrowDownBold"></v-icon>
           </v-btn>
-          <v-btn icon @click="listRef?.deleteItem" :disabled="!listRef?.canDelete" variant="plain">
+          <v-btn icon :disabled="!listRef?.canDelete" variant="plain" @click="listRef?.deleteItem">
             <v-icon size="30" :icon="mdiDelete"></v-icon>
           </v-btn>
         </div>
@@ -88,23 +89,24 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onUnmounted, ref, watch } from "vue";
+import { computed, onUnmounted, ref, useTemplateRef, watch } from "vue";
 
-import I18nMsgs from "@/common/I18nMsgs";
-import { AppConfigSatelliteGroupForSatSetting } from "@/common/model/AppConfigSatelliteSettingModel";
-import { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import type { AppConfigSatelliteGroupForSatSetting } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import type { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import EditSatelliteInfo from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/EditSatelliteInfo/EditSatelliteInfo.vue";
 import GroupSatellite from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/GroupSatellite/GroupSatellite.vue";
 import RegistSatellite from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/RegistSatellite/RegistSatellite.vue";
 
-import Constant from "@/common/Constant";
+import Constant from "@/common/Constant.js";
 import VirtualScrollList from "@/renderer/components/molecules/VirtualScrollList/VirtualScrollList.vue";
-import emitter from "@/renderer/util/EventBus";
+import emitter from "@/renderer/util/EventBus.js";
 import { mdiArrowDownBold, mdiArrowUpBold, mdiDelete } from "@mdi/js";
+import type { ComponentExposed } from "vue-component-type-helpers";
 
 // 衛星グループリスト
-const satelliteGroups = defineModel<AppConfigSatelliteGroupForSatSetting[]>("satelliteGroups", { default: [] });
+const satelliteGroups = defineModel<AppConfigSatelliteGroupForSatSetting[]>("satelliteGroups", { default: () => [] });
 // 選択されたグループ
 const selectedGroup = ref<AppConfigSatelliteGroupForSatSetting>({
   groupName: "",
@@ -112,7 +114,7 @@ const selectedGroup = ref<AppConfigSatelliteGroupForSatSetting>({
   satellites: [],
 } as AppConfigSatelliteGroupForSatSetting);
 // グループに所属する衛星リスト
-const selectedSatellites = defineModel<SatelliteIdentiferType[]>("selectedSatellites", { default: [] });
+const selectedSatellites = defineModel<SatelliteIdentiferType[]>("selectedSatellites", { default: () => [] });
 // 衛星リストから選択したアイテムのインデックス
 const selectedItemIndex = ref<number | null>(null);
 
@@ -130,7 +132,7 @@ const enableRegistSatellite = ref(false);
 // 衛星情報編集画面表示用のフラグ
 const enableEditSatelliteInfo = ref(false);
 // リストの関数を使用するためのref
-const listRef = ref<InstanceType<typeof VirtualScrollList> | null>(null);
+const listRef = useTemplateRef<ComponentExposed<typeof VirtualScrollList>>("listRef");
 
 // 画面表示時にデータ更新する
 // deepCopyにするとnewとoldが同じになってしまうので展開して別のオブジェクトとして扱う
@@ -173,7 +175,10 @@ onUnmounted(() => {
  * 選択したアイテムに対して衛星登録画面が表示可能かを判断
  */
 const canRegist = computed(() => {
-  const items = listRef.value?.selectedItems;
+  // memo: env.d.tsの"*.vue"shimの都合上、ESLintの型解析ではVirtualScrollListの公開プロパティの型を解決できないため無効化する
+  // （vue-tscでは正しく型付けされていることを確認済み）
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  const items = listRef.value?.selectedItems as SatelliteIdentiferType[] | undefined;
   if (!items) return false;
   if (items.length > 1) return false;
   return checkCanRegist(items[0]);
@@ -223,7 +228,10 @@ function onOkShowGroupSatellite(newSatelliteGroups: AppConfigSatelliteGroupForSa
  * 衛星登録画面を表示する
  */
 function showRegistSatellite() {
-  const items = listRef.value?.selectedItems;
+  // memo: env.d.tsの"*.vue"shimの都合上、ESLintの型解析ではVirtualScrollListの公開プロパティの型を解決できないため無効化する
+  // （vue-tscでは正しく型付けされていることを確認済み）
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  const items = listRef.value?.selectedItems as SatelliteIdentiferType[] | undefined;
   if (!items) return;
   if (items.length > 1) return;
   const item = items[0];
@@ -270,5 +278,5 @@ function onCloseEditSatelliteInfo() {
 }
 </script>
 <style lang="scss" scoped>
-@import "./SelectControlledItemList.scss";
+@use "./SelectControlledItemList" as *;
 </style>

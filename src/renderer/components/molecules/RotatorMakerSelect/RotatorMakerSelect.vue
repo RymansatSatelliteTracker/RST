@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import useRotatorMakers from "./useRotatorMakers";
+import useRotatorMakers from "./useRotatorMakers.js";
 
 const selectedValue = defineModel<string>("selectedValue", { required: true });
 const needEmpty = defineModel<boolean>("needEmpty", { required: true });

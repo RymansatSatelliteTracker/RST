@@ -1,4 +1,4 @@
-import { LangType } from "@/common/types/types";
+import type { LangType } from "@/common/types/types.js";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 

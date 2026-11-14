@@ -1,4 +1,4 @@
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
+import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
 import { ref } from "vue";
 
 /**

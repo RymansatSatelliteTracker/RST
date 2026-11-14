@@ -1,7 +1,7 @@
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import DateUtil from "@/renderer/util/DateUtil";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import DateUtil from "@/renderer/util/DateUtil.js";
 import { onMounted, ref, watch, type Ref } from "vue";
 
 /**

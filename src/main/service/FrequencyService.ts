@@ -1,9 +1,9 @@
-import Constant from "@/common/Constant";
-import { FrequencyModel } from "@/common/model/FrequencyModel";
-import WebClient from "@/common/WebClient";
-import AppMainLogger from "@/main/util/AppMainLogger";
-import ElectronUtil from "@/main/util/ElectronUtil";
-import FrequencyValidator from "@/main/validator/FrequencyValidator";
+import Constant from "@/common/Constant.js";
+import { FrequencyModel } from "@/common/model/FrequencyModel.js";
+import WebClient from "@/common/WebClient.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
+import ElectronUtil from "@/main/util/ElectronUtil.js";
+import FrequencyValidator from "@/main/validator/FrequencyValidator.js";
 import fs from "fs";
 import path from "path";
 /**
@@ -50,7 +50,7 @@ export default class FrequencyService {
     const savePath = path.join(ElectronUtil.getUserDir(), Constant.Config.FREQUENCY_FILENAME);
     if (fs.existsSync(savePath)) {
       const fileContent = fs.readFileSync(savePath, "utf-8");
-      oldFreqModel = JSON.parse(fileContent);
+      oldFreqModel = JSON.parse(fileContent) as FrequencyModel;
     }
 
     const isNew: boolean = oldFreqModel.frequency.lastUpdateTime < 0;

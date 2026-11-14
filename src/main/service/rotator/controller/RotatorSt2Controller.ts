@@ -1,11 +1,11 @@
-import CommonUtil from "@/common/CommonUtil";
-import I18nMsgs from "@/common/I18nMsgs";
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import { AppConfigRotator } from "@/common/model/AppConfigModel";
-import { ApiResponse } from "@/common/types/types";
-import RotatorSerialControllerBase from "@/main/service/rotator/controller/RotatorSerialControllerBase";
-import RotatorSerialHelper from "@/main/service/rotator/RotatorSerialHelper";
-import AppMainLogger from "@/main/util/AppMainLogger";
+import CommonUtil from "@/common/CommonUtil.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import type { AppConfigRotator } from "@/common/model/AppConfigModel.js";
+import { ApiResponse } from "@/common/types/types.js";
+import RotatorSerialControllerBase from "@/main/service/rotator/controller/RotatorSerialControllerBase.js";
+import RotatorSerialHelper from "@/main/service/rotator/RotatorSerialHelper.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
 
 // 受信タイムアウト（秒）
 const RECV_TIEOUT_SEC = 5;
@@ -36,8 +36,8 @@ export default class RotatorSt2Controller extends RotatorSerialControllerBase {
     this.isReceived = false;
 
     // 一定間隔でアンテナ位置の取得コマンドを送信する
-    this.timer = setInterval(async () => {
-      await this.sendGetAzElCommand();
+    this.timer = setInterval(() => {
+      void this.sendGetAzElCommand();
     }, 1000);
 
     return new ApiResponse(true);
@@ -87,7 +87,7 @@ export default class RotatorSt2Controller extends RotatorSerialControllerBase {
     }
 
     // コールバック呼び出し
-    const res = new ApiResponse(true);
+    const res = new ApiResponse<AntennaPositionModel>(true);
     res.data = pos;
     this.callback(res);
   };
@@ -112,7 +112,7 @@ export default class RotatorSt2Controller extends RotatorSerialControllerBase {
       const el = parseFloat(cols[2]);
 
       return new AntennaPositionModel(az, el);
-    } catch (error) {
+    } catch {
       return null;
     }
   }
@@ -167,7 +167,7 @@ export default class RotatorSt2Controller extends RotatorSerialControllerBase {
 
     // コールバック呼び出し
     if (this.callback) {
-      const res = new ApiResponse(false, I18nMsgs.SYSTEM_ROTATOR_SERIAL_RECV_TIMEOUT);
+      const res = new ApiResponse<AntennaPositionModel>(false, I18nMsgs.SYSTEM_ROTATOR_SERIAL_RECV_TIMEOUT);
       this.callback(res);
     }
 

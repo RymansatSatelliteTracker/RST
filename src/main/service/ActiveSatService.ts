@@ -1,11 +1,12 @@
-import { ActiveSatelliteGroupModel, ActiveSatelliteModel } from "@/common/model/ActiveSatModel";
-import { AppConfigMainDisplay } from "@/common/model/AppConfigModel";
-import { getMainWindow } from "@/main/main";
-import DefaultSatelliteCacheService from "@/main/service/DefaultSatelliteCacheService";
-import TleService from "@/main/service/TleService";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
-import TleUtil from "@/main/util/TleUtil";
-import { TleStrings } from "@/renderer/types/satellite-type";
+import CommonUtil from "@/common/CommonUtil.js";
+import { ActiveSatelliteGroupModel, ActiveSatelliteModel } from "@/common/model/ActiveSatModel.js";
+import type { AppConfigMainDisplay } from "@/common/model/AppConfigModel.js";
+import type { OmmItem } from "@/common/model/OmmModel.js";
+import { getMainWindow } from "@/main/main.js";
+import DefaultSatelliteCacheService from "@/main/service/DefaultSatelliteCacheService.js";
+import OmmService from "@/main/service/OmmService.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import OmmUtil from "@/main/util/OmmUtil.js";
 
 /**
  * アクティブ衛星サービス
@@ -14,7 +15,7 @@ import { TleStrings } from "@/renderer/types/satellite-type";
 export default class ActiveSatService {
   // シングルトンインスタンス
   private static instance: ActiveSatService = new ActiveSatService();
-  private static tleServie = new TleService();
+  private static ommService = new OmmService();
 
   /**
    * シングルトンのため、コンストラクタは隠蔽
@@ -51,38 +52,57 @@ export default class ActiveSatService {
     // グループ内の衛星データをリストで取得
     grpModel.activeSatellites = this.createActiveSatModel(mainDisp);
 
-    // メイン表示衛星のTLEを取得
-    grpModel.mainSattelliteTle = this.getActiveSatTleBySatId(mainDisp.activeSatelliteId);
+    // メイン表示衛星のOMMを取得
+    grpModel.mainSatelliteOmm = this.getActiveSatOmmBySatId(mainDisp.activeSatelliteId);
 
     return grpModel;
   }
 
   /**
-   * 衛星IDからTLEを返す
+   * 衛星IDからOMMを返す
    */
-  public getActiveSatTleBySatId(satId: number): TleStrings | null {
-    // デフォルト衛星設定経由でTLEを取得
+  public getActiveSatOmmBySatId(satId: number): OmmItem | null {
+    // デフォルト衛星設定経由でOMMを取得
     const cacheService = new DefaultSatelliteCacheService();
     const defSat = cacheService.getDefaultSatelliteBySatelliteIdSync(satId);
 
-    let tleString: TleStrings | null = null;
+    let ommItem: OmmItem | null = null;
     if (defSat) {
-      tleString = ActiveSatService.tleServie.getTlesByNoradId(defSat.noradId);
+      ommItem = ActiveSatService.ommService.getOmmByNoradId(defSat.noradId);
+    }
+
+    // 取得できた場合はそのデータを返す
+    if (ommItem) {
+      return ommItem;
     }
 
     // 手動追加された衛星の場合（デフォルト衛星設定から取得出来なかった場合）
-    // AppConfif.satellites 経由でTLEを取得する
-    if (!tleString) {
-      const appConfig = AppConfigUtil.getConfig();
-      const sat = appConfig.satellites.find((sat) => sat.satelliteId === satId);
-      if (sat) {
-        // ユーザが登録した衛星のTLEは２行なので、ユーザー登録衛星名とTLEを結合してTLE文字列を生成
-        const tleText = `${sat.userRegisteredSatelliteName}\n${sat.userRegisteredTle}`;
-        tleString = TleUtil.toTleStrings(tleText);
+    // AppConfif.satellites 経由でOMMを取得する
+    const appConfig = AppConfigUtil.getConfig();
+    const sat = appConfig.satellites.find((sat) => sat.satelliteId === satId);
+    if (!sat) {
+      return null;
+    }
+
+    if (!CommonUtil.isEmpty(sat.userRegisteredOmm)) {
+      // ユーザが登録した衛星のOMMを使用
+      try {
+        return JSON.parse(sat.userRegisteredOmm) as OmmItem;
+      } catch {
+        // memo: 不正なJSON（設定ファイルの破損・手編集等）の場合はTLEへフォールバック
+        // 次の処理を進める
       }
     }
 
-    return tleString;
+    if (!CommonUtil.isEmpty(sat.userRegisteredTle)) {
+      // memo: userRegisteredOmmへの移行が未済の場合のフォールバック
+      // ユーザが登録した衛星のTLEは２行なので、ユーザー登録衛星名とTLEを結合してOMMに変換する
+      const tleText = `${sat.userRegisteredSatelliteName}\n${sat.userRegisteredTle}`;
+      const ommItems = OmmUtil.parseToOmmItems(tleText);
+      return ommItems.length > 0 ? ommItems[0] : null;
+    }
+
+    return ommItem;
   }
 
   /**
@@ -113,7 +133,7 @@ export default class ActiveSatService {
       // 衛星リストに格納
       const activeSat = new ActiveSatelliteModel();
       activeSat.satelliteId = satId;
-      activeSat.tle = this.getActiveSatTleBySatId(satId);
+      activeSat.omm = this.getActiveSatOmmBySatId(satId);
       activeSats.push(activeSat);
     }
 

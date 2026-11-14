@@ -5,17 +5,23 @@
       <v-checkbox-btn v-model="enable" hide-details density="compact"></v-checkbox-btn>
     </v-col>
     <v-col cols="11">
-      <TextField v-model="url" :valiSchema="validSchema" valiSchemaFieldPath="url" v-model:errorText="errorsTleUrl" />
+      <TextField
+        v-model="url"
+        v-model:error-text="errorsTleUrl"
+        :vali-schema="validSchema"
+        vali-schema-field-path="url"
+      />
     </v-col>
   </v-row>
 </template>
 
 <script setup lang="ts">
 import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
+import type { AnyZodObject } from "zod";
 
 const enable = defineModel<boolean>("enable");
 const url = defineModel<string>("url");
-const validSchema: any = defineModel("validSchema");
+const validSchema = defineModel<AnyZodObject | null>("validSchema", { default: null });
 const errorsTleUrl = defineModel<string>("errorsTleUrl");
 </script>
 <style lang="scss" scoped></style>

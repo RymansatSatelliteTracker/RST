@@ -1,13 +1,14 @@
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import { MessageModel } from "@/common/model/MessageModel";
-import ValidatorResultModel from "@/main/common/model/ValidatorResultModel";
-import { fireIpcEvent, getMainWindow } from "@/main/main";
-import ActiveSatService from "@/main/service/ActiveSatService";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
-import FileUtil from "@/main/util/FileUtil";
-import I18nUtil4Main from "@/main/util/I18nUtil4Main";
-import AppConfigValidator from "@/main/validator/AppConfigValidator";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import { MessageModel } from "@/common/model/MessageModel.js";
+import ValidatorResultModel from "@/main/common/model/ValidatorResultModel.js";
+import { fireIpcEvent, getMainWindow } from "@/main/main.js";
+import ActiveSatService from "@/main/service/ActiveSatService.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import FileUtil from "@/main/util/FileUtil.js";
+import I18nUtil4Main from "@/main/util/I18nUtil4Main.js";
+import AppConfigValidator from "@/main/validator/AppConfigValidator.js";
 import { dialog } from "electron";
 
 /**
@@ -42,10 +43,10 @@ export default class AppConfigImportSerivce {
     // memo: 入力チェック内で一度読んでるので読み直したくない。
     //      （JSONパースで落ちる可能性があるのと、処理配置的にこうしている）
     const text = FileUtil.readText(newConfigPath);
-    const appConfig = JSON.parse(text);
+    const appConfig = JSON.parse(text) as { param: AppConfigModel };
 
     // ユーザ指定の設定ファイルをアプリの設定ファイルクラスに割り当てる
-    const newConfig = AppConfigUtil.migrationConfig(appConfig["param"]);
+    const newConfig = AppConfigUtil.migrationConfig(appConfig.param);
 
     // 保存する
     AppConfigUtil.storeConfig(newConfig);
@@ -69,8 +70,8 @@ export default class AppConfigImportSerivce {
     // JSONがパースできるか
     let appConfig;
     try {
-      appConfig = JSON.parse(text);
-    } catch (err: any) {
+      appConfig = JSON.parse(text) as unknown;
+    } catch {
       return [new ValidatorResultModel("file", I18nMsgs.CHK_ERR_APPCONFIG_NOT_JSON_FORMAT)];
     }
 

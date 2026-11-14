@@ -6,16 +6,16 @@ const PREFIX = "[renderer]";
  * レンダラプロセス向けロガー
  */
 export default class AppRendererLogger {
-  public static debug(text: any) {
-    log.debug(`${PREFIX} ${text}`);
+  public static debug(text: unknown) {
+    log.debug(PREFIX, text);
   }
-  public static info(text: any) {
-    log.info(`${PREFIX} ${text}`);
+  public static info(text: unknown) {
+    log.info(PREFIX, text);
   }
-  public static warn(text: any) {
-    log.warn(`${PREFIX} ${text}`);
+  public static warn(text: unknown) {
+    log.warn(PREFIX, text);
   }
-  public static error(text: any, err: any = null) {
-    log.error(`${PREFIX} ${text}`, err);
+  public static error(text: unknown, err: unknown = null) {
+    log.error(PREFIX, text, err);
   }
 }

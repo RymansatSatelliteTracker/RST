@@ -1,6 +1,6 @@
 <template>
   <div class="datetime-picker">
-    <Button styleType="primary-transparent" :disabled="autoStore.isAutoMode()" class="now__btn" @click="setNow"
+    <Button style-type="primary-transparent" :disabled="autoStore.isAutoMode()" class="now__btn" @click="setNow"
       >Now</Button
     >
     <div class="controls">
@@ -57,9 +57,9 @@
 
 <script setup lang="ts">
 import Button from "@/renderer/components/atoms/Button/Button.vue";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
+import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
 import { watch } from "vue";
-import useDateTimePicker from "./useDateTimePicker";
+import useDateTimePicker from "./useDateTimePicker.js";
 
 // フック
 const {
@@ -89,5 +89,5 @@ watch(targetDate, (newDate) => {
 </script>
 
 <style lang="scss" scoped>
-@import "./DateTimePicker.scss";
+@use "./DateTimePicker" as *;
 </style>

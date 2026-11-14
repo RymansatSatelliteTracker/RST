@@ -1,0 +1,7 @@
+// ESLint専用のTSConfig。tsc本体のビルド対象(tsconfig.json)はテストファイルを除外しているが、
+// ESLintの型情報付きルールをテストファイルにも適用するため、除外せずに含める。
+{
+  "extends": "./tsconfig.json",
+  "include": ["./src/**/*"],
+  "exclude": []
+}

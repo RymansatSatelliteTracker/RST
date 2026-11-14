@@ -9,11 +9,11 @@
 <script setup lang="ts">
 import ConfirmDialog from "./components/atoms/ConfirmDialog/ConfirmDialog.vue";
 import AppSnackBar from "./components/molecules/AppSnackBar/AppSnackBar.vue";
-import router from "./router/router";
+import router from "./router/router.js";
 
 // メインページを表示
 // Memo: これがないとexe化した場合にページが表示されない
-router.push("/");
+void router.push("/");
 </script>
 
 <style module lang="scss"></style>

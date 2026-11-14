@@ -1,7 +1,7 @@
-import I18nMsgs from "@/common/I18nMsgs";
-import { AppConfigTleUrl } from "@/common/model/AppConfigModel";
-import { useValidate } from "@/renderer/common/hook/useValidate";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import type { AppConfigTleUrl } from "@/common/model/AppConfigModel.js";
+import { useValidate } from "@/renderer/common/hook/useValidate.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import * as zod from "zod";
 
 /**

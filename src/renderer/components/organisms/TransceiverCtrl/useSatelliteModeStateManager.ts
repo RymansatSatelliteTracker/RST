@@ -1,5 +1,6 @@
-import Constant from "@/common/Constant";
-import { ref, Ref } from "vue";
+import Constant from "@/common/Constant.js";
+import type { Ref } from "vue";
+import { ref } from "vue";
 
 // モードごとの状態の型
 export interface ModeState {

@@ -9,7 +9,7 @@
       weight: 1,
     }"
     :interactive="false"
-    dashArray="false"
+    dash-array="false"
   ></l-polygon>
 
   <!-- その他の衛星（点線表示） -->
@@ -21,16 +21,16 @@
       weight: 1,
     }"
     :interactive="false"
-    dashArray="2 3"
+    dash-array="2 3"
   ></l-polygon>
 </template>
 
 <script setup lang="ts">
-import Constant from "@/common/Constant";
+import Constant from "@/common/Constant.js";
 import { LPolygon } from "@vue-leaflet/vue-leaflet";
 import { ref, watch } from "vue";
-import useVisibilityDashRange from "./useVisibilityDashRange";
-import useVisibilityRange from "./useVisibilityRange";
+import useVisibilityDashRange from "./useVisibilityDashRange.js";
+import useVisibilityRange from "./useVisibilityRange.js";
 
 // propsを取得する
 const props = defineProps({
@@ -63,5 +63,6 @@ const { visibilityDashRangeList } = useVisibilityDashRange(currentDate, offsetLo
 //       l-polygonのlat-lngsにそのままでは渡せない。
 //       以下で、anyにキャストしてしてl-polygonのlat-lngsに設定する。
 //       また、l-polygonのlat-lngsは座標のリスト（１次元配列）であるが、複数の座標リストを渡すことになるが、問題なく動作する。
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const visibilityDashRangeListRaw = ref<any>(visibilityDashRangeList);
 </script>

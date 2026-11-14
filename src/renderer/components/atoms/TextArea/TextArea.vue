@@ -6,10 +6,10 @@
       hide-details
       :error="!CommonUtil.isEmpty(errorText)"
       class="textarea"
-      @blur="onInput(model)"
       :rows="rows"
       :flat="true"
       no-resize
+      @blur="onInput(model)"
     >
     </v-textarea>
     <ValidateTooltip :target="errorText" />
@@ -17,17 +17,19 @@
 </template>
 
 <script setup lang="ts">
-import CommonUtil from "@/common/CommonUtil";
-import { useValidate } from "@/renderer/common/hook/useValidate";
+import CommonUtil from "@/common/CommonUtil.js";
+import { useValidate } from "@/renderer/common/hook/useValidate.js";
 import ValidateTooltip from "@/renderer/components/atoms/ValidateTooltip/ValidateTooltip.vue";
 import { onMounted } from "vue";
+import type { PropType } from "vue";
+import type { AnyZodObject } from "zod";
 
-const model = defineModel<any>();
+const model = defineModel<string>({ default: "" });
 const errorText = defineModel<string>("errorText", { required: false, default: "" });
 const rows = defineModel<string>("rows", { required: false, default: "3" });
 const props = defineProps({
   valiSchema: {
-    type: Object, // as () => ZodObject<any>,
+    type: Object as PropType<AnyZodObject | null>,
     required: false,
     default: null,
   },

@@ -13,37 +13,39 @@
     <v-row>
       <v-col>
         <VirtualScrollList
+          ref="listRef"
           style="overflow-y: auto"
           :items="filteredItems"
-          :itemName="'displayText'"
-          :itemKey="'satelliteId'"
+          :item-name="'displayText'"
+          data-testid="filterable-satellite-list"
+          :item-key="'satelliteId'"
           :height="355"
-          :selectMode="'inclusive'"
-          @itemDblClick="showEditSatelliteInfo"
-          ref="listRef"
+          :select-mode="'inclusive'"
+          @item-dbl-click="showEditSatelliteInfo"
         ></VirtualScrollList>
         <!-- ダブルクリックしたら衛星情報を表示 -->
         <EditSatelliteInfo
           v-if="enableEditSatelliteInfo"
-          :isShow="enableEditSatelliteInfo"
-          :selectedItem="selectedEditSatelliteItem"
-          @onOk="onCloseEditSatelliteInfo"
-          @onCancel="onCloseEditSatelliteInfo"
+          :is-show="enableEditSatelliteInfo"
+          :selected-item="selectedEditSatelliteItem"
+          @on-ok="onCloseEditSatelliteInfo"
+          @on-cancel="onCloseEditSatelliteInfo"
         />
       </v-col>
     </v-row>
   </div>
 </template>
 <script setup lang="ts">
-import I18nMsgs from "@/common/I18nMsgs";
-import { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes";
-import ApiDefaultSatellite from "@/renderer/api/ApiDefaultSatellite";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import type { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
+import ApiDefaultSatellite from "@/renderer/api/ApiDefaultSatellite.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
 import VirtualScrollList from "@/renderer/components/molecules/VirtualScrollList/VirtualScrollList.vue";
 import EditSatelliteInfo from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/EditSatelliteInfo/EditSatelliteInfo.vue";
-import AppRendererLogger from "@/renderer/util/AppRendererLogger";
-import { computed, onMounted, ref } from "vue";
+import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
+import { computed, onMounted, ref, useTemplateRef } from "vue";
+import type { ComponentExposed } from "vue-component-type-helpers";
 
 type DisplaySatelliteItem = {
   satelliteId: number;
@@ -62,7 +64,7 @@ const filterText = ref("");
 // リストに表示するアイテム
 const items = ref<DisplaySatelliteItem[]>([]);
 // リストの関数を使用するためのref
-const listRef = ref<InstanceType<typeof VirtualScrollList> | null>(null);
+const listRef = useTemplateRef<ComponentExposed<typeof VirtualScrollList<DisplaySatelliteItem>>>("listRef");
 
 /**
  * コンポーネントのマウント時にデフォルト衛星定義を読み込む
@@ -113,8 +115,12 @@ function onCloseEditSatelliteInfo() {
 }
 
 // 親に公開する
+// memo: env.d.tsの"*.vue"shimの都合上、ESLintの型解析ではVirtualScrollListの公開プロパティの型を解決できないため無効化する
+// （vue-tscでは正しく型付けされていることを確認済み）
+// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 const selectedItems = computed(() => listRef.value?.selectedItems ?? []);
 function clearSelect() {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   listRef.value?.clearSelect();
 }
 
@@ -125,5 +131,5 @@ defineExpose({
 </script>
 
 <style lang="scss" scoped>
-@import "./FilterableItemList.scss";
+@use "./FilterableItemList" as *;
 </style>

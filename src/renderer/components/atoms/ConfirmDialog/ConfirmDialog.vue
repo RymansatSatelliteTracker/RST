@@ -8,10 +8,10 @@
         {{ message }}
       </v-card-text>
       <v-card-actions>
-        <v-btn @click="handleConfirm(true)" variant="outlined" size="large">{{
+        <v-btn variant="outlined" size="large" @click="handleConfirm(true)">{{
           I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_OK)
         }}</v-btn>
-        <v-btn @click="handleConfirm(false)" variant="outlined" size="large" class="ml-5">{{
+        <v-btn variant="outlined" size="large" class="ml-5" @click="handleConfirm(false)">{{
           I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_CANCEL)
         }}</v-btn>
       </v-card-actions>
@@ -19,10 +19,10 @@
   </v-dialog>
 </template>
 <script setup lang="ts">
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import emitter from "@/renderer/util/EventBus";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import emitter from "@/renderer/util/EventBus.js";
 import { onMounted, ref } from "vue";
 
 // ダイアログ表示用
@@ -46,12 +46,12 @@ onMounted(() => {
 
 // 親に通知用のイベント
 //const emits = defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
-const emits = defineEmits(["onConfirmOk", "onConfirmCancel", "update:isConfirmShow"]);
+defineEmits(["onConfirmOk", "onConfirmCancel", "update:isConfirmShow"]);
 
 /**
  * ダイアログでボタンを押下したときの処理
  */
-async function handleConfirm(result: boolean) {
+function handleConfirm(result: boolean) {
   isShow.value = false;
   if (resolveCallback) {
     resolveCallback(result);

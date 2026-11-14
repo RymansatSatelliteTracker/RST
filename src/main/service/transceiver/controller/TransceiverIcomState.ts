@@ -1,3 +1,6 @@
+// Rx周波数の読み取りに失敗した場合に再試行する上限回数（超えた場合は保留を解除し、RSTからの要求を再開する）
+const MAX_RX_READ_RETRY_COUNT = 3;
+
 /**
  * RSTとICOM無線機の周波数とモードの値と更新状態を保持するクラス
  */
@@ -27,6 +30,10 @@ export default class TransceiverIcomState {
   public isRecvTxFreqUpdate = false;
   public isRecvRxFreqUpdate = false;
 
+  // サブバンド（Tx）のトランシーブ受信後、連動して変化したRx周波数を無線機から読み取るまでの間はtrue
+  public isRxReadPending = false;
+  private rxReadFailCount = 0;
+
   // 現在の運用モード
   public currentTxOpeMode = "";
   public currentRxOpeMode = "";
@@ -50,10 +57,11 @@ export default class TransceiverIcomState {
 
   /**
    * RSTから無線機に設定したいRx周波数をセットする
+   * @param isForce 強制設定（同一周波数でも強制的に無線機へ送信する場合はtrueを指定する）
    */
-  public setReqRxFreqHz(freqHz: number): void {
+  public setReqRxFreqHz(freqHz: number, isForce: boolean = false): void {
     // 現在保持している値と同一の場合は何もしない（不要なバンド切り替えを抑止する）
-    if (this.reqRxFreqHz === freqHz) {
+    if (!isForce && this.reqRxFreqHz === freqHz) {
       return;
     }
     this.reqRxFreqHz = freqHz;
@@ -62,10 +70,11 @@ export default class TransceiverIcomState {
 
   /**
    * RSTから無線機に設定したいTx周波数をセットする
+   * @param isForce 強制設定（同一周波数でも強制的に無線機へ送信する場合はtrueを指定する）
    */
-  public setReqTxFreqHz(freq: number): void {
+  public setReqTxFreqHz(freq: number, isForce: boolean = false): void {
     // 現在保持している値と同一の場合は何もしない（不要なバンド切り替えを抑止する）
-    if (this.reqTxFreqHz === freq) {
+    if (!isForce && this.reqTxFreqHz === freq) {
       return;
     }
     this.reqTxFreqHz = freq;
@@ -170,11 +179,62 @@ export default class TransceiverIcomState {
   }
 
   /**
+   * Rx周波数の読み取り待ちを開始する
+   * 無線機側のTxダイヤル操作に連動してRxが変化しているため、RST側の古い周波数要求を破棄し、Rxの読み取りを予約する。
+   * 要求値も未設定に戻し、解除後に同じ値が再要求されても重複判定でスキップされないようにする。
+   */
+  public startRxReadPending(): void {
+    this.isRxReadPending = true;
+    this.rxReadFailCount = 0;
+    this.isReqTxFreqUpdate = false;
+    this.isReqRxFreqUpdate = false;
+    this.reqTxFreqHz = 0;
+    this.reqRxFreqHz = 0;
+    // 受信したTx周波数が前回と同一でも、Rxの読み取りが必ず行われるようにする
+    this.isRecvRxFreqUpdate = true;
+  }
+
+  /**
+   * Rx周波数の読み取り待ちを解除する
+   * 読み取り待ちの間に予約されていたRxの読み取りも取り消す（読み取り済み、またはRx値を受信済みで不要となるため）。
+   */
+  public endRxReadPending(): void {
+    if (this.isRxReadPending) {
+      this.isRecvRxFreqUpdate = false;
+    }
+    this.isRxReadPending = false;
+    this.rxReadFailCount = 0;
+  }
+
+  /**
+   * Rx周波数の読み取り失敗を記録する
+   * 上限回数に達するまでは読み取り待ちを維持し、次の周期で再試行する。上限に達した場合は、RSTからの要求を
+   * 破棄し続けないよう読み取り待ちを解除する。
+   * @returns 上限に達して読み取り待ちを解除した場合はtrue
+   */
+  public failRxRead(): boolean {
+    if (!this.isRxReadPending) {
+      return false;
+    }
+
+    this.rxReadFailCount += 1;
+    if (this.rxReadFailCount >= MAX_RX_READ_RETRY_COUNT) {
+      this.endRxReadPending();
+      return true;
+    }
+
+    // 再試行のため、Rxの読み取りを再度予約する
+    this.isRecvRxFreqUpdate = true;
+    return false;
+  }
+
+  /**
    * 周波数、モードの更新状態をリセットする
    */
   public resetAll(): void {
     this.resetRx();
     this.resetTx();
+    this.endRxReadPending();
   }
 
   // Getter

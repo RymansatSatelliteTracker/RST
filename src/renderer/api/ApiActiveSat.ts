@@ -1,4 +1,4 @@
-import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel";
+import type { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
 
 /**
  * メイン表示する衛星関係のレンダラ側API
@@ -21,7 +21,7 @@ export default class ApiActiveSat {
   /**
    * メイン表示する衛星グループ、衛星ID情報が保存された場合の変更イベント
    */
-  public static async onChangeActiveSatelliteGroup(callback: Function) {
-    await window.rstApi.onChangeActiveSatelliteGroup(callback);
+  public static onChangeActiveSatelliteGroup(callback: (satGrpModel: ActiveSatelliteGroupModel) => void) {
+    window.rstApi.onChangeActiveSatelliteGroup(callback);
   }
 }

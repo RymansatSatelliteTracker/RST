@@ -1,11 +1,12 @@
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import { useValidate } from "@/renderer/common/hook/useValidate";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import RegistSatelliteForm from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/RegistSatellite/RegistSatelliteForm";
-import { getUTCDate } from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/RegistSatellite/useRegistSatelliteUtils";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { useValidate } from "@/renderer/common/hook/useValidate.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import type RegistSatelliteForm from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/RegistSatellite/RegistSatelliteForm.js";
+import { getUTCDate } from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/RegistSatellite/useRegistSatelliteUtils.js";
 import * as zod from "zod";
-import { calcDateFomatEpoch, parseTle, Tle, validateParsedTle } from "./useValidateTle";
+import type { Tle } from "./useValidateTle.js";
+import { calcDateFomatEpoch, parseTle, validateParsedTle } from "./useValidateTle.js";
 /**
  * 衛星情報編集画面の入力チェックフック
  */
@@ -79,7 +80,7 @@ export const valiSchemaRegistSatellite = zod.object({
         .string({ message: message1 })
         .min(1, { message: message1 })
         // アルファベット、数字、記号(＆*/ '-+_()[])
-        .regex(/^[A-Za-z0-9&*/ '()+_\[\]-]*$/, { message: message2 })
+        .regex(/^[A-Za-z0-9&*/ '()+_[\]-]*$/, { message: message2 })
     );
   }),
   tle: zod.lazy(() => {

@@ -1,0 +1,24 @@
+{
+  "ommItemMap": {
+    "04793": {
+      "objectName": "NOAA 1",
+      "objectId": "70106A",
+      "noradCatId": "04793",
+      "epoch": "2024-11-20T15:15:33.456Z",
+      "meanMotion": 12.54036317,
+      "eccentricity": 0.0031587,
+      "inclination": 101.4251,
+      "raOfAscNode": 12.2886,
+      "argOfPericenter": 31.6003,
+      "meanAnomaly": 123.0557,
+      "bstar": 0.000075999,
+      "meanMotionDot": -0.00000031,
+      "meanMotionDdot": 0,
+      "ephemerisType": 0,
+      "classificationType": "U",
+      "elementSetNo": 999,
+      "revAtEpoch": 46879,
+      "isInLatestOmm": true
+    }
+  }
+}

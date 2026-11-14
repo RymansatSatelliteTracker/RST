@@ -1,13 +1,14 @@
-import Constant from "@/common/Constant";
-import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel";
-import ApiActiveSat from "@/renderer/api/ApiActiveSat";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
-import GroundStationHelper from "@/renderer/common/util/GroundStationHelper";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import { SatAzEl } from "@/renderer/types/satellite-type";
-import CanvasUtil from "@/renderer/util/CanvasUtil";
-import { onMounted, Ref, watch } from "vue";
+import Constant from "@/common/Constant.js";
+import type { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
+import ApiActiveSat from "@/renderer/api/ApiActiveSat.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper.js";
+import GroundStationHelper from "@/renderer/common/util/GroundStationHelper.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import type { SatAzEl } from "@/renderer/types/satellite-type.js";
+import CanvasUtil from "@/renderer/util/CanvasUtil.js";
+import type { Ref } from "vue";
+import { onMounted, watch } from "vue";
 
 type CenterPosition = {
   x: number;
@@ -115,7 +116,7 @@ export default function useDrawSatPass(
     // 現在の衛星グループとアクティブ衛星
     const satGrp = await ApiActiveSat.getActiveSatelliteGroup();
     const activeSatIndex = ActiveSatServiceHub.getInstance().getActiveSatIndex();
-    if (!(await needRefresh(currentAosDate, pass.aos.date, satGrp, activeSatIndex))) {
+    if (!needRefresh(currentAosDate, pass.aos.date, satGrp, activeSatIndex)) {
       return;
     }
 
@@ -176,12 +177,12 @@ export default function useDrawSatPass(
    *  ・衛星グループが変更されている場合
    *  ・アクティブ衛星が変更されている場合
    */
-  async function needRefresh(
+  function needRefresh(
     currentAosDate: Date,
     aosDate: Date,
     satGrp: ActiveSatelliteGroupModel,
     activeSatIndex: number
-  ): Promise<boolean> {
+  ): boolean {
     // 表示中のAOS日時と引数のAOS日時が異なる場合は更新要
     const tmpCurTime = Math.trunc(currentAosDate.getTime() / 1000);
     const tmpAosTime = Math.trunc(aosDate.getTime() / 1000);

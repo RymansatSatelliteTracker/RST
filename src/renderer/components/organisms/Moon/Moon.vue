@@ -1,16 +1,16 @@
 <template>
   <icon-marker
-    :iconUrl="moonImg"
+    :icon-url="moonImg"
     :latlng="moonLocation"
-    :iconSize="18"
+    :icon-size="18"
     :options="{
       interactive: false,
     }"
   ></icon-marker>
   <icon-marker
-    :iconUrl="moonAgeMaskImgs[moonAgeIdx]"
+    :icon-url="moonAgeMaskImgs[moonAgeIdx]"
     :latlng="moonLocation"
-    :iconSize="18"
+    :icon-size="18"
     :options="{
       interactive: false,
     }"
@@ -51,7 +51,7 @@ import moonAge8Img from "@/renderer/assets/moonAge/moonAge8.png";
 import moonAge9Img from "@/renderer/assets/moonAge/moonAge9.png";
 import IconMarker from "@/renderer/components/atoms/IconMarker/IconMarker.vue";
 import { computed, ref, watch } from "vue";
-import useMoon from "./useMoon";
+import useMoon from "./useMoon.js";
 
 // 月齢のマスク画像リスト
 const moonAgeMaskImgs = ref<string[]>([

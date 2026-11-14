@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // 色定義
 $blue-pale: #68a8ce;
 $blue-light: #2783b9;
@@ -5,8 +7,8 @@ $blue: #1f6994;
 $blue-dark: #174f6f;
 $black-blue: #141d23;
 $danger-pale: #eb5757;
-$danger: darken(#eb5757, 20%);
-$danger-dark: darken(#eb5757, 40%);
+$danger: color.adjust(#eb5757, $lightness: -20%);
+$danger-dark: color.adjust(#eb5757, $lightness: -40%);
 $white: #f2f2f2;
 $white-alpha: #ffffff90;
 $black20: #bdbdbd;

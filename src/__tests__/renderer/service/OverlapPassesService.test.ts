@@ -1,6 +1,7 @@
-import TleDataHelper from "@/__tests__/renderer/service/TleDataHelper";
-import OverlapPassesService from "@/renderer/service/OverlapPassesService";
-import { GROUND2_STATION, GROUND_STATION } from "./GroundStationService.test";
+import TleDataHelper from "@/__tests__/renderer/service/TleDataHelper.js";
+import OverlapPassesService from "@/renderer/service/OverlapPassesService.js";
+import { describe, expect, it } from "vitest";
+import { GROUND2_STATION, GROUND_STATION } from "./GroundStationService.test.js";
 
 /**
  * [正常系]
@@ -8,12 +9,18 @@ import { GROUND2_STATION, GROUND_STATION } from "./GroundStationService.test";
  */
 describe("[正常系]2か所の地上局から観測できる人工衛星の可視時間リストが取得できる", () => {
   it("2か所の地上局から同時に観測できる人工衛星の可視時間リストが取得できる", async () => {
-    const nowDate = new Date();
+    // MEMO: 実行時の現在日時を使うと、最初の可視パスが地球の影の中になる時間帯に日照率が0となり、
+    //       テストが不安定になる。そのため日時を固定する。
+    //       2026-11-04T12:00:00Z起点の24時間は、最初の可視パスが日照中(shadowFraction=1)となる。
+    const nowDate = new Date("2026-11-04T12:00:00Z");
     const oneDayLaterDate = new Date(nowDate.getTime() + 24 * 60 * 60 * 1000);
 
     // 宮本工場(東京都江戸川区)と種子島宇宙センターで同時に観測できる可視時間リストを取得する
+    // MEMO: 静的なTLE（TleDataHelper.Satellite.ISS）は、TLEのエポックから時間が経過するほど
+    //       SGP4の伝播誤差が大きくなり可視パスが求まらなくなる。
+    //       そのためエポックを起点日時に合わせて生成した軌道要素を使用する。
     const issOverlapPasses = new OverlapPassesService(
-      TleDataHelper.Satellite.ISS,
+      TleDataHelper.createIssOrbitSatellite(nowDate),
       GROUND_STATION.latitudeDeg,
       GROUND_STATION.longitudeDeg,
       GROUND2_STATION.latitudeDeg,
@@ -26,6 +33,10 @@ describe("[正常系]2か所の地上局から観測できる人工衛星の可�
     expect(issResult && issResult[0].maxEl).not.toBe(null);
     expect(issResult && issResult[0].los).not.toBe(null);
     expect(issResult && issResult[0].durationMs).not.toBe(null);
+    // 可視時間リストに付随する日照時間も取得ができることを確認する
+    expect(issResult && issResult[0].aos?.shadowFraction).toBe(1);
+    expect(issResult && issResult[0].maxEl?.shadowFraction).toBe(1);
+    expect(issResult && issResult[0].los?.shadowFraction).toBe(1);
   });
 
   // MEMO: TLEをもとに計算した衛星軌道は長時間が経過すると、赤道面に対して横移動してしまうため？以下ケースはテストが失敗する。

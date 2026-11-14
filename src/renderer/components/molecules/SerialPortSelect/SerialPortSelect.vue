@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import useActiveSerialPorts from "./useActiveSerialPorts";
+import useActiveSerialPorts from "./useActiveSerialPorts.js";
 
 const selectedValue = defineModel<string>("selectedValue", { required: true });
 const needEmpty = defineModel<boolean>("needEmpty", { required: true });
@@ -25,7 +25,7 @@ refreshSerialPort();
  * 選択肢をリフレッシュする
  */
 function refreshSerialPort() {
-  getActiveSerialPorts();
+  void getActiveSerialPorts();
 }
 
 // 外部に公開するもの
@@ -35,5 +35,5 @@ defineExpose({
 </script>
 
 <style lang="scss" scoped>
-@import "./SerialPortSelect.scss";
+@use "./SerialPortSelect" as *;
 </style>

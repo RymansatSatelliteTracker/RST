@@ -1,11 +1,12 @@
-import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel";
-import ApiActiveSat from "@/renderer/api/ApiActiveSat";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import ActiveSatHelper from "@/renderer/common/util/ActiveSatHelper";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
-import { SelectOption } from "@/renderer/types/vue-types";
-import { onMounted, ref, Ref } from "vue";
+import type { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
+import ApiActiveSat from "@/renderer/api/ApiActiveSat.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ActiveSatHelper from "@/renderer/common/util/ActiveSatHelper.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
+import type { SelectOption } from "@/renderer/types/vue-types.js";
+import type { Ref } from "vue";
+import { onMounted, ref } from "vue";
 
 /**
  * アクティブ衛星関係のフック
@@ -16,12 +17,12 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
   let currentSatGroupId: number;
 
   // 衛星グループごとの前回選択された衛星ID
-  let prevSelectedSatIdMap: { [key: number]: number } = {};
+  const prevSelectedSatIdMap: { [key: number]: number } = {};
   let prevItems: SelectOption[] = [];
 
-  onMounted(async () => {
+  onMounted(() => {
     // 初期表示時のアクティブ衛星グループで衛星SeceletBoxを更新
-    await onChangeSatGrp();
+    onChangeSatGrp();
 
     // 表示中の衛星グループが変更された場合のコールバックを設定
     ActiveSatServiceHub.getInstance().addOnChangeActiveSat(onChangeSatGrp);
@@ -30,9 +31,9 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
   /**
    * 表示中の衛星グループが変更された場合のイベントハンドラ
    */
-  async function onChangeSatGrp() {
+  function onChangeSatGrp() {
     // 新しい衛星グループでSelectBoxのデータを更新
-    updateSatItems();
+    void updateSatItems();
   }
 
   /**
@@ -41,7 +42,7 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
   async function updateSatItems() {
     // 更新された衛星グループ情報を取得
     const satGrp = await ApiActiveSat.getActiveSatelliteGroup();
-    if (!satGrp || !satGrp.mainSattelliteTle) {
+    if (!satGrp || !satGrp.mainSatelliteOmm) {
       return;
     }
 
@@ -69,12 +70,12 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
       // memo: 衛星リストが空の場合はsatId=-1で返ってくるので、その場合は更新不要（次の有効な衛星リストが来たら更新される）
       if (satId >= 0 && selectedSatId.value !== satId) {
         selectedSatId.value = satId;
-        updateAppConfig(selectedSatId.value.toString());
+        void updateAppConfig(selectedSatId.value.toString());
       }
     }
 
     // 前回選択肢として現在の衛星リストを保持
-    prevItems = JSON.parse(JSON.stringify(items.value));
+    prevItems = JSON.parse(JSON.stringify(items.value)) as SelectOption[];
 
     // 現在の衛星グループIDを保持
     currentSatGroupId = satGrp.activeSatelliteGroupId;
@@ -118,10 +119,11 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
       return -1;
     }
 
-    // 一旦、先頭を候補にしておく
-    let satId = items[0].value;
-
     // 衛星グループごとの前回選択された衛星IDが存在する場合は、その衛星を選択
+    // 存在しない場合（起動時など）は、保存済みのアクティブ衛星を選択
+    // memo: 起動時に先頭衛星を選択するとAppConfigが書き換わり、
+    //       ActiveSatServiceHub側の初期化と競合して画面と軌道のアクティブ衛星が不一致になるため
+    let satId = activeSatGrp.mainSatelliteId;
     if (activeSatGrp.activeSatelliteGroupId in prevSelectedSatIdMap) {
       satId = prevSelectedSatIdMap[activeSatGrp.activeSatelliteGroupId];
     }
@@ -129,7 +131,7 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
     // ただし、選択肢に当該衛星が存在しない（削除された)場合は、先頭の衛星を選択する
     const index = items.findIndex((item) => item.value === satId);
     if (index < 0) {
-      satId = items[0].value;
+      satId = Number(items[0].value);
     }
 
     return satId;

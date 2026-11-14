@@ -6,7 +6,7 @@
         <!-- Manual/Auto -->
         <div>
           <Button
-            styleType="primary-transparent"
+            style-type="primary-transparent"
             :loading="loadingAutoBtn"
             :class="{
               auto_btn_on: autoStore.rotatorAuto,
@@ -61,23 +61,24 @@
 </template>
 
 <script setup lang="ts">
-import Constant from "@/common/Constant";
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import { ApiResponse } from "@/common/types/types";
-import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import Constant from "@/common/Constant.js";
+import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import type { ApiResponse } from "@/common/types/types.js";
+import ApiAntennaTracking from "@/renderer/api/ApiAntennaTracking.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import Button from "@/renderer/components/atoms/Button/Button.vue";
-import useDrawAntennaPosition from "@/renderer/components/organisms/Radar/useDrawAntennaPosition";
-import useDrawRadar from "@/renderer/components/organisms/Radar/useDrawRadar";
-import useDrawSat from "@/renderer/components/organisms/Radar/useDrawSat";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
-import { RotatorAzEl, SatAzEl } from "@/renderer/types/satellite-type";
-import emitter from "@/renderer/util/EventBus";
-import { onMounted, Ref, ref, watch } from "vue";
-import useAutoTracking from "./useAutoTracking";
-import useCanvasPosToAntennaPos from "./useCanvasPosToAntennaPos";
-import useDrawSatPass from "./useDrawSatPass";
-import useTracking from "./useTracking";
+import useDrawAntennaPosition from "@/renderer/components/organisms/Radar/useDrawAntennaPosition.js";
+import useDrawRadar from "@/renderer/components/organisms/Radar/useDrawRadar.js";
+import useDrawSat from "@/renderer/components/organisms/Radar/useDrawSat.js";
+import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
+import type { RotatorAzEl, SatAzEl } from "@/renderer/types/satellite-type.js";
+import emitter from "@/renderer/util/EventBus.js";
+import type { Ref } from "vue";
+import { onMounted, ref, watch } from "vue";
+import useAutoTracking from "./useAutoTracking.js";
+import useCanvasPosToAntennaPos from "./useCanvasPosToAntennaPos.js";
+import useDrawSatPass from "./useDrawSatPass.js";
+import useTracking from "./useTracking.js";
 
 // レーダの半径（px）
 const RADAR_RADIUS_PX = 100;
@@ -132,7 +133,7 @@ const autoStore = useStoreAutoState();
 
 onMounted(() => {
   // 衛星位置の描画開始
-  startTraking();
+  void startTraking();
 
   // アンテナの位置変化を取得し、positionを更新する
   ApiAntennaTracking.onChangeAntennaPosition((res: ApiResponse<AntennaPositionModel>) => {
@@ -177,8 +178,8 @@ watch(destPosition as Ref<AntennaPositionModel>, (newValue: AntennaPositionModel
   }
 
   // シリアライズ可能なオブジェクトにしてから渡す
-  const pos = JSON.parse(JSON.stringify(newValue));
-  ApiAntennaTracking.setAntennaPosition(pos);
+  const pos = JSON.parse(JSON.stringify(newValue)) as AntennaPositionModel;
+  void ApiAntennaTracking.setAntennaPosition(pos);
 });
 
 /**
@@ -234,5 +235,5 @@ function formatPosition(value: number) {
 </script>
 
 <style lang="scss" scoped>
-@import "./Radar.scss";
+@use "./Radar" as *;
 </style>

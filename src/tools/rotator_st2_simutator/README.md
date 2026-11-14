@@ -47,39 +47,31 @@ const bool CONFIG = true;
 4. 以下操作を行っていく。
 
    ①ST-2 画面 `Set Az=min & press D (U=esc)`
-
    - シリアルモニタ："3"を入力する。
    - ST-2："D"押下
 
    ②ST-2 画面 `Set El=min & press L (R=esc)`
-
    - シリアルモニタ："1"を入力する。
    - ST-2："L"押下
 
    ③ST-2 画面 `Set Az=max & press D (U=esc)`
-
    - シリアルモニタ："2"を入力する。
    - ST-2："D"押下
 
    ④ST-2 画面 `Set El=max & press L (R=esc)`
-
    - シリアルモニタ："0"を入力する。
    - ST-2："L"押下
 
    ⑤ST-2 画面 `Az range: 450 U 360 D (R=esc)`
-
    - ST-2："U"押下
 
    ⑥ST-2 画面 `El range: 0-90 U 0-180 D (R=esc)`
-
    - ST-2："D"押下
 
    ⑦ST-2 画面 `CCW stop North=U South D (R=esc`
-
    - ST-2："U"押下
 
    ⑧ST-2 画面 `EE Write: U (R=esc)`
-
    - ST-2："U"押下
 
 5. スタブモードへの戻し

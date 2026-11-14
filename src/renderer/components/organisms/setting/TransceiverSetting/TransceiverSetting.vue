@@ -4,7 +4,7 @@
       {{ I18nUtil.getMsg(I18nMsgs.GCOM_RADIO) }}
 
       <!-- タブ -->
-      <v-tabs v-model="tab" @update:modelValue="onTabChange">
+      <v-tabs v-model="tab" @update:model-value="onTabChange">
         <v-tab value="device" class="g_solid_border px-16 font-weight-bold"
           >{{ I18nUtil.getMsg(I18nMsgs.G41_TAB_CONNECTION) }}
         </v-tab>
@@ -45,17 +45,18 @@
 </template>
 
 <script setup lang="ts">
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import ApiSirial from "@/renderer/api/ApiSirial";
-import ApiTransceiver from "@/renderer/api/ApiTransceiver";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
-import { ref, watch } from "vue";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ApiSirial from "@/renderer/api/ApiSirial.js";
+import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
+import { ref, useTemplateRef, watch } from "vue";
+import type { ComponentExposed } from "vue-component-type-helpers";
 import TransceiverBegavior from "./TransceiverBegavior/TransceiverBegavior.vue";
 import TransceiverConn from "./TransceiverConn/TransceiverConn.vue";
-import TransceiverSettingForm from "./TransceiverSettingForm";
+import TransceiverSettingForm from "./TransceiverSettingForm.js";
 
 // イベント関係
 const emits = defineEmits<{ (e: "onOk"): void; (e: "onCancel"): void }>();
@@ -68,7 +69,7 @@ const form = ref<TransceiverSettingForm>(new TransceiverSettingForm());
 const isShow = defineModel<boolean>("isShow");
 const loadingTestBtn = ref(false);
 const isSerialOpen = ref(false);
-const refTravsceiverConn = ref();
+const refTravsceiverConn = useTemplateRef<ComponentExposed<typeof TransceiverConn>>("refTravsceiverConn");
 // v-tabsの現在のタブ
 const tab = ref("device");
 // アプリ側で管理する現在のタブ
@@ -99,7 +100,7 @@ watch(isShow, async (newValue) => {
   tab.value = "device";
   currentTab.value = "device";
 
-  reloadConfig();
+  void reloadConfig();
 });
 
 /**
@@ -107,7 +108,7 @@ watch(isShow, async (newValue) => {
  */
 async function reloadConfig() {
   // ローテーターの監視を終了する
-  ApiTransceiver.stopCtrl();
+  void ApiTransceiver.stopCtrl();
 
   // データの取得
   const transceiverConfig = await ApiAppConfig.getAppConfig();
@@ -125,6 +126,7 @@ async function reloadConfig() {
   form.value.ipPort = transceiverConfig.transceiver.ipPort.toString();
   form.value.autoTrackingIntervalSec = transceiverConfig.transceiver.autoTrackingIntervalSec;
   form.value.autoTrackingStartEndTime = transceiverConfig.transceiver.autoTrackingStartEndTime;
+  form.value.dopplerResumeDelaySec = transceiverConfig.transceiver.dopplerResumeDelaySec;
 }
 
 /**
@@ -153,13 +155,17 @@ async function onOk() {
   transceiverConfig.transceiver.ipPort = form.value.ipPort;
   transceiverConfig.transceiver.autoTrackingIntervalSec = form.value.autoTrackingIntervalSec;
   transceiverConfig.transceiver.autoTrackingStartEndTime = form.value.autoTrackingStartEndTime;
+  transceiverConfig.transceiver.dopplerResumeDelaySec = form.value.dopplerResumeDelaySec;
 
   // 保存
   await ApiAppConfig.storeAppConfig(transceiverConfig);
 
   // シリアル接続、無線機の状態監視開始
   // memo: OKクリック時に待たさせるのを避けるためawaitは敢えて付けてない。
-  refTravsceiverConn.value.startNewConnect();
+  // memo: env.d.tsの"*.vue"shimの都合上、ESLintの型解析ではTransceiverConnの公開プロパティの型を解決できないため無効化する
+  // （vue-tscでは正しく型付けされていることを確認済み）
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  refTravsceiverConn.value?.startNewConnect();
 
   // 親へ通知
   emits("onOk");
@@ -168,10 +174,11 @@ async function onOk() {
 /**
  * キャンセルクリック
  */
-async function cancelClick() {
+function cancelClick() {
   // シリアル接続、無線機の状態監視開始
   // memo: キャンセルクリック時に待たさせるのを避けるためawaitは敢えて付けてない。
-  refTravsceiverConn.value.startNewConnect();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  refTravsceiverConn.value?.startNewConnect();
 
   // 親へ通知
   emits("onCancel");
@@ -198,7 +205,8 @@ async function onTabChange() {
 async function validateTabContents(): Promise<boolean> {
   // 現在のタブが「機器設定」の場合
   if (currentTab.value === "device") {
-    return await refTravsceiverConn.value.validateAll();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+    return (await refTravsceiverConn.value?.validateAll()) ?? true;
   }
   // 現在のタブが「動作設定」の場合は入力チェックなし（現状はSelectBoxのみのため）
 
@@ -207,5 +215,5 @@ async function validateTabContents(): Promise<boolean> {
 </script>
 
 <style lang="scss" scoped>
-@import "./TransceiverSetting.scss";
+@use "./TransceiverSetting" as *;
 </style>

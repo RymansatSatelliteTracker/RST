@@ -1,10 +1,10 @@
-import Constant from "@/common/Constant";
-import { InvalidArgumentError } from "@/common/exceptions";
-import { AppConfigRotatorDevice } from "@/common/model/AppConfigRotatorModel";
-import AzElBtController from "@/renderer/service/rotator/AzElBtController";
-import DevAntennaController from "@/renderer/service/rotator/DevAntennaController";
-import RotatorControllerBase from "@/renderer/service/rotator/RotatorControllerBase";
-import St2Controller from "@/renderer/service/rotator/St2Controller";
+import Constant from "@/common/Constant.js";
+import { InvalidArgumentError } from "@/common/exceptions.js";
+import type { AppConfigRotatorDevice } from "@/common/model/AppConfigRotatorModel.js";
+import AzElBtController from "@/renderer/service/rotator/AzElBtController.js";
+import DevAntennaController from "@/renderer/service/rotator/DevAntennaController.js";
+import type RotatorControllerBase from "@/renderer/service/rotator/RotatorControllerBase.js";
+import St2Controller from "@/renderer/service/rotator/St2Controller.js";
 
 /**
  * RotatorController のファクトリ
@@ -13,7 +13,14 @@ export default class RotatorControllerFactory {
   /**
    * RotatorController を生成する
    */
-  public static async getController(deviceConfig: AppConfigRotatorDevice): Promise<RotatorControllerBase> {
+  public static getController(deviceConfig: AppConfigRotatorDevice): Promise<RotatorControllerBase> {
+    return Promise.resolve(this.selectController(deviceConfig));
+  }
+
+  /**
+   * 機器種別に応じたRotatorControllerを選択する
+   */
+  private static selectController(deviceConfig: AppConfigRotatorDevice): RotatorControllerBase {
     switch (deviceConfig.commnadType) {
       // Bluetooth AZ/EL Rotator
       case Constant.Rotator.CmdType.BT_AZ_EL_ROTATOR:

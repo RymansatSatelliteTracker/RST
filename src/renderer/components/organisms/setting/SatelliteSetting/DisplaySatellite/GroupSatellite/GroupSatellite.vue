@@ -15,7 +15,7 @@
             </v-col>
             <!-- グループ追加ボタン -->
             <v-col cols="2" class="d-flex flex-column align-center justify-center">
-              <v-btn @click="addItem" variant="outlined" :disabled="!canAdd" size="small">
+              <v-btn variant="outlined" :disabled="!canAdd" size="small" @click="addItem">
                 {{ I18nUtil.getMsg(I18nMsgs.GCOM_ADD) }}
               </v-btn>
             </v-col>
@@ -25,12 +25,12 @@
           <v-row>
             <v-col cols="10">
               <VirtualScrollList
+                ref="listRef"
                 style="overflow-y: auto"
                 :items="satelliteGroupsLocal"
-                :itemName="'groupName'"
-                :itemKey="'groupKey'"
+                :item-name="'groupName'"
+                :item-key="'groupKey'"
                 :height="358"
-                ref="listRef"
               ></VirtualScrollList>
               <!-- グループ名変更用ダイアログ -->
               <v-dialog v-model="isDialogShow" max-width="500">
@@ -48,16 +48,16 @@
             <!-- アイテムを上下に移動、および削除するためのボタン -->
             <v-col cols="2">
               <div class="d-flex flex-column">
-                <v-btn icon @click="listRef?.moveItemUp" :disabled="!listRef?.canMoveUp" variant="plain">
+                <v-btn icon :disabled="!listRef?.canMoveUp" variant="plain" @click="listRef?.moveItemUp">
                   <v-icon size="30" :icon="mdiArrowUpBold"></v-icon>
                 </v-btn>
-                <v-btn icon @click="listRef?.moveItemDown" :disabled="!listRef?.canMoveDown" variant="plain">
+                <v-btn icon :disabled="!listRef?.canMoveDown" variant="plain" @click="listRef?.moveItemDown">
                   <v-icon size="30" :icon="mdiArrowDownBold"></v-icon>
                 </v-btn>
-                <v-btn icon @click="editItems" :disabled="!canEdit" variant="plain">
+                <v-btn icon :disabled="!canEdit" variant="plain" @click="editItems">
                   <v-icon size="30" :icon="mdiPencil"></v-icon>
                 </v-btn>
-                <v-btn icon @click="listRef?.deleteItem" :disabled="!canDelete" variant="plain">
+                <v-btn icon :disabled="!canDelete" variant="plain" @click="listRef?.deleteItem">
                   <v-icon size="30" :icon="mdiDelete"></v-icon>
                 </v-btn>
               </div>
@@ -66,8 +66,8 @@
         </div>
       </v-card-text>
       <v-card-actions>
-        <v-btn @click="onOk" variant="outlined" size="large">{{ I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_OK) }}</v-btn>
-        <v-btn @click="onCancel" variant="outlined" size="large" class="ml-5">{{
+        <v-btn variant="outlined" size="large" @click="onOk">{{ I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_OK) }}</v-btn>
+        <v-btn variant="outlined" size="large" class="ml-5" @click="onCancel">{{
           I18nUtil.getMsg(I18nMsgs.GCOM_ACTION_CANCEL)
         }}</v-btn>
       </v-card-actions>
@@ -75,14 +75,15 @@
   </v-dialog>
 </template>
 <script setup lang="ts">
-import I18nMsgs from "@/common/I18nMsgs";
-import { AppConfigSatelliteGroupForSatSetting } from "@/common/model/AppConfigSatelliteSettingModel";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import { AppConfigSatelliteGroupForSatSetting } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
 import VirtualScrollList from "@/renderer/components/molecules/VirtualScrollList/VirtualScrollList.vue";
 import { mdiArrowDownBold, mdiArrowUpBold, mdiDelete, mdiPencil } from "@mdi/js";
-import { computed, onMounted, ref, toRaw } from "vue";
+import { computed, onMounted, ref, toRaw, useTemplateRef } from "vue";
+import type { ComponentExposed } from "vue-component-type-helpers";
 
 // ダイアログ表示用
 const isShow = defineModel<boolean>("isShow", {
@@ -91,11 +92,12 @@ const isShow = defineModel<boolean>("isShow", {
 // グループ名編集用ダイアログ用
 const isDialogShow = ref<boolean>(false);
 // 衛星グループリスト
-const satelliteGroups = defineModel<AppConfigSatelliteGroupForSatSetting[]>("satelliteGroups", { default: [] });
+const satelliteGroups = defineModel<AppConfigSatelliteGroupForSatSetting[]>("satelliteGroups", { default: () => [] });
 // 衛星グループリスト(画面内)
 const satelliteGroupsLocal = ref<AppConfigSatelliteGroupForSatSetting[]>([]);
 // リストの関数を使用するためのref
-const listRef = ref<InstanceType<typeof VirtualScrollList> | null>(null);
+const listRef =
+  useTemplateRef<ComponentExposed<typeof VirtualScrollList<AppConfigSatelliteGroupForSatSetting>>>("listRef");
 
 // 入力するグループ名
 const inputGroupName = ref<string>("");
@@ -106,7 +108,9 @@ const emits = defineEmits<{
 }>();
 
 onMounted(() => {
-  satelliteGroupsLocal.value = JSON.parse(JSON.stringify(toRaw(satelliteGroups.value)));
+  satelliteGroupsLocal.value = JSON.parse(
+    JSON.stringify(toRaw(satelliteGroups.value))
+  ) as AppConfigSatelliteGroupForSatSetting[];
 });
 
 /**
@@ -125,6 +129,9 @@ function addItem() {
  * アイテムを編集
  */
 function editItems() {
+  // memo: env.d.tsの"*.vue"shimの都合上、ESLintの型解析ではVirtualScrollListの公開プロパティの型を解決できないため無効化する
+  // （vue-tscでは正しく型付けされていることを確認済み）
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   if (listRef.value?.selectedItems[0]) {
     isDialogShow.value = true;
   }
@@ -138,17 +145,22 @@ const canAdd = computed(() => {
 });
 
 // 衛星リストから選択したアイテムのインデックス
+// memo: env.d.tsの"*.vue"shimの都合上、ESLintの型解析ではVirtualScrollListの公開プロパティの型を解決できないため無効化する
+// （vue-tscでは正しく型付けされていることを確認済み）
 const selectedItemIndex = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
   return listRef.value?.selectedItemIndexes[0] ?? -1;
 });
 
 // 編集可能かどうか（条件はdeleteの共通の条件と同じ）
 const canEdit = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return listRef.value?.canDelete;
 });
 
 // 削除可能かどうか（この画面では1件未満にならないようにする）
 const canDelete = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return listRef.value?.canDelete && satelliteGroupsLocal.value.length > 1;
 });
 
@@ -188,23 +200,28 @@ async function onOk() {
   }
 
   // 設定
-  setSettingModel.satelliteGroupsForSatSetting = JSON.parse(JSON.stringify(toRaw(satelliteGroupsLocal.value)));
+  setSettingModel.satelliteGroupsForSatSetting = JSON.parse(
+    JSON.stringify(toRaw(satelliteGroupsLocal.value))
+  ) as AppConfigSatelliteGroupForSatSetting[];
 
   // 保存
-  ApiAppConfig.storeAppSatSettingConfig(setSettingModel);
+  void ApiAppConfig.storeAppSatSettingConfig(setSettingModel);
 
   // 親に通知(ダイアログクローズ)
-  emits("onOk", JSON.parse(JSON.stringify(toRaw(satelliteGroupsLocal.value))));
+  emits(
+    "onOk",
+    JSON.parse(JSON.stringify(toRaw(satelliteGroupsLocal.value))) as AppConfigSatelliteGroupForSatSetting[]
+  );
 }
 
 /**
  * ダイアログを閉じるボタンで閉じる
  */
-async function onCancel() {
+function onCancel() {
   // 親に通知(ダイアログクローズ)
   emits("onCancel");
 }
 </script>
 <style lang="scss" scoped>
-@import "./GroupSatellite.scss";
+@use "./GroupSatellite" as *;
 </style>

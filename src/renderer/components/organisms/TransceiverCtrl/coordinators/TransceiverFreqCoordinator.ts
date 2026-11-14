@@ -1,0 +1,171 @@
+import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
+import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc.js";
+import TransceiverUtil from "@/common/util/TransceiverUtil.js";
+import type { Ref } from "vue";
+
+/**
+ * 補正値なしのRx・Tx基準周波数
+ */
+export interface PlainBaseFreqs {
+  plainRxBaseFreq: number;
+  plainTxBaseFreq: number;
+}
+
+/**
+ * Coordinatorが操作する周波数関連のリアクティブ状態
+ */
+export interface FreqCoordinatorState {
+  /** アップリンク周波数 */
+  txFrequency: Ref<string>;
+  /** ダウンリンク周波数 */
+  rxFrequency: Ref<string>;
+  /** 補正値反映済みのTx基準周波数 */
+  txBaseFreq: Ref<number>;
+  /** 補正値反映済みのRx基準周波数 */
+  rxBaseFreq: Ref<number>;
+}
+
+/**
+ * 周波数の初期化・送信・ドップラー補正更新を扱うクラス
+ */
+export default class TransceiverFreqCoordinator {
+  private dopplerCalc: TransceiverDopplerCalc;
+
+  public constructor(
+    private state: FreqCoordinatorState,
+    private currentDate: Ref<Date>
+  ) {
+    this.dopplerCalc = new TransceiverDopplerCalc();
+  }
+
+  /**
+   * 無線機周波数を初期化する
+   */
+  public async initFreq(): Promise<void> {
+    const config = await ApiAppConfig.getAppConfig();
+    this.state.txFrequency.value = config.transceiver.txFrequency;
+    this.state.rxFrequency.value = config.transceiver.rxFrequency;
+  }
+
+  /**
+   * アップリンク周波数を無線機へ送信する
+   * @param newTxFrequency 送信するアップリンク周波数
+   * @param isForce 強制送信（無線機側の値が同一であっても強制的に送信する場合はtrueを指定する）
+   */
+  public async sendTxFreq(newTxFrequency: number, isForce: boolean = false): Promise<void> {
+    await ApiTransceiver.setTransceiverFrequency(
+      {
+        uplinkHz: newTxFrequency,
+        uplinkMode: "",
+      },
+      isForce
+    );
+  }
+
+  /**
+   * ダウンリンク周波数を無線機へ送信する
+   * @param newRxFreq 送信するダウンリンク周波数
+   * @param isForce 強制送信（無線機側の値が同一であっても強制的に送信する場合はtrueを指定する）
+   */
+  public async sendRxFreq(newRxFreq: number, isForce: boolean = false): Promise<void> {
+    await ApiTransceiver.setTransceiverFrequency(
+      {
+        downlinkHz: newRxFreq,
+        downlinkMode: "",
+      },
+      isForce
+    );
+  }
+
+  /**
+   * アップリンク周波数をドップラーシフト補正して更新する
+   */
+  public async updateTxFreqByInvertingHeterodyne(intervalMs: number): Promise<void> {
+    const newTxFreq = await this.dopplerCalc.calcNewTxFreqWithDoppler(
+      this.currentDate.value,
+      this.state.txBaseFreq.value,
+      intervalMs
+    );
+    if (newTxFreq !== null) {
+      this.state.txFrequency.value = newTxFreq;
+    }
+  }
+
+  /**
+   * ダウンリンク周波数をドップラーシフト補正して更新する
+   * @param intervalMs 計算に使用する時間間隔（ミリ秒）
+   * @param rxBaseFreq Rx基準周波数（省略時は補正値反映済みのRx基準周波数。ビーコン中はビーコンのRx基準周波数を指定する）
+   */
+  public async updateRxFreqWithDopplerShift(
+    intervalMs: number,
+    rxBaseFreq: number = this.state.rxBaseFreq.value
+  ): Promise<void> {
+    const newRxFreq = await this.dopplerCalc.calcNewRxFreqWithDoppler(this.currentDate.value, rxBaseFreq, intervalMs);
+    if (newRxFreq !== null) {
+      this.state.rxFrequency.value = newRxFreq;
+    }
+  }
+
+  /**
+   * 受信固定モード：固定Rxを維持するよう、アップリンク周波数をドップラーシフト補正して更新する
+   * @param plainBaseFreqs 補正値なしのRx・Tx基準周波数
+   * @param rxAdjustFreq Rx周波数補正値
+   * @param txAdjustFreq Tx周波数補正値
+   * @param intervalMs 計算に使用する時間間隔（ミリ秒）
+   */
+  public async updateTxFreqKeepingRxFixed(
+    plainBaseFreqs: PlainBaseFreqs,
+    rxAdjustFreq: number,
+    txAdjustFreq: number,
+    intervalMs: number
+  ): Promise<void> {
+    const newTxFreq = await this.dopplerCalc.calcTxFreqKeepingRxFixed(
+      plainBaseFreqs.plainRxBaseFreq,
+      plainBaseFreqs.plainTxBaseFreq,
+      rxAdjustFreq,
+      txAdjustFreq,
+      TransceiverUtil.parseNumber(this.state.rxFrequency.value),
+      this.currentDate.value,
+      intervalMs
+    );
+    if (newTxFreq !== null) {
+      this.state.txFrequency.value = newTxFreq;
+    }
+  }
+
+  /**
+   * 送信固定モード：固定Txを維持するよう、ダウンリンク周波数をドップラーシフト補正して更新する
+   * @param plainBaseFreqs 補正値なしのRx・Tx基準周波数
+   * @param rxAdjustFreq Rx周波数補正値
+   * @param txAdjustFreq Tx周波数補正値
+   * @param intervalMs 計算に使用する時間間隔（ミリ秒）
+   */
+  public async updateRxFreqKeepingTxFixed(
+    plainBaseFreqs: PlainBaseFreqs,
+    rxAdjustFreq: number,
+    txAdjustFreq: number,
+    intervalMs: number
+  ): Promise<void> {
+    const newRxFreq = await this.dopplerCalc.calcRxFreqKeepingTxFixed(
+      plainBaseFreqs.plainRxBaseFreq,
+      plainBaseFreqs.plainTxBaseFreq,
+      rxAdjustFreq,
+      txAdjustFreq,
+      TransceiverUtil.parseNumber(this.state.txFrequency.value),
+      this.currentDate.value,
+      intervalMs
+    );
+    if (newRxFreq !== null) {
+      this.state.rxFrequency.value = newRxFreq;
+    }
+  }
+
+  /**
+   * 人工衛星がドップラーシフト有効範囲内にいるか判定する
+   */
+  public async isWithinDopplerShiftActiveRange(appConfig: AppConfigModel): Promise<boolean> {
+    return await this.dopplerCalc.isWithinDopplerShiftActiveRange(appConfig, this.currentDate.value);
+  }
+}

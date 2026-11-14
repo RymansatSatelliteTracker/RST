@@ -2,7 +2,7 @@ import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import { createApp } from "vue";
 
-import router from "@/renderer/router/router";
+import router from "@/renderer/router/router.js";
 import App from "./AppRotatorSim.vue";
 
 import { createVuetify } from "vuetify";

@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import useRotatorDevices from "./useRotatorDevices";
+import useRotatorDevices from "./useRotatorDevices.js";
 
 const selectedValue = defineModel<string>("selectedValue", { required: true });
 const makerId = defineModel<string>("makerId", { required: true });

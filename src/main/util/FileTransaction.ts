@@ -1,10 +1,10 @@
-import { AppConfigModel } from "@/common/model/AppConfigModel";
-import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
-import { FileType } from "@/common/types/types";
-import { AppConfigUtil } from "@/main/util/AppConfigUtil";
-import AppMainLogger from "@/main/util/AppMainLogger";
-import FileUtil from "@/main/util/FileUtil";
-import TransactionRegistry from "@/main/util/TransactionRegistry";
+import type { AppConfigModel } from "@/common/model/AppConfigModel.js";
+import type { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import type { FileType } from "@/common/types/types.js";
+import { AppConfigUtil } from "@/main/util/AppConfigUtil.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
+import FileUtil from "@/main/util/FileUtil.js";
+import TransactionRegistry from "@/main/util/TransactionRegistry.js";
 
 /**
  * ファイルをトランザクション管理するクラス
@@ -52,10 +52,14 @@ export class FileTransaction {
    * ファイルトランザクションを更新する
    * 処理が失敗した場合は設定が反映されていない（ロールバック）ことを保証する
    */
-  public update(content: any): void {
+  public update(content: AppConfigModel | AppConfigSatSettingModel): void {
     AppMainLogger.info(`ファイルトランザクション更新: ${this.fileType}, transactionId=${this.transactionId}`);
     const tempFilePath = this.getTempFilePath(this.fileType, this.transactionId);
-    const text = this.fileHandlers[this.fileType].stringify(content);
+    // memo: contentの実体はfileTypeに対応したものが呼び出し元から渡される前提のため、ここでキャストする
+    const stringify = this.fileHandlers[this.fileType].stringify as (
+      content: AppConfigModel | AppConfigSatSettingModel
+    ) => string;
+    const text = stringify(content);
     if (!FileUtil.exists(tempFilePath)) {
       // 不整合が起きている可能性があるので登録解除はしておく
       TransactionRegistry.unregister(this.fileType);

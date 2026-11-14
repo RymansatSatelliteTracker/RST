@@ -11,7 +11,13 @@
 
         <!-- アイテムを移動するためのボタン -->
         <v-col cols="1" class="d-flex flex-column align-center justify-center">
-          <v-btn @click="moveSelectedToRight" variant="plain" size="x-large" :disabled="!canMoveRight">
+          <v-btn
+            variant="plain"
+            size="x-large"
+            :disabled="!canMoveRight"
+            data-testid="move-to-group-btn"
+            @click="moveSelectedToRight"
+          >
             <v-icon size="50" :icon="mdiArrowRightBold"></v-icon>
           </v-btn>
         </v-col>
@@ -20,8 +26,8 @@
         <v-col cols="6">
           <SelectControlledItemList
             v-show="satelliteGroups"
-            v-model:selectedSatellites="rightItems"
-            v-model:satelliteGroups="satelliteGroups"
+            v-model:selected-satellites="rightItems"
+            v-model:satellite-groups="satelliteGroups"
           ></SelectControlledItemList>
         </v-col>
       </v-row>
@@ -29,29 +35,33 @@
   </div>
 </template>
 <script setup lang="ts">
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import { AppConfigSatelliteGroupForSatSetting } from "@/common/model/AppConfigSatelliteSettingModel";
-import { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import type { AppConfigSatelliteGroupForSatSetting } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import type { SatelliteIdentiferType } from "@/common/types/satelliteSettingTypes.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import FilterableItemList from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/FilterableItemList/FilterableItemList.vue";
 import SelectControlledItemList from "@/renderer/components/organisms/setting/SatelliteSetting/DisplaySatellite/SelectControlledItemList/SelectControlledItemList.vue";
-import emitter from "@/renderer/util/EventBus";
+import emitter from "@/renderer/util/EventBus.js";
 import { mdiArrowRightBold } from "@mdi/js";
-import { computed, ref } from "vue";
+import { computed, ref, useTemplateRef } from "vue";
+import type { ComponentExposed } from "vue-component-type-helpers";
 
 // 衛星グループリスト
-const satelliteGroups = defineModel<AppConfigSatelliteGroupForSatSetting[]>("satelliteGroups", { default: [] });
+const satelliteGroups = defineModel<AppConfigSatelliteGroupForSatSetting[]>("satelliteGroups", { default: () => [] });
 
 // 右側のリストに表示しているアイテム
 const rightItems = ref<SatelliteIdentiferType[]>([]);
 // リストの関数を使用するためのref
-const filtListRef = ref<InstanceType<typeof FilterableItemList> | null>(null);
+const filtListRef = useTemplateRef<ComponentExposed<typeof FilterableItemList>>("filtListRef");
 
 /**
  * 選択したアイテムが右に移動可能かどうかを判断
  */
 const canMoveRight = computed(() => {
+  // memo: env.d.tsの"*.vue"shimの都合上、ESLintの型解析ではFilterableItemListの公開プロパティの型を解決できないため無効化する
+  // （vue-tscでは正しく型付けされていることを確認済み）
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   return filtListRef.value?.selectedItems.length !== 0;
 });
 
@@ -61,6 +71,9 @@ const canMoveRight = computed(() => {
 function moveSelectedToRight() {
   const toBeRegistedItems: SatelliteIdentiferType[] = [];
   const duplicateSats: string[] = [];
+  // memo: env.d.tsの"*.vue"シムの都合上、ESLintの型解析ではFilterableItemListの公開プロパティの型を解決できないため無効化する
+  // （vue-tscでは正しく型付けされていることを確認済み）
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
   filtListRef.value?.selectedItems.forEach((leftItem: SatelliteIdentiferType) => {
     // idが一致する場合は移動しない
     if (rightItems.value.some((rightItem) => rightItem.satelliteId === leftItem.satelliteId)) {
@@ -96,6 +109,9 @@ function moveSelectedToRight() {
     rightItems.value.push(item);
   });
 
+  // memo: env.d.tsの"*.vue"シムの都合上、ESLintの型解析ではFilterableItemListの公開プロパティの型を解決できないため無効化する
+  // （vue-tscでは正しく型付けされていることを確認済み）
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   filtListRef.value?.clearSelect();
 }
 </script>

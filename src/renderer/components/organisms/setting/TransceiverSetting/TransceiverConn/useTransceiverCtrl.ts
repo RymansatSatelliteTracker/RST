@@ -1,10 +1,10 @@
-import CommonUtil from "@/common/CommonUtil";
-import Constant from "@/common/Constant";
-import { AppConfigTransceiver } from "@/common/model/AppConfigModel";
-import ApiSirial from "@/renderer/api/ApiSirial";
-import ApiTransceiver from "@/renderer/api/ApiTransceiver";
-import TransceiverConnForm from "@/renderer/components/organisms/setting/TransceiverSetting/TransceiverConn/TransceiverConnForm";
-import { Ref } from "vue";
+import CommonUtil from "@/common/CommonUtil.js";
+import Constant from "@/common/Constant.js";
+import { AppConfigTransceiver } from "@/common/model/AppConfigModel.js";
+import ApiSirial from "@/renderer/api/ApiSirial.js";
+import ApiTransceiver from "@/renderer/api/ApiTransceiver.js";
+import type TransceiverConnForm from "@/renderer/components/organisms/setting/TransceiverSetting/TransceiverConn/TransceiverConnForm.js";
+import type { Ref } from "vue";
 
 /**
  * 無線機制御関係のフック

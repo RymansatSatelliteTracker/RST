@@ -1,6 +1,7 @@
-import { RotatorAzEl } from "@/renderer/types/satellite-type";
-import { CenterPosition } from "@/renderer/util/CanvasUtil";
-import { Ref, watch } from "vue";
+import type { RotatorAzEl } from "@/renderer/types/satellite-type.js";
+import type { CenterPosition } from "@/renderer/util/CanvasUtil.js";
+import type { Ref } from "vue";
+import { watch } from "vue";
 
 /**
  * 現在のアンテナ位置をレーダ部に描画する

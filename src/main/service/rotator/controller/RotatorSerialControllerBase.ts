@@ -1,9 +1,9 @@
-import I18nMsgs from "@/common/I18nMsgs";
-import { AppConfigRotator } from "@/common/model/AppConfigModel";
-import { ApiResponse } from "@/common/types/types";
-import SerialComm from "@/main/common/SerialComm";
-import RotatorControllerBase from "@/main/service/rotator/controller/RotatorControllerBase";
-import RotatorSerialHelper from "@/main/service/rotator/RotatorSerialHelper";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import type { AppConfigRotator } from "@/common/model/AppConfigModel.js";
+import { ApiResponse } from "@/common/types/types.js";
+import SerialComm from "@/main/common/SerialComm.js";
+import RotatorControllerBase from "@/main/service/rotator/controller/RotatorControllerBase.js";
+import RotatorSerialHelper from "@/main/service/rotator/RotatorSerialHelper.js";
 
 /**
  * ローテータ／シリアル接続系コントローラの親クラス
@@ -30,8 +30,8 @@ export default abstract class RotatorSerialControllerBase extends RotatorControl
       this.rotatorConfig.port,
       parseInt(this.rotatorConfig.baudrateBps),
       true,
-      this.onRecv,
-      this.onSerialClose
+      this.onRecv.bind(this),
+      this.onSerialClose.bind(this)
     );
     return await this.serial.open();
   }
@@ -39,7 +39,7 @@ export default abstract class RotatorSerialControllerBase extends RotatorControl
   /**
    * データ受信
    */
-  protected onRecv(data: Buffer): void {}
+  protected onRecv(_data: Buffer): void {}
 
   /**
    * シリアル切断イベント

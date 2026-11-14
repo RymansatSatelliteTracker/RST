@@ -1,19 +1,20 @@
-// mainプロセスでのimportでaliasを適用するために以下の module-alias を使用
-import "module-alias/register";
-// このコメント行は、 module-alias を先頭のままとするためのものです。（import整形で順序を変更させない）
-import Constant from "@/common/Constant";
-import { MessageModel } from "@/common/model/MessageModel";
-import EnvUtil from "@/common/util/EnvUtil";
-import { initializeIpcEvents, releaseIpcEvents } from "@/main/initializeIpcEvent";
-import { makeElectronMenu } from "@/main/menu";
-import RotatorService from "@/main/service/RotatorService";
-import SerialTrialService from "@/main/service/SerialTrialService";
-import StartupService from "@/main/service/StartupService";
-import TransceiverService from "@/main/service/TransceiverSerivice";
-import AppMainLogger from "@/main/util/AppMainLogger";
-import AppWindowUtil from "@/main/util/AppWindowUtil";
-import { app, BrowserWindow, Menu } from "electron";
-import electronReload from "electron-reload";
+// E2Eテスト用のユーザデータディレクトリ切替（他のモジュールより先に読み込むため、最初に import する）
+// MEMO: 保存時の import の整理（source.organizeImports）で並べ替えられないよう、直後に空行を入れて別グループにしている。
+//       この import と次の import の間の空行は削除しないこと。
+import "@/main/util/E2eUserDataPath.js";
+
+import Constant from "@/common/Constant.js";
+import { MessageModel } from "@/common/model/MessageModel.js";
+import EnvUtil from "@/common/util/EnvUtil.js";
+import { initializeIpcEvents, releaseIpcEvents } from "@/main/initializeIpcEvent.js";
+import { makeElectronMenu } from "@/main/menu.js";
+import RotatorService from "@/main/service/RotatorService.js";
+import SerialTrialService from "@/main/service/SerialTrialService.js";
+import StartupService from "@/main/service/StartupService.js";
+import TransceiverService from "@/main/service/TransceiverSerivice.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
+import AppWindowUtil from "@/main/util/AppWindowUtil.js";
+import { BrowserWindow, Menu, app } from "electron";
 import * as path from "path";
 
 // Logger初期化
@@ -22,7 +23,7 @@ AppMainLogger.init();
 // メインウィンドウ
 let mainWindow: BrowserWindow;
 
-(async () => {
+void (async () => {
   // 既に起動中のインスタンスがある場合は終了する
   const gotTheLock = app.requestSingleInstanceLock();
   if (!gotTheLock) {
@@ -39,20 +40,14 @@ let mainWindow: BrowserWindow;
 
   // アプリ関係の初期化処理
   const serive = new StartupService();
-  // アプリ初期化時にTLE取得に失敗する場合があるためtry-catchで囲む
   let errorMessage: string | undefined;
-  try {
-    await serive.initApp();
-  } catch (e) {
-    AppMainLogger.error("StartupService init error", e instanceof Error ? e.stack ?? e.message : String(e));
-    errorMessage = e instanceof Error ? e.message : String(e);
-  }
 
-  // メニュー設定
-  // memo: makeElectronMenu()内でapp_configを参照しているため、
-  //       serive.initApp()コール後に実行する必要がある
-  const appMenu = makeElectronMenu();
-  Menu.setApplicationMenu(appMenu);
+  // 起動高速化のため、初期化は非同期で継続し、レンダラの起動を先行させる
+  // memo: initApp()内のawait前処理（AppConfig初期化など）は同期で実行される
+  const startupPromise = serive.initApp().catch((e: unknown) => {
+    AppMainLogger.error("StartupService init error", e instanceof Error ? (e.stack ?? e.message) : String(e));
+    errorMessage = e instanceof Error ? e.message : String(e);
+  });
 
   // ウィンドウ生成
   mainWindow = createWindow();
@@ -70,12 +65,30 @@ let mainWindow: BrowserWindow;
     contextMenu.popup();
   });
 
+  // 起動時の重い初期化が完了するまで待機する
+  await startupPromise;
+
+  // メニュー設定
+  // memo: makeElectronMenu()内でapp_configを参照しているため、
+  //       serive.initApp()完了後に実行する必要がある
+  const appMenu = makeElectronMenu();
+  Menu.setApplicationMenu(appMenu);
+
   // アプリ初期化時に例外が発生した場合は、mainWindowが読み込み終わってからエラーメッセージを表示する
-  mainWindow.once("ready-to-show", () => {
-    if (errorMessage) {
-      fireIpcEvent("onNoticeMessage", new MessageModel(Constant.GlobalEvent.NOTICE_ERR, errorMessage));
+  if (errorMessage) {
+    const errorText = errorMessage;
+
+    // mainWindowがまだ読み込み中の場合は、読み込み完了後にエラーメッセージを表示する
+    if (mainWindow.webContents.isLoadingMainFrame()) {
+      mainWindow.webContents.once("did-finish-load", () => {
+        fireIpcEvent("onNoticeMessage", new MessageModel(Constant.GlobalEvent.NOTICE_ERR, errorText));
+      });
+      return;
     }
-  });
+
+    // mainWindowが読み込み終わっている場合は、即座にエラーメッセージを表示する
+    fireIpcEvent("onNoticeMessage", new MessageModel(Constant.GlobalEvent.NOTICE_ERR, errorText));
+  }
 })();
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -136,7 +149,7 @@ function createWindow() {
       contextIsolation: true,
       // 一旦、サンドボックスは無効にしておく（preloadでapiHandler.tsをインポートしたいので）
       sandbox: false,
-      preload: path.join(__dirname, "./preload.js"),
+      preload: path.join(import.meta.dirname, "./preload.js"),
     },
   });
 
@@ -147,25 +160,21 @@ function createWindow() {
 
   // 開発環境の場合
   if (EnvUtil.isDev()) {
-    // メインプロセス側のホットリロード設定
-    // memo: メイン側のソース保存時に再起動させたくない場合は、ここをコメントアウトしてください
-    // enableHotReload();
-
     // ウィンドウ内のコンテンツの設定（レンダラプロセスのURLを指定）
-    mainWindow.loadURL("http://localhost:5173");
+    void mainWindow.loadURL("http://localhost:5173");
 
     // DevTool表示
     // memo: 以下を行うと"Request Autofill.enable failed"が表示されるが、
     //       開発時のみであることと、実害なしのようなのでエラーは無視して良い
     mainWindow.webContents.openDevTools();
   } else {
-    mainWindow.loadFile(path.join(__dirname, "../../index.html"));
+    void mainWindow.loadFile(path.join(import.meta.dirname, "../../index.html"));
   }
 
   // アプリ終了時
-  mainWindow.on("close", async (event) => {
+  mainWindow.on("close", () => {
     // アプリ終了処理
-    await onAppClose();
+    void onAppClose();
   });
 
   return mainWindow;
@@ -195,25 +204,11 @@ async function onAppClose() {
 }
 
 /**
- * メインプロセスのホットリロードを有効化する
- */
-function enableHotReload() {
-  const electronPath = path.resolve(
-    __dirname,
-    "../../../node_modules/electron/dist/electron" + (process.platform === "win32" ? ".exe" : "")
-  );
-  electronReload(__dirname, {
-    electron: electronPath,
-    forceHardReset: true,
-  });
-}
-
-/**
  * コンテキストメニューの内容を生成する
  * @param params
  * @returns
  */
-function buildMenuTemplate(params: Electron.ContextMenuParams): Electron.MenuItemConstructorOptions[] {
+function buildMenuTemplate(_params: Electron.ContextMenuParams): Electron.MenuItemConstructorOptions[] {
   const menuTemplate: Electron.MenuItemConstructorOptions[] = [
     {
       label: "Cut",
@@ -244,7 +239,7 @@ function buildMenuTemplate(params: Electron.ContextMenuParams): Electron.MenuIte
  * IPCイベントを発火させる
  * @param channel メインプロセス内のイベント伝播用のチャネル名
  */
-export function fireIpcEvent(channel: string, ...args: any): void {
+export function fireIpcEvent(channel: string, ...args: unknown[]): void {
   mainWindow.webContents.send(channel, args);
 }
 

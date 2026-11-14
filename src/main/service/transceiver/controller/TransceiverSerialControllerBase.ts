@@ -1,8 +1,8 @@
-import I18nMsgs from "@/common/I18nMsgs";
-import { AppConfigTransceiver } from "@/common/model/AppConfigModel";
-import { ApiResponse } from "@/common/types/types";
-import SerialComm from "@/main/common/SerialComm";
-import TransceiverControllerBase from "@/main/service/transceiver/controller/TransceiverControllerBase";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import type { AppConfigTransceiver } from "@/common/model/AppConfigModel.js";
+import { ApiResponse } from "@/common/types/types.js";
+import SerialComm from "@/main/common/SerialComm.js";
+import TransceiverControllerBase from "@/main/service/transceiver/controller/TransceiverControllerBase.js";
 
 /**
  * 無線機コントローラの親クラス
@@ -29,7 +29,7 @@ export default abstract class TransceiverSerialControllerBase extends Transceive
       this.transceiverConfig.port,
       parseInt(this.transceiverConfig.baudrateBps),
       false,
-      this.onRecv
+      this.onRecv.bind(this)
     );
     return await this.serial.open();
   }
@@ -37,8 +37,8 @@ export default abstract class TransceiverSerialControllerBase extends Transceive
   /**
    * データ受信
    */
-  protected onRecv(data: Buffer): Promise<void> {
-    // console.log(`受信データ: ${data.toString()}`);
+  protected onRecv(_data: Buffer): Promise<void> {
+    // console.log(`受信データ: ${_data.toString()}`);
     return Promise.resolve();
   }
 

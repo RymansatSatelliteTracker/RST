@@ -1,19 +1,19 @@
-import Constant from "@/common/Constant";
-import { BeaconType, DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
-import ApiActiveSat from "@/renderer/api/ApiActiveSat";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite";
-import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
-import GroundStationServiceFactory from "@/renderer/common/util/GroundStationServiceFactory";
-import OrbitLineServiceFactory from "@/renderer/common/util/OrbitLineServiceFactory";
-import SatelliteServiceFactory from "@/renderer/common/util/SatelliteServiceFactory";
-import FrequencyTrackService from "@/renderer/service/FrequencyTrackService";
-import GroundStationService from "@/renderer/service/GroundStationService";
-import OrbitLineService from "@/renderer/service/OrbitLineService";
-import OverlapPassesService from "@/renderer/service/OverlapPassesService";
-import SatelliteService from "@/renderer/service/SatelliteService";
-import type { GroundStation } from "@/renderer/types/location-type";
-import { PassesCache } from "@/renderer/types/pass-type";
+import Constant from "@/common/Constant.js";
+import type { BeaconType, DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
+import ApiActiveSat from "@/renderer/api/ApiActiveSat.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ApiAppConfigSatellite from "@/renderer/api/ApiAppConfigSatellite.js";
+import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper.js";
+import GroundStationServiceFactory from "@/renderer/common/util/GroundStationServiceFactory.js";
+import OrbitLineServiceFactory from "@/renderer/common/util/OrbitLineServiceFactory.js";
+import SatelliteServiceFactory from "@/renderer/common/util/SatelliteServiceFactory.js";
+import FrequencyTrackService from "@/renderer/service/FrequencyTrackService.js";
+import type GroundStationService from "@/renderer/service/GroundStationService.js";
+import type OrbitLineService from "@/renderer/service/OrbitLineService.js";
+import type OverlapPassesService from "@/renderer/service/OverlapPassesService.js";
+import type SatelliteService from "@/renderer/service/SatelliteService.js";
+import type { GroundStation } from "@/renderer/types/location-type.js";
+import type { PassesCache } from "@/renderer/types/pass-type.js";
 
 /**
  * アクティブ衛星関係のハブクラス
@@ -33,10 +33,13 @@ export default class ActiveSatServiceHub {
   private groundStation2: GroundStation | null = null;
 
   // 衛星グループ、アクティブ衛星が変更された場合のコールバックリスト
-  private activeSatChangeCallbacks: Function[] = [];
+  private activeSatChangeCallbacks: (() => void | Promise<void>)[] = [];
 
   // 基準時刻が変更された場合のコールバックリスト
-  private baseDateChangeCallbacks: Function[] = [];
+  private baseDateChangeCallbacks: (() => void | Promise<void>)[] = [];
+
+  // アクティブ衛星情報の更新処理を直列化するためのPromiseチェーン
+  private changeSatGrpQueue: Promise<void> = Promise.resolve();
 
   // アクティブ衛星のSatelliteService
   private satService: SatelliteService | null = null;
@@ -63,6 +66,8 @@ export default class ActiveSatServiceHub {
   private satelliteMode: boolean = false;
   // アクティブ衛星のトラッキングモード
   private satTrackMode: string | null = null;
+  // アクティブ衛星の固定モード
+  private dopplerShiftMode: string = Constant.Transceiver.DopplerShiftMode.FIXED_SAT;
   // アクティブ衛星のTone周波数
   private toneHz: number | null = null;
 
@@ -82,13 +87,15 @@ export default class ActiveSatServiceHub {
    * アクティブ衛星情報の取得を開始する
    */
   public async start() {
+    // 表示中の衛星グループが変更された場合のコールバックを設定
+    // memo: 初回取得中に他コンポーネントがアクティブ衛星を変更した場合に通知を取りこぼさないよう、
+    //       初回取得より前に登録する
+    ApiActiveSat.onChangeActiveSatelliteGroup(() => {
+      void this.onChangeSatGrp();
+    });
+
     // 最新情報を取得
     await this.onChangeSatGrp();
-
-    // 表示中の衛星グループが変更された場合のコールバックを設定
-    await ApiActiveSat.onChangeActiveSatelliteGroup(async () => {
-      await this.onChangeSatGrp();
-    });
   }
 
   /**
@@ -115,28 +122,40 @@ export default class ActiveSatServiceHub {
 
     // コールバックを実行
     this.activeSatChangeCallbacks.forEach((callback) => {
-      callback();
+      void callback();
     });
   }
 
   /**
    * 衛星グループ、アクティブ衛星が変更された場合のコールバックを追加する
    */
-  public addOnChangeActiveSat(callback: Function) {
+  public addOnChangeActiveSat(callback: () => void | Promise<void>) {
     this.activeSatChangeCallbacks.push(callback);
   }
 
   /**
    * 基準時刻が変更された場合のコールバックを追加する
    */
-  public addOnChangeBaseDate(callback: Function) {
+  public addOnChangeBaseDate(callback: () => void | Promise<void>) {
     this.baseDateChangeCallbacks.push(callback);
   }
 
   /**
    * 表示中の衛星グループが変更された場合のイベントハンドラ
+   * memo: 並行実行すると古い呼び出しの結果が後から上書きするため、直列に実行する。
+   *       各実行は開始時点のAppConfigを読み込むため、最後に積まれた実行の内容が最終状態になる。
    */
-  private async onChangeSatGrp() {
+  private onChangeSatGrp(): Promise<void> {
+    const next = this.changeSatGrpQueue.then(() => this.refreshActiveSat());
+    // 例外が発生してもチェーンが途切れないようにする（呼び出し元には例外を返す）
+    this.changeSatGrpQueue = next.catch(() => {});
+    return next;
+  }
+
+  /**
+   * 現在のアクティブ衛星で各サービスを生成しなおし、コールバックを実行する
+   */
+  private async refreshActiveSat() {
     // 現在のアクティブ衛星でSatelliteServiceを生成しなおす
     this.satService = await SatelliteServiceFactory.createByActiveSat();
     if (!this.satService) {
@@ -188,7 +207,7 @@ export default class ActiveSatServiceHub {
 
     // コールバックを実行
     this.activeSatChangeCallbacks.forEach((callback) => {
-      callback();
+      void callback();
     });
   }
 
@@ -198,7 +217,7 @@ export default class ActiveSatServiceHub {
   private async getSatIndex() {
     // 衛星グループを取得
     const satGrp = await ApiActiveSat.getActiveSatelliteGroup();
-    if (!satGrp || !satGrp.mainSattelliteTle) {
+    if (!satGrp || !satGrp.mainSatelliteOmm) {
       return 0;
     }
 
@@ -219,7 +238,7 @@ export default class ActiveSatServiceHub {
   private async getTransceiverSetting(): Promise<void> {
     // 衛星グループを取得
     const satGrp = await ApiActiveSat.getActiveSatelliteGroup();
-    if (!satGrp || !satGrp.mainSattelliteTle) {
+    if (!satGrp || !satGrp.mainSatelliteOmm) {
       return;
     }
 
@@ -292,6 +311,16 @@ export default class ActiveSatServiceHub {
 
     // アクティブ衛星のトラッキングモード
     this.satTrackMode = appConfigSatellite.enableSatelliteMode ? appConfigSatellite.satelliteMode : null;
+
+    // アクティブ衛星の固定モード（未設定・不正値は衛星固定）
+    const dopplerShiftModes: string[] = [
+      Constant.Transceiver.DopplerShiftMode.FIXED_SAT,
+      Constant.Transceiver.DopplerShiftMode.FIXED_RX,
+      Constant.Transceiver.DopplerShiftMode.FIXED_TX,
+    ];
+    this.dopplerShiftMode = dopplerShiftModes.includes(appConfigSatellite.dopplerShiftMode)
+      ? appConfigSatellite.dopplerShiftMode
+      : Constant.Transceiver.DopplerShiftMode.FIXED_SAT;
 
     // アクティブ衛星のTone周波数
     this.toneHz = appConfigSatellite.toneHz;
@@ -395,6 +424,7 @@ export default class ActiveSatServiceHub {
     beacon: BeaconType | null;
     satelliteMode: boolean;
     satTrackMode: string | null;
+    dopplerShiftMode: string;
     toneHz: number | null;
   } {
     return {
@@ -403,6 +433,7 @@ export default class ActiveSatServiceHub {
       beacon: this.beaconFreq,
       satelliteMode: this.satelliteMode,
       satTrackMode: this.satTrackMode,
+      dopplerShiftMode: this.dopplerShiftMode,
       toneHz: this.toneHz,
     };
   }

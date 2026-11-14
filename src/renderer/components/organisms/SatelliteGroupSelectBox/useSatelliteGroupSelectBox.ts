@@ -1,8 +1,9 @@
-import ApiActiveSat from "@/renderer/api/ApiActiveSat";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import { SelectOption } from "@/renderer/types/vue-types";
-import { onMounted, ref, Ref } from "vue";
+import ApiActiveSat from "@/renderer/api/ApiActiveSat.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import type { SelectOption } from "@/renderer/types/vue-types.js";
+import type { Ref } from "vue";
+import { onMounted, ref } from "vue";
 
 /**
  * アクティブ衛星グループ関係のフック
@@ -24,7 +25,7 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
   async function onChangeAppConfig() {
     // 表示対象の衛星グループを取得
     const satGrp = await ApiActiveSat.getActiveSatelliteGroup();
-    if (!satGrp || !satGrp.mainSattelliteTle) {
+    if (!satGrp || !satGrp.mainSatelliteOmm) {
       return;
     }
 
@@ -32,22 +33,22 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
     await getSatItems();
 
     // 現在のアクティブ衛星グループのIndexを取得
-    const index = items.value.findIndex((item: any) => {
-      return item.value === satGrp.activeSatelliteGroupId && !item.props.disabled;
+    const index = items.value.findIndex((item: SelectOption) => {
+      return item.value === satGrp.activeSatelliteGroupId && !item.props?.disabled;
     });
 
     // 現在のアクティブ衛星グループがリストに存在する場合は、更新前の選択状態を保持する。
     if (index >= 0) {
       // 選択されていた衛星グループが存在する場合は、その衛星グループを選択状態にする
-      selectedSatGroupId.value = items.value[index].value;
+      selectedSatGroupId.value = Number(items.value[index].value);
     }
     // リストに存在しない場合
     else {
       // 先頭を選択状態にする
-      selectedSatGroupId.value = items.value[0].value;
+      selectedSatGroupId.value = Number(items.value[0].value);
 
       // AppConfigの更新
-      updateAppConfig(items.value[0].value);
+      void updateAppConfig(String(items.value[0].value));
     }
   }
 

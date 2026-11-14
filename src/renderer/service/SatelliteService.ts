@@ -1,12 +1,14 @@
-import CommonUtil from "@/common/CommonUtil";
-import Constant from "@/common/Constant";
-import { InvalidArgumentError } from "@/common/exceptions";
-import type { EcefLocation, Location3 } from "@/renderer/types/location-type";
-import type { MeanElements, TargetPolarLocation, TleStrings } from "@/renderer/types/satellite-type";
-import AppRendererLogger from "@/renderer/util/AppRendererLogger";
-import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil";
-import DateUtil from "@/renderer/util/DateUtil";
-import type { SatRec } from "satellite.js";
+import CommonUtil from "@/common/CommonUtil.js";
+import Constant from "@/common/Constant.js";
+import { InvalidArgumentError } from "@/common/exceptions.js";
+import type { OmmItem } from "@/common/model/OmmModel.js";
+import type { EcefLocation, Location3 } from "@/renderer/types/location-type.js";
+import type { MeanElements, TargetPolarLocation } from "@/renderer/types/satellite-type.js";
+import AppRendererLogger from "@/renderer/util/AppRendererLogger.js";
+import AstronomyUtil from "@/renderer/util/AstronomyUtil";
+import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil.js";
+import DateUtil from "@/renderer/util/DateUtil.js";
+import type { OMMJsonObject, SatRec } from "satellite.js";
 import * as satellite from "satellite.js";
 
 /**
@@ -30,37 +32,37 @@ class SatelliteService {
   /**
    * コンストラクタ
    * @constructor
-   * @param {TleStrings} tleStrings TLE文字列
+   * @param {OmmItem} ommItem OMM（軌道要素）
    */
-  constructor(tleStrings: TleStrings) {
-    // コンストラクタに渡すTLE行がnullまたは空白の場合は例外をスローする
-    if (CommonUtil.isEmpty(tleStrings.tleLine1) || CommonUtil.isEmpty(tleStrings.tleLine2)) {
-      AppRendererLogger.error("InvalidArgumentError: tleline is null or empty.");
-      throw new InvalidArgumentError("tleline is null or empty.");
+  constructor(ommItem: OmmItem) {
+    // コンストラクタに渡すNoradIDまたはエポックがnullまたは空白の場合は例外をスローする
+    if (CommonUtil.isEmpty(ommItem.noradCatId) || CommonUtil.isEmpty(ommItem.epoch)) {
+      AppRendererLogger.error("InvalidArgumentError: ommItem.noradCatId or epoch is null or empty.");
+      throw new InvalidArgumentError("ommItem.noradCatId or epoch is null or empty.");
     }
-    this._satelliteName = tleStrings.satelliteName;
-    this._satRec = satellite.twoline2satrec(tleStrings.tleLine1, tleStrings.tleLine2);
+    this._satelliteName = ommItem.objectName;
+    this._satRec = satellite.json2satrec(SatelliteService._toOmmJsonObject(ommItem));
     this._noradId = Number(this._satRec.satnum);
 
-    // 人工衛星のTLE文字列が有効期限切れの場合は警告メッセージを表示する
+    // 人工衛星の軌道要素データが有効期限切れの場合は警告メッセージを表示する
     const expirationDate = new Date();
     expirationDate.setDate(new Date().getDate() - Constant.Tle.TLE_EXPIRATION_DAYS);
     if (this.getSgp4Epoc() < expirationDate) {
       AppRendererLogger.warn(
-        "TLE(ID:" +
+        "OMM(ID:" +
           this.getNoradId() +
           ") data has expired. EpocDate: " +
           DateUtil.formatDateTime(this.getSgp4Epoc(), { year: "numeric", month: "2-digit", day: "2-digit" })
       );
     }
 
-    // 人工衛星の軌道傾斜角が0.0Rad、かつ、離心率が0.0、かつ、軌道周期が1恒星日の場合、静止衛星と判定する（定数の偏差を許容）
+    // 人工衛星の軌道傾斜角が0.0Rad、かつ、離心率が0.0、かつ、軌道周期が1恒星日の場合、静止衛星と判定する（定数で定めた許容誤差を考慮）
     this._isGeostationaryOrbit =
       Math.abs(this._satRec.inclo) <= 2 * Math.PI * Constant.OrbitCalculation.DEVIATION_PERCENTAGE &&
       this.getEccentricity() <= Constant.OrbitCalculation.DEVIATION_PERCENTAGE &&
       Math.abs(this.getOrbitalPeriodInMin() - Constant.Astronomy.MINUTES_IN_SIDEREAL_DAY) <=
         Constant.Astronomy.MINUTES_IN_SIDEREAL_DAY * Constant.OrbitCalculation.DEVIATION_PERCENTAGE;
-    // 人工衛星の軌道周期が1恒星日以上か判定する（定数の偏差を許容）
+    // 人工衛星の軌道周期が1恒星日以上か判定する（定数で定めた許容誤差を考慮）
     this._isOverSiderealDay =
       this.getOrbitalPeriodInMin() >=
       Constant.Astronomy.MINUTES_IN_SIDEREAL_DAY -
@@ -68,6 +70,32 @@ class SatelliteService {
     // 遠地点距離を計算する
     this._apogee = this.getApogee();
   }
+
+  /**
+   * OmmItemをsatellite.jsのjson2satrecが要求するOMMJsonObject形式に変換する
+   * @param {OmmItem} ommItem OMM（軌道要素）
+   * @returns {OMMJsonObject} satellite.js用OMM JSONオブジェクト
+   */
+  private static _toOmmJsonObject = (ommItem: OmmItem): OMMJsonObject => {
+    return {
+      OBJECT_NAME: ommItem.objectName,
+      OBJECT_ID: ommItem.objectId,
+      EPOCH: ommItem.epoch,
+      MEAN_MOTION: ommItem.meanMotion,
+      ECCENTRICITY: ommItem.eccentricity,
+      INCLINATION: ommItem.inclination,
+      RA_OF_ASC_NODE: ommItem.raOfAscNode,
+      ARG_OF_PERICENTER: ommItem.argOfPericenter,
+      MEAN_ANOMALY: ommItem.meanAnomaly,
+      CLASSIFICATION_TYPE: ommItem.classificationType as "U" | "C",
+      NORAD_CAT_ID: ommItem.noradCatId,
+      ELEMENT_SET_NO: ommItem.elementSetNo,
+      REV_AT_EPOCH: ommItem.revAtEpoch,
+      BSTAR: ommItem.bstar,
+      MEAN_MOTION_DOT: ommItem.meanMotionDot,
+      MEAN_MOTION_DDOT: ommItem.meanMotionDdot,
+    };
+  };
 
   /**
    * 人工衛星のTLEオブジェクトを取得する
@@ -378,6 +406,28 @@ class SatelliteService {
       Constant.Astronomy.EARTH_EQUATOR_RADIUS_KM / (Constant.Astronomy.EARTH_EQUATOR_RADIUS_KM + location.height)
     );
   };
+
+  /**
+   * 人工衛星の日照状態を取得する
+   * @param {Date} date 計算日時
+   * @returns {(number | null)} 0: 人工衛星が完全に日光を受けている状態,
+   *                            0-1: 人工衛星が部分的に日光を受けている状態,
+   *                            1: 人工衛星が完全に地球の影に入っている状態
+   */
+  public getShadowFraction(date: Date): number | null {
+    const propagate = satellite.propagate(this._satRec, date);
+    if (!propagate) {
+      // 人工衛星が消滅した場合はnullを返却する
+      return null;
+    }
+
+    // 指定日時におけるユリウス通日を計算する
+    const julianDate = AstronomyUtil.getJulianDate(date);
+    // 指定日時における太陽の位置ベクトルを計算する
+    const rsun = satellite.sunPos(julianDate).rsun;
+    // 指定日時における人工衛星の日照状態を取得する
+    return satellite.shadowFraction(rsun, propagate.position);
+  }
 }
 
 export default SatelliteService;

@@ -1,4 +1,5 @@
-import { onMounted, Ref } from "vue";
+import type { Ref } from "vue";
+import { onMounted } from "vue";
 
 /**
  * 位置情報（センター）
@@ -19,7 +20,7 @@ export default function useDrawRadar(
   radiusPx: number,
   centerPos: CenterPosition
 ) {
-  onMounted(async () => {
+  onMounted(() => {
     const element = canvasRef.value;
     const context = element ? element.getContext("2d") : null;
     if (!context) return;

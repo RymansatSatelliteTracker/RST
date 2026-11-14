@@ -1,6 +1,7 @@
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import { useStoreAutoState } from "@/renderer/store/useStoreAutoState";
-import { ref, Ref } from "vue";
+import { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import { useStoreAutoState } from "@/renderer/store/useStoreAutoState.js";
+import type { Ref } from "vue";
+import { ref } from "vue";
 
 /**
  * レーダークリック時のCanvas座標を方位仰角に変換する

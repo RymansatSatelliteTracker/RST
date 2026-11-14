@@ -1,4 +1,4 @@
-import Constant from "@/common/Constant";
+import Constant from "@/common/Constant.js";
 
 // パースしたTle保持用
 export class Tle {
@@ -94,12 +94,12 @@ export function validateParsedTle(
   tle: Tle
 ): { lineNumber: string; error: { name: string; value: string | number } } | null {
   const error1: [string, string | number] | undefined = Object.entries(tle.line1).find(
-    ([key, val]) => val === "" || Number.isNaN(val)
+    ([, val]) => val === "" || Number.isNaN(val)
   );
   if (error1) return { lineNumber: "1", error: { name: error1[0], value: error1[1] } };
 
   const error2: [string, string | number] | undefined = Object.entries(tle.line2).find(
-    ([key, val]) => val === "" || Number.isNaN(val)
+    ([, val]) => val === "" || Number.isNaN(val)
   );
   if (error2) return { lineNumber: "2", error: { name: error2[0], value: error2[1] } };
 

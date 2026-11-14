@@ -1,15 +1,15 @@
-import { Mutex } from "@/common/util/Mutex";
+import { Mutex } from "@/common/util/Mutex.js";
 
 /**
  * デコレータ／function、メソッドの排他制御
  * "@synchronized"でデコレートされたメソッドを排他制御する
  */
 export function synchronized() {
-  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    const originalMethod = descriptor.value;
+  return function (target: unknown, propertyKey: string, descriptor: PropertyDescriptor) {
+    const originalMethod = descriptor.value as ((...args: unknown[]) => Promise<unknown>) | undefined;
     const mutex = new Mutex();
 
-    descriptor.value = async function (...args: any[]) {
+    descriptor.value = async function (...args: unknown[]) {
       if (!originalMethod) {
         return;
       }

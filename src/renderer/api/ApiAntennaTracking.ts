@@ -1,6 +1,6 @@
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import { AppConfigRotator } from "@/common/model/AppConfigModel";
-import { ApiResponse } from "@/common/types/types";
+import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import type { AppConfigRotator } from "@/common/model/AppConfigModel.js";
+import type { ApiResponse } from "@/common/types/types.js";
 
 export type AntennaTrackingItem = {
   trackedAt: string;
@@ -38,8 +38,8 @@ export default class ApiAntennaTracking {
   /**
    * アンテナ位置の変更イベント
    */
-  public static async onChangeAntennaPosition(callback: Function) {
-    await window.rstApi.onChangeAntennaPosition(callback);
+  public static onChangeAntennaPosition(callback: (res: ApiResponse<AntennaPositionModel>) => void) {
+    window.rstApi.onChangeAntennaPosition(callback);
   }
 
   /**
@@ -52,7 +52,7 @@ export default class ApiAntennaTracking {
   /**
    * ローテータのデバイスが切断された際のイベント
    */
-  public static async onRoratorDisconnect(callback: Function) {
-    await window.rstApi.onRoratorDisconnect(callback);
+  public static onRoratorDisconnect(callback: () => void) {
+    window.rstApi.onRoratorDisconnect(callback);
   }
 }

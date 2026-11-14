@@ -1,8 +1,9 @@
-import GroundStationHelper from "@/renderer/common/util/GroundStationHelper";
-import GroundStationServiceFactory from "@/renderer/common/util/GroundStationServiceFactory";
-import SatelliteServiceFactory from "@/renderer/common/util/SatelliteServiceFactory";
-import { SatAzEl } from "@/renderer/types/satellite-type";
-import { onUnmounted, Ref } from "vue";
+import GroundStationHelper from "@/renderer/common/util/GroundStationHelper.js";
+import GroundStationServiceFactory from "@/renderer/common/util/GroundStationServiceFactory.js";
+import SatelliteServiceFactory from "@/renderer/common/util/SatelliteServiceFactory.js";
+import type { SatAzEl } from "@/renderer/types/satellite-type.js";
+import type { Ref } from "vue";
+import { onUnmounted } from "vue";
 
 /**
  * 衛星の軌跡、衛星位置関係のフック
@@ -17,11 +18,13 @@ export default function useTracking(activeSat: Ref<SatAzEl | null>, currentDate:
   /**
    * 衛星の追跡を開始する
    */
-  async function startTraking() {
+  function startTraking() {
     if (intervalId) {
       clearInterval(intervalId);
     }
-    intervalId = setInterval(refreshSatPos, 1000);
+    intervalId = setInterval(() => {
+      void refreshSatPos();
+    }, 1000);
   }
 
   /**

@@ -1,0 +1,73 @@
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import type { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes.js";
+import type { ApiResponse } from "@/common/types/types.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import type { OpeModeResolverState } from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver.js";
+import TransceiverOpeModeResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverOpeModeResolver.js";
+import emitter from "@/renderer/util/EventBus.js";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { ref } from "vue";
+
+const createState = (): OpeModeResolverState => ({
+  txOpeMode: ref(Constant.Transceiver.OpeMode.UNSET),
+  rxOpeMode: ref(Constant.Transceiver.OpeMode.UNSET),
+});
+
+describe("TransceiverOpeModeResolver.applyFromTransceiver", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("受信失敗時は通知してTx/Rx運用モードをUNSETに戻すこと", () => {
+    const state = createState();
+    state.txOpeMode.value = Constant.Transceiver.OpeMode.FM;
+    state.rxOpeMode.value = Constant.Transceiver.OpeMode.FM;
+    const resolver = new TransceiverOpeModeResolver(state);
+    vi.spyOn(I18nUtil, "getMsg").mockReturnValue("mocked notice");
+    const emitSpy = vi.spyOn(emitter, "emit").mockImplementation(() => {});
+    const res = {
+      status: false,
+      message: I18nMsgs.SERIAL_NOT_CONNECTED_TRANSCEIVER,
+      data: null,
+    } as unknown as ApiResponse<UplinkType | DownlinkType>;
+
+    resolver.applyFromTransceiver(res);
+
+    expect(state.txOpeMode.value).toBe(Constant.Transceiver.OpeMode.UNSET);
+    expect(state.rxOpeMode.value).toBe(Constant.Transceiver.OpeMode.UNSET);
+    expect(emitSpy).toHaveBeenCalledWith(Constant.GlobalEvent.NOTICE_ERR, expect.any(String));
+  });
+
+  it("アップリンク運用モード受信時、Tx運用モードを更新すること", () => {
+    const state = createState();
+    const resolver = new TransceiverOpeModeResolver(state);
+    const res = {
+      status: true,
+      data: {
+        uplinkMode: Constant.Transceiver.OpeMode.USB,
+      },
+    } as unknown as ApiResponse<UplinkType | DownlinkType>;
+
+    resolver.applyFromTransceiver(res);
+
+    expect(state.txOpeMode.value).toBe(Constant.Transceiver.OpeMode.USB);
+    expect(state.rxOpeMode.value).toBe(Constant.Transceiver.OpeMode.UNSET);
+  });
+
+  it("ダウンリンク運用モード受信時、Rx運用モードを更新すること", () => {
+    const state = createState();
+    const resolver = new TransceiverOpeModeResolver(state);
+    const res = {
+      status: true,
+      data: {
+        downlinkMode: Constant.Transceiver.OpeMode.FM,
+      },
+    } as unknown as ApiResponse<UplinkType | DownlinkType>;
+
+    resolver.applyFromTransceiver(res);
+
+    expect(state.txOpeMode.value).toBe(Constant.Transceiver.OpeMode.UNSET);
+    expect(state.rxOpeMode.value).toBe(Constant.Transceiver.OpeMode.FM);
+  });
+});

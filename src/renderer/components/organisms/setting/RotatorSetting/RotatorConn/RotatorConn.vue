@@ -9,9 +9,9 @@
             <label class="label form_label">{{ I18nUtil.getMsg(I18nMsgs.G51_MAKER) }}</label>
             <div class="form_select">
               <RotatorMakerSelect
-                v-model:selectedValue="form.makerId"
-                v-model:rotatorId="form.rotatorId"
-                :needEmpty="true"
+                v-model:selected-value="form.makerId"
+                v-model:rotator-id="form.rotatorId"
+                :need-empty="true"
               />
             </div>
           </div>
@@ -21,9 +21,9 @@
             <label class="label form_label">{{ I18nUtil.getMsg(I18nMsgs.G51_DEVICE) }}</label>
             <div class="form_select">
               <RotatorDeviceSelect
-                v-model:selectedValue="form.rotatorId"
-                v-model:makerId="form.makerId"
-                :needEmpty="false"
+                v-model:selected-value="form.rotatorId"
+                v-model:maker-id="form.makerId"
+                :need-empty="false"
               />
             </div>
           </div>
@@ -32,7 +32,7 @@
           <div class="d-flex mt-2">
             <label class="label form_label">{{ I18nUtil.getMsg(I18nMsgs.G51_SERIAL_PORT) }}</label>
             <div class="form_select">
-              <SerialPortSelect ref="serialPortSelectRef" v-model:selectedValue="form.port" :needEmpty="true" />
+              <SerialPortSelect ref="serialPortSelectRef" v-model:selected-value="form.port" :need-empty="true" />
             </div>
 
             <!-- 更新 -->
@@ -49,7 +49,7 @@
           <div class="d-flex mt-2">
             <label class="label form_label">{{ I18nUtil.getMsg(I18nMsgs.G51_BORATE) }}</label>
             <div class="form_select">
-              <BorateSelect v-model:selectedValue="form.borate" :needEmpty="true" />
+              <BorateSelect v-model:selected-value="form.borate" :need-empty="true" />
             </div>
           </div>
 
@@ -99,13 +99,13 @@
             <div class="d-flex">
               <TextField
                 v-model="form.testAz"
+                v-model:error-text="errors.testAz"
                 class="g_right"
                 suffix="°"
                 maxlength="3"
                 :disabled="!isSerialOpen"
-                :valiSchema="valiSchemaRotatorConn"
-                valiSchemaFieldPath="testAz"
-                v-model:error-text="errors.testAz"
+                :vali-schema="valiSchemaRotatorConn"
+                vali-schema-field-path="testAz"
                 @blur="testMovePos"
               />
             </div>
@@ -116,13 +116,13 @@
             <div class="d-flex">
               <TextField
                 v-model="form.testEl"
+                v-model:error-text="errors.testEl"
                 class="g_right"
                 suffix="°"
                 maxlength="3"
                 :disabled="!isSerialOpen"
-                :valiSchema="valiSchemaRotatorConn"
-                valiSchemaFieldPath="testEl"
-                v-model:error-text="errors.testEl"
+                :vali-schema="valiSchemaRotatorConn"
+                vali-schema-field-path="testEl"
                 @blur="testMovePos"
               />
             </div>
@@ -187,10 +187,10 @@
             <label class="label form_label g_invalid_item_label">{{ I18nUtil.getMsg(I18nMsgs.G51_IPADDRESS) }}</label>
             <TextField
               v-model="form.ipAddress"
-              maxlength="15"
-              :valiSchema="valiSchemaRotatorConn"
-              valiSchemaFieldPath="ipAddress"
               v-model:error-text="errors.ipAddress"
+              maxlength="15"
+              :vali-schema="valiSchemaRotatorConn"
+              vali-schema-field-path="ipAddress"
               disabled
             />
           </div>
@@ -202,10 +202,10 @@
             }}</label>
             <TextField
               v-model="form.ipPort"
-              maxlength="5"
-              :valiSchema="valiSchemaRotatorConn"
-              valiSchemaFieldPath="ipPort"
               v-model:error-text="errors.ipPort"
+              maxlength="5"
+              :vali-schema="valiSchemaRotatorConn"
+              vali-schema-field-path="ipPort"
               disabled
             />
           </div>
@@ -216,28 +216,29 @@
 </template>
 
 <script setup lang="ts">
-import CommonUtil from "@/common/CommonUtil";
-import I18nMsgs from "@/common/I18nMsgs";
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
+import CommonUtil from "@/common/CommonUtil.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import TextField from "@/renderer/components/atoms/TextField/TextField.vue";
 import BorateSelect from "@/renderer/components/molecules/BorateSelect/BorateSelect.vue";
 import RotatorDeviceSelect from "@/renderer/components/molecules/RotatorDeviceSelect/RotatorDeviceSelect.vue";
 import RotatorMakerSelect from "@/renderer/components/molecules/RotatorMakerSelect/RotatorMakerSelect.vue";
 import SerialPortSelect from "@/renderer/components/molecules/SerialPortSelect/SerialPortSelect.vue";
 import { mdiArrowDownBold, mdiArrowLeftBold, mdiArrowRightBold, mdiArrowUpBold } from "@mdi/js";
-import { ref } from "vue";
-import RotatorConnForm from "./RotatorConnForm";
-import { useRotatorConnValidate, valiSchemaRotatorConn } from "./useRotatorConnValidate";
-import useRotatorCtrl from "./useRotatorCtrl";
-import useRotatorMonitor from "./useRotatorMonitor";
-import useRotatorTestConnect from "./useRotatorTestConnect";
+import { ref, useTemplateRef } from "vue";
+import type { ComponentExposed } from "vue-component-type-helpers";
+import type RotatorConnForm from "./RotatorConnForm.js";
+import { useRotatorConnValidate, valiSchemaRotatorConn } from "./useRotatorConnValidate.js";
+import useRotatorCtrl from "./useRotatorCtrl.js";
+import useRotatorMonitor from "./useRotatorMonitor.js";
+import useRotatorTestConnect from "./useRotatorTestConnect.js";
 
 // 親との送受信
 const form = defineModel<RotatorConnForm>("form", { required: true });
 
 // 「更新」クリック時に更新ボタン側のメソッドをコールするためのref
-const serialPortSelectRef = ref();
+const serialPortSelectRef = useTemplateRef<ComponentExposed<typeof SerialPortSelect>>("serialPortSelectRef");
 const antennaPosition = ref<AntennaPositionModel>({ azimuth: 0, elevation: 0 });
 
 // 制御系データ
@@ -269,7 +270,10 @@ defineExpose({
  * 更新クリック
  */
 function onRefreshSerialPort() {
-  serialPortSelectRef.value.refreshSerialPort();
+  // memo: env.d.tsの"*.vue"shimの都合上、ESLintの型解析ではSerialPortSelectの公開プロパティの型を解決できないため無効化する
+  // （vue-tscでは正しく型付けされていることを確認済み）
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  serialPortSelectRef.value?.refreshSerialPort();
 }
 
 /**
@@ -281,5 +285,5 @@ async function validateAll(): Promise<boolean> {
 </script>
 
 <style lang="scss" scoped>
-@import "./RotatorConn.scss";
+@use "./RotatorConn" as *;
 </style>

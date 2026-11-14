@@ -1,8 +1,8 @@
-import Constant from "@/common/Constant";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import { PassesCache } from "@/renderer/types/pass-type";
+import Constant from "@/common/Constant.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import AutoTrackingHelper from "@/renderer/common/util/AutoTrackingHelper.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import type { PassesCache } from "@/renderer/types/pass-type.js";
 import { onMounted, onUnmounted, ref, watch, type Ref } from "vue";
 
 /**
@@ -53,7 +53,9 @@ const useOrbitalPassList = (currentDate: Ref<Date>) => {
     ActiveSatServiceHub.getInstance().addOnChangeActiveSat(onChangeSatGrp);
 
     // 10秒ごとにAOSリストを更新する
-    intervalId = window.setInterval(updatePassList, 10000) as number;
+    intervalId = window.setInterval(() => {
+      void updatePassList();
+    }, 10000) as number;
   });
 
   // currentDateの変更を監視して1500ms以上増減した場合はAOSリストを更新する

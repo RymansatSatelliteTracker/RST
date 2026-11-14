@@ -1,5 +1,6 @@
-import Constant from "@/common/Constant";
-import { autoModeFreqType } from "@/common/types/satelliteSettingTypes";
+import Constant from "@/common/Constant.js";
+import type { autoModeFreqType } from "@/common/types/satelliteSettingTypes.js";
+import type { LangType } from "@/common/types/types.js";
 
 /**
  * アプリケーション設定モデル
@@ -9,7 +10,7 @@ export class AppConfigModel {
   public appVersion = "0.0.3";
 
   // 表示言語
-  public lang = "ja";
+  public lang: LangType = "ja";
 
   // TLE設定
   public tle: AppConfigTle = new AppConfigTle();
@@ -73,6 +74,8 @@ export class AppConfigSatellite {
   public userRegisteredSatelliteName = "";
   // ユーザ登録衛星TLE
   public userRegisteredTle = "";
+  // ユーザ登録衛星OMM(OmmItemのJSON文字列)
+  public userRegisteredOmm = "";
   // 対象衛星NORAD ID
   public noradId: string = "";
   // 自動設定時に使用するアップリンク設定
@@ -96,7 +99,9 @@ export class AppConfigSatellite {
   // 衛星モード有効フラグ
   public enableSatelliteMode = false;
   // 衛星モード
-  public satelliteMode = "1";
+  public satelliteMode = Constant.Transceiver.TrackingMode.NORMAL;
+  // 固定モード（衛星固定/受信固定/送信固定）
+  public dopplerShiftMode: string = Constant.Transceiver.DopplerShiftMode.FIXED_SAT;
   // トーン周波数
   public toneHz: number | null = null;
   // 対象衛星概要

@@ -12,15 +12,15 @@
 </template>
 
 <script setup lang="ts">
-import Constant from "@/common/Constant";
-import I18nMsgs from "@/common/I18nMsgs";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
+import Constant from "@/common/Constant.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
 import { ref, watch } from "vue";
 
 // 選択範囲は0~85
 const minElevationRange = ref(Array.from({ length: Constant.SatSetting.ELEVATION_RANGE_LENGTH }, (_, i) => i));
-const satelliteChoiceMinEl = defineModel("satelliteChoiceMinEl");
+const satelliteChoiceMinEl = defineModel<number | null>("satelliteChoiceMinEl");
 
 // 衛星パス抽出最小仰角を更新する
 watch(satelliteChoiceMinEl, async (newMinEl) => {
@@ -29,5 +29,5 @@ watch(satelliteChoiceMinEl, async (newMinEl) => {
 </script>
 
 <style lang="scss" scoped>
-@import "./SatelliteChoiceMinElSelect.scss";
+@use "./SatelliteChoiceMinElSelect" as *;
 </style>

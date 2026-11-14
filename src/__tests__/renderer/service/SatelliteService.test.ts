@@ -1,6 +1,8 @@
-import TleDataHelper from "@/__tests__/renderer/service/TleDataHelper";
-import { InvalidArgumentError } from "@/common/exceptions";
-import SatelliteService from "@/renderer/service/SatelliteService";
+import TleDataHelper from "@/__tests__/renderer/service/TleDataHelper.js";
+import { InvalidArgumentError } from "@/common/exceptions.js";
+import OmmUtil from "@/main/util/OmmUtil.js";
+import SatelliteService from "@/renderer/service/SatelliteService.js";
+import { describe, expect, it } from "vitest";
 
 /**
  * [正常系]
@@ -315,19 +317,40 @@ describe("[正常系]人工衛星の軌道周期が1恒星日以上か判定で�
 });
 
 /**
+ * [正常系]
+ * 人工衛星の日照状態が取得できる
+ */
+describe("[正常系]人工衛星の日照状態が取得できる", () => {
+  it("人工衛星が完全に日光を受けている場合は0を返す", () => {
+    const result = TleDataHelper.Satellite.ISS.getShadowFraction(new Date("2024-09-12T00:00:00Z"));
+
+    expect(result).toBe(0);
+  });
+
+  it("人工衛星が完全に地球の影に入っている場合は1を返す", () => {
+    const result = TleDataHelper.Satellite.ISS.getShadowFraction(new Date("2024-09-12T00:15:00Z"));
+
+    expect(result).toBe(1);
+  });
+
+  it("人工衛星が部分的に日光を受けている場合は0から1の間の値を返す", () => {
+    const result = TleDataHelper.Satellite.ISS.getShadowFraction(new Date("2024-09-12T13:00:00Z"));
+
+    expect(result).toBeCloseTo(0.0252970997);
+  });
+});
+
+/**
  * 準正常系テスト
  */
 describe("準正常系テスト", () => {
   it("[準正常系]コンストラクタに渡す人工衛星の名称が空文字だった場合は例外をスローしない", () => {
-    // 人工衛星の名称が空文字
-    expect(
-      () =>
-        new SatelliteService({
-          satelliteName: "",
-          tleLine1: "1 25544U 98067A   24274.40627631  .00013723  00000-0  24831-3 0  9995",
-          tleLine2: "2 25544  51.6392 154.2186 0007232  45.9401 125.4774 15.49946976474861",
-        })
-    ).not.toThrow(InvalidArgumentError);
+    // 人工衛星の名称が空文字（衛星名行のない2LE形式から生成）
+    const ommItem = OmmUtil.parseToOmmItems(
+      "1 25544U 98067A   24274.40627631  .00013723  00000-0  24831-3 0  9995\n" +
+        "2 25544  51.6392 154.2186 0007232  45.9401 125.4774 15.49946976474861"
+    )[0];
+    expect(() => new SatelliteService(ommItem)).not.toThrow(InvalidArgumentError);
   });
 });
 
@@ -335,26 +358,24 @@ describe("準正常系テスト", () => {
  * 異常系テスト
  */
 describe("異常系テスト", () => {
-  it("[異常系]コンストラクタに渡すTLEの1行目が空文字だった場合は例外をスローする", () => {
-    // TLEの1行目が空文字
-    expect(
-      () =>
-        new SatelliteService({
-          satelliteName: "ISS (ZARYA)",
-          tleLine1: "",
-          tleLine2: "2 25544  51.6392 154.2186 0007232  45.9401 125.4774 15.49946976474861",
-        })
-    ).toThrow(InvalidArgumentError);
+  it("[異常系]コンストラクタに渡すOMMのNoradIDが空文字だった場合は例外をスローする", () => {
+    // OMMのNoradIDが空文字
+    const ommItem = OmmUtil.parseToOmmItems(
+      "ISS (ZARYA)\n" +
+        "1 25544U 98067A   24274.40627631  .00013723  00000-0  24831-3 0  9995\n" +
+        "2 25544  51.6392 154.2186 0007232  45.9401 125.4774 15.49946976474861"
+    )[0];
+    ommItem.noradCatId = "";
+    expect(() => new SatelliteService(ommItem)).toThrow(InvalidArgumentError);
   });
-  it("[異常系]コンストラクタに渡すTLEの2行目が空文字だった場合は例外をスローする", () => {
-    // TLEの2行目が空文字
-    expect(
-      () =>
-        new SatelliteService({
-          satelliteName: "ISS (ZARYA)",
-          tleLine1: "1 25544U 98067A   24274.40627631  .00013723  00000-0  24831-3 0  9995",
-          tleLine2: "",
-        })
-    ).toThrow(InvalidArgumentError);
+  it("[異常系]コンストラクタに渡すOMMのエポックが空文字だった場合は例外をスローする", () => {
+    // OMMのエポックが空文字
+    const ommItem = OmmUtil.parseToOmmItems(
+      "ISS (ZARYA)\n" +
+        "1 25544U 98067A   24274.40627631  .00013723  00000-0  24831-3 0  9995\n" +
+        "2 25544  51.6392 154.2186 0007232  45.9401 125.4774 15.49946976474861"
+    )[0];
+    ommItem.epoch = "";
+    expect(() => new SatelliteService(ommItem)).toThrow(InvalidArgumentError);
   });
 });

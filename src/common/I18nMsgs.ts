@@ -1,4 +1,4 @@
-import { I18nMsgItem } from "@/common/types/types";
+import type { I18nMsgItem } from "@/common/types/types.js";
 
 export default class I18nMsgs {
   // 汎用系エラーメッセージ
@@ -100,8 +100,8 @@ export default class I18nMsgs {
   };
   public static readonly CHK_ERR_TLE: I18nMsgItem = { en: "TLE format is invalid", ja: "TLEのフォーマットが不正です" };
   public static readonly CHK_ERR_GET_TLE: I18nMsgItem = {
-    en: "Cannot retrieve TLE from the specified URL ({0})",
-    ja: "指定のURLからTLEを取得できません ({0})",
+    en: "Cannot retrieve orbital data from the specified URL ({0})",
+    ja: "指定のURLから軌道要素データを取得できません ({0})",
   };
   public static readonly CHK_ERR_TLE_2LINE: I18nMsgItem = {
     en: "Please enter TLE on two lines",
@@ -212,16 +212,20 @@ export default class I18nMsgs {
     en: "TLE update completed",
     ja: "TLEの更新が完了しました",
   };
+  public static readonly SYSTEM_SAVE_SETTING_FAILED: I18nMsgItem = {
+    en: "Failed to save the settings.",
+    ja: "設定の保存に失敗しました。",
+  };
 
   // シリアル接続系
   public static readonly SERIAL_NOT_CONNECTED: I18nMsgItem = { en: "Serial not connected", ja: "シリアルが未接続です" };
   public static readonly SERIAL_NOT_CONNECTED_ROTATOR: I18nMsgItem = {
     en: "Serial not connected",
-    ja: "ローテータのシリアルが未接続です",
+    ja: "ローテータが未接続です",
   };
   public static readonly SERIAL_NOT_CONNECTED_TRANSCEIVER: I18nMsgItem = {
     en: "Serial not connected",
-    ja: "無線機のシリアルが未接続です",
+    ja: "無線機が未接続です",
   };
   public static readonly SERIAL_CONNECTION_FAILED: I18nMsgItem = {
     en: "Serial connection failed",
@@ -328,13 +332,13 @@ export default class I18nMsgs {
   public static readonly G51_PARK_POS: I18nMsgItem = { en: "Park position", ja: "パークポジション" };
   // 画面項目系／衛星設定画面
   public static readonly G31_DISPLAY_SATELLITE: I18nMsgItem = { en: "Display Satellite", ja: "表示衛星" };
-  public static readonly G32_TLE_LOAD: I18nMsgItem = { en: "TLE Load", ja: "TLE読み込み" };
+  public static readonly G32_TLE_LOAD: I18nMsgItem = { en: "Orbital Data Load", ja: "軌道要素読み込み" };
   public static readonly G33_OTHER_SETTING: I18nMsgItem = { en: "Others", ja: "その他設定" };
   // 画面項目系／衛星設定画面 表示衛星
   public static readonly G31_SATELLITE_GROUP: I18nMsgItem = { en: "Satellite Group", ja: "衛星グループ" };
   public static readonly G31_GROUP: I18nMsgItem = { en: "Group", ja: "グループ" };
   public static readonly G31_SEARCH: I18nMsgItem = { en: "Satellite Name/ NORAD ID", ja: "衛星名/NORAD ID" };
-  // 画面項目系／衛星設定画面　衛星情報編集
+  // 画面項目系／衛星設定画面 衛星情報編集
   public static readonly G31_INTERNATIONAL_NAME: I18nMsgItem = { en: "International Name", ja: "国際呼称" };
   public static readonly G31_NORADID: I18nMsgItem = { en: "NORAD ID", ja: "NORAD ID" };
   public static readonly G31_SATELLITE_NAME: I18nMsgItem = { en: "Satellite Name", ja: "衛星名" };
@@ -376,6 +380,7 @@ export default class I18nMsgs {
   public static readonly G31_CHECKSUM: I18nMsgItem = { en: "Checksum", ja: "チェックサム" };
   public static readonly G31_EPHEMERIS_TYPE: I18nMsgItem = { en: "Ephemeris Type", ja: "エフェメリスタイプ" };
   public static readonly G31_SATELLITE_MODE: I18nMsgItem = { en: "Satellite Mode", ja: "サテライトモード" };
+  public static readonly G31_DOPPLER_SHIFT_MODE: I18nMsgItem = { en: "Fixed Mode", ja: "固定モード" };
   // 画面項目系／衛星設定画面 その他設定
   public static readonly G33_MIN_ELEVATION: I18nMsgItem = { en: "Min. Elevation", ja: "最小仰角" };
   // 画面項目系／地上局画面

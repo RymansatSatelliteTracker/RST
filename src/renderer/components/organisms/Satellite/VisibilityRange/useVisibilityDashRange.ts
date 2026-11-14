@@ -1,6 +1,6 @@
-import Constant from "@/common/Constant";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
-import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil";
+import Constant from "@/common/Constant.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
+import CoordinateCalcUtil from "@/renderer/util/CoordinateCalcUtil.js";
 import { onMounted, onUnmounted, ref, watch, type Ref } from "vue";
 
 /**
@@ -46,7 +46,17 @@ export default function useVisibilityDashRange(currentDate: Ref<Date>, offsetLon
             location.longitude +
             (visibleAngleRad / (lengthOfOneDegree * Math.cos(CoordinateCalcUtil.degreeToRadian(latitude)))) *
               Math.sin(radian);
-          resolve([latitude, longitude]);
+
+          if (latitude > 90) {
+            // 緯度が90度を超える場合は90度に制限する
+            resolve([90, longitude]);
+          } else if (latitude < -90) {
+            // 緯度が-90度を下回る場合は-90度に制限する
+            resolve([-90, longitude]);
+          } else {
+            // 緯度が-90度から90度の範囲内の場合はそのまま使用する
+            resolve([latitude, longitude]);
+          }
         });
       });
 
@@ -64,7 +74,9 @@ export default function useVisibilityDashRange(currentDate: Ref<Date>, offsetLon
     ActiveSatServiceHub.getInstance().addOnChangeActiveSat(onChangeSatGrp);
 
     // 1秒ごとに可視範囲を更新する
-    intervalId = window.setInterval(updateVisibilityRange, 1000) as number;
+    intervalId = window.setInterval(() => {
+      void updateVisibilityRange();
+    }, 1000) as number;
   });
 
   /**

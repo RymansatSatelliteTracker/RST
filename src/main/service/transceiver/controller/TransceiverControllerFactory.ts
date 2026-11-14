@@ -1,9 +1,9 @@
-import Constant from "@/common/Constant";
-import { InvalidArgumentError } from "@/common/exceptions";
-import { AppConfigTransceiver } from "@/common/model/AppConfigModel";
-import TransceiverControllerBase from "@/main/service/transceiver/controller/TransceiverControllerBase";
-import TransceiverIcomController from "@/main/service/transceiver/controller/TransceiverIcomController";
-import AppMainLogger from "@/main/util/AppMainLogger";
+import Constant from "@/common/Constant.js";
+import { InvalidArgumentError } from "@/common/exceptions.js";
+import type { AppConfigTransceiver } from "@/common/model/AppConfigModel.js";
+import type TransceiverControllerBase from "@/main/service/transceiver/controller/TransceiverControllerBase.js";
+import TransceiverIcomController from "@/main/service/transceiver/controller/TransceiverIcomController.js";
+import AppMainLogger from "@/main/util/AppMainLogger.js";
 
 /**
  * TransceiverControllerのファクトリ
@@ -13,7 +13,14 @@ export default class TransceiverControllerFactory {
    * TransceiverControllerを生成する
    * @param transceiverConfig 無線機設定
    */
-  public static async getController(transceiverConfig: AppConfigTransceiver): Promise<TransceiverControllerBase> {
+  public static getController(transceiverConfig: AppConfigTransceiver): Promise<TransceiverControllerBase> {
+    return Promise.resolve().then(() => this.selectController(transceiverConfig));
+  }
+
+  /**
+   * 無線機メーカーに応じたTransceiverControllerを選択する
+   */
+  private static selectController(transceiverConfig: AppConfigTransceiver): TransceiverControllerBase {
     switch (transceiverConfig.makerId) {
       // ICOMの無線機
       case Constant.Transceiver.MakerId.ICOM:

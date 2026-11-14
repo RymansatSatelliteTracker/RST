@@ -13,19 +13,21 @@
 </template>
 
 <script setup lang="ts">
-import CommonUtil from "@/common/CommonUtil";
-import { useValidate } from "@/renderer/common/hook/useValidate";
+import CommonUtil from "@/common/CommonUtil.js";
+import { useValidate } from "@/renderer/common/hook/useValidate.js";
 import ValidateTooltip from "@/renderer/components/atoms/ValidateTooltip/ValidateTooltip.vue";
 import { nextTick, onMounted, ref, watch } from "vue";
+import type { PropType } from "vue";
+import type { AnyZodObject } from "zod";
 
-const model = defineModel<any>();
+const model = defineModel<number | null>({ default: null });
 const errorText = defineModel<string>("errorText", { required: false, default: "" });
 // 表示用の文字列（ドット区切り）
 const displayValue = ref<string>("");
 let isEditing = false;
 const props = defineProps({
   valiSchema: {
-    type: Object, // as () => ZodObject<any>,
+    type: Object as PropType<AnyZodObject | null>,
     required: false,
     default: null,
   },
@@ -43,7 +45,7 @@ const props = defineProps({
 
 const { validateAt } = useValidate(props.valiSchema);
 
-onMounted(async () => {
+onMounted(() => {
   // エラーメッセージをクリア
   errorText.value = "";
 });
@@ -51,7 +53,7 @@ onMounted(async () => {
 /**
  * focusイベントのハンドラ
  */
-async function onFocus() {
+function onFocus() {
   isEditing = true;
   // フォーカス時はドット区切りを外す
   displayValue.value = model.value ? model.value.toString() : "";
@@ -78,11 +80,15 @@ async function onBlur(val: string) {
 }
 // model → displayValue への変換
 // 編集中は更新しないようにしないと無限ループが発生する
-watch(model, async (newVal) => {
-  if (isEditing) return;
-  await nextTick();
-  displayValue.value = formatWithDot(newVal);
-});
+watch(
+  model,
+  async (newVal) => {
+    if (isEditing) return;
+    await nextTick();
+    displayValue.value = formatWithDot(newVal);
+  },
+  { immediate: true }
+);
 // displayValue → model への変換
 // modelとの同期はこいつに任せる
 watch(displayValue, (newVal) => {

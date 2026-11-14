@@ -1,10 +1,11 @@
-import CommonUtil from "@/common/CommonUtil";
-import I18nMsgs from "@/common/I18nMsgs";
-import { AppConfigRotatorDevice } from "@/common/model/AppConfigRotatorModel";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import I18nUtil from "@/renderer/common/util/I18nUtil";
-import { SelectOption } from "@/renderer/types/vue-types";
-import { ModelRef, ref, watch } from "vue";
+import CommonUtil from "@/common/CommonUtil.js";
+import I18nMsgs from "@/common/I18nMsgs.js";
+import type { AppConfigRotatorDevice } from "@/common/model/AppConfigRotatorModel.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import I18nUtil from "@/renderer/common/util/I18nUtil.js";
+import type { SelectOption } from "@/renderer/types/vue-types.js";
+import type { ModelRef } from "vue";
+import { ref, watch } from "vue";
 
 /**
  * ローテーターの機種のSelectBox向けリストを生成するフック
@@ -13,11 +14,11 @@ function useRotatorDevices(makerIdRef: ModelRef<string>, selectedVal: ModelRef<s
   const rotatorDevices = ref<SelectOption[]>();
 
   // ダイアログ表示時のSelectBox再表示
-  getRotatorDevices(makerIdRef.value, needEmpty);
+  void getRotatorDevices(makerIdRef.value, needEmpty);
 
   // メーカー名の変更時に機種の選択リストを変動させる
   watch(makerIdRef, () => {
-    getRotatorDevices(makerIdRef.value, needEmpty);
+    void getRotatorDevices(makerIdRef.value, needEmpty);
   });
 
   return {
@@ -74,11 +75,11 @@ function useRotatorDevices(makerIdRef: ModelRef<string>, selectedVal: ModelRef<s
       return selectedVal.value === device.value;
     });
     if (index >= 0) {
-      selectedVal.value = devices[index].value;
+      selectedVal.value = String(devices[index].value);
       return;
     }
 
-    selectedVal.value = devices[0].value;
+    selectedVal.value = String(devices[0].value);
   }
 }
 

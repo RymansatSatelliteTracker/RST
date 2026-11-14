@@ -1,30 +1,29 @@
 <template>
   <v-list border elevation="2" bg-color="#121212">
     <v-virtual-scroll :height="height" :items="items">
-      <template v-slot:default="{ item, index }">
+      <template #default="{ item, index }">
         <span v-if="index === items.length - 1" v-intersect.once="onIntersect"></span>
         <v-list-item
-          :key="item[itemKey]"
-          @click="selectItem(index)"
-          @dblclick="emitItemDblClick(item)"
+          :key="getItemKey(item as T, index)"
           :class="{ 'v-list-item--active': isSelected(index) }"
           class="listitem"
           density="compact"
-          ref="listItemRef"
-          >{{ item[itemName] }}
+          @click="selectItem(index)"
+          @dblclick="emitItemDblClick(item as T)"
+          >{{ (item as Record<string, unknown>)[itemName] }}
         </v-list-item>
       </template>
     </v-virtual-scroll>
   </v-list>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends object">
 import { computed, ref, watch } from "vue";
 
 // コンポーネントに渡された源泉のアイテム
-const srcItems = defineModel<any[]>("items", { default: [] });
+const srcItems = defineModel<T[]>("items", { default: () => [] });
 // 表示対象のアイテム
-const items = ref<any[]>([]);
+const items = ref<T[]>([]);
 const itemName = defineModel<string>("itemName", { default: "" });
 const itemKey = defineModel<string>("itemKey", { default: "" });
 const height = defineModel<number>("height", { default: 0 });
@@ -37,9 +36,18 @@ const maxNumberOfOnceLoad: number = 200;
 // 現在のページ数
 let currentPage: number = 0;
 
-const emits = defineEmits(["itemDblClick"]);
-function emitItemDblClick(item: any) {
+const emits = defineEmits<{ itemDblClick: [item: T] }>();
+function emitItemDblClick(item: T) {
   emits("itemDblClick", item);
+}
+
+/**
+ * アイテムのキーを返す
+ * itemKeyが未指定の場合はindexを返す
+ */
+function getItemKey(item: T, index: number): string | number {
+  if (!itemKey.value) return index;
+  return (item as Record<string, unknown>)[itemKey.value] as string | number;
 }
 
 /**
@@ -52,13 +60,13 @@ watch(
     currentPage = 0;
     loadItems();
   },
-  { deep: true }
+  { deep: true, immediate: true }
 );
 
 /**
  * ユーザーがスクロールしたときに新しいアイテムをロード
  */
-function onIntersect(_entries: IntersectionObserverEntry[], _observer: IntersectionObserver, isIntersecting: boolean) {
+function onIntersect(isIntersecting: boolean, _entries: IntersectionObserverEntry[], _observer: IntersectionObserver) {
   if (isIntersecting) {
     loadItems();
   }
@@ -195,5 +203,5 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
-@import "./VirtualScrollList.scss";
+@use "./VirtualScrollList" as *;
 </style>

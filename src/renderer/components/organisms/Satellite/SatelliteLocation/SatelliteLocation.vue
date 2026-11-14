@@ -17,11 +17,11 @@
 </template>
 
 <script setup lang="ts">
-import Constant from "@/common/Constant";
+import Constant from "@/common/Constant.js";
 import CircleMarker from "@/renderer/components/atoms/CircleMarker/CircleMarker.vue";
-import CanvasUtil from "@/renderer/util/CanvasUtil";
+import CanvasUtil from "@/renderer/util/CanvasUtil.js";
 import { ref, watch } from "vue";
-import useSatelliteLocation from "./useSatelliteLocation";
+import useSatelliteLocation from "./useSatelliteLocation.js";
 
 // propsを取得する
 const props = defineProps({
@@ -52,6 +52,6 @@ const { satelliteLocation, updateAppConfig } = useSatelliteLocation(currentDate,
  */
 const handleClick = (index: number) => {
   // 選択された衛星をアクティブ衛星として更新する
-  updateAppConfig(index);
+  void updateAppConfig(index);
 };
 </script>

@@ -1,19 +1,30 @@
-import { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel";
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
-import {
+import type { ActiveSatelliteGroupModel } from "@/common/model/ActiveSatModel.js";
+import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
+import type {
+  AppConfigMainDisplay,
   AppConfigModel,
   AppConfigRotator,
   AppConfigSatellite,
   AppConfigTransceiver,
-} from "@/common/model/AppConfigModel";
-import { AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel";
-import { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel";
-import { AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel";
-import { MessageModel } from "@/common/model/MessageModel";
-import { DownlinkType, UplinkType } from "@/common/types/satelliteSettingTypes";
-import { ApiResponse, LangType } from "@/common/types/types";
-import type { TleStrings } from "@/renderer/types/satellite-type";
-import { IpcRendererEvent, contextBridge, ipcRenderer } from "electron";
+} from "@/common/model/AppConfigModel.js";
+import type { AppConfigRotatorModel } from "@/common/model/AppConfigRotatorModel.js";
+import type { AppConfigSatSettingModel } from "@/common/model/AppConfigSatelliteSettingModel.js";
+import type { AppConfigTransceiverModel } from "@/common/model/AppConfigTransceiverModel.js";
+import type { FrequencyModel } from "@/common/model/FrequencyModel.js";
+import type { MessageModel } from "@/common/model/MessageModel.js";
+import type { OmmItem } from "@/common/model/OmmModel.js";
+import type {
+  DefaultSatelliteType,
+  DownlinkType,
+  SatelliteIdentiferType,
+  UplinkType,
+} from "@/common/types/satelliteSettingTypes.js";
+import type { ApiResponse, LangType } from "@/common/types/types.js";
+import EnvUtil from "@/common/util/EnvUtil.js";
+import type { IpcRendererEvent } from "electron";
+import { contextBridge, ipcRenderer } from "electron";
+import fs from "fs";
+import path from "path";
 /**
  * ここにレンダラに公開するAPIを定義する
  */
@@ -28,7 +39,7 @@ const apiHandler = {
   /**
    * アプリケーション設定を保存する
    */
-  storeAppConfig: function (config: AppConfigModel) {
+  storeAppConfig: function (config: AppConfigModel): Promise<void> {
     return ipcRenderer.invoke("storeAppConfig", config);
   },
 
@@ -37,6 +48,13 @@ const apiHandler = {
    */
   getAppConfigSatSetting: function (): Promise<AppConfigSatSettingModel> {
     return ipcRenderer.invoke("getAppConfigSatSetting");
+  },
+
+  /**
+   * メイン表示する衛星グループ、衛星ID情報を返す
+   */
+  getAppConfigMainDisplay: function (): Promise<AppConfigMainDisplay> {
+    return ipcRenderer.invoke("getAppConfigMainDisplay");
   },
 
   /**
@@ -66,7 +84,7 @@ const apiHandler = {
   /**
    * メイン表示する衛星グループ、衛星ID情報が保存された場合の変更イベント
    */
-  onChangeActiveSatelliteGroup: (callback: Function) => {
+  onChangeActiveSatelliteGroup: (callback: (satGrpModel: ActiveSatelliteGroupModel) => void) => {
     ipcRenderer.on(
       "onChangeActiveSatelliteGroup",
       (event: IpcRendererEvent, satGrpModel: ActiveSatelliteGroupModel) => {
@@ -93,8 +111,24 @@ const apiHandler = {
    * 衛星識別情報を返す
    * 呼び出し例）const ret = await window.rstApi.getSavedSatelliteIdentifer();
    */
-  getSavedSatelliteIdentifer: function (): Promise<string> {
+  getSavedSatelliteIdentifer: function (): Promise<SatelliteIdentiferType[]> {
     return ipcRenderer.invoke("getSavedSatelliteIdentifer");
+  },
+
+  /**
+   * リポジトリ登録用の保存済み周波数設定情報を返す
+   * 呼び出し例）const ret = await window.rstApi.getRepoFrequency();
+   */
+  getRepoFrequency: function (): Promise<FrequencyModel> {
+    return ipcRenderer.invoke("getRepoFrequency");
+  },
+
+  /**
+   * リポジトリ登録用の周波数設定情報を保存する
+   * 呼び出し例）const ret = await window.rstApi.storeRepoFrequency(freqModel);
+   */
+  storeRepoFrequency: function (frequencyModel: FrequencyModel): Promise<ApiResponse<void>> {
+    return ipcRenderer.invoke("storeRepoFrequency", frequencyModel);
   },
 
   /**
@@ -104,7 +138,7 @@ const apiHandler = {
   getDefaultSatelliteBySatelliteId: function (
     satelliteId: number,
     useDefaultAppConfigIfExists: boolean
-  ): Promise<string> {
+  ): Promise<DefaultSatelliteType | null> {
     return ipcRenderer.invoke("getDefaultSatelliteBySatelliteId", satelliteId, useDefaultAppConfigIfExists);
   },
 
@@ -125,11 +159,11 @@ const apiHandler = {
   },
 
   /**
-   * 指定のNORAD IDのTLEを返す
-   * 呼び出し例）const ret = await window.rstApi.getTlesByNoradIds(["xxx", "yyy"]);
+   * 指定のNORAD IDの軌道要素データをOMMで返す
+   * 呼び出し例）const ret = await window.rstApi.getOmmsByNoradIds(["xxx", "yyy"]);
    */
-  getTlesByNoradIds: function (noradIds: string): Promise<TleStrings[]> {
-    return ipcRenderer.invoke("getTlesByNoradIds", noradIds);
+  getOmmsByNoradIds: function (noradIds: string): Promise<OmmItem[]> {
+    return ipcRenderer.invoke("getOmmsByNoradIds", noradIds);
   },
 
   /**
@@ -164,7 +198,7 @@ const apiHandler = {
   /**
    * ローテータ関係・アンテナ位置の変更イベント
    */
-  onChangeAntennaPosition: (callback: Function) => {
+  onChangeAntennaPosition: (callback: (res: ApiResponse<AntennaPositionModel>) => void) => {
     ipcRenderer.on("onChangeAntennaPosition", (event: IpcRendererEvent, res: ApiResponse<AntennaPositionModel>) => {
       callback(res);
     });
@@ -173,8 +207,8 @@ const apiHandler = {
   /**
    * ローテータ関係・ローテータのデバイスが切断された際のイベント
    */
-  onRoratorDisconnect: (callback: Function) => {
-    ipcRenderer.on("onRoratorDisconnect", (event: IpcRendererEvent) => {
+  onRoratorDisconnect: (callback: () => void) => {
+    ipcRenderer.on("onRoratorDisconnect", (_event: IpcRendererEvent) => {
       callback();
     });
   },
@@ -227,18 +261,18 @@ const apiHandler = {
   /**
    * 無線機関係・周波数設定コマンドを送信する
    */
-  setTransceiverFrequency: function (frequencyModel: UplinkType | DownlinkType): Promise<void> {
-    return ipcRenderer.invoke("setTransceiverFrequency", frequencyModel);
+  setTransceiverFrequency: function (frequencyModel: UplinkType | DownlinkType, isForce?: boolean): Promise<void> {
+    return ipcRenderer.invoke("setTransceiverFrequency", frequencyModel, isForce);
   },
 
   /**
    * 無線機関係・周波数の変更イベント
    */
-  onChangeTransceiverFrequency: (callback: Function) => {
+  onChangeTransceiverFrequency: (callback: (res: ApiResponse<UplinkType | DownlinkType>) => void | Promise<void>) => {
     ipcRenderer.on(
       "onChangeTransceiverFrequency",
       (event: IpcRendererEvent, res: ApiResponse<UplinkType | DownlinkType>) => {
-        callback(res);
+        void callback(res);
       }
     );
   },
@@ -254,7 +288,7 @@ const apiHandler = {
   /**
    * 無線機関係・モードの変更イベント
    */
-  onChangeTransceiverMode: (callback: Function) => {
+  onChangeTransceiverMode: (callback: (res: ApiResponse<UplinkType | DownlinkType>) => void) => {
     ipcRenderer.on(
       "onChangeTransceiverMode",
       (event: IpcRendererEvent, res: ApiResponse<UplinkType | DownlinkType>) => {
@@ -274,7 +308,7 @@ const apiHandler = {
   /**
    * ドップラーシフト待機イベント
    */
-  dopplerShiftWaitingCallback: (callback: Function) => {
+  dopplerShiftWaitingCallback: (callback: (res: ApiResponse<boolean>) => void) => {
     ipcRenderer.on("dopplerShiftWaitingCallback", (event: IpcRendererEvent, res: ApiResponse<boolean>) => {
       callback(res);
     });
@@ -305,9 +339,19 @@ const apiHandler = {
    * メイン側で以下の記載を行うと"onDispLangChange"が発火し、レンダラ側のコールバックが実行される
    * mainWindow.webContents.send("onDispLangChange", "ja");
    */
-  onDispLangChange: (callback: Function) => {
+  onDispLangChange: (callback: (lang: LangType) => void) => {
     ipcRenderer.on("onDispLangChange", (event: IpcRendererEvent, lang: LangType) => {
       callback(lang);
+    });
+  },
+  /**
+   * Frequency JSON Editor を開くイベント
+   * メイン側で以下の記載を行うと"openFrequencyEditor"が発火し、レンダラ側のコールバックが実行される
+   * mainWindow.webContents.send("openFrequencyEditor");
+   */
+  onOpenFrequencyEditor: (callback: () => void) => {
+    ipcRenderer.on("openFrequencyEditor", (_event: IpcRendererEvent) => {
+      callback();
     });
   },
   /**
@@ -315,29 +359,55 @@ const apiHandler = {
    * メイン側で以下の記載を行うと"onSaveTransceiverFrequency"が発火し、レンダラ側のコールバックが実行される
    * mainWindow.webContents.send("onSaveTransceiverFrequency");
    */
-  onSaveTransceiverFrequency: (callback: Function) => {
-    ipcRenderer.on("onSaveTransceiverFrequency", (event: IpcRendererEvent) => {
-      callback();
+  onSaveTransceiverFrequency: (callback: () => void | Promise<void>) => {
+    ipcRenderer.on("onSaveTransceiverFrequency", (_event: IpcRendererEvent) => {
+      void callback();
     });
   },
   /**
-   * URLから読み込み可能なTLEが取得できるか確認する
-   * 呼び出し例）const canGet = await window.rstApi.canGetValidTle(url);
+   * URLから読み込み可能な軌道要素データが取得できるか確認する
+   * 呼び出し例）const canGet = await window.rstApi.canGetValidOmm(url);
    */
-  canGetValidTle: function (url: string): Promise<boolean> {
-    return ipcRenderer.invoke("canGetValidTle", url);
+  canGetValidOmm: function (url: string): Promise<boolean> {
+    return ipcRenderer.invoke("canGetValidOmm", url);
   },
   /**
    * 通知メッセージイベント
    * メイン側で以下の記載を行うと"onNoticeMessage"が発火し、レンダラ側のコールバックが実行される
    * mainWindow.webContents.send("onNoticeMessage", message);
    */
-  onNoticeMessage: (callback: Function) => {
-    ipcRenderer.on("onNoticeMessage", (event: IpcRendererEvent, args: any) => {
-      callback(args[0] as MessageModel);
+  onNoticeMessage: (callback: (message: MessageModel) => void) => {
+    ipcRenderer.on("onNoticeMessage", (event: IpcRendererEvent, args: [MessageModel]) => {
+      callback(args[0]);
     });
   },
+
+  /**
+   * 地図タイルのルートパス
+   * 使用例）const tilePath = await window.rstApi.getTilesPath();
+   */
+  getTilesPath: () => {
+    // 開発環境かビルド環境かで地図タイルのパスを切り替える
+    if (EnvUtil.isDev()) {
+      // 開発環境ではpublicフォルダのtilesを参照する
+      return "/tiles";
+    }
+
+    // ビルド環境ではresourcesPathのtilesを参照する（electron-builder の extraResources で配置される）
+    const resourcesTilesPath = path.join(process.resourcesPath, "tiles");
+    if (fs.existsSync(resourcesTilesPath)) {
+      return resourcesTilesPath;
+    }
+
+    // パッケージ化せずにビルド結果を起動した場合（E2Eテストなど）は、resourcesPathにtilesがないため、
+    // ビルド時に public からコピーされた dist/tiles を参照する（preload.js は dist/electron/main に出力される）
+    // memo: ルーターが createWebHistory のため、画面のURLは file:/// 基準になる。相対パスでは解決できないため絶対パスで返す
+    return path.join(import.meta.dirname, "..", "..", "tiles");
+  },
 };
+
+// レンダラ側で呼び出すAPIの型定義
+export type ApiHandler = typeof apiHandler;
 
 // rendererプロセスに公開（アプリ関係）
 contextBridge.exposeInMainWorld("rstApi", apiHandler);

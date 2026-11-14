@@ -1,6 +1,6 @@
-import ApiActiveSat from "@/renderer/api/ApiActiveSat";
-import ApiAppConfig from "@/renderer/api/ApiAppConfig";
-import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub";
+import ApiActiveSat from "@/renderer/api/ApiActiveSat.js";
+import ApiAppConfig from "@/renderer/api/ApiAppConfig.js";
+import ActiveSatServiceHub from "@/renderer/service/ActiveSatServiceHub.js";
 import { onMounted, onUnmounted, ref, watch, type Ref } from "vue";
 
 /**
@@ -16,7 +16,7 @@ const useSatelliteLocation = (currentDate: Ref<Date>, offsetLongitude: Ref<numbe
   /**
    * 表示中の衛星グループが変更された場合のイベントハンドラ
    */
-  async function onChangeSatGrp() {
+  function onChangeSatGrp() {
     // 人工衛星の位置を更新
     updateLocation();
   }
@@ -63,7 +63,7 @@ const useSatelliteLocation = (currentDate: Ref<Date>, offsetLongitude: Ref<numbe
   async function getSatIdByIndex(index: number) {
     // 更新された衛星グループ情報を取得
     const satGrp = await ApiActiveSat.getActiveSatelliteGroup();
-    if (!satGrp || !satGrp.mainSattelliteTle) {
+    if (!satGrp || !satGrp.mainSatelliteOmm) {
       return;
     }
 
@@ -75,9 +75,9 @@ const useSatelliteLocation = (currentDate: Ref<Date>, offsetLongitude: Ref<numbe
     return satGrp.activeSatellites[index].satelliteId;
   }
 
-  onMounted(async () => {
+  onMounted(() => {
     // 初期表示時の衛星グループで画面を更新
-    await onChangeSatGrp();
+    onChangeSatGrp();
 
     // 表示中の衛星グループが変更された場合のコールバックを設定
     ActiveSatServiceHub.getInstance().addOnChangeActiveSat(onChangeSatGrp);

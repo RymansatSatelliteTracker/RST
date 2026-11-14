@@ -3,8 +3,8 @@
     :lat-lng="cmOptions.position"
     :radius="cmOptions.markerOptions.radius"
     :fill="cmOptions.markerOptions.fill"
-    :fillOpacity="cmOptions.markerOptions.fillOpacity"
-    :fillColor="cmOptions.markerOptions.fillColor"
+    :fill-opacity="cmOptions.markerOptions.fillOpacity"
+    :fill-color="cmOptions.markerOptions.fillColor"
     :color="cmOptions.markerOptions.color"
     :weight="cmOptions.markerOptions.weight"
     :interactive="cmOptions.markerOptions.interactive"
@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { LCircleMarker } from "@vue-leaflet/vue-leaflet";
-import { useCircleMarker } from "./useCircleMarker";
+import { useCircleMarker } from "./useCircleMarker.js";
 
 type Props = {
   // プロパティの指定

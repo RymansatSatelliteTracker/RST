@@ -1,4 +1,4 @@
-import { AntennaPositionModel } from "@/common/model/AntennaPositionModel";
+import type { AntennaPositionModel } from "@/common/model/AntennaPositionModel.js";
 
 /**
  * ローテーターのコントローラの親クラス
@@ -7,5 +7,5 @@ export default abstract class RotatorControllerBase {
   /**
    * ローテーター位置を設定する
    */
-  public abstract setPosition(pos: AntennaPositionModel): void;
+  public abstract setPosition(pos: AntennaPositionModel): void | Promise<void>;
 }
