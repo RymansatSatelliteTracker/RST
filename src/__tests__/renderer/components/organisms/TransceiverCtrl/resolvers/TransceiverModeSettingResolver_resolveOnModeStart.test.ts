@@ -23,66 +23,9 @@ describe("TransceiverModeSettingResolver.resolveOnModeStart", () => {
     resolver = new TransceiverModeSettingResolver();
   });
 
-  describe("Beaconモード開始時（isBeaconMode=true）", () => {
-    it("ビーコン設定が揃っている場合はrxFreqとrxOpeModeが設定されること", () => {
-      const result = resolver.resolveOnModeStart(true, fullSetting);
-
-      // ビーコンモードではRxのみ変更し、Txは変更しない
-      expect(result.rxFreq).toBe("0145.000.000");
-      expect(result.rxOpeMode).toBe("CW");
-      expect(result.txFreq).toBeUndefined();
-      expect(result.txOpeMode).toBeUndefined();
-      expect(result.noticeMessageKeys).toHaveLength(0);
-    });
-
-    it("ビーコン周波数が未設定の場合はエラー通知が返ること", () => {
-      const setting: TransceiverSettingLike = {
-        ...fullSetting,
-        beacon: { beaconHz: null, beaconMode: "CW" },
-      };
-
-      const result = resolver.resolveOnModeStart(true, setting);
-
-      expect(result.noticeMessageKeys).toContain(I18nMsgs.CHK_ERR_NO_BEACON_FREQ);
-      expect(result.rxFreq).toBeUndefined();
-    });
-
-    it("ビーコン運用モードが未設定の場合はエラー通知が返ること", () => {
-      const setting: TransceiverSettingLike = {
-        ...fullSetting,
-        beacon: { beaconHz: 145000000, beaconMode: null },
-      };
-
-      const result = resolver.resolveOnModeStart(true, setting);
-
-      expect(result.noticeMessageKeys).toContain(I18nMsgs.CHK_ERR_NO_BEACON_FREQ);
-    });
-
-    it("ビーコン運用モードが空文字の場合は設定済みとして反映されること", () => {
-      const setting: TransceiverSettingLike = {
-        ...fullSetting,
-        beacon: { beaconHz: 145000000, beaconMode: "" },
-      };
-
-      const result = resolver.resolveOnModeStart(true, setting);
-
-      expect(result.rxFreq).toBe("0145.000.000");
-      expect(result.rxOpeMode).toBe("");
-      expect(result.noticeMessageKeys).toHaveLength(0);
-    });
-
-    it("ビーコン設定がnullの場合はエラー通知が返ること", () => {
-      const setting: TransceiverSettingLike = { ...fullSetting, beacon: null };
-
-      const result = resolver.resolveOnModeStart(true, setting);
-
-      expect(result.noticeMessageKeys).toContain(I18nMsgs.CHK_ERR_NO_BEACON_FREQ);
-    });
-  });
-
-  describe("Autoモード開始時（isBeaconMode=false）", () => {
+  describe("Autoモード開始時", () => {
     it("Tx/Rx両方設定済みの場合はtxFreq/rxFreq/txOpeMode/rxOpeModeが全て設定されること", () => {
-      const result = resolver.resolveOnModeStart(false, fullSetting);
+      const result = resolver.resolveOnModeStart(fullSetting);
 
       expect(result.txFreq).toBe("2430.000.000");
       expect(result.rxFreq).toBe("0480.000.000");
@@ -98,7 +41,7 @@ describe("TransceiverModeSettingResolver.resolveOnModeStart", () => {
         beacon: fullSetting.beacon,
       };
 
-      const result = resolver.resolveOnModeStart(false, setting);
+      const result = resolver.resolveOnModeStart(setting);
 
       expect(result.noticeMessageKeys).toContain(I18nMsgs.CHK_ERR_NO_FREQ);
       expect(result.txFreq).toBeUndefined();
@@ -112,7 +55,7 @@ describe("TransceiverModeSettingResolver.resolveOnModeStart", () => {
         beacon: fullSetting.beacon,
       };
 
-      const result = resolver.resolveOnModeStart(false, setting);
+      const result = resolver.resolveOnModeStart(setting);
 
       expect(result.noticeMessageKeys).toContain(I18nMsgs.CHK_ERR_NO_UPLINK_FREQ);
       expect(result.txFreq).toBeUndefined();
@@ -127,7 +70,7 @@ describe("TransceiverModeSettingResolver.resolveOnModeStart", () => {
         beacon: fullSetting.beacon,
       };
 
-      const result = resolver.resolveOnModeStart(false, setting);
+      const result = resolver.resolveOnModeStart(setting);
 
       expect(result.noticeMessageKeys).toContain(I18nMsgs.CHK_ERR_NO_DOWNLINK_FREQ);
       expect(result.rxFreq).toBeUndefined();
@@ -142,7 +85,7 @@ describe("TransceiverModeSettingResolver.resolveOnModeStart", () => {
         beacon: fullSetting.beacon,
       };
 
-      const result = resolver.resolveOnModeStart(false, setting);
+      const result = resolver.resolveOnModeStart(setting);
 
       expect(result.txOpeMode).toBe(Constant.Transceiver.OpeMode.UNSET);
     });
@@ -154,7 +97,7 @@ describe("TransceiverModeSettingResolver.resolveOnModeStart", () => {
         beacon: fullSetting.beacon,
       };
 
-      const result = resolver.resolveOnModeStart(false, setting);
+      const result = resolver.resolveOnModeStart(setting);
 
       expect(result.rxOpeMode).toBe(Constant.Transceiver.OpeMode.UNSET);
     });

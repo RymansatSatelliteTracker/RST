@@ -26,6 +26,7 @@ export function createDefaultSatellite(
     beacon: { beaconHz: null, beaconMode: "" },
     enableSatelliteMode: false,
     satelliteMode: Constant.Transceiver.TrackingMode.NORMAL,
+    dopplerShiftMode: Constant.Transceiver.DopplerShiftMode.FIXED_SAT,
     toneHz: null,
     outline: "",
   };

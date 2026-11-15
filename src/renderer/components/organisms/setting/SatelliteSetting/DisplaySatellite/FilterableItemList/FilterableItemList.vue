@@ -17,6 +17,7 @@
           style="overflow-y: auto"
           :items="filteredItems"
           :item-name="'displayText'"
+          data-testid="filterable-satellite-list"
           :item-key="'satelliteId'"
           :height="355"
           :select-mode="'inclusive'"

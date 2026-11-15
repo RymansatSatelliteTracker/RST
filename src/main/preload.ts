@@ -23,6 +23,7 @@ import type { ApiResponse, LangType } from "@/common/types/types.js";
 import EnvUtil from "@/common/util/EnvUtil.js";
 import type { IpcRendererEvent } from "electron";
 import { contextBridge, ipcRenderer } from "electron";
+import fs from "fs";
 import path from "path";
 /**
  * ここにレンダラに公開するAPIを定義する
@@ -390,10 +391,18 @@ const apiHandler = {
     if (EnvUtil.isDev()) {
       // 開発環境ではpublicフォルダのtilesを参照する
       return "/tiles";
-    } else {
-      // ビルド環境ではresourcesPathのtilesを参照する
-      return path.join(process.resourcesPath, "tiles");
     }
+
+    // ビルド環境ではresourcesPathのtilesを参照する（electron-builder の extraResources で配置される）
+    const resourcesTilesPath = path.join(process.resourcesPath, "tiles");
+    if (fs.existsSync(resourcesTilesPath)) {
+      return resourcesTilesPath;
+    }
+
+    // パッケージ化せずにビルド結果を起動した場合（E2Eテストなど）は、resourcesPathにtilesがないため、
+    // ビルド時に public からコピーされた dist/tiles を参照する（preload.js は dist/electron/main に出力される）
+    // memo: ルーターが createWebHistory のため、画面のURLは file:/// 基準になる。相対パスでは解決できないため絶対パスで返す
+    return path.join(import.meta.dirname, "..", "..", "tiles");
   },
 };
 

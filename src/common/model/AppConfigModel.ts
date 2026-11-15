@@ -100,6 +100,8 @@ export class AppConfigSatellite {
   public enableSatelliteMode = false;
   // 衛星モード
   public satelliteMode = Constant.Transceiver.TrackingMode.NORMAL;
+  // 固定モード（衛星固定/受信固定/送信固定）
+  public dopplerShiftMode: string = Constant.Transceiver.DopplerShiftMode.FIXED_SAT;
   // トーン周波数
   public toneHz: number | null = null;
   // 対象衛星概要

@@ -65,6 +65,8 @@ export type DefaultSatelliteType = {
   enableSatelliteMode: boolean;
   // 衛星モード
   satelliteMode: string;
+  // 固定モード（衛星固定/受信固定/送信固定）
+  dopplerShiftMode: string;
   // 対象衛星概要
   outline: string;
 };

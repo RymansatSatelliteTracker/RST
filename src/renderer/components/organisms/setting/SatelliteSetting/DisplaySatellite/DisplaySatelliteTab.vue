@@ -11,7 +11,13 @@
 
         <!-- アイテムを移動するためのボタン -->
         <v-col cols="1" class="d-flex flex-column align-center justify-center">
-          <v-btn variant="plain" size="x-large" :disabled="!canMoveRight" @click="moveSelectedToRight">
+          <v-btn
+            variant="plain"
+            size="x-large"
+            :disabled="!canMoveRight"
+            data-testid="move-to-group-btn"
+            @click="moveSelectedToRight"
+          >
             <v-icon size="50" :icon="mdiArrowRightBold"></v-icon>
           </v-btn>
         </v-col>

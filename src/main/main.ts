@@ -1,3 +1,8 @@
+// E2Eテスト用のユーザデータディレクトリ切替（他のモジュールより先に読み込むため、最初に import する）
+// MEMO: 保存時の import の整理（source.organizeImports）で並べ替えられないよう、直後に空行を入れて別グループにしている。
+//       この import と次の import の間の空行は削除しないこと。
+import "@/main/util/E2eUserDataPath.js";
+
 import Constant from "@/common/Constant.js";
 import { MessageModel } from "@/common/model/MessageModel.js";
 import EnvUtil from "@/common/util/EnvUtil.js";

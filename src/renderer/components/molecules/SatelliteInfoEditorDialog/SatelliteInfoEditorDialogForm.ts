@@ -30,5 +30,6 @@ export default class SatelliteInfoEditorDialogForm {
   public beaconMode: string = "";
   public enableSatelliteMode: boolean = false;
   public satelliteMode: string = Constant.Transceiver.TrackingMode.NORMAL;
+  public dopplerShiftMode: string = Constant.Transceiver.DopplerShiftMode.FIXED_SAT;
   public outline: string = "";
 }

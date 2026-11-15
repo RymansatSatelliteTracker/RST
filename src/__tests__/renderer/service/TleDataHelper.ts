@@ -12,6 +12,26 @@ class TleDataHelper {
   }
 
   /**
+   * 指定したエポックのISS (ZARYA)の軌道要素から人工衛星サービスを生成する
+   * MEMO: 時刻に依存しないテストのため、エポックを固定して生成する用途で使用する。
+   */
+  public static createIssOrbitSatellite(epochUtcDate: Date): SatelliteService {
+    const tle = TleUtil.orbitElementsToTLE({
+      noradId: "25544",
+      satelliteName: "ISS (ZARYA)",
+      epochUtcDate,
+      semiMajorAxisKm: 6797.0,
+      inclinationDeg: 51.6,
+      raanDeg: 243.0542,
+      argumentOfPerigeeDeg: 345.284,
+      eccentricity: 0.0007697,
+      meanAnomalyDeg: 100.4574,
+      bStar: 0.0,
+    });
+    return new SatelliteService(TleDataHelper.toOmmItem(tle));
+  }
+
+  /**
    * TLE
    */
   public static readonly Tle = class {

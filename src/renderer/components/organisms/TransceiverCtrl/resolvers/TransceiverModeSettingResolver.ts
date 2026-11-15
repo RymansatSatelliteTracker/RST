@@ -49,7 +49,7 @@ export interface ModeResolvedState {
 }
 
 /**
- * モード状態（Auto/Beacon）から周波数・運用モード反映内容を決定する
+ * モード（Auto/Beacon）の開始時に、衛星設定から周波数・運用モードの反映内容を決定する
  */
 export default class TransceiverModeSettingResolver {
   /**
@@ -61,38 +61,12 @@ export default class TransceiverModeSettingResolver {
   }
 
   /**
-   * Auto/Beacon開始時の周波数・運用モードを解決する
+   * Autoモード開始時の周波数・運用モードを解決する
+   * @param transceiverSetting アクティブ衛星の無線機設定
+   * @returns モード解決結果（設定未入力の場合は通知メッセージを含む）
    */
-  public resolveOnModeStart(isBeaconMode: boolean, transceiverSetting: TransceiverSettingLike): ModeResolvedState {
-    // BeaconモードがONの場合はビーコン設定を、OFFの場合はAuto設定を優先して解決する
-    if (isBeaconMode) {
-      return this.resolveBeaconModeSetting(transceiverSetting);
-    }
-
+  public resolveOnModeStart(transceiverSetting: TransceiverSettingLike): ModeResolvedState {
     return this.resolveAutoModeSetting(transceiverSetting);
-  }
-
-  /**
-   * Autoモード中にBeacon OFFへ戻したときの周波数・運用モードを解決する
-   */
-  public resolveWhenBeaconOffInAuto(transceiverSetting: TransceiverSettingLike): ModeResolvedState {
-    const resolved: ModeResolvedState = {
-      noticeMessageKeys: [],
-    };
-
-    // Tx周波数/運用モードを指定の設定値で保持する（未設定の場合は変更せず通知のみ）
-    if (transceiverSetting.uplink?.uplinkHz) {
-      resolved.txFreq = TransceiverUtil.formatWithDot(transceiverSetting.uplink.uplinkHz);
-      resolved.txOpeMode = transceiverSetting.uplink.uplinkMode ?? Constant.Transceiver.OpeMode.UNSET;
-    }
-
-    // ダウンリンク周波数/運用モードを指定の設定値で保持する（未設定の場合は変更せず通知のみ）
-    if (transceiverSetting.downlink?.downlinkHz) {
-      resolved.rxFreq = TransceiverUtil.formatWithDot(transceiverSetting.downlink.downlinkHz);
-      resolved.rxOpeMode = transceiverSetting.downlink.downlinkMode ?? Constant.Transceiver.OpeMode.UNSET;
-    }
-
-    return resolved;
   }
 
   /**
@@ -100,7 +74,7 @@ export default class TransceiverModeSettingResolver {
    * @param transceiverSetting アクティブ衛星の無線機設定
    * @returns モード解決結果（ビーコン設定未入力の場合は通知メッセージを含む）
    */
-  private resolveBeaconModeSetting(transceiverSetting: TransceiverSettingLike): ModeResolvedState {
+  public resolveBeaconModeSetting(transceiverSetting: TransceiverSettingLike): ModeResolvedState {
     const beacon = transceiverSetting.beacon;
     // ビーコン周波数または運用モードが未設定の場合はエラー通知のみ返す
     if (!beacon || beacon.beaconHz == null || beacon.beaconMode == null) {

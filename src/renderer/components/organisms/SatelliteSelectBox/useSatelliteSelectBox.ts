@@ -119,10 +119,11 @@ export default function useSatelliteSelectBox(items: Ref<SelectOption[]>) {
       return -1;
     }
 
-    // 一旦、先頭を候補にしておく
-    let satId = Number(items[0].value);
-
     // 衛星グループごとの前回選択された衛星IDが存在する場合は、その衛星を選択
+    // 存在しない場合（起動時など）は、保存済みのアクティブ衛星を選択
+    // memo: 起動時に先頭衛星を選択するとAppConfigが書き換わり、
+    //       ActiveSatServiceHub側の初期化と競合して画面と軌道のアクティブ衛星が不一致になるため
+    let satId = activeSatGrp.mainSatelliteId;
     if (activeSatGrp.activeSatelliteGroupId in prevSelectedSatIdMap) {
       satId = prevSelectedSatIdMap[activeSatGrp.activeSatelliteGroupId];
     }

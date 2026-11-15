@@ -5,6 +5,7 @@ import type { ApiResponse } from "@/common/types/types.js";
 import I18nUtil from "@/renderer/common/util/I18nUtil.js";
 import TransceiverDopplerCalc from "@/renderer/components/organisms/TransceiverCtrl/calculators/TransceiverDopplerCalc.js";
 import TransceiverBaseFreqMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBaseFreqMgr.js";
+import TransceiverBeaconMgr from "@/renderer/components/organisms/TransceiverCtrl/managers/TransceiverBeaconMgr.js";
 import type { RecvFreqResolverState } from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverRecvFreqResolver.js";
 import TransceiverRecvFreqResolver from "@/renderer/components/organisms/TransceiverCtrl/resolvers/TransceiverRecvFreqResolver.js";
 import emitter from "@/renderer/util/EventBus.js";
@@ -16,6 +17,7 @@ const createState = (): RecvFreqResolverState => ({
   rxFrequencyAdjustment: ref("+000.000"),
   txBaseFreq: ref(2430000000),
   rxBaseFreq: ref(480000000),
+  isBeaconMode: ref(false),
 });
 
 describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
@@ -148,6 +150,47 @@ describe("TransceiverRecvFreqResolver.applyFromTransceiver", () => {
     expect(baseFreqMgr.getPlainBaseFreqs()).toEqual({
       plainRxBaseFreq: 481000000,
       plainTxBaseFreq: 2429000000,
+    });
+  });
+  it("Rx周波数受信かつAutoOnかつBeacon中、ビーコンのRx基準周波数のみ更新され、通常の基準周波数は変化しないこと", async () => {
+    const state = createState();
+    state.isBeaconMode.value = true;
+    const baseFreqMgr = new TransceiverBaseFreqMgr();
+    baseFreqMgr.setPlainBaseFreqs(480000000, 2430000000);
+    const beaconMgr = new TransceiverBeaconMgr();
+    beaconMgr.setBeaconRxBaseFreq(479990000);
+    const calcSumSpy = vi.spyOn(TransceiverDopplerCalc.prototype, "calcBaseFreqByShiftedRxFreq");
+    const calcBeaconSpy = vi
+      .spyOn(TransceiverDopplerCalc.prototype, "calcRxBaseFreqByShiftedRxFreq")
+      .mockResolvedValue(479991000);
+    const calcWithAdjust = vi.fn();
+    const resolver = new TransceiverRecvFreqResolver(
+      state,
+      { tranceiverAuto: true } as never,
+      baseFreqMgr,
+      ref(new Date("2026-05-09T00:00:00.000Z")),
+      () => 1000,
+      calcWithAdjust,
+      () => 0,
+      beaconMgr
+    );
+
+    await resolver.applyFromTransceiver({
+      status: true,
+      data: {
+        downlinkHz: 480001000,
+      },
+    } as unknown as ApiResponse<UplinkType | DownlinkType>);
+
+    expect(state.rxFrequency.value).toBe("0480.001.000");
+    expect(calcBeaconSpy).toHaveBeenCalledWith(480001000, new Date("2026-05-09T00:00:00.000Z"), 1000);
+    expect(beaconMgr.getBeaconRxBaseFreq()).toBe(479991000);
+    // ビーコンはSumの関係にないため、通常の基準周波数（Tx側を含む）は再算出しない
+    expect(calcSumSpy).not.toHaveBeenCalled();
+    expect(calcWithAdjust).not.toHaveBeenCalled();
+    expect(baseFreqMgr.getPlainBaseFreqs()).toEqual({
+      plainRxBaseFreq: 480000000,
+      plainTxBaseFreq: 2430000000,
     });
   });
 });
