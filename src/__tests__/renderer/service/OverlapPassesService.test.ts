@@ -1,6 +1,6 @@
 import TleDataHelper from "@/__tests__/renderer/service/TleDataHelper.js";
 import OverlapPassesService from "@/renderer/service/OverlapPassesService.js";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { GROUND2_STATION, GROUND_STATION } from "./GroundStationService.test.js";
 
 /**
@@ -8,6 +8,18 @@ import { GROUND2_STATION, GROUND_STATION } from "./GroundStationService.test.js"
  * 2か所の地上局から観測できる人工衛星の可視時間リストが取得できる
  */
 describe("[正常系]2か所の地上局から観測できる人工衛星の可視時間リストが取得できる", () => {
+  // MEMO: サービス内部で現在日時(new Date())を参照し、過去日時の期間はnullを返却/探索対象外とするため、
+  //       テストの起点日時に合わせてシステム日時を固定する。（Dateのみ偽装し、タイマー類は実時間のまま）
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-11-04T12:00:00Z"));
+  });
+
+  afterEach(() => {
+    // beforeEachで設定したモック日時を元に戻す
+    vi.useRealTimers();
+  });
+
   it("2か所の地上局から同時に観測できる人工衛星の可視時間リストが取得できる", async () => {
     // MEMO: 実行時の現在日時を使うと、最初の可視パスが地球の影の中になる時間帯に日照率が0となり、
     //       テストが不安定になる。そのため日時を固定する。
