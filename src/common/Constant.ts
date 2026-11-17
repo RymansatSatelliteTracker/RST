@@ -47,7 +47,6 @@ export default class Constant {
       // 動作モード
       static readonly MOVE_MODE_NORMAL = "normal";
       static readonly MOVE_MODE_FLIP = "flip";
-      static readonly MOVE_MODE_SHIFT = "shift";
     };
   };
 
